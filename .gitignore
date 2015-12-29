@@ -13,6 +13,7 @@
 # IDEA #
 .idea/
 *.iml
+/out
 
 # Maven #
 dependency-reduced-pom.xml
@@ -21,3 +22,6 @@ dependency-reduced-pom.xml
 # logs #
 *.log
 logs/
+
+# FXGL #
+/saves
