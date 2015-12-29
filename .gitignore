@@ -17,7 +17,7 @@
 
 # Maven #
 dependency-reduced-pom.xml
-/target
+*/target
 
 # logs #
 *.log
