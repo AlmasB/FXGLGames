@@ -44,7 +44,7 @@ import javafx.util.Duration;
 public final class EntityFactory {
 
     public enum Type implements EntityType {
-        PLAYER, ENEMY, BULLET, EXPLOSION,
+        PLAYER, ENEMY, BULLET,
         LEVEL_INFO
     }
 
@@ -55,6 +55,9 @@ public final class EntityFactory {
     // we don't have to do this in code
     // we could just pre-format the texture specifically for the game
     public static void preLoad() {
+        if (textureExplosion != null)
+            return;
+
         textureExplosion = assetLoader.loadTexture("explosion.png");
         int h = 1536 / 6;
         Texture textureCombined = textureExplosion.subTexture(new Rectangle2D(0, 0, 2048, h));
@@ -78,6 +81,9 @@ public final class EntityFactory {
         player.setSceneView(texture);
         player.setCollidable(true);
         player.setRotation(-90);
+
+        player.addComponent(new InvincibleComponent());
+
         return player;
     }
 
@@ -109,7 +115,7 @@ public final class EntityFactory {
     }
 
     public static Entity newExplosion(Point2D position) {
-        Entity explosion = new Entity(Type.EXPLOSION);
+        Entity explosion = Entity.noType();
         explosion.setPosition(position.subtract(40, 40));
 
         Texture animation = textureExplosion.toStaticAnimatedTexture(48, Duration.seconds(2));

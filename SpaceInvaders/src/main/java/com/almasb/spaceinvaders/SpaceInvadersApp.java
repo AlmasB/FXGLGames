@@ -56,6 +56,8 @@ import javafx.util.Duration;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 
+import java.io.Serializable;
+
 import static com.almasb.spaceinvaders.EntityFactory.Type;
 
 /**
@@ -68,11 +70,11 @@ public class SpaceInvadersApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("FXGL Space Invaders");
-        settings.setVersion("0.3dev");
+        settings.setVersion("0.4dev");
         settings.setWidth(600);
         settings.setHeight(800);
-        settings.setIntroEnabled(false);
-        settings.setMenuEnabled(false);
+        settings.setIntroEnabled(true);
+        settings.setMenuEnabled(true);
         settings.setShowFPS(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
@@ -111,12 +113,19 @@ public class SpaceInvadersApp extends GameApplication {
     @Override
     protected void preInit() {
         getAudioPlayer().setGlobalSoundVolume(0.33);
+        getAudioPlayer().setGlobalMusicVolume(0.33);
 
         SaveData data = getSaveLoadManager().<SaveData>load(SAVE_DATA_NAME)
                 .orElse(new SaveData("CPU", 10000));
 
         highScoreName = data.getName();
         highScore = data.getHighScore();
+    }
+
+    // workaround until saves are properly recognized
+    @Override
+    public void loadState(Serializable data) {
+        initGame();
     }
 
     @Override
@@ -136,7 +145,9 @@ public class SpaceInvadersApp extends GameApplication {
                 .achievedProperty().bind(score.greaterThanOrEqualTo(10000));
 
         spawnPlayer();
-        nextLevel();
+
+        if (!runningFirstTime)
+            nextLevel();
     }
 
     private void initBackground() {
@@ -196,7 +207,8 @@ public class SpaceInvadersApp extends GameApplication {
             @Override
             protected void onCollisionBegin(Entity bullet, Entity player) {
                 // player shot that bullet so no need to handle collision
-                if (bullet.getComponentUnsafe(OwnerComponent.class).getValue().isType(Type.PLAYER)) {
+                if (bullet.getComponentUnsafe(OwnerComponent.class).getValue().isType(Type.PLAYER)
+                        || player.getComponentUnsafe(InvincibleComponent.class).getValue()) {
                     return;
                 }
 
@@ -254,6 +266,17 @@ public class SpaceInvadersApp extends GameApplication {
                     animation.setOnFinished(e -> getGameScene().removeUINode(t));
                     animation.play();
 
+                    Entity flash = Entity.noType();
+                    flash.setSceneView(new Rectangle(getWidth(), getHeight(), Color.rgb(190, 10, 15, 0.5)));
+                    getGameWorld().addEntity(flash);
+
+                    player.getComponentUnsafe(InvincibleComponent.class).setValue(true);
+
+                    getMasterTimer().runOnceAfter(() -> {
+                        flash.removeFromWorld();
+                        player.getComponentUnsafe(InvincibleComponent.class).setValue(false);
+                    }, Duration.seconds(1));
+
                     playSound("lose_life.wav");
                 }
             });
@@ -268,9 +291,70 @@ public class SpaceInvadersApp extends GameApplication {
         getGameScene().addUINodes(textBox);
     }
 
+    private boolean runningFirstTime = true;
+
     @Override
     protected void onUpdate() {
+        if (runningFirstTime) {
+            getDisplay().showConfirmationBox("Play Tutorial?", yes -> {
+                if (yes)
+                    playTutorial();
+                else
+                    nextLevel();
+            });
+
+            runningFirstTime = false;
+        }
+
+        if (mockLeft)
+            moveLeft();
+
+        if (mockRight)
+            moveRight();
+
         removeOffscreenBullets();
+    }
+
+    // workaround until FXGL can do it
+    private boolean mockLeft, mockRight;
+
+    private void playTutorial() {
+        getInput().setProcessActions(false);
+
+        Text hint = UIFactory.newText("Press A to move left", Color.AQUA, 24);
+        hint.setTranslateX(getWidth() / 2 - UIFactory.widthOf(hint.getText(), 24) / 2);
+        hint.setTranslateY(getHeight() / 2 - 50);
+        getGameScene().addUINode(hint);
+
+        mockLeft = true;
+        playMusic("dialogs/move_left.mp3");
+
+        getMasterTimer().runOnceAfter(() -> {
+            hint.setText("Press D to move right");
+            hint.setTranslateX(getWidth() / 2 - UIFactory.widthOf(hint.getText(), 24) / 2);
+
+            mockLeft = false;
+            mockRight = true;
+
+            playMusic("dialogs/move_right.mp3");
+
+            getMasterTimer().runOnceAfter(() -> {
+                hint.setText("Press F to shoot");
+                hint.setTranslateX(getWidth() / 2 - UIFactory.widthOf(hint.getText(), 24) / 2);
+
+                mockRight = false;
+                shoot();
+
+                playMusic("dialogs/shoot.mp3");
+
+                getMasterTimer().runOnceAfter(() -> {
+                    player.setPosition(getWidth() / 2 - 20, getHeight() - 40);
+
+                    getGameScene().removeUINode(hint);
+                    nextLevel();
+                }, Duration.seconds(3));
+            }, Duration.seconds(3));
+        }, Duration.seconds(3));
     }
 
     private void removeOffscreenBullets() {
@@ -330,6 +414,10 @@ public class SpaceInvadersApp extends GameApplication {
 
     private void playSound(String name) {
         getAudioPlayer().playSound(getAssetLoader().loadSound(name));
+    }
+
+    private void playMusic(String name) {
+        getAudioPlayer().playMusic(getAssetLoader().loadMusic(name));
     }
 
     private void showGameOver() {
