@@ -1,5 +1,5 @@
 ## FXGLGames
-This repo contains sample games built with FXGL.
+This repo contains sample games built with <a href="https://github.com/AlmasB/FXGL">FXGL</a> Game Library.
 
 ## Build
 ```bash
