@@ -30,21 +30,23 @@ import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.asset.Texture;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.EntityType;
-import com.almasb.fxgl.entity.control.ProjectileControl;
-import com.almasb.fxgl.event.DisplayEvent;
 import com.almasb.fxgl.gameplay.Achievement;
-import com.almasb.fxgl.input.*;
+import com.almasb.fxgl.gameplay.AchievementManager;
+import com.almasb.fxgl.input.ActionType;
+import com.almasb.fxgl.input.Input;
+import com.almasb.fxgl.input.InputMapping;
+import com.almasb.fxgl.input.OnUserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsEntity;
 import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.ui.UIFactory;
+import javafx.animation.Animation;
 import javafx.animation.ScaleTransition;
+import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -54,17 +56,14 @@ import javafx.util.Duration;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 
+import static com.almasb.spaceinvaders.EntityFactory.Type;
+
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class SpaceInvadersApp extends GameApplication {
 
     private static final String SAVE_DATA_NAME = "hiscore.dat";
-
-    public enum Type implements EntityType {
-        PLAYER, ENEMY, PLAYER_BULLET, ENEMY_BULLET,
-        LEVEL_INFO
-    }
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -80,10 +79,10 @@ public class SpaceInvadersApp extends GameApplication {
 
     @Override
     protected void initAchievements() {
-        getAchievementManager().registerAchievement(
-                new Achievement("Hitman", "Destroy 5 enemies"));
-        getAchievementManager().registerAchievement(
-                new Achievement("Master Scorer", "Score 10000+ points"));
+        AchievementManager am = getAchievementManager();
+
+        am.registerAchievement(new Achievement("Hitman", "Destroy 5 enemies"));
+        am.registerAchievement(new Achievement("Master Scorer", "Score 10000+ points"));
     }
 
     @Override
@@ -96,7 +95,9 @@ public class SpaceInvadersApp extends GameApplication {
     }
 
     @Override
-    protected void initAssets() {}
+    protected void initAssets() {
+        EntityFactory.preLoad();
+    }
 
     private Entity player;
     private IntegerProperty enemiesDestroyed;
@@ -108,22 +109,25 @@ public class SpaceInvadersApp extends GameApplication {
     private String highScoreName;
 
     @Override
-    protected void initGame() {
+    protected void preInit() {
+        getAudioPlayer().setGlobalSoundVolume(0.33);
+
         SaveData data = getSaveLoadManager().<SaveData>load(SAVE_DATA_NAME)
-                .orElse(new SaveData("CPU", 0));
+                .orElse(new SaveData("CPU", 10000));
 
         highScoreName = data.getName();
         highScore = data.getHighScore();
+    }
 
-        getAudioPlayer().setGlobalSoundVolume(0);
-
+    @Override
+    protected void initGame() {
         initBackground();
 
         getNotificationService().setBackgroundColor(Color.DARKBLUE);
 
         enemiesDestroyed = new SimpleIntegerProperty(0);
-        score = new SimpleIntegerProperty();
-        level = new SimpleIntegerProperty();
+        score = new SimpleIntegerProperty(0);
+        level = new SimpleIntegerProperty(0);
         lives = new SimpleIntegerProperty(3);
 
         getAchievementManager().getAchievementByName("Hitman")
@@ -180,43 +184,46 @@ public class SpaceInvadersApp extends GameApplication {
         getGameWorld().addEntities(levelInfo, ground);
 
         getMasterTimer().runOnceAfter(this::initLevel, Duration.seconds(3));
+
+        playSound("level.wav");
     }
 
     @Override
     protected void initPhysics() {
         PhysicsWorld physicsWorld = getPhysicsWorld();
 
-        physicsWorld.addCollisionHandler(new CollisionHandler(Type.ENEMY_BULLET, Type.PLAYER) {
+        physicsWorld.addCollisionHandler(new CollisionHandler(Type.BULLET, Type.PLAYER) {
             @Override
             protected void onCollisionBegin(Entity bullet, Entity player) {
+                // player shot that bullet so no need to handle collision
+                if (bullet.getComponentUnsafe(OwnerComponent.class).getValue().isType(Type.PLAYER)) {
+                    return;
+                }
+
                 bullet.removeFromWorld();
                 lives.set(lives.get() - 1);
-                if (lives.get() == 0) {
-                    getDisplay().showConfirmationBox("Game Over. Continue?", yes -> {
-                        if (yes) {
-                            startNewGame();
-                        } else {
-                            if (score.get() > highScore) {
-                                getDisplay().showInputBox("Enter your name", input -> {
-                                    getSaveLoadManager().save(new SaveData(input, score.get()), SAVE_DATA_NAME);
-                                    getEventBus().fireEvent(new DisplayEvent(DisplayEvent.CLOSE_REQUEST));
-                                });
-                            } else {
-                                getEventBus().fireEvent(new DisplayEvent(DisplayEvent.CLOSE_REQUEST));
-                            }
-                        }
-                    });
-                }
+                if (lives.get() == 0)
+                    showGameOver();
             }
         });
 
-        physicsWorld.addCollisionHandler(new CollisionHandler(Type.PLAYER_BULLET, Type.ENEMY) {
+        physicsWorld.addCollisionHandler(new CollisionHandler(Type.BULLET, Type.ENEMY) {
             @Override
             protected void onCollisionBegin(Entity bullet, Entity enemy) {
+                // some enemy shot the bullet, skip collision handling
+                if (bullet.getComponentUnsafe(OwnerComponent.class).getValue().isType(Type.ENEMY)) {
+                    return;
+                }
+
                 bullet.removeFromWorld();
                 enemy.removeFromWorld();
                 enemiesDestroyed.set(enemiesDestroyed.get() + 1);
                 score.set(score.get() + 200);
+
+                Entity explosion = EntityFactory.newExplosion(enemy.getCenter());
+                getGameWorld().addEntity(explosion);
+
+                playSound("explosion.wav");
 
                 if (enemiesDestroyed.get() % 40 == 0)
                     nextLevel();
@@ -241,24 +248,13 @@ public class SpaceInvadersApp extends GameApplication {
             t.setTranslateY(10);
 
             lives.addListener((observable, oldValue, newValue) -> {
+                // if lives get reduced, the index gives us which life
                 if (newValue.intValue() == index) {
+                    Animation animation = getAnimationLoseLife(t);
+                    animation.setOnFinished(e -> getGameScene().removeUINode(t));
+                    animation.play();
 
-                    t.setFitWidth(64);
-                    t.setFitHeight(64);
-
-                    TranslateTransition tt = new TranslateTransition(Duration.seconds(0.66), t);
-                    tt.setToX(getWidth() / 2 - t.getFitWidth() / 2);
-                    tt.setToY(getHeight() / 2 - t.getFitHeight() / 2);
-                    tt.setOnFinished(e -> {
-                        ScaleTransition st = new ScaleTransition(Duration.seconds(0.66), t);
-                        st.setToX(0);
-                        st.setToY(0);
-                        st.setOnFinished(e2 -> {
-                            getGameScene().removeUINode(t);
-                        });
-                        st.play();
-                    });
-                    tt.play();
+                    playSound("lose_life.wav");
                 }
             });
 
@@ -274,39 +270,39 @@ public class SpaceInvadersApp extends GameApplication {
 
     @Override
     protected void onUpdate() {
-        getGameWorld().getEntities(Type.PLAYER_BULLET, Type.ENEMY_BULLET)
+        removeOffscreenBullets();
+    }
+
+    private void removeOffscreenBullets() {
+        getGameWorld().getEntities(Type.BULLET)
                 .stream()
                 .filter(b -> b.isOutside(0, 0, getWidth(), getHeight()))
                 .forEach(Entity::removeFromWorld);
     }
 
+    private Animation getAnimationLoseLife(Texture texture) {
+        texture.setFitWidth(64);
+        texture.setFitHeight(64);
+
+        TranslateTransition tt = new TranslateTransition(Duration.seconds(0.66), texture);
+        tt.setToX(getWidth() / 2 - texture.getFitWidth() / 2);
+        tt.setToY(getHeight() / 2 - texture.getFitHeight() / 2);
+
+        ScaleTransition st = new ScaleTransition(Duration.seconds(0.66), texture);
+        st.setToX(0);
+        st.setToY(0);
+
+        return new SequentialTransition(tt, st);
+    }
+
     private void spawnEnemy(double x, double y) {
-        Entity enemy = new Entity(Type.ENEMY);
-        enemy.setPosition(x, y);
-
-        Texture texture = getAssetLoader().loadTexture("tank_enemy.png");
-        texture.setFitWidth(40);
-        texture.setFitHeight(40);
-
-        enemy.setSceneView(texture);
-        enemy.setCollidable(true);
-        enemy.setRotation(90);
-        enemy.addControl(new EnemyControl());
+        Entity enemy = EntityFactory.newEnemy(x, y);
 
         getGameWorld().addEntity(enemy);
     }
 
     private void spawnPlayer() {
-        player = new Entity(Type.PLAYER);
-        player.setPosition(getWidth() / 2 - 20, getHeight() - 40);
-
-        Texture texture = getAssetLoader().loadTexture("tank_player.png");
-        texture.setFitWidth(40);
-        texture.setFitHeight(40);
-
-        player.setSceneView(texture);
-        player.setCollidable(true);
-        player.setRotation(-90);
+        player = EntityFactory.newPlayer(getWidth() / 2 - 20, getHeight() - 40);
 
         getGameWorld().addEntity(player);
     }
@@ -317,31 +313,40 @@ public class SpaceInvadersApp extends GameApplication {
             player.translate(-5, 0);
     }
 
-    @OnUserAction(name = "Move Right", type = ActionType.ON_ACTION_BEGIN)
-    public void moveRightStart() {
-        log.finer("Starting move right");
-    }
-
     @OnUserAction(name = "Move Right", type = ActionType.ON_ACTION)
     public void moveRight() {
         if (player.getX() <= getWidth() - player.getWidth() - 5)
             player.translate(5, 0);
     }
 
-    @OnUserAction(name = "Move Right", type = ActionType.ON_ACTION_END)
-    public void moveRightStop() {
-        log.finer("Stopping move right");
-    }
-
     @OnUserAction(name = "Shoot", type = ActionType.ON_ACTION_BEGIN)
     public void shoot() {
-        Entity bullet = new Entity(Type.PLAYER_BULLET);
-        bullet.setPosition(player.getCenter().subtract(8, player.getHeight() / 2));
-        bullet.setCollidable(true);
-        bullet.setSceneView(getAssetLoader().loadTexture("tank_bullet.png"));
-        bullet.addControl(new ProjectileControl(new Point2D(0, -1), 10));
+        Entity bullet = EntityFactory.newBullet(player);
 
         getGameWorld().addEntity(bullet);
+
+        playSound("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
+    }
+
+    private void playSound(String name) {
+        getAudioPlayer().playSound(getAssetLoader().loadSound(name));
+    }
+
+    private void showGameOver() {
+        getDisplay().showConfirmationBox("Game Over. Continue?", yes -> {
+            if (yes) {
+                startNewGame();
+            } else {
+                if (score.get() > highScore) {
+                    getDisplay().showInputBox("Enter your name", playerName -> {
+                        getSaveLoadManager().save(new SaveData(playerName, score.get()), SAVE_DATA_NAME);
+                        exit();
+                    });
+                } else {
+                    exit();
+                }
+            }
+        });
     }
 
     public static void main(String[] args) {
