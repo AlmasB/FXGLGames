@@ -3,7 +3,7 @@
 # Package Files #
 *.war
 *.ear
-*/META-INF
+META-INF/
 
 # Eclipse #
 .classpath
