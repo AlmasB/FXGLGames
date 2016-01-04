@@ -28,9 +28,11 @@ package com.almasb.geowars;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.asset.Texture;
+import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.control.Control;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityType;
+import com.almasb.fxgl.entity.control.ProjectileControl;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
@@ -75,7 +77,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setVersion("0.2dev");
         settings.setFullScreen(false);
         settings.setIntroEnabled(false);
-        settings.setMenuEnabled(true);
+        settings.setMenuEnabled(false);
         settings.setShowFPS(true);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
@@ -87,7 +89,6 @@ public class GeoWarsApp extends GameApplication {
         input.addAction(new UserAction("Move Left") {
             @Override
             protected void onAction() {
-                player.setRotation(-90);
                 player.translate(-5, 0);
             }
         }, KeyCode.A);
@@ -95,7 +96,6 @@ public class GeoWarsApp extends GameApplication {
         input.addAction(new UserAction("Move Right") {
             @Override
             protected void onAction() {
-                player.setRotation(90);
                 player.translate(5, 0);
             }
         }, KeyCode.D);
@@ -103,7 +103,6 @@ public class GeoWarsApp extends GameApplication {
         input.addAction(new UserAction("Move Up") {
             @Override
             protected void onAction() {
-                player.setRotation(0);
                 player.translate(0, -5);
             }
         }, KeyCode.W);
@@ -111,7 +110,6 @@ public class GeoWarsApp extends GameApplication {
         input.addAction(new UserAction("Move Down") {
             @Override
             protected void onAction() {
-                player.setRotation(180);
                 player.translate(0, 5);
             }
         }, KeyCode.S);
@@ -154,6 +152,10 @@ public class GeoWarsApp extends GameApplication {
 
     @Override
     protected void initGame() {
+        getAudioPlayer().setGlobalSoundVolume(0.1);
+        getAudioPlayer().setGlobalMusicVolume(0.1);
+
+        initBackground();
         initPlayer();
 
         getMasterTimer().runAtInterval(this::spawnWanderer, Duration.seconds(2));
@@ -219,7 +221,17 @@ public class GeoWarsApp extends GameApplication {
 
     @Override
     protected void onUpdate() {
+        player.getComponentUnsafe(OldPositionComponent.class)
+                .setValue(player.getPosition());
 
+        cleanOffscreenBullets();
+    }
+
+    private void initBackground() {
+        Entity bg = Entity.noType();
+        bg.setSceneView(getAssetLoader().loadTexture("background.png"));
+
+        getGameWorld().addEntity(bg);
     }
 
     private void initPlayer() {
@@ -227,7 +239,14 @@ public class GeoWarsApp extends GameApplication {
         player.setPosition(getWidth() / 2, getHeight() / 2);
         player.setCollidable(true);
 
-        Polygon triangle = new Polygon(0, 40, 20, 0, 40, 40);
+        OldPositionComponent oldPosition = new OldPositionComponent();
+        oldPosition.valueProperty().addListener((obs, old, newPos) -> {
+            player.rotateToVector(newPos.subtract(old));
+        });
+
+        player.addComponent(oldPosition);
+
+        Polygon triangle = new Polygon(0, 0, 40, 20, 0, 40);
         triangle.setStroke(Color.BLUE);
         triangle.setStrokeWidth(3);
 
@@ -299,7 +318,7 @@ public class GeoWarsApp extends GameApplication {
     private void shoot() {
         Entity bullet = new Entity(Type.BULLET);
         bullet.setPosition(player.getCenter());
-        bullet.addControl(new BulletControl(getVectorToCursor(bullet.getPosition())));
+        bullet.addControl(new ProjectileControl(getVectorToCursor(bullet.getPosition()), 10));
         bullet.setCollidable(true);
 
         Rectangle rect = new Rectangle(20, 1);
@@ -310,17 +329,17 @@ public class GeoWarsApp extends GameApplication {
         getGameWorld().addEntity(bullet);
     }
 
-    private Point2D getVectorToCursor(Point2D point) {
-        double x = getInput().getMouse().getGameX();
-        double y = getInput().getMouse().getGameY();
-
-        return new Point2D(x, y).subtract(point);
+    private void cleanOffscreenBullets() {
+        getGameWorld().getEntities(Type.BULLET)
+                .stream()
+                .filter(b -> b.isOutside(0, 0, getWidth(), getHeight()))
+                .forEach(Entity::removeFromWorld);
     }
 
-    private boolean isWithinScene(Entity entity) {
-        return entity.getX() >= 0 && entity.getY() >= 0
-                && entity.getX() + entity.getWidth() <= getWidth()
-                && entity.getY() + entity.getHeight() <= getHeight();
+    private Point2D getVectorToCursor(Point2D point) {
+        return getInput().getMouse()
+                .getGameXY()
+                .subtract(point);
     }
 
     private Point2D getRandomPoint() {
@@ -333,23 +352,6 @@ public class GeoWarsApp extends GameApplication {
 
     private void deductScoreDeath() {
         score.set(score.get() - 1000);
-    }
-
-    private class BulletControl implements Control {
-
-        private Point2D velocity;
-
-        public BulletControl(Point2D vector) {
-            this.velocity = vector.normalize().multiply(10);
-        }
-
-        @Override
-        public void onUpdate(Entity entity) {
-            entity.setRotation(Math.toDegrees(Math.atan2(velocity.getY(), velocity.getX())));
-            entity.translate(velocity);
-            if (!isWithinScene(entity))
-                entity.removeFromWorld();
-        }
     }
 
     private class WandererControl implements Control {
