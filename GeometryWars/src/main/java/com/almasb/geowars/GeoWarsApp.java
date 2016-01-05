@@ -29,6 +29,7 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.asset.Texture;
 import com.almasb.fxgl.entity.EntityView;
+import com.almasb.fxgl.entity.RenderLayer;
 import com.almasb.fxgl.entity.control.Control;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityType;
@@ -41,13 +42,18 @@ import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxgl.time.FXGLMasterTimer;
 import com.almasb.fxgl.app.ApplicationMode;
+import com.almasb.geowars.grid.GraphicsComponent;
+import com.almasb.geowars.grid.Grid;
+import com.almasb.geowars.grid.TestControl;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.HorizontalDirection;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
@@ -55,6 +61,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+
+import java.util.Random;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -64,10 +72,15 @@ public class GeoWarsApp extends GameApplication {
     private enum Type implements EntityType {
         PLAYER, WANDERER, SEEKER, BULLET,
         SHOCKWAVE,
-        EXPLOSION
+        EXPLOSION,
+        PARTICLE
     }
 
     private Entity player;
+
+    private Grid grid;
+
+    private Canvas canvas;
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -125,29 +138,22 @@ public class GeoWarsApp extends GameApplication {
                 }
             }
         }, MouseButton.PRIMARY);
-
-        input.addAction(new UserAction("Shockwave") {
-            @Override
-            protected void onActionBegin() {
-                spawnShockwave();
-            }
-        }, KeyCode.F);
     }
 
-    private Texture textureExplosion;
+    //private Texture textureExplosion;
 
     @Override
     protected void initAssets() {
-        textureExplosion = getAssetLoader().loadTexture("explosion.png");
-        int h = 1536 / 6;
-        Texture textureCombined = textureExplosion.subTexture(new Rectangle2D(0, 0, 2048, h));
-
-        for (int i = 1; i < 6; i++) {
-            textureCombined = textureCombined
-                    .superTexture(textureExplosion.subTexture(new Rectangle2D(0, h*i, 2048, h)), HorizontalDirection.RIGHT);
-        }
-
-        textureExplosion = textureCombined;
+//        textureExplosion = getAssetLoader().loadTexture("explosion.png");
+//        int h = 1536 / 6;
+//        Texture textureCombined = textureExplosion.subTexture(new Rectangle2D(0, 0, 2048, h));
+//
+//        for (int i = 1; i < 6; i++) {
+//            textureCombined = textureCombined
+//                    .superTexture(textureExplosion.subTexture(new Rectangle2D(0, h*i, 2048, h)), HorizontalDirection.RIGHT);
+//        }
+//
+//        textureExplosion = textureCombined;
     }
 
     @Override
@@ -158,8 +164,8 @@ public class GeoWarsApp extends GameApplication {
         initBackground();
         initPlayer();
 
-        getMasterTimer().runAtInterval(this::spawnWanderer, Duration.seconds(2));
-        getMasterTimer().runAtInterval(this::spawnSeeker, Duration.seconds(5));
+        //getMasterTimer().runAtInterval(this::spawnWanderer, Duration.seconds(2));
+        //getMasterTimer().runAtInterval(this::spawnSeeker, Duration.seconds(5));
     }
 
     @Override
@@ -216,7 +222,7 @@ public class GeoWarsApp extends GameApplication {
         scoreText.setTranslateY(50);
         scoreText.textProperty().bind(score.asString("Score: %d"));
 
-        getGameScene().addUINode(scoreText);
+        getGameScene().addUINodes(scoreText);
     }
 
     @Override
@@ -225,13 +231,40 @@ public class GeoWarsApp extends GameApplication {
                 .setValue(player.getPosition());
 
         cleanOffscreenBullets();
+
+        grid.update();
     }
 
     private void initBackground() {
         Entity bg = Entity.noType();
-        bg.setSceneView(getAssetLoader().loadTexture("background.png"));
+        bg.setSceneView(getAssetLoader().loadTexture("background.png"), new RenderLayer() {
+            @Override
+            public String name() {
+                return "BG";
+            }
+
+            @Override
+            public int index() {
+                return 0;
+            }
+        });
 
         getGameWorld().addEntity(bg);
+
+        canvas = new Canvas(getWidth(), getHeight());
+        canvas.getGraphicsContext2D().setStroke(new Color(0.118, 0.118, 0.545, 0.65));
+
+        Entity e = Entity.noType();
+        e.addComponent(new GraphicsComponent(canvas.getGraphicsContext2D()));
+        e.addControl(new TestControl());
+        e.setSceneView(canvas);
+
+        getGameWorld().addEntity(e);
+
+        Rectangle size = new Rectangle(0, 0, 1280, 720);
+        Point2D spacing = new Point2D(40, 40);
+
+        grid = new Grid(size, spacing, getGameWorld(), canvas.getGraphicsContext2D());
     }
 
     private void initPlayer() {
@@ -245,12 +278,7 @@ public class GeoWarsApp extends GameApplication {
         });
 
         player.addComponent(oldPosition);
-
-        Polygon triangle = new Polygon(0, 0, 40, 20, 0, 40);
-        triangle.setStroke(Color.BLUE);
-        triangle.setStrokeWidth(3);
-
-        player.setSceneView(triangle);
+        player.setSceneView(getAssetLoader().loadTexture("Player.png"));
 
         getGameWorld().addEntity(player);
     }
@@ -258,15 +286,9 @@ public class GeoWarsApp extends GameApplication {
     private void spawnWanderer() {
         Entity wanderer = new Entity(Type.WANDERER);
         wanderer.setPosition(50, 50);
-        wanderer.addControl(new WandererControl());
+        wanderer.addControl(new WandererControl((int)getWidth(), (int)getHeight()));
         wanderer.setCollidable(true);
-
-        Rectangle rect = new Rectangle(40, 40);
-        rect.setArcHeight(15);
-        rect.setArcWidth(15);
-        rect.setFill(Color.GREENYELLOW);
-
-        wanderer.setSceneView(rect);
+        wanderer.setSceneView(getAssetLoader().loadTexture("Wanderer.png"));
 
         getGameWorld().addEntity(wanderer);
     }
@@ -274,57 +296,33 @@ public class GeoWarsApp extends GameApplication {
     private void spawnSeeker() {
         Entity seeker = new Entity(Type.SEEKER);
         seeker.setPosition(50, 50);
-        seeker.addControl(new SeekerControl());
+        seeker.addControl(new SeekerControl(player));
         seeker.setCollidable(true);
-
-        Circle circle = new Circle(20);
-        circle.setFill(Color.DARKRED);
-
-        seeker.setSceneView(circle);
+        seeker.setSceneView(getAssetLoader().loadTexture("Seeker.png"));
 
         getGameWorld().addEntity(seeker);
     }
 
-    private void spawnShockwave() {
-        Entity shock = new Entity(Type.SHOCKWAVE);
-        shock.setPosition(player.getCenter());
-
-        Circle circle = new Circle(75);
-        circle.setFill(null);
-        circle.setStroke(Color.BLUEVIOLET);
-
-        shock.setSceneView(circle);
-        shock.xProperty().bind(player.xProperty().subtract(55));
-        shock.yProperty().bind(player.yProperty().subtract(55));
-        shock.setExpireTime(Duration.seconds(5));
-        shock.setCollidable(true);
-
-        getGameWorld().addEntity(shock);
-    }
-
     private void spawnExplosion(Point2D point) {
-        Entity explosion = new Entity(Type.EXPLOSION);
-        explosion.setPosition(point.subtract(40, 40));
-
-        Texture animation = textureExplosion.toStaticAnimatedTexture(48, Duration.seconds(2));
-        animation.setFitWidth(80);
-        animation.setFitHeight(80);
-        explosion.setSceneView(animation);
-        explosion.setExpireTime(Duration.seconds(2));
-
-        getGameWorld().addEntity(explosion);
+//        Entity explosion = new Entity(Type.EXPLOSION);
+//        explosion.setPosition(point.subtract(40, 40));
+//
+//        Texture animation = textureExplosion.toStaticAnimatedTexture(48, Duration.seconds(2));
+//        animation.setFitWidth(80);
+//        animation.setFitHeight(80);
+//        explosion.setSceneView(animation);
+//        explosion.setExpireTime(Duration.seconds(2));
+//
+//        getGameWorld().addEntity(explosion);
     }
 
     private void shoot() {
         Entity bullet = new Entity(Type.BULLET);
         bullet.setPosition(player.getCenter());
         bullet.addControl(new ProjectileControl(getVectorToCursor(bullet.getPosition()), 10));
+        bullet.addControl(new BulletControl(grid));
         bullet.setCollidable(true);
-
-        Rectangle rect = new Rectangle(20, 1);
-        rect.setFill(Color.RED);
-
-        bullet.setSceneView(rect);
+        bullet.setSceneView(getAssetLoader().loadTexture("Bullet.png"));
 
         getGameWorld().addEntity(bullet);
     }
@@ -352,39 +350,6 @@ public class GeoWarsApp extends GameApplication {
 
     private void deductScoreDeath() {
         score.set(score.get() - 1000);
-    }
-
-    private class WandererControl implements Control {
-        private LocalTimer timer = getService(ServiceType.LOCAL_TIMER);
-        private Point2D velocity = Point2D.ZERO;
-
-        @Override
-        public void onUpdate(Entity entity) {
-            if (timer.elapsed(Duration.seconds(4))) {
-                velocity = getRandomPoint().subtract(entity.getPosition())
-                        .multiply(FXGLMasterTimer.tpfSeconds() / 4);
-                timer.capture();
-            }
-
-            entity.translate(velocity);
-        }
-    }
-
-    private class SeekerControl implements Control {
-        private LocalTimer timer = getService(ServiceType.LOCAL_TIMER);
-        private Point2D velocity = Point2D.ZERO;
-
-        @Override
-        public void onUpdate(Entity entity) {
-            if (timer.elapsed(Duration.seconds(2))) {
-                velocity = player.getPosition().subtract(entity.getPosition())
-                        .normalize()
-                        .multiply(5);
-                timer.capture();
-            }
-
-            entity.translate(velocity);
-        }
     }
 
     public static void main(String[] args) {
