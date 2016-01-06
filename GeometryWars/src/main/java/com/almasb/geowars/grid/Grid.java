@@ -112,18 +112,6 @@ public class Grid {
         }
     }
 
-    private RenderLayer backgroundLayer = new RenderLayer() {
-        @Override
-        public String name() {
-            return "GRID";
-        }
-
-        @Override
-        public int index() {
-            return 100;
-        }
-    };
-
     private Entity createLine(float thickness) {
         Entity entity = Entity.noType();
 
@@ -133,7 +121,6 @@ public class Grid {
 
         entity.addComponent(new GraphicsComponent(g));
 
-        //entity.setSceneView(line, backgroundLayer);
         return entity;
     }
 

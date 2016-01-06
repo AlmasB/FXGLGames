@@ -80,14 +80,12 @@ public class GeoWarsApp extends GameApplication {
 
     private Grid grid;
 
-    private Canvas canvas;
-
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("FXGL Geometry Wars");
-        settings.setVersion("0.2dev");
+        settings.setVersion("0.3dev");
         settings.setFullScreen(false);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
@@ -132,7 +130,7 @@ public class GeoWarsApp extends GameApplication {
 
             @Override
             protected void onAction() {
-                if (timer.elapsed(Duration.seconds(0.33))) {
+                if (timer.elapsed(Duration.seconds(0.17))) {
                     shoot();
                     timer.capture();
                 }
@@ -140,32 +138,32 @@ public class GeoWarsApp extends GameApplication {
         }, MouseButton.PRIMARY);
     }
 
-    //private Texture textureExplosion;
+    private Texture textureExplosion;
 
     @Override
     protected void initAssets() {
-//        textureExplosion = getAssetLoader().loadTexture("explosion.png");
-//        int h = 1536 / 6;
-//        Texture textureCombined = textureExplosion.subTexture(new Rectangle2D(0, 0, 2048, h));
-//
-//        for (int i = 1; i < 6; i++) {
-//            textureCombined = textureCombined
-//                    .superTexture(textureExplosion.subTexture(new Rectangle2D(0, h*i, 2048, h)), HorizontalDirection.RIGHT);
-//        }
-//
-//        textureExplosion = textureCombined;
+        textureExplosion = getAssetLoader().loadTexture("explosion.png");
+        int h = 1536 / 6;
+        Texture textureCombined = textureExplosion.subTexture(new Rectangle2D(0, 0, 2048, h));
+
+        for (int i = 1; i < 6; i++) {
+            textureCombined = textureCombined
+                    .superTexture(textureExplosion.subTexture(new Rectangle2D(0, h*i, 2048, h)), HorizontalDirection.RIGHT);
+        }
+
+        textureExplosion = textureCombined;
     }
 
     @Override
     protected void initGame() {
-        getAudioPlayer().setGlobalSoundVolume(0.1);
-        getAudioPlayer().setGlobalMusicVolume(0.1);
+        getAudioPlayer().setGlobalSoundVolume(0.3);
+        getAudioPlayer().setGlobalMusicVolume(0.3);
 
         initBackground();
         initPlayer();
 
-        //getMasterTimer().runAtInterval(this::spawnWanderer, Duration.seconds(2));
-        //getMasterTimer().runAtInterval(this::spawnSeeker, Duration.seconds(5));
+        getMasterTimer().runAtInterval(this::spawnWanderer, Duration.seconds(2));
+        getMasterTimer().runAtInterval(this::spawnSeeker, Duration.seconds(5));
     }
 
     @Override
@@ -237,22 +235,12 @@ public class GeoWarsApp extends GameApplication {
 
     private void initBackground() {
         Entity bg = Entity.noType();
-        bg.setSceneView(getAssetLoader().loadTexture("background.png"), new RenderLayer() {
-            @Override
-            public String name() {
-                return "BG";
-            }
-
-            @Override
-            public int index() {
-                return 0;
-            }
-        });
+        bg.setSceneView(getAssetLoader().loadTexture("background.png"));
 
         getGameWorld().addEntity(bg);
 
-        canvas = new Canvas(getWidth(), getHeight());
-        canvas.getGraphicsContext2D().setStroke(new Color(0.118, 0.118, 0.545, 0.65));
+        Canvas canvas = new Canvas(getWidth(), getHeight());
+        canvas.getGraphicsContext2D().setStroke(new Color(0.118, 0.118, 0.545, 1));
 
         Entity e = Entity.noType();
         e.addComponent(new GraphicsComponent(canvas.getGraphicsContext2D()));
@@ -304,27 +292,31 @@ public class GeoWarsApp extends GameApplication {
     }
 
     private void spawnExplosion(Point2D point) {
-//        Entity explosion = new Entity(Type.EXPLOSION);
-//        explosion.setPosition(point.subtract(40, 40));
-//
-//        Texture animation = textureExplosion.toStaticAnimatedTexture(48, Duration.seconds(2));
-//        animation.setFitWidth(80);
-//        animation.setFitHeight(80);
-//        explosion.setSceneView(animation);
-//        explosion.setExpireTime(Duration.seconds(2));
-//
-//        getGameWorld().addEntity(explosion);
+        Entity explosion = new Entity(Type.EXPLOSION);
+        explosion.setPosition(point.subtract(40, 40));
+
+        Texture animation = textureExplosion.toStaticAnimatedTexture(48, Duration.seconds(2));
+        animation.setFitWidth(80);
+        animation.setFitHeight(80);
+        explosion.setSceneView(animation);
+        explosion.setExpireTime(Duration.seconds(1.8));
+
+        getGameWorld().addEntity(explosion);
+
+        playSound("explosion-0" + (int)(Math.random() * 8 + 1) + ".wav");
     }
 
     private void shoot() {
         Entity bullet = new Entity(Type.BULLET);
-        bullet.setPosition(player.getCenter());
+        bullet.setPosition(player.getCenter().subtract(14, 4.5));
         bullet.addControl(new ProjectileControl(getVectorToCursor(bullet.getPosition()), 10));
         bullet.addControl(new BulletControl(grid));
         bullet.setCollidable(true);
         bullet.setSceneView(getAssetLoader().loadTexture("Bullet.png"));
 
         getGameWorld().addEntity(bullet);
+
+        playSound("shoot" + (int)(Math.random() * 8 + 1) + ".wav");
     }
 
     private void cleanOffscreenBullets() {
@@ -350,6 +342,10 @@ public class GeoWarsApp extends GameApplication {
 
     private void deductScoreDeath() {
         score.set(score.get() - 1000);
+    }
+
+    private void playSound(String name) {
+        getAudioPlayer().playSound(getAssetLoader().loadSound(name));
     }
 
     public static void main(String[] args) {
