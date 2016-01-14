@@ -24,36 +24,41 @@
  * SOFTWARE.
  */
 
-package com.almasb.pong;
+package com.almasb.pong.control;
 
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.control.AbstractControl;
+import com.almasb.fxgl.physics.PhysicsEntity;
 
 /**
- * TODO: fix if ball is on the other side
- *
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class EnemyBatControl extends BatControl {
-    private Entity ball;
+public class BatControl extends AbstractControl {
+    private PhysicsEntity bat;
 
     @Override
-    public void onUpdate(Entity entity) {
-        super.onUpdate(entity);
+    protected void initEntity(Entity entity) {
+        bat = (PhysicsEntity) entity;
+    }
 
-        if (ball == null) {
-            entity.getWorld()
-                    .getEntities(EntityTypes.Type.BALL)
-                    .stream()
-                    .findAny()
-                    .ifPresent(b -> ball = b);
-        } else {
-            if (ball.getY() < entity.getY()) {
-                up();
-            } else if (ball.getBottomY() > entity.getBottomY()) {
-                down();
-            } else {
-                stop();
-            }
-        }
+    @Override
+    public void onUpdate(Entity entity) {}
+
+    public void up() {
+        if (bat.getY() >= 5)
+            bat.setLinearVelocity(0, -5);
+        else
+            stop();
+    }
+
+    public void down() {
+        if (bat.getBottomY() <= 600 - 5)
+            bat.setLinearVelocity(0, 5);
+        else
+            stop();
+    }
+
+    public void stop() {
+        bat.setLinearVelocity(0, 0);
     }
 }

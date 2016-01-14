@@ -24,36 +24,47 @@
  * SOFTWARE.
  */
 
-package com.almasb.pong;
+package com.almasb.pong.control;
 
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.control.AbstractControl;
-import com.almasb.fxgl.physics.PhysicsEntity;
+import com.almasb.pong.EntityTypes;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class BatControl extends AbstractControl {
-    private PhysicsEntity bat;
-
-    @Override
-    protected void initEntity(Entity entity) {
-        bat = (PhysicsEntity) entity;
-    }
+public class EnemyBatControl extends BatControl {
+    private Entity ball;
 
     @Override
     public void onUpdate(Entity entity) {
+        super.onUpdate(entity);
+
+        if (ball == null) {
+            entity.getWorld()
+                    .getEntities(EntityTypes.Type.BALL)
+                    .stream()
+                    .findAny()
+                    .ifPresent(b -> ball = b);
+        } else {
+            moveAI();
+        }
     }
 
-    public void up() {
-        bat.setLinearVelocity(0, -5);
-    }
+    private void moveAI() {
+        boolean isBallToLeft = ball.getRightX() <= entity.getX();
 
-    public void down() {
-        bat.setLinearVelocity(0, 5);
-    }
-
-    public void stop() {
-        bat.setLinearVelocity(0, 0);
+        if (ball.getY() < entity.getY()) {
+            if (isBallToLeft)
+                up();
+            else
+                down();
+        } else if (ball.getBottomY() > entity.getBottomY()) {
+            if (isBallToLeft)
+                down();
+            else
+                up();
+        } else {
+            stop();
+        }
     }
 }

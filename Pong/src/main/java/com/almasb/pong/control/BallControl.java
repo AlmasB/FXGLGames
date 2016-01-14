@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-package com.almasb.pong;
+package com.almasb.pong.control;
 
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.control.AbstractControl;

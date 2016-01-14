@@ -35,6 +35,9 @@ import com.almasb.fxgl.input.OnUserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsEntity;
 import com.almasb.fxgl.settings.GameSettings;
+import com.almasb.pong.control.BallControl;
+import com.almasb.pong.control.BatControl;
+import com.almasb.pong.control.EnemyBatControl;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Parent;
@@ -42,7 +45,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 
@@ -54,7 +56,7 @@ public class PongApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Pong");
-        settings.setVersion("0.1dev");
+        settings.setVersion("0.2dev");
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
     }
@@ -68,9 +70,7 @@ public class PongApp extends GameApplication {
     }
 
     @Override
-    protected void initAssets() {
-
-    }
+    protected void initAssets() {}
 
     private IntegerProperty scorePlayer, scoreEnemy;
 
@@ -163,7 +163,7 @@ public class PongApp extends GameApplication {
         def.setRestitution(1.0f);
 
         ball.setFixtureDef(def);
-        ball.setOnPhysicsInitialized(() -> ball.setLinearVelocity(-5, -5));
+        ball.setOnPhysicsInitialized(() -> ball.setLinearVelocity(5, -5));
 
         getGameWorld().addEntity(ball);
     }
@@ -183,7 +183,7 @@ public class PongApp extends GameApplication {
     }
 
     private void initEnemyBat() {
-        PhysicsEntity bat = new PhysicsEntity(EntityTypes.Type.PLAYER_BAT);
+        PhysicsEntity bat = new PhysicsEntity(EntityTypes.Type.ENEMY_BAT);
         bat.setBodyType(BodyType.KINEMATIC);
         bat.setPosition(3 * getWidth() / 4 - 20, getHeight() / 2 - 30);
         bat.setSceneView(new Rectangle(20, 60, Color.LIGHTGRAY));
