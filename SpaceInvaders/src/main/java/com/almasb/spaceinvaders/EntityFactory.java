@@ -26,12 +26,17 @@
 
 package com.almasb.spaceinvaders;
 
+import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.asset.AssetLoader;
 import com.almasb.fxgl.asset.Texture;
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.EntityType;
+import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.entity.EntityView;
+import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.component.CollidableComponent;
+import com.almasb.fxgl.entity.control.ExpireCleanControl;
+import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.entity.control.ProjectileControl;
 import javafx.geometry.HorizontalDirection;
 import javafx.geometry.Point2D;
@@ -43,9 +48,8 @@ import javafx.util.Duration;
  */
 public final class EntityFactory {
 
-    public enum Type implements EntityType {
-        PLAYER, ENEMY, BULLET,
-        LEVEL_INFO
+    public enum EntityType {
+        PLAYER, ENEMY, BULLET
     }
 
     private static final AssetLoader assetLoader = GameApplication.getService(ServiceType.ASSET_LOADER);
@@ -70,59 +74,65 @@ public final class EntityFactory {
         textureExplosion = textureCombined;
     }
 
-    public static Entity newPlayer(double x, double y) {
-        Entity player = new Entity(Type.PLAYER);
-        player.setPosition(x, y);
+    public static GameEntity newPlayer(double x, double y) {
+        GameEntity player = new GameEntity();
+        player.getTypeComponent().setValue(EntityType.PLAYER);
+        player.getPositionComponent().setValue(x, y);
 
-        Texture texture = assetLoader.loadTexture("tank_player.png");
-        texture.setFitWidth(40);
-        texture.setFitHeight(40);
+        Texture texture = assetLoader.loadTexture("player.png");
 
-        player.setSceneView(texture);
-        player.setCollidable(true);
-        player.setRotation(-90);
+        player.getMainViewComponent().setView(new EntityView(texture), true);
 
+        player.addComponent(new CollidableComponent(true));
         player.addComponent(new InvincibleComponent());
 
         return player;
     }
 
     public static Entity newEnemy(double x, double y) {
-        Entity enemy = new Entity(Type.ENEMY);
-        enemy.setPosition(x, y);
+        GameEntity enemy = new GameEntity();
+        enemy.getTypeComponent().setValue(EntityType.ENEMY);
+        enemy.getPositionComponent().setValue(x, y);
 
-        Texture texture = assetLoader.loadTexture("tank_enemy.png");
-        texture.setFitWidth(40);
-        texture.setFitHeight(40);
+        Texture texture = assetLoader.loadTexture("enemy" + ((int)(Math.random() * 3) + 1) + ".png")
+                .toStaticAnimatedTexture(2, Duration.seconds(2));
 
-        enemy.setSceneView(texture);
-        enemy.setCollidable(true);
-        enemy.setRotation(90);
+        enemy.getMainViewComponent().setView(new EntityView(texture), true);
+        enemy.addComponent(new CollidableComponent(true));
         enemy.addControl(new EnemyControl());
 
         return enemy;
     }
 
     public static Entity newBullet(Entity owner) {
-        Entity bullet = new Entity(Type.BULLET);
-        bullet.setPosition(owner.getCenter().add(-8, 20 * (owner.isType(Type.PLAYER) ? -1 : 1)));
-        bullet.setCollidable(true);
-        bullet.setSceneView(assetLoader.loadTexture("tank_bullet.png"));
-        bullet.addControl(new ProjectileControl(new Point2D(0, owner.isType(Type.PLAYER) ? -1 : 1), 10));
-        bullet.addComponent(new OwnerComponent(owner));
+        GameEntity bullet = new GameEntity();
+        bullet.getTypeComponent().setValue(EntityType.BULLET);
+
+        Point2D center = Entities.getBBox(owner)
+                .getCenterWorld()
+                .add(-8, 20 * (Entities.getType(owner).isType(EntityType.PLAYER) ? -1 : 1));
+
+        bullet.getPositionComponent().setValue(center);
+
+        bullet.addComponent(new CollidableComponent(true));
+        bullet.getMainViewComponent().setView(new EntityView(assetLoader.loadTexture("tank_bullet.png")), true);
+        bullet.addControl(new ProjectileControl(new Point2D(0, Entities.getType(owner).isType(EntityType.PLAYER) ? -1 : 1), 10));
+        bullet.addComponent(new OwnerComponent(Entities.getType(owner).getValue()));
+        bullet.addControl(new OffscreenCleanControl());
 
         return bullet;
     }
 
     public static Entity newExplosion(Point2D position) {
-        Entity explosion = Entity.noType();
-        explosion.setPosition(position.subtract(40, 40));
+        GameEntity explosion = new GameEntity();
+        explosion.getPositionComponent().setValue(position.subtract(40, 40));
 
         Texture animation = textureExplosion.toStaticAnimatedTexture(48, Duration.seconds(2));
         animation.setFitWidth(80);
         animation.setFitHeight(80);
-        explosion.setSceneView(animation);
-        explosion.setExpireTime(Duration.seconds(2));
+
+        explosion.getMainViewComponent().setGraphics(animation);
+        explosion.addControl(new ExpireCleanControl(Duration.seconds(1.8)));
 
         return explosion;
     }

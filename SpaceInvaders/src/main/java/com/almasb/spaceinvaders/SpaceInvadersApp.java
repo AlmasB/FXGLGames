@@ -26,10 +26,15 @@
 
 package com.almasb.spaceinvaders;
 
+import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.asset.IOResult;
 import com.almasb.fxgl.asset.Texture;
-import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.entity.EntityView;
+import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.gameplay.Achievement;
 import com.almasb.fxgl.gameplay.AchievementManager;
 import com.almasb.fxgl.input.ActionType;
@@ -37,7 +42,7 @@ import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.InputMapping;
 import com.almasb.fxgl.input.OnUserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.fxgl.physics.PhysicsEntity;
+import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.ui.UIFactory;
@@ -58,7 +63,7 @@ import org.jbox2d.dynamics.FixtureDef;
 
 import java.io.Serializable;
 
-import static com.almasb.spaceinvaders.EntityFactory.Type;
+import static com.almasb.spaceinvaders.EntityFactory.EntityType;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -73,8 +78,8 @@ public class SpaceInvadersApp extends GameApplication {
         settings.setVersion("0.4dev");
         settings.setWidth(600);
         settings.setHeight(800);
-        settings.setIntroEnabled(true);
-        settings.setMenuEnabled(true);
+        settings.setIntroEnabled(false);
+        settings.setMenuEnabled(false);
         settings.setShowFPS(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
@@ -101,7 +106,7 @@ public class SpaceInvadersApp extends GameApplication {
         EntityFactory.preLoad();
     }
 
-    private Entity player;
+    private GameEntity player;
     private IntegerProperty enemiesDestroyed;
     private IntegerProperty score;
     private IntegerProperty level;
@@ -112,11 +117,14 @@ public class SpaceInvadersApp extends GameApplication {
 
     @Override
     protected void preInit() {
-        getAudioPlayer().setGlobalSoundVolume(0.33);
-        getAudioPlayer().setGlobalMusicVolume(0.33);
+        getAudioPlayer().setGlobalSoundVolume(0);
+        getAudioPlayer().setGlobalMusicVolume(0);
 
-        SaveData data = getSaveLoadManager().<SaveData>load(SAVE_DATA_NAME)
-                .orElse(new SaveData("CPU", 10000));
+        //IOResult<SaveData> io = getSaveLoadManager().load(SAVE_DATA_NAME);
+
+        //SaveData data = io.hasData() ? io.getData() : new SaveData("CPU", 10000);
+
+        SaveData data = new SaveData("CPU", 10000);
 
         highScoreName = data.getName();
         highScore = data.getHighScore();
@@ -140,9 +148,9 @@ public class SpaceInvadersApp extends GameApplication {
         lives = new SimpleIntegerProperty(3);
 
         getAchievementManager().getAchievementByName("Hitman")
-                .achievedProperty().bind(enemiesDestroyed.greaterThanOrEqualTo(5));
+                .bind(enemiesDestroyed.greaterThanOrEqualTo(5));
         getAchievementManager().getAchievementByName("Master Scorer")
-                .achievedProperty().bind(score.greaterThanOrEqualTo(10000));
+                .bind(score.greaterThanOrEqualTo(10000));
 
         spawnPlayer();
 
@@ -151,12 +159,12 @@ public class SpaceInvadersApp extends GameApplication {
     }
 
     private void initBackground() {
-        Entity bg = Entity.noType();
+        GameEntity bg = new GameEntity();
         Texture bgTexture = getAssetLoader().loadTexture("background.png");
         bgTexture.setFitWidth(getWidth());
         bgTexture.setFitHeight(getHeight());
 
-        bg.setSceneView(bgTexture);
+        bg.getMainViewComponent().setGraphics(bgTexture);
 
         getGameWorld().addEntity(bg);
     }
@@ -175,40 +183,46 @@ public class SpaceInvadersApp extends GameApplication {
         getInput().setProcessActions(false);
         level.set(level.get() + 1);
 
-        PhysicsEntity levelInfo = new PhysicsEntity(Type.LEVEL_INFO);
-        levelInfo.setPosition(getWidth() / 2 - UIFactory.widthOf("Level " + level.get(), 44) / 2, 0);
-        levelInfo.setSceneView(UIFactory.newText("Level " + level.get(), Color.AQUAMARINE, 44));
-        levelInfo.setBodyType(BodyType.DYNAMIC);
-        levelInfo.setOnPhysicsInitialized(() -> levelInfo.setLinearVelocity(0, 5));
-        levelInfo.setExpireTime(Duration.seconds(3));
+        GameEntity levelInfo = new GameEntity();
+        levelInfo.getPositionComponent().setValue(getWidth() / 2 - UIFactory.widthOf("Level " + level.get(), 44) / 2, 0);
+        levelInfo.getMainViewComponent().setView(new EntityView(UIFactory.newText("Level " + level.get(), Color.AQUAMARINE, 44)), true);
+        levelInfo.addControl(new ExpireCleanControl(Duration.seconds(3)));
+
+        PhysicsComponent pComponent = new PhysicsComponent();
+        pComponent.setBodyType(BodyType.DYNAMIC);
+        pComponent.setOnPhysicsInitialized(() -> pComponent.setLinearVelocity(0, 5));
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.setDensity(0.05f);
         fixtureDef.setRestitution(0.3f);
-        levelInfo.setFixtureDef(fixtureDef);
 
-        PhysicsEntity ground = new PhysicsEntity(Type.LEVEL_INFO);
-        ground.setPosition(0, getHeight() / 2);
-        ground.setSceneView(new Rectangle(getWidth(), 100, Color.TRANSPARENT));
-        ground.setExpireTime(Duration.seconds(3));
+        pComponent.setFixtureDef(fixtureDef);
+        levelInfo.addComponent(pComponent);
+
+        GameEntity ground = new GameEntity();
+        ground.getPositionComponent().setY(getHeight() / 2);
+        ground.getMainViewComponent().setView(new EntityView(new Rectangle(getWidth(), 100, Color.TRANSPARENT)), true);
+        ground.addControl(new ExpireCleanControl(Duration.seconds(3)));
+        ground.addComponent(new PhysicsComponent());
 
         getGameWorld().addEntities(levelInfo, ground);
 
         getMasterTimer().runOnceAfter(this::initLevel, Duration.seconds(3));
 
-        playSound("level.wav");
+        getAudioPlayer().playSound("level.wav");
     }
 
     @Override
     protected void initPhysics() {
         PhysicsWorld physicsWorld = getPhysicsWorld();
 
-        physicsWorld.addCollisionHandler(new CollisionHandler(Type.BULLET, Type.PLAYER) {
+        physicsWorld.addCollisionHandler(new CollisionHandler(EntityType.BULLET, EntityType.PLAYER) {
             @Override
             protected void onCollisionBegin(Entity bullet, Entity player) {
+                Object owner = bullet.getComponentUnsafe(OwnerComponent.class).getValue();
+
                 // player shot that bullet so no need to handle collision
-                if (bullet.getComponentUnsafe(OwnerComponent.class).getValue().isType(Type.PLAYER)
-                        || player.getComponentUnsafe(InvincibleComponent.class).getValue()) {
+                if (owner == EntityType.PLAYER || player.getComponentUnsafe(InvincibleComponent.class).getValue()) {
                     return;
                 }
 
@@ -219,11 +233,13 @@ public class SpaceInvadersApp extends GameApplication {
             }
         });
 
-        physicsWorld.addCollisionHandler(new CollisionHandler(Type.BULLET, Type.ENEMY) {
+        physicsWorld.addCollisionHandler(new CollisionHandler(EntityType.BULLET, EntityType.ENEMY) {
             @Override
             protected void onCollisionBegin(Entity bullet, Entity enemy) {
+                Object owner = bullet.getComponentUnsafe(OwnerComponent.class).getValue();
+
                 // some enemy shot the bullet, skip collision handling
-                if (bullet.getComponentUnsafe(OwnerComponent.class).getValue().isType(Type.ENEMY)) {
+                if (owner == (EntityType.ENEMY)) {
                     return;
                 }
 
@@ -232,10 +248,10 @@ public class SpaceInvadersApp extends GameApplication {
                 enemiesDestroyed.set(enemiesDestroyed.get() + 1);
                 score.set(score.get() + 200);
 
-                Entity explosion = EntityFactory.newExplosion(enemy.getCenter());
+                Entity explosion = EntityFactory.newExplosion(Entities.getBBox(enemy).getCenterWorld());
                 getGameWorld().addEntity(explosion);
 
-                playSound("explosion.wav");
+                getAudioPlayer().playSound("explosion.wav");
 
                 if (enemiesDestroyed.get() % 40 == 0)
                     nextLevel();
@@ -266,8 +282,9 @@ public class SpaceInvadersApp extends GameApplication {
                     animation.setOnFinished(e -> getGameScene().removeUINode(t));
                     animation.play();
 
-                    Entity flash = Entity.noType();
-                    flash.setSceneView(new Rectangle(getWidth(), getHeight(), Color.rgb(190, 10, 15, 0.5)));
+                    GameEntity flash = new GameEntity();
+                    flash.getMainViewComponent().setGraphics(new Rectangle(getWidth(), getHeight(), Color.rgb(190, 10, 15, 0.5)));
+
                     getGameWorld().addEntity(flash);
 
                     player.getComponentUnsafe(InvincibleComponent.class).setValue(true);
@@ -277,7 +294,7 @@ public class SpaceInvadersApp extends GameApplication {
                         player.getComponentUnsafe(InvincibleComponent.class).setValue(false);
                     }, Duration.seconds(1));
 
-                    playSound("lose_life.wav");
+                    getAudioPlayer().playSound("lose_life.wav");
                 }
             });
 
@@ -311,8 +328,6 @@ public class SpaceInvadersApp extends GameApplication {
 
         if (mockRight)
             moveRight();
-
-        removeOffscreenBullets();
     }
 
     // workaround until FXGL can do it
@@ -327,7 +342,7 @@ public class SpaceInvadersApp extends GameApplication {
         getGameScene().addUINode(hint);
 
         mockLeft = true;
-        playMusic("dialogs/move_left.mp3");
+        getAudioPlayer().playMusic("dialogs/move_left.mp3");
 
         getMasterTimer().runOnceAfter(() -> {
             hint.setText("Press D to move right");
@@ -336,7 +351,7 @@ public class SpaceInvadersApp extends GameApplication {
             mockLeft = false;
             mockRight = true;
 
-            playMusic("dialogs/move_right.mp3");
+            getAudioPlayer().playMusic("dialogs/move_right.mp3");
 
             getMasterTimer().runOnceAfter(() -> {
                 hint.setText("Press F to shoot");
@@ -345,23 +360,16 @@ public class SpaceInvadersApp extends GameApplication {
                 mockRight = false;
                 shoot();
 
-                playMusic("dialogs/shoot.mp3");
+                getAudioPlayer().playMusic("dialogs/shoot.mp3");
 
                 getMasterTimer().runOnceAfter(() -> {
-                    player.setPosition(getWidth() / 2 - 20, getHeight() - 40);
+                    player.getPositionComponent().setValue(getWidth() / 2 - 20, getHeight() - 40);
 
                     getGameScene().removeUINode(hint);
                     nextLevel();
                 }, Duration.seconds(3));
             }, Duration.seconds(3));
         }, Duration.seconds(3));
-    }
-
-    private void removeOffscreenBullets() {
-        getGameWorld().getEntities(Type.BULLET)
-                .stream()
-                .filter(b -> b.isOutside(0, 0, getWidth(), getHeight()))
-                .forEach(Entity::removeFromWorld);
     }
 
     private Animation getAnimationLoseLife(Texture texture) {
@@ -393,14 +401,14 @@ public class SpaceInvadersApp extends GameApplication {
 
     @OnUserAction(name = "Move Left", type = ActionType.ON_ACTION)
     public void moveLeft() {
-        if (player.getX() >= 5)
-            player.translate(-5, 0);
+        if (player.getPositionComponent().getX() >= 5)
+            player.getPositionComponent().translateX(-5);
     }
 
     @OnUserAction(name = "Move Right", type = ActionType.ON_ACTION)
     public void moveRight() {
-        if (player.getX() <= getWidth() - player.getWidth() - 5)
-            player.translate(5, 0);
+        if (player.getPositionComponent().getX() <= getWidth() - player.getBoundingBoxComponent().getWidth() - 5)
+            player.getPositionComponent().translate(5, 0);
     }
 
     @OnUserAction(name = "Shoot", type = ActionType.ON_ACTION_BEGIN)
@@ -409,15 +417,7 @@ public class SpaceInvadersApp extends GameApplication {
 
         getGameWorld().addEntity(bullet);
 
-        playSound("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
-    }
-
-    private void playSound(String name) {
-        getAudioPlayer().playSound(getAssetLoader().loadSound(name));
-    }
-
-    private void playMusic(String name) {
-        getAudioPlayer().playMusic(getAssetLoader().loadMusic(name));
+        getAudioPlayer().playSound("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
     }
 
     private void showGameOver() {

@@ -26,12 +26,13 @@
 
 package com.almasb.spaceinvaders;
 
+import com.almasb.ents.AbstractControl;
+import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.ServiceType;
-import com.almasb.fxgl.asset.AssetLoader;
 import com.almasb.fxgl.audio.AudioPlayer;
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.control.AbstractControl;
+import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.time.LocalTimer;
 import javafx.util.Duration;
 
@@ -47,12 +48,10 @@ public class EnemyControl extends AbstractControl {
     private boolean movingRight = true;
 
     private AudioPlayer audioPlayer;
-    private AssetLoader assetLoader;
 
     @Override
-    protected void initEntity(Entity entity) {
+    public void onAdded(Entity entity) {
         audioPlayer = GameApplication.getService(ServiceType.AUDIO_PLAYER);
-        assetLoader = GameApplication.getService(ServiceType.ASSET_LOADER);
 
         hTimer = GameApplication.getService(ServiceType.LOCAL_TIMER);
         vTimer = GameApplication.getService(ServiceType.LOCAL_TIMER);
@@ -63,14 +62,16 @@ public class EnemyControl extends AbstractControl {
     }
 
     @Override
-    public void onUpdate(Entity entity) {
+    public void onUpdate(Entity entity, double tpf) {
+        PositionComponent positionComponent = entity.getComponentUnsafe(PositionComponent.class);
+
         if (hTimer.elapsed(Duration.seconds(2))) {
             movingRight = !movingRight;
             hTimer.capture();
         }
 
         if (vTimer.elapsed(Duration.seconds(6))) {
-            entity.translate(0, 20);
+            positionComponent.translateY(20);
             vTimer.capture();
         }
 
@@ -82,14 +83,14 @@ public class EnemyControl extends AbstractControl {
             attackTimer.capture();
         }
 
-        entity.translate(movingRight ? 1 : -1, 0);
+        positionComponent.translateX(movingRight ? 1 : -1);
     }
 
     private void shoot() {
-        Entity bullet = EntityFactory.newBullet(entity);
+        Entity bullet = EntityFactory.newBullet(getEntity());
 
-        entity.getWorld().addEntity(bullet);
+        getEntity().getWorld().addEntity(bullet);
 
-        audioPlayer.playSound(assetLoader.loadSound("shoot" + (int)(Math.random() * 4 + 1) + ".wav"));
+        audioPlayer.playSound("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
     }
 }

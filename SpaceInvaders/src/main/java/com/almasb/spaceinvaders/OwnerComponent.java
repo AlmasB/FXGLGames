@@ -26,14 +26,15 @@
 
 package com.almasb.spaceinvaders;
 
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.ObjectComponent;
+import com.almasb.ents.Entity;
+import com.almasb.ents.component.ObjectComponent;
+import com.almasb.fxgl.entity.component.TypeComponent;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class OwnerComponent extends ObjectComponent<Entity> {
-    public OwnerComponent(Entity entity) {
+public class OwnerComponent extends TypeComponent {
+    public OwnerComponent(Object entity) {
         super(entity);
     }
 }
