@@ -38,6 +38,9 @@ import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.entity.control.ProjectileControl;
+import com.almasb.spaceinvaders.component.InvincibleComponent;
+import com.almasb.spaceinvaders.component.OwnerComponent;
+import com.almasb.spaceinvaders.control.EnemyControl;
 import javafx.geometry.HorizontalDirection;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
@@ -72,6 +75,17 @@ public final class EntityFactory {
         }
 
         textureExplosion = textureCombined;
+    }
+
+    public static Entity newBackground(double w, double h) {
+        GameEntity bg = new GameEntity();
+        Texture bgTexture = assetLoader.loadTexture("background.png");
+        bgTexture.setFitWidth(w);
+        bgTexture.setFitHeight(h);
+
+        bg.getMainViewComponent().setGraphics(bgTexture);
+
+        return bg;
     }
 
     public static GameEntity newPlayer(double x, double y) {

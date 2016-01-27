@@ -24,17 +24,38 @@
  * SOFTWARE.
  */
 
-package com.almasb.spaceinvaders;
+package com.almasb.spaceinvaders.collision;
 
 import com.almasb.ents.Entity;
-import com.almasb.ents.component.ObjectComponent;
-import com.almasb.fxgl.entity.component.TypeComponent;
+import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.app.ServiceType;
+import com.almasb.fxgl.physics.CollisionHandler;
+import com.almasb.spaceinvaders.EntityFactory;
+import com.almasb.spaceinvaders.component.InvincibleComponent;
+import com.almasb.spaceinvaders.component.OwnerComponent;
+import com.almasb.spaceinvaders.event.GameEvent;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class OwnerComponent extends TypeComponent {
-    public OwnerComponent(Object entity) {
-        super(entity);
+public class BulletPlayerHandler extends CollisionHandler {
+
+    public BulletPlayerHandler() {
+        super(EntityFactory.EntityType.BULLET, EntityFactory.EntityType.PLAYER);
+    }
+
+    @Override
+    protected void onCollisionBegin(Entity bullet, Entity player) {
+        Object owner = bullet.getComponentUnsafe(OwnerComponent.class).getValue();
+
+        // player shot that bullet so no need to handle collision
+        if (owner == EntityFactory.EntityType.PLAYER
+                || player.getComponentUnsafe(InvincibleComponent.class).getValue()) {
+            return;
+        }
+
+        bullet.removeFromWorld();
+
+        GameApplication.getService(ServiceType.EVENT_BUS).fireEvent(new GameEvent(GameEvent.PLAYER_GOT_HIT));
     }
 }

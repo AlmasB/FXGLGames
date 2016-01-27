@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-package com.almasb.spaceinvaders;
+package com.almasb.spaceinvaders.component;
 
 import com.almasb.ents.component.BooleanComponent;
 

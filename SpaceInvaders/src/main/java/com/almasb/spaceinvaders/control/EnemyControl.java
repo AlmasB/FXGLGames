@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-package com.almasb.spaceinvaders;
+package com.almasb.spaceinvaders.control;
 
 import com.almasb.ents.AbstractControl;
 import com.almasb.ents.Entity;
@@ -34,6 +34,7 @@ import com.almasb.fxgl.audio.AudioPlayer;
 import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.time.LocalTimer;
+import com.almasb.spaceinvaders.EntityFactory;
 import javafx.util.Duration;
 
 /**

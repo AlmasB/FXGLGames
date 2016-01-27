@@ -29,7 +29,6 @@ package com.almasb.spaceinvaders;
 import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.asset.IOResult;
 import com.almasb.fxgl.asset.Texture;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.EntityView;
@@ -46,6 +45,11 @@ import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.ui.UIFactory;
+import com.almasb.spaceinvaders.collision.BulletEnemyHandler;
+import com.almasb.spaceinvaders.collision.BulletPlayerHandler;
+import com.almasb.spaceinvaders.component.InvincibleComponent;
+import com.almasb.spaceinvaders.component.OwnerComponent;
+import com.almasb.spaceinvaders.event.GameEvent;
 import javafx.animation.Animation;
 import javafx.animation.ScaleTransition;
 import javafx.animation.SequentialTransition;
@@ -74,12 +78,12 @@ public class SpaceInvadersApp extends GameApplication {
 
     @Override
     protected void initSettings(GameSettings settings) {
-        settings.setTitle("FXGL Space Invaders");
-        settings.setVersion("0.4dev");
-        settings.setWidth(600);
+        settings.setTitle("Space Invaders");
+        settings.setVersion("0.5");
+        settings.setWidth(650);
         settings.setHeight(800);
         settings.setIntroEnabled(false);
-        settings.setMenuEnabled(false);
+        settings.setMenuEnabled(true);
         settings.setShowFPS(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
@@ -120,6 +124,8 @@ public class SpaceInvadersApp extends GameApplication {
         getAudioPlayer().setGlobalSoundVolume(0);
         getAudioPlayer().setGlobalMusicVolume(0);
 
+        getNotificationService().setBackgroundColor(Color.DARKBLUE);
+
         //IOResult<SaveData> io = getSaveLoadManager().load(SAVE_DATA_NAME);
 
         //SaveData data = io.hasData() ? io.getData() : new SaveData("CPU", 10000);
@@ -128,6 +134,20 @@ public class SpaceInvadersApp extends GameApplication {
 
         highScoreName = data.getName();
         highScore = data.getHighScore();
+
+        getEventBus().addEventHandler(GameEvent.PLAYER_GOT_HIT, event -> {
+            lives.set(lives.get() - 1);
+            if (lives.get() == 0)
+                showGameOver();
+        });
+
+        getEventBus().addEventHandler(GameEvent.ENEMY_KILLED, event -> {
+            enemiesDestroyed.set(enemiesDestroyed.get() + 1);
+            score.set(score.get() + 200);
+
+            if (enemiesDestroyed.get() % 40 == 0)
+                nextLevel();
+        });
     }
 
     // workaround until saves are properly recognized
@@ -139,8 +159,6 @@ public class SpaceInvadersApp extends GameApplication {
     @Override
     protected void initGame() {
         initBackground();
-
-        getNotificationService().setBackgroundColor(Color.DARKBLUE);
 
         enemiesDestroyed = new SimpleIntegerProperty(0);
         score = new SimpleIntegerProperty(0);
@@ -159,12 +177,7 @@ public class SpaceInvadersApp extends GameApplication {
     }
 
     private void initBackground() {
-        GameEntity bg = new GameEntity();
-        Texture bgTexture = getAssetLoader().loadTexture("background.png");
-        bgTexture.setFitWidth(getWidth());
-        bgTexture.setFitHeight(getHeight());
-
-        bg.getMainViewComponent().setGraphics(bgTexture);
+        Entity bg = EntityFactory.newBackground(getWidth(), getHeight());
 
         getGameWorld().addEntity(bg);
     }
@@ -186,7 +199,7 @@ public class SpaceInvadersApp extends GameApplication {
         GameEntity levelInfo = new GameEntity();
         levelInfo.getPositionComponent().setValue(getWidth() / 2 - UIFactory.widthOf("Level " + level.get(), 44) / 2, 0);
         levelInfo.getMainViewComponent().setView(new EntityView(UIFactory.newText("Level " + level.get(), Color.AQUAMARINE, 44)), true);
-        levelInfo.addControl(new ExpireCleanControl(Duration.seconds(3)));
+        levelInfo.addControl(new ExpireCleanControl(Duration.seconds(2.4)));
 
         PhysicsComponent pComponent = new PhysicsComponent();
         pComponent.setBodyType(BodyType.DYNAMIC);
@@ -202,12 +215,12 @@ public class SpaceInvadersApp extends GameApplication {
         GameEntity ground = new GameEntity();
         ground.getPositionComponent().setY(getHeight() / 2);
         ground.getMainViewComponent().setView(new EntityView(new Rectangle(getWidth(), 100, Color.TRANSPARENT)), true);
-        ground.addControl(new ExpireCleanControl(Duration.seconds(3)));
+        ground.addControl(new ExpireCleanControl(Duration.seconds(2.4)));
         ground.addComponent(new PhysicsComponent());
 
         getGameWorld().addEntities(levelInfo, ground);
 
-        getMasterTimer().runOnceAfter(this::initLevel, Duration.seconds(3));
+        getMasterTimer().runOnceAfter(this::initLevel, Duration.seconds(2.4));
 
         getAudioPlayer().playSound("level.wav");
     }
@@ -215,48 +228,50 @@ public class SpaceInvadersApp extends GameApplication {
     @Override
     protected void initPhysics() {
         PhysicsWorld physicsWorld = getPhysicsWorld();
+        physicsWorld.addCollisionHandler(new BulletPlayerHandler());
+        physicsWorld.addCollisionHandler(new BulletEnemyHandler());
 
-        physicsWorld.addCollisionHandler(new CollisionHandler(EntityType.BULLET, EntityType.PLAYER) {
-            @Override
-            protected void onCollisionBegin(Entity bullet, Entity player) {
-                Object owner = bullet.getComponentUnsafe(OwnerComponent.class).getValue();
+//        physicsWorld.addCollisionHandler(new CollisionHandler(EntityType.BULLET, EntityType.PLAYER) {
+//            @Override
+//            protected void onCollisionBegin(Entity bullet, Entity player) {
+//                Object owner = bullet.getComponentUnsafe(OwnerComponent.class).getValue();
+//
+//                // player shot that bullet so no need to handle collision
+//                if (owner == EntityType.PLAYER || player.getComponentUnsafe(InvincibleComponent.class).getValue()) {
+//                    return;
+//                }
+//
+//                bullet.removeFromWorld();
+//                lives.set(lives.get() - 1);
+//                if (lives.get() == 0)
+//                    showGameOver();
+//            }
+//        });
 
-                // player shot that bullet so no need to handle collision
-                if (owner == EntityType.PLAYER || player.getComponentUnsafe(InvincibleComponent.class).getValue()) {
-                    return;
-                }
-
-                bullet.removeFromWorld();
-                lives.set(lives.get() - 1);
-                if (lives.get() == 0)
-                    showGameOver();
-            }
-        });
-
-        physicsWorld.addCollisionHandler(new CollisionHandler(EntityType.BULLET, EntityType.ENEMY) {
-            @Override
-            protected void onCollisionBegin(Entity bullet, Entity enemy) {
-                Object owner = bullet.getComponentUnsafe(OwnerComponent.class).getValue();
-
-                // some enemy shot the bullet, skip collision handling
-                if (owner == (EntityType.ENEMY)) {
-                    return;
-                }
-
-                bullet.removeFromWorld();
-                enemy.removeFromWorld();
-                enemiesDestroyed.set(enemiesDestroyed.get() + 1);
-                score.set(score.get() + 200);
-
-                Entity explosion = EntityFactory.newExplosion(Entities.getBBox(enemy).getCenterWorld());
-                getGameWorld().addEntity(explosion);
-
-                getAudioPlayer().playSound("explosion.wav");
-
-                if (enemiesDestroyed.get() % 40 == 0)
-                    nextLevel();
-            }
-        });
+//        physicsWorld.addCollisionHandler(new CollisionHandler(EntityType.BULLET, EntityType.ENEMY) {
+//            @Override
+//            protected void onCollisionBegin(Entity bullet, Entity enemy) {
+//                Object owner = bullet.getComponentUnsafe(OwnerComponent.class).getValue();
+//
+//                // some enemy shot the bullet, skip collision handling
+//                if (owner == EntityType.ENEMY) {
+//                    return;
+//                }
+//
+//                bullet.removeFromWorld();
+//                enemy.removeFromWorld();
+//                enemiesDestroyed.set(enemiesDestroyed.get() + 1);
+//                score.set(score.get() + 200);
+//
+//                Entity explosion = EntityFactory.newExplosion(Entities.getBBox(enemy).getCenterWorld());
+//                getGameWorld().addEntity(explosion);
+//
+//                getAudioPlayer().playSound("explosion.wav");
+//
+//                if (enemiesDestroyed.get() % 40 == 0)
+//                    nextLevel();
+//            }
+//        });
     }
 
     @Override
