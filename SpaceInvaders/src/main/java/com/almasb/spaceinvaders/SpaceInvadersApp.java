@@ -29,18 +29,12 @@ package com.almasb.spaceinvaders;
 import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.asset.Texture;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.gameplay.Achievement;
 import com.almasb.fxgl.gameplay.AchievementManager;
-import com.almasb.fxgl.input.ActionType;
-import com.almasb.fxgl.input.Input;
-import com.almasb.fxgl.input.InputMapping;
-import com.almasb.fxgl.input.OnUserAction;
-import com.almasb.fxgl.physics.CollisionHandler;
+import com.almasb.fxgl.input.*;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxgl.settings.GameSettings;
@@ -48,16 +42,13 @@ import com.almasb.fxgl.ui.UIFactory;
 import com.almasb.spaceinvaders.collision.BulletEnemyHandler;
 import com.almasb.spaceinvaders.collision.BulletPlayerHandler;
 import com.almasb.spaceinvaders.component.InvincibleComponent;
-import com.almasb.spaceinvaders.component.OwnerComponent;
 import com.almasb.spaceinvaders.event.GameEvent;
-import javafx.animation.Animation;
-import javafx.animation.ScaleTransition;
-import javafx.animation.SequentialTransition;
-import javafx.animation.TranslateTransition;
+import com.almasb.spaceinvaders.tutorial.Tutorial;
+import com.almasb.spaceinvaders.tutorial.TutorialStep;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -66,10 +57,11 @@ import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 
 import java.io.Serializable;
-
-import static com.almasb.spaceinvaders.EntityFactory.EntityType;
+import java.util.stream.IntStream;
 
 /**
+ * A simple clone of Space Invaders. Demonstrates basic FXGL features.
+ *
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class SpaceInvadersApp extends GameApplication {
@@ -119,6 +111,8 @@ public class SpaceInvadersApp extends GameApplication {
     private int highScore;
     private String highScoreName;
 
+    private GameController uiController;
+
     @Override
     protected void preInit() {
         getAudioPlayer().setGlobalSoundVolume(0);
@@ -126,39 +120,27 @@ public class SpaceInvadersApp extends GameApplication {
 
         getNotificationService().setBackgroundColor(Color.DARKBLUE);
 
-        //IOResult<SaveData> io = getSaveLoadManager().load(SAVE_DATA_NAME);
-
-        //SaveData data = io.hasData() ? io.getData() : new SaveData("CPU", 10000);
-
-        SaveData data = new SaveData("CPU", 10000);
-
-        highScoreName = data.getName();
-        highScore = data.getHighScore();
-
-        getEventBus().addEventHandler(GameEvent.PLAYER_GOT_HIT, event -> {
-            lives.set(lives.get() - 1);
-            if (lives.get() == 0)
-                showGameOver();
-        });
-
-        getEventBus().addEventHandler(GameEvent.ENEMY_KILLED, event -> {
-            enemiesDestroyed.set(enemiesDestroyed.get() + 1);
-            score.set(score.get() + 200);
-
-            if (enemiesDestroyed.get() % 40 == 0)
-                nextLevel();
-        });
+        getEventBus().addEventHandler(GameEvent.PLAYER_GOT_HIT, this::onPlayerGotHit);
+        getEventBus().addEventHandler(GameEvent.ENEMY_KILLED, this::onEnemyKilled);
     }
 
-    // workaround until saves are properly recognized
     @Override
     public void loadState(Serializable data) {
-        initGame();
+        SaveData saveData = (SaveData) data;
+
+        initGame(saveData);
     }
 
     @Override
     protected void initGame() {
-        initBackground();
+        initGame(highScore == 0
+                ? new SaveData("CPU", 10000)
+                : new SaveData(highScoreName, highScore));
+    }
+
+    private void initGame(SaveData data) {
+        highScoreName = data.getName();
+        highScore = data.getHighScore();
 
         enemiesDestroyed = new SimpleIntegerProperty(0);
         score = new SimpleIntegerProperty(0);
@@ -170,16 +152,50 @@ public class SpaceInvadersApp extends GameApplication {
         getAchievementManager().getAchievementByName("Master Scorer")
                 .bind(score.greaterThanOrEqualTo(10000));
 
+        spawnBackground();
         spawnPlayer();
 
         if (!runningFirstTime)
             nextLevel();
     }
 
-    private void initBackground() {
+    private void spawnBackground() {
         Entity bg = EntityFactory.newBackground(getWidth(), getHeight());
 
         getGameWorld().addEntity(bg);
+    }
+
+    private void spawnEnemy(double x, double y) {
+        Entity enemy = EntityFactory.newEnemy(x, y);
+
+        getGameWorld().addEntity(enemy);
+    }
+
+    private void spawnPlayer() {
+        player = EntityFactory.newPlayer(getWidth() / 2 - 20, getHeight() - 40);
+
+        getGameWorld().addEntity(player);
+    }
+
+    @OnUserAction(name = "Move Left", type = ActionType.ON_ACTION)
+    public void moveLeft() {
+        if (player.getPositionComponent().getX() >= 5)
+            player.getPositionComponent().translateX(-5);
+    }
+
+    @OnUserAction(name = "Move Right", type = ActionType.ON_ACTION)
+    public void moveRight() {
+        if (player.getPositionComponent().getX() <= getWidth() - player.getBoundingBoxComponent().getWidth() - 5)
+            player.getPositionComponent().translate(5, 0);
+    }
+
+    @OnUserAction(name = "Shoot", type = ActionType.ON_ACTION_BEGIN)
+    public void shoot() {
+        Entity bullet = EntityFactory.newBullet(player);
+
+        getGameWorld().addEntity(bullet);
+
+        getAudioPlayer().playSound("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
     }
 
     private void initLevel() {
@@ -230,97 +246,21 @@ public class SpaceInvadersApp extends GameApplication {
         PhysicsWorld physicsWorld = getPhysicsWorld();
         physicsWorld.addCollisionHandler(new BulletPlayerHandler());
         physicsWorld.addCollisionHandler(new BulletEnemyHandler());
-
-//        physicsWorld.addCollisionHandler(new CollisionHandler(EntityType.BULLET, EntityType.PLAYER) {
-//            @Override
-//            protected void onCollisionBegin(Entity bullet, Entity player) {
-//                Object owner = bullet.getComponentUnsafe(OwnerComponent.class).getValue();
-//
-//                // player shot that bullet so no need to handle collision
-//                if (owner == EntityType.PLAYER || player.getComponentUnsafe(InvincibleComponent.class).getValue()) {
-//                    return;
-//                }
-//
-//                bullet.removeFromWorld();
-//                lives.set(lives.get() - 1);
-//                if (lives.get() == 0)
-//                    showGameOver();
-//            }
-//        });
-
-//        physicsWorld.addCollisionHandler(new CollisionHandler(EntityType.BULLET, EntityType.ENEMY) {
-//            @Override
-//            protected void onCollisionBegin(Entity bullet, Entity enemy) {
-//                Object owner = bullet.getComponentUnsafe(OwnerComponent.class).getValue();
-//
-//                // some enemy shot the bullet, skip collision handling
-//                if (owner == EntityType.ENEMY) {
-//                    return;
-//                }
-//
-//                bullet.removeFromWorld();
-//                enemy.removeFromWorld();
-//                enemiesDestroyed.set(enemiesDestroyed.get() + 1);
-//                score.set(score.get() + 200);
-//
-//                Entity explosion = EntityFactory.newExplosion(Entities.getBBox(enemy).getCenterWorld());
-//                getGameWorld().addEntity(explosion);
-//
-//                getAudioPlayer().playSound("explosion.wav");
-//
-//                if (enemiesDestroyed.get() % 40 == 0)
-//                    nextLevel();
-//            }
-//        });
     }
 
     @Override
     protected void initUI() {
-        Text textScore = UIFactory.newText("", Color.AQUAMARINE, 18);
-        textScore.textProperty().bind(score.asString("Score:[%d]"));
+        uiController = new GameController(getGameScene());
 
-        Text textHighScore = UIFactory.newText("", Color.AQUAMARINE, 18);
-        textHighScore.setText("HiScore:[" + highScore + "](" + highScoreName + ")");
+        Parent ui = getAssetLoader().loadFXML("main.fxml", uiController);
 
-        for (int i = 0; i < lives.get(); i++) {
-            final int index = i;
-            Texture t = getAssetLoader().loadTexture("life.png");
-            t.setFitWidth(16);
-            t.setFitHeight(16);
-            t.setTranslateX(getWidth() * 4 / 5 + i * 32);
-            t.setTranslateY(10);
+        uiController.getLabelScore().textProperty().bind(score.asString("Score:[%d]"));
+        uiController.getLabelHighScore().setText("HiScore:[" + highScore + "](" + highScoreName + ")");
 
-            lives.addListener((observable, oldValue, newValue) -> {
-                // if lives get reduced, the index gives us which life
-                if (newValue.intValue() == index) {
-                    Animation animation = getAnimationLoseLife(t);
-                    animation.setOnFinished(e -> getGameScene().removeUINode(t));
-                    animation.play();
+        IntStream.range(0, lives.get())
+                .forEach(i -> uiController.addLife());
 
-                    GameEntity flash = new GameEntity();
-                    flash.getMainViewComponent().setGraphics(new Rectangle(getWidth(), getHeight(), Color.rgb(190, 10, 15, 0.5)));
-
-                    getGameWorld().addEntity(flash);
-
-                    player.getComponentUnsafe(InvincibleComponent.class).setValue(true);
-
-                    getMasterTimer().runOnceAfter(() -> {
-                        flash.removeFromWorld();
-                        player.getComponentUnsafe(InvincibleComponent.class).setValue(false);
-                    }, Duration.seconds(1));
-
-                    getAudioPlayer().playSound("lose_life.wav");
-                }
-            });
-
-            getGameScene().addUINode(t);
-        }
-
-        HBox textBox = new HBox(20, textScore, textHighScore);
-        textBox.setTranslateX(25);
-        textBox.setTranslateY(10);
-
-        getGameScene().addUINodes(textBox);
+        getGameScene().addUINode(ui);
     }
 
     private boolean runningFirstTime = true;
@@ -337,102 +277,71 @@ public class SpaceInvadersApp extends GameApplication {
 
             runningFirstTime = false;
         }
-
-        if (mockLeft)
-            moveLeft();
-
-        if (mockRight)
-            moveRight();
     }
-
-    // workaround until FXGL can do it
-    private boolean mockLeft, mockRight;
 
     private void playTutorial() {
-        getInput().setProcessActions(false);
+        getInput().setRegisterInput(false);
 
-        Text hint = UIFactory.newText("Press A to move left", Color.AQUA, 24);
-        hint.setTranslateX(getWidth() / 2 - UIFactory.widthOf(hint.getText(), 24) / 2);
-        hint.setTranslateY(getHeight() / 2 - 50);
-        getGameScene().addUINode(hint);
+        // TODO: ideally we must obtain dynamic key codes because the keys
+        // may have been reassigned
+        TutorialStep step1 = new TutorialStep("Press A to move left", "dialogs/move_left.mp3", () -> {
+            getInput().mockKeyPress(KeyCode.A, InputModifier.NONE);
+        });
 
-        mockLeft = true;
-        getAudioPlayer().playMusic("dialogs/move_left.mp3");
+        TutorialStep step2 = new TutorialStep("Press D to move right", "dialogs/move_right.mp3", () -> {
+            getInput().mockKeyRelease(KeyCode.A, InputModifier.NONE);
+            getInput().mockKeyPress(KeyCode.D, InputModifier.NONE);
+        });
+
+        TutorialStep step3 = new TutorialStep("Press F to shoot", "dialogs/shoot.mp3", () -> {
+            getInput().mockKeyRelease(KeyCode.D, InputModifier.NONE);
+
+            getInput().mockKeyPress(KeyCode.F, InputModifier.NONE);
+            getInput().mockKeyRelease(KeyCode.F, InputModifier.NONE);
+        });
+
+        Text tutorialText = UIFactory.newText("", Color.AQUA, 24);
+        tutorialText.textProperty().addListener((o, old, newText) -> {
+            tutorialText.setTranslateX(getWidth() / 2 - UIFactory.widthOf(newText, 24) / 2);
+        });
+
+        tutorialText.setTranslateY(getHeight() / 2 - 50);
+        getGameScene().addUINode(tutorialText);
+
+        Tutorial tutorial = new Tutorial(tutorialText, () -> {
+            player.getPositionComponent().setValue(getWidth() / 2 - 20, getHeight() - 40);
+
+            getGameScene().removeUINode(tutorialText);
+            nextLevel();
+
+            getInput().setRegisterInput(true);
+        }, step1, step2, step3);
+
+        tutorial.play();
+    }
+
+    private void onPlayerGotHit(GameEvent event) {
+        lives.set(lives.get() - 1);
+        uiController.loseLife();
+
+        player.getComponentUnsafe(InvincibleComponent.class).setValue(true);
 
         getMasterTimer().runOnceAfter(() -> {
-            hint.setText("Press D to move right");
-            hint.setTranslateX(getWidth() / 2 - UIFactory.widthOf(hint.getText(), 24) / 2);
+            player.getComponentUnsafe(InvincibleComponent.class).setValue(false);
+        }, Duration.seconds(1));
 
-            mockLeft = false;
-            mockRight = true;
+        getAudioPlayer().playSound("lose_life.wav");
 
-            getAudioPlayer().playMusic("dialogs/move_right.mp3");
-
-            getMasterTimer().runOnceAfter(() -> {
-                hint.setText("Press F to shoot");
-                hint.setTranslateX(getWidth() / 2 - UIFactory.widthOf(hint.getText(), 24) / 2);
-
-                mockRight = false;
-                shoot();
-
-                getAudioPlayer().playMusic("dialogs/shoot.mp3");
-
-                getMasterTimer().runOnceAfter(() -> {
-                    player.getPositionComponent().setValue(getWidth() / 2 - 20, getHeight() - 40);
-
-                    getGameScene().removeUINode(hint);
-                    nextLevel();
-                }, Duration.seconds(3));
-            }, Duration.seconds(3));
-        }, Duration.seconds(3));
+        if (lives.get() == 0)
+            showGameOver();
     }
 
-    private Animation getAnimationLoseLife(Texture texture) {
-        texture.setFitWidth(64);
-        texture.setFitHeight(64);
+    private void onEnemyKilled(GameEvent event) {
+        enemiesDestroyed.set(enemiesDestroyed.get() + 1);
+        score.set(score.get() + 200);
 
-        TranslateTransition tt = new TranslateTransition(Duration.seconds(0.66), texture);
-        tt.setToX(getWidth() / 2 - texture.getFitWidth() / 2);
-        tt.setToY(getHeight() / 2 - texture.getFitHeight() / 2);
-
-        ScaleTransition st = new ScaleTransition(Duration.seconds(0.66), texture);
-        st.setToX(0);
-        st.setToY(0);
-
-        return new SequentialTransition(tt, st);
-    }
-
-    private void spawnEnemy(double x, double y) {
-        Entity enemy = EntityFactory.newEnemy(x, y);
-
-        getGameWorld().addEntity(enemy);
-    }
-
-    private void spawnPlayer() {
-        player = EntityFactory.newPlayer(getWidth() / 2 - 20, getHeight() - 40);
-
-        getGameWorld().addEntity(player);
-    }
-
-    @OnUserAction(name = "Move Left", type = ActionType.ON_ACTION)
-    public void moveLeft() {
-        if (player.getPositionComponent().getX() >= 5)
-            player.getPositionComponent().translateX(-5);
-    }
-
-    @OnUserAction(name = "Move Right", type = ActionType.ON_ACTION)
-    public void moveRight() {
-        if (player.getPositionComponent().getX() <= getWidth() - player.getBoundingBoxComponent().getWidth() - 5)
-            player.getPositionComponent().translate(5, 0);
-    }
-
-    @OnUserAction(name = "Shoot", type = ActionType.ON_ACTION_BEGIN)
-    public void shoot() {
-        Entity bullet = EntityFactory.newBullet(player);
-
-        getGameWorld().addEntity(bullet);
-
-        getAudioPlayer().playSound("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
+        if (enemiesDestroyed.get() % 40 == 0)
+            nextLevel();
     }
 
     private void showGameOver() {
