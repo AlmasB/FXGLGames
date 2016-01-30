@@ -28,31 +28,79 @@ package com.almasb.spaceinvaders.control;
 
 import com.almasb.ents.AbstractControl;
 import com.almasb.ents.Entity;
+import com.almasb.ents.component.Required;
+import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.app.ServiceType;
+import com.almasb.fxgl.entity.component.BoundingBoxComponent;
+import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.spaceinvaders.EntityFactory;
+import com.almasb.spaceinvaders.component.InvincibleComponent;
+import javafx.util.Duration;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
+@Required(PositionComponent.class)
+@Required(BoundingBoxComponent.class)
+@Required(InvincibleComponent.class)
 public class PlayerControl extends AbstractControl {
 
+    private PositionComponent position;
+    private BoundingBoxComponent bbox;
+    private double tpf = 0.017;
+
+    private InvincibleComponent invicibility;
+
+    private boolean canShoot = true;
+
+    @Override
+    public void onAdded(Entity entity) {
+        position = entity.getComponentUnsafe(PositionComponent.class);
+        bbox = entity.getComponentUnsafe(BoundingBoxComponent.class);
+        invicibility = entity.getComponentUnsafe(InvincibleComponent.class);
+
+        GameApplication.getService(ServiceType.MASTER_TIMER)
+                .runAtInterval(() -> canShoot = true, Duration.seconds(0.5));
+    }
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
-
+        this.tpf = tpf;
     }
 
     public void left() {
-
+        if (position.getX() >= 5)
+            position.translateX(-5 * 60 * tpf);
     }
 
     public void right() {
-
+        if (position.getX() + bbox.getWidth() <= 650 - 5)
+            position.translateX(5 * 60 * tpf);
     }
 
     public void shoot() {
+        if (!canShoot)
+            return;
 
+        Entity bullet = EntityFactory.newBullet(getEntity());
+
+        getEntity().getWorld().addEntity(bullet);
+
+        GameApplication.getService(ServiceType.AUDIO_PLAYER)
+                .playSound("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
+
+        canShoot = false;
+    }
+
+    public void enableInvincibility() {
+        invicibility.setValue(true);
+    }
+
+    public void disableInvincibility() {
+        invicibility.setValue(false);
     }
 
     public boolean isInvincible() {
-        return true;
+        return invicibility.getValue();
     }
 }

@@ -29,6 +29,7 @@ package com.almasb.spaceinvaders;
 import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
@@ -41,7 +42,9 @@ import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.ui.UIFactory;
 import com.almasb.spaceinvaders.collision.BulletEnemyHandler;
 import com.almasb.spaceinvaders.collision.BulletPlayerHandler;
+import com.almasb.spaceinvaders.collision.BulletWallHandler;
 import com.almasb.spaceinvaders.component.InvincibleComponent;
+import com.almasb.spaceinvaders.control.PlayerControl;
 import com.almasb.spaceinvaders.event.GameEvent;
 import com.almasb.spaceinvaders.tutorial.Tutorial;
 import com.almasb.spaceinvaders.tutorial.TutorialStep;
@@ -103,6 +106,8 @@ public class SpaceInvadersApp extends GameApplication {
     }
 
     private GameEntity player;
+    private PlayerControl playerControl;
+
     private IntegerProperty enemiesDestroyed;
     private IntegerProperty score;
     private IntegerProperty level;
@@ -173,29 +178,28 @@ public class SpaceInvadersApp extends GameApplication {
 
     private void spawnPlayer() {
         player = EntityFactory.newPlayer(getWidth() / 2 - 20, getHeight() - 40);
+        playerControl = player.getControlUnsafe(PlayerControl.class);
 
         getGameWorld().addEntity(player);
     }
 
+    private void spawnWall(double x, double y) {
+        getGameWorld().addEntity(EntityFactory.newWall(x, y));
+    }
+
     @OnUserAction(name = "Move Left", type = ActionType.ON_ACTION)
     public void moveLeft() {
-        if (player.getPositionComponent().getX() >= 5)
-            player.getPositionComponent().translateX(-5);
+        playerControl.left();
     }
 
     @OnUserAction(name = "Move Right", type = ActionType.ON_ACTION)
     public void moveRight() {
-        if (player.getPositionComponent().getX() <= getWidth() - player.getBoundingBoxComponent().getWidth() - 5)
-            player.getPositionComponent().translate(5, 0);
+        playerControl.right();
     }
 
-    @OnUserAction(name = "Shoot", type = ActionType.ON_ACTION_BEGIN)
+    @OnUserAction(name = "Shoot", type = ActionType.ON_ACTION)
     public void shoot() {
-        Entity bullet = EntityFactory.newBullet(player);
-
-        getGameWorld().addEntity(bullet);
-
-        getAudioPlayer().playSound("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
+        playerControl.shoot();
     }
 
     private void initLevel() {
@@ -205,11 +209,24 @@ public class SpaceInvadersApp extends GameApplication {
             }
         }
 
+        spawnWall(40, getHeight() - 100);
+        spawnWall(120, getHeight() - 100);
+
+        spawnWall(getWidth() - 160, getHeight() - 100);
+        spawnWall(getWidth() - 80, getHeight() - 100);
+
         getInput().setProcessActions(true);
     }
 
     private void nextLevel() {
         getInput().setProcessActions(false);
+
+        // do cleanup of the old level first
+        getGameWorld().getEntitiesByType(EntityFactory.EntityType.BULLET)
+                .forEach(Entity::removeFromWorld);
+        getGameWorld().getEntitiesByType(EntityFactory.EntityType.WALL)
+                .forEach(Entity::removeFromWorld);
+
         level.set(level.get() + 1);
 
         GameEntity levelInfo = new GameEntity();
@@ -246,6 +263,7 @@ public class SpaceInvadersApp extends GameApplication {
         PhysicsWorld physicsWorld = getPhysicsWorld();
         physicsWorld.addCollisionHandler(new BulletPlayerHandler());
         physicsWorld.addCollisionHandler(new BulletEnemyHandler());
+        physicsWorld.addCollisionHandler(new BulletWallHandler());
     }
 
     @Override
@@ -324,10 +342,10 @@ public class SpaceInvadersApp extends GameApplication {
         lives.set(lives.get() - 1);
         uiController.loseLife();
 
-        player.getComponentUnsafe(InvincibleComponent.class).setValue(true);
+        playerControl.enableInvincibility();
 
         getMasterTimer().runOnceAfter(() -> {
-            player.getComponentUnsafe(InvincibleComponent.class).setValue(false);
+            playerControl.disableInvincibility();
         }, Duration.seconds(1));
 
         getAudioPlayer().playSound("lose_life.wav");

@@ -38,9 +38,11 @@ import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.entity.control.ProjectileControl;
+import com.almasb.spaceinvaders.component.HPComponent;
 import com.almasb.spaceinvaders.component.InvincibleComponent;
 import com.almasb.spaceinvaders.component.OwnerComponent;
 import com.almasb.spaceinvaders.control.EnemyControl;
+import com.almasb.spaceinvaders.control.PlayerControl;
 import javafx.geometry.HorizontalDirection;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
@@ -52,7 +54,7 @@ import javafx.util.Duration;
 public final class EntityFactory {
 
     public enum EntityType {
-        PLAYER, ENEMY, BULLET
+        PLAYER, ENEMY, BULLET, WALL
     }
 
     private static final AssetLoader assetLoader = GameApplication.getService(ServiceType.ASSET_LOADER);
@@ -99,6 +101,7 @@ public final class EntityFactory {
 
         player.addComponent(new CollidableComponent(true));
         player.addComponent(new InvincibleComponent());
+        player.addControl(new PlayerControl());
 
         return player;
     }
@@ -135,6 +138,17 @@ public final class EntityFactory {
         bullet.addControl(new OffscreenCleanControl());
 
         return bullet;
+    }
+
+    public static Entity newWall(double x, double y) {
+        GameEntity wall = new GameEntity();
+        wall.getTypeComponent().setValue(EntityType.WALL);
+        wall.getPositionComponent().setValue(x, y);
+        wall.getMainViewComponent().setView(new EntityView(assetLoader.loadTexture("wall.png")), true);
+        wall.addComponent(new CollidableComponent(true));
+        wall.addComponent(new HPComponent(7));
+
+        return wall;
     }
 
     public static Entity newExplosion(Point2D position) {
