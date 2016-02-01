@@ -33,6 +33,7 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
 import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.spaceinvaders.Config;
 import com.almasb.spaceinvaders.EntityFactory;
 import com.almasb.spaceinvaders.component.InvincibleComponent;
 import javafx.util.Duration;
@@ -47,7 +48,7 @@ public class PlayerControl extends AbstractControl {
 
     private PositionComponent position;
     private BoundingBoxComponent bbox;
-    private double tpf = 0.017;
+    private double dx = 0;
 
     private InvincibleComponent invicibility;
 
@@ -67,19 +68,17 @@ public class PlayerControl extends AbstractControl {
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
-
-
-        this.tpf = tpf;
+        dx = Config.PLAYER_MOVE_SPEED * tpf;
     }
 
     public void left() {
-        if (position.getX() >= 5)
-            position.translateX(-5 * 60 * tpf);
+        if (position.getX() - dx >= 0)
+            position.translateX(-dx);
     }
 
     public void right() {
-        if (position.getX() + bbox.getWidth() <= 650 - 5)
-            position.translateX(5 * 60 * tpf);
+        if (position.getX() + bbox.getWidth() + dx <= Config.WIDTH)
+            position.translateX(dx);
     }
 
     public void shoot() {

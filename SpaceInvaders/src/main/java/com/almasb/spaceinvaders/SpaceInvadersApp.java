@@ -29,7 +29,6 @@ package com.almasb.spaceinvaders;
 import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
@@ -44,7 +43,6 @@ import com.almasb.spaceinvaders.collision.BonusPlayerHandler;
 import com.almasb.spaceinvaders.collision.BulletEnemyHandler;
 import com.almasb.spaceinvaders.collision.BulletPlayerHandler;
 import com.almasb.spaceinvaders.collision.BulletWallHandler;
-import com.almasb.spaceinvaders.component.InvincibleComponent;
 import com.almasb.spaceinvaders.control.PlayerControl;
 import com.almasb.spaceinvaders.event.BonusPickupEvent;
 import com.almasb.spaceinvaders.event.GameEvent;
@@ -64,6 +62,8 @@ import org.jbox2d.dynamics.FixtureDef;
 import java.io.Serializable;
 import java.util.stream.IntStream;
 
+import static com.almasb.spaceinvaders.Config.*;
+
 /**
  * A simple clone of Space Invaders. Demonstrates basic FXGL features.
  *
@@ -71,14 +71,12 @@ import java.util.stream.IntStream;
  */
 public class SpaceInvadersApp extends GameApplication {
 
-    private static final String SAVE_DATA_NAME = "hiscore.dat";
-
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Space Invaders");
         settings.setVersion("0.5");
-        settings.setWidth(650);
-        settings.setHeight(800);
+        settings.setWidth(WIDTH);
+        settings.setHeight(HEIGHT);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(true);
         settings.setShowFPS(false);
@@ -89,8 +87,8 @@ public class SpaceInvadersApp extends GameApplication {
     protected void initAchievements() {
         AchievementManager am = getAchievementManager();
 
-        am.registerAchievement(new Achievement("Hitman", "Destroy 5 enemies"));
-        am.registerAchievement(new Achievement("Master Scorer", "Score 10000+ points"));
+        am.registerAchievement(new Achievement("Hitman", "Destroy " + ACHIEVEMENT_ENEMIES_KILLED + " enemies"));
+        am.registerAchievement(new Achievement("Master Scorer", "Score " + ACHIEVEMENT_MASTER_SCORER + " points"));
     }
 
     @Override
@@ -142,7 +140,7 @@ public class SpaceInvadersApp extends GameApplication {
     @Override
     protected void initGame() {
         initGame(highScore == 0
-                ? new SaveData("CPU", 10000)
+                ? new SaveData("CPU", ACHIEVEMENT_MASTER_SCORER)
                 : new SaveData(highScoreName, highScore));
     }
 
@@ -150,15 +148,15 @@ public class SpaceInvadersApp extends GameApplication {
         highScoreName = data.getName();
         highScore = data.getHighScore();
 
-        enemiesDestroyed = new SimpleIntegerProperty(0);
-        score = new SimpleIntegerProperty(0);
-        level = new SimpleIntegerProperty(0);
-        lives = new SimpleIntegerProperty(3);
+        enemiesDestroyed = new SimpleIntegerProperty();
+        score = new SimpleIntegerProperty();
+        level = new SimpleIntegerProperty();
+        lives = new SimpleIntegerProperty(START_LIVES);
 
         getAchievementManager().getAchievementByName("Hitman")
-                .bind(enemiesDestroyed.greaterThanOrEqualTo(5));
+                .bind(enemiesDestroyed.greaterThanOrEqualTo(ACHIEVEMENT_ENEMIES_KILLED));
         getAchievementManager().getAchievementByName("Master Scorer")
-                .bind(score.greaterThanOrEqualTo(10000));
+                .bind(score.greaterThanOrEqualTo(ACHIEVEMENT_MASTER_SCORER));
 
         spawnBackground();
         spawnPlayer();
@@ -264,7 +262,7 @@ public class SpaceInvadersApp extends GameApplication {
 
         getMasterTimer().runOnceAfter(this::initLevel, Duration.seconds(2.4));
 
-        getAudioPlayer().playSound("level.wav");
+        getAudioPlayer().playSound(Asset.SOUND_NEW_LEVEL);
     }
 
     @Override
@@ -280,7 +278,7 @@ public class SpaceInvadersApp extends GameApplication {
     protected void initUI() {
         uiController = new GameController(getGameScene());
 
-        Parent ui = getAssetLoader().loadFXML("main.fxml", uiController);
+        Parent ui = getAssetLoader().loadFXML(Asset.FXML_MAIN_UI, uiController);
 
         uiController.getLabelScore().textProperty().bind(score.asString("Score:[%d]"));
         uiController.getLabelHighScore().setText("HiScore:[" + highScore + "](" + highScoreName + ")");
@@ -312,16 +310,16 @@ public class SpaceInvadersApp extends GameApplication {
 
         // TODO: ideally we must obtain dynamic key codes because the keys
         // may have been reassigned
-        TutorialStep step1 = new TutorialStep("Press A to move left", "dialogs/move_left.mp3", () -> {
+        TutorialStep step1 = new TutorialStep("Press A to move left", Asset.DIALOG_MOVE_LEFT, () -> {
             getInput().mockKeyPress(KeyCode.A, InputModifier.NONE);
         });
 
-        TutorialStep step2 = new TutorialStep("Press D to move right", "dialogs/move_right.mp3", () -> {
+        TutorialStep step2 = new TutorialStep("Press D to move right", Asset.DIALOG_MOVE_RIGHT, () -> {
             getInput().mockKeyRelease(KeyCode.A, InputModifier.NONE);
             getInput().mockKeyPress(KeyCode.D, InputModifier.NONE);
         });
 
-        TutorialStep step3 = new TutorialStep("Press F to shoot", "dialogs/shoot.mp3", () -> {
+        TutorialStep step3 = new TutorialStep("Press F to shoot", Asset.DIALOG_SHOOT, () -> {
             getInput().mockKeyRelease(KeyCode.D, InputModifier.NONE);
 
             getInput().mockKeyPress(KeyCode.F, InputModifier.NONE);
@@ -356,9 +354,9 @@ public class SpaceInvadersApp extends GameApplication {
 
         getMasterTimer().runOnceAfter(() -> {
             playerControl.disableInvincibility();
-        }, Duration.seconds(1));
+        }, Duration.seconds(INVINCIBILITY_TIME));
 
-        getAudioPlayer().playSound("lose_life.wav");
+        getAudioPlayer().playSound(Asset.SOUND_LOSE_LIFE);
 
         if (lives.get() == 0)
             showGameOver();
@@ -366,7 +364,7 @@ public class SpaceInvadersApp extends GameApplication {
 
     private void onEnemyKilled(GameEvent event) {
         enemiesDestroyed.set(enemiesDestroyed.get() + 1);
-        score.set(score.get() + 200);
+        score.set(score.get() + SCORE_ENEMY_KILL);
 
         if (enemiesDestroyed.get() % 40 == 0)
             nextLevel();
