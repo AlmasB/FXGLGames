@@ -53,6 +53,8 @@ public class PlayerControl extends AbstractControl {
 
     private boolean canShoot = true;
 
+    private double delay = 0.5;
+
     @Override
     public void onAdded(Entity entity) {
         position = entity.getComponentUnsafe(PositionComponent.class);
@@ -60,11 +62,13 @@ public class PlayerControl extends AbstractControl {
         invicibility = entity.getComponentUnsafe(InvincibleComponent.class);
 
         GameApplication.getService(ServiceType.MASTER_TIMER)
-                .runAtInterval(() -> canShoot = true, Duration.seconds(0.5));
+                .runAtInterval(() -> canShoot = true, Duration.seconds(delay));
     }
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
+
+
         this.tpf = tpf;
     }
 

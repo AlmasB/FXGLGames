@@ -40,11 +40,13 @@ import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.ui.UIFactory;
+import com.almasb.spaceinvaders.collision.BonusPlayerHandler;
 import com.almasb.spaceinvaders.collision.BulletEnemyHandler;
 import com.almasb.spaceinvaders.collision.BulletPlayerHandler;
 import com.almasb.spaceinvaders.collision.BulletWallHandler;
 import com.almasb.spaceinvaders.component.InvincibleComponent;
 import com.almasb.spaceinvaders.control.PlayerControl;
+import com.almasb.spaceinvaders.event.BonusPickupEvent;
 import com.almasb.spaceinvaders.event.GameEvent;
 import com.almasb.spaceinvaders.tutorial.Tutorial;
 import com.almasb.spaceinvaders.tutorial.TutorialStep;
@@ -127,6 +129,7 @@ public class SpaceInvadersApp extends GameApplication {
 
         getEventBus().addEventHandler(GameEvent.PLAYER_GOT_HIT, this::onPlayerGotHit);
         getEventBus().addEventHandler(GameEvent.ENEMY_KILLED, this::onEnemyKilled);
+        getEventBus().addEventHandler(BonusPickupEvent.ANY, this::onBonusPickup);
     }
 
     @Override
@@ -185,6 +188,12 @@ public class SpaceInvadersApp extends GameApplication {
 
     private void spawnWall(double x, double y) {
         getGameWorld().addEntity(EntityFactory.newWall(x, y));
+    }
+
+    private void spawnBonus(double x, double y, EntityFactory.BonusType type) {
+        Entity bonus = EntityFactory.newBonus(x, y, type);
+
+        getGameWorld().addEntity(bonus);
     }
 
     @OnUserAction(name = "Move Left", type = ActionType.ON_ACTION)
@@ -264,6 +273,7 @@ public class SpaceInvadersApp extends GameApplication {
         physicsWorld.addCollisionHandler(new BulletPlayerHandler());
         physicsWorld.addCollisionHandler(new BulletEnemyHandler());
         physicsWorld.addCollisionHandler(new BulletWallHandler());
+        physicsWorld.addCollisionHandler(new BonusPlayerHandler());
     }
 
     @Override
@@ -360,6 +370,22 @@ public class SpaceInvadersApp extends GameApplication {
 
         if (enemiesDestroyed.get() % 40 == 0)
             nextLevel();
+
+        if (Math.random() < 0.75) {
+            spawnBonus(Math.random() * (getWidth() - 50), Math.random() * getHeight() / 3, EntityFactory.BonusType.LIFE);
+        }
+    }
+
+    private void onBonusPickup(BonusPickupEvent event) {
+        switch (event.getType()) {
+            case ATTACK_RATE:
+                System.out.println("NOT IMPLEMENTED!");
+                break;
+            case LIFE:
+                lives.set(lives.get() + 1);
+                uiController.addLife();
+                break;
+        }
     }
 
     private void showGameOver() {

@@ -41,6 +41,7 @@ import com.almasb.fxgl.entity.control.ProjectileControl;
 import com.almasb.spaceinvaders.component.HPComponent;
 import com.almasb.spaceinvaders.component.InvincibleComponent;
 import com.almasb.spaceinvaders.component.OwnerComponent;
+import com.almasb.spaceinvaders.component.SubTypeComponent;
 import com.almasb.spaceinvaders.control.EnemyControl;
 import com.almasb.spaceinvaders.control.PlayerControl;
 import javafx.geometry.HorizontalDirection;
@@ -54,7 +55,11 @@ import javafx.util.Duration;
 public final class EntityFactory {
 
     public enum EntityType {
-        PLAYER, ENEMY, BULLET, WALL
+        PLAYER, ENEMY, BULLET, WALL, BONUS
+    }
+
+    public enum BonusType {
+        ATTACK_RATE, LIFE
     }
 
     private static final AssetLoader assetLoader = GameApplication.getService(ServiceType.ASSET_LOADER);
@@ -149,6 +154,19 @@ public final class EntityFactory {
         wall.addComponent(new HPComponent(7));
 
         return wall;
+    }
+
+    public static Entity newBonus(double x, double y, BonusType type) {
+        GameEntity bonus = new GameEntity();
+        bonus.getTypeComponent().setValue(EntityType.BONUS);
+        bonus.getPositionComponent().setValue(x, y);
+        bonus.getMainViewComponent().setView(new EntityView(assetLoader.loadTexture("life.png")), true);
+
+        bonus.addComponent(new SubTypeComponent(type));
+        bonus.addComponent(new CollidableComponent(true));
+        bonus.addControl(new ProjectileControl(new Point2D(0, 1), 7.5));
+
+        return bonus;
     }
 
     public static Entity newExplosion(Point2D position) {
