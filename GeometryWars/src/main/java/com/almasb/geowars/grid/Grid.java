@@ -26,19 +26,17 @@
 
 package com.almasb.geowars.grid;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.almasb.fxgl.entity.RenderLayer;
+import com.almasb.ents.Entity;
 import com.almasb.fxgl.gameplay.GameWorld;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 
-import com.almasb.fxgl.entity.Entity;
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -113,7 +111,7 @@ public class Grid {
     }
 
     private Entity createLine(float thickness) {
-        Entity entity = Entity.noType();
+        Entity entity = new Entity();
 
         Line line = new Line(0, 0, 1, 0);
         line.setStrokeWidth(thickness);
@@ -161,7 +159,7 @@ public class Grid {
         }
     }
 
-    public void applyExplosiveForce(double force, Point2D position, float radius) {
+    public void applyExplosiveForce(double force, Point2D position, double radius) {
         for (int x = 0; x < points.length; x++) {
             for (int y = 0; y < points[0].length; y++) {
                 double dist = position.distance(points[x][y].getPosition());

@@ -26,8 +26,7 @@
 
 package com.almasb.geowars.grid;
 
-import com.almasb.fxgl.entity.Entity;
-
+import com.almasb.ents.Entity;
 import com.almasb.fxgl.gameplay.GameWorld;
 import javafx.geometry.Point2D;
 

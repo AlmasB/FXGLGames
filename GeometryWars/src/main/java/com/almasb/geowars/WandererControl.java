@@ -26,8 +26,9 @@
 
 package com.almasb.geowars;
 
-import com.almasb.fxgl.entity.control.AbstractControl;
-import com.almasb.fxgl.entity.Entity;
+import com.almasb.ents.AbstractControl;
+import com.almasb.ents.Entity;
+import com.almasb.fxgl.entity.Entities;
 import javafx.geometry.Point2D;
 
 import java.util.Random;
@@ -51,22 +52,19 @@ public class WandererControl extends AbstractControl {
     }
 
     @Override
-    protected void initEntity(Entity entity) {}
-
-    @Override
-    public void onUpdate(Entity entity) {
+    public void onUpdate(Entity entity, double tpf) {
         // change the directionAngle a bit
-        directionAngle += (new Random().nextFloat() * 20f - 10f) * 0.016;
+        directionAngle += (new Random().nextFloat() * 20f - 10f) * tpf;
         Point2D directionVector = getVectorFromAngle(directionAngle);
         directionVector = directionVector.multiply(1000f);
         velocity = velocity.add(directionVector);
 
         // decrease the velocity a bit and move the wanderer
         velocity = velocity.multiply(0.65f);
-        entity.translate(velocity.multiply(0.016 * 0.1f));
+        Entities.getPosition(entity).translate(velocity.multiply(tpf * 0.1f));
 
         // make the wanderer bounce off the screen borders
-        Point2D loc = entity.getPosition();
+        Point2D loc = Entities.getPosition(entity).getValue();
         if (loc.getX() < 0 || loc.getY() < 0 || loc.getX() + 40 >= screenWidth
                 || loc.getY() + 40 >= screenHeight) {
             Point2D newDirectionVector = new Point2D(screenWidth / 2, screenHeight / 2).subtract(loc);
@@ -78,7 +76,7 @@ public class WandererControl extends AbstractControl {
         }
 
         // rotate the wanderer
-        entity.rotateBy(0.016 * 2);
+        Entities.getRotation(entity).rotateBy(0.016 * 2);
     }
 
     private Point2D getVectorFromAngle(double angle) {

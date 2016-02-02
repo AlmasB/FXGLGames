@@ -26,20 +26,16 @@
 
 package com.almasb.geowars.grid;
 
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.control.AbstractControl;
+import com.almasb.ents.AbstractControl;
+import com.almasb.ents.Entity;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class TestControl extends AbstractControl {
-    @Override
-    protected void initEntity(Entity entity) {
-
-    }
 
     @Override
-    public void onUpdate(Entity entity) {
+    public void onUpdate(Entity entity, double tpf) {
         entity.getComponentUnsafe(GraphicsComponent.class).getValue()
                 .clearRect(0, 0, 1280, 720);
     }

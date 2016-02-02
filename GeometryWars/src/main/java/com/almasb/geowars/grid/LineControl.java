@@ -26,8 +26,9 @@
 
 package com.almasb.geowars.grid;
 
-import com.almasb.fxgl.entity.control.AbstractControl;
-import com.almasb.fxgl.entity.Entity;
+import com.almasb.ents.AbstractControl;
+import com.almasb.ents.Entity;
+import com.almasb.fxgl.entity.component.MainViewComponent;
 import javafx.scene.Node;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.shape.Line;
@@ -49,9 +50,9 @@ public class LineControl extends AbstractControl {
     }
 
     @Override
-    protected void initEntity(Entity entity) {
-        entity.getSceneView().ifPresent(view -> {
-            List<Node> list = view.getChildrenUnmodifiable();
+    public void onAdded(Entity entity) {
+        entity.getComponent(MainViewComponent.class).ifPresent(viewComponent -> {
+            List<Node> list = viewComponent.getView().getChildrenUnmodifiable();
             if (!list.isEmpty()) {
                 line = (Line) list.get(0);
             }
@@ -62,7 +63,7 @@ public class LineControl extends AbstractControl {
     }
 
     @Override
-    public void onUpdate(Entity entity) {
+    public void onUpdate(Entity entity, double tpf) {
 //        line.setStartX(end1.getPosition().getX());
 //        line.setStartY(end1.getPosition().getY());
 //        line.setEndX(end2.getPosition().getX());

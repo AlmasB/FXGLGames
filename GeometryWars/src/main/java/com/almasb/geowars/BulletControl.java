@@ -26,8 +26,9 @@
 
 package com.almasb.geowars;
 
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.control.AbstractControl;
+import com.almasb.ents.AbstractControl;
+import com.almasb.ents.Entity;
+import com.almasb.fxgl.entity.component.BoundingBoxComponent;
 import com.almasb.fxgl.entity.control.ProjectileControl;
 import com.almasb.geowars.grid.Grid;
 import javafx.geometry.Point2D;
@@ -37,6 +38,8 @@ import javafx.geometry.Point2D;
  */
 public class BulletControl extends AbstractControl {
 
+    private BoundingBoxComponent bbox;
+
     private Point2D velocity;
     private Grid grid;
 
@@ -45,12 +48,13 @@ public class BulletControl extends AbstractControl {
     }
 
     @Override
-    protected void initEntity(Entity entity) {
+    public void onAdded(Entity entity) {
         velocity = entity.getControlUnsafe(ProjectileControl.class).getVelocity();
+        bbox = entity.getComponentUnsafe(BoundingBoxComponent.class);
     }
 
     @Override
-    public void onUpdate(Entity entity) {
-        grid.applyExplosiveForce(velocity.magnitude() * 18, entity.getCenter(), 80);
+    public void onUpdate(Entity entity, double tpf) {
+        grid.applyExplosiveForce(velocity.magnitude() * 18, bbox.getCenterWorld(), 80 * 60 * tpf);
     }
 }

@@ -26,10 +26,10 @@
 
 package com.almasb.geowars;
 
+import com.almasb.ents.AbstractControl;
+import com.almasb.ents.Entity;
+import com.almasb.fxgl.entity.Entities;
 import javafx.geometry.Point2D;
-
-import com.almasb.fxgl.entity.control.AbstractControl;
-import com.almasb.fxgl.entity.Entity;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -45,24 +45,21 @@ public class SeekerControl extends AbstractControl {
     }
 
     @Override
-    protected void initEntity(Entity entity) {}
-
-    @Override
-    public void onUpdate(Entity entity) {
+    public void onUpdate(Entity entity, double tpf) {
         // translate the seeker
-        Point2D playerDirection = player.getPosition()
-                .subtract(entity.getPosition())
+        Point2D playerDirection = Entities.getPosition(player).getValue()
+                .subtract(Entities.getPosition(entity).getValue())
                 .normalize()
                 .multiply(1000);
 
         velocity = velocity.add(playerDirection)
                 .multiply(0.65);
 
-        entity.translate(velocity.multiply(0.016 * 0.1f));
+        Entities.getPosition(entity).translate(velocity.multiply(tpf * 0.1f));
 
         // rotate the seeker
         if (velocity.getX() != 0 && velocity.getY() != 0) {
-            entity.rotateToVector(velocity);
+            Entities.getRotation(entity).rotateToVector(velocity);
         }
     }
 }
