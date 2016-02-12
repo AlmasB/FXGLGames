@@ -32,6 +32,7 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
+import com.almasb.fxgl.entity.control.ProjectileControl;
 import com.almasb.fxgl.gameplay.Achievement;
 import com.almasb.fxgl.gameplay.AchievementManager;
 import com.almasb.fxgl.input.*;
@@ -50,6 +51,7 @@ import com.almasb.spaceinvaders.tutorial.Tutorial;
 import com.almasb.spaceinvaders.tutorial.TutorialStep;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.geometry.Point2D;
 import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -74,7 +76,7 @@ public class SpaceInvadersApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Space Invaders");
-        settings.setVersion("0.5");
+        settings.setVersion("0.6");
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
         settings.setIntroEnabled(false);
@@ -169,6 +171,12 @@ public class SpaceInvadersApp extends GameApplication {
         Entity bg = EntityFactory.newBackground(getWidth(), getHeight());
 
         getGameWorld().addEntity(bg);
+
+        getMasterTimer().runAtInterval(() -> {
+            Entity meteor = EntityFactory.newMeteor();
+
+            getGameWorld().addEntity(meteor);
+        }, Duration.seconds(3));
     }
 
     private void spawnEnemy(double x, double y) {

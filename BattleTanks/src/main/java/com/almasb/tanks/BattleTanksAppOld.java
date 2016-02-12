@@ -69,7 +69,7 @@ import java.util.Random;
  *
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class BattleTanksApp extends GameApplication {
+public class BattleTanksAppOld extends GameApplication {
 
     private static final int ATTACK_RANGE = 200;
     private static final int TANK_MOVE_SPEED = 40;

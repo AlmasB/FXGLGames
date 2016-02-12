@@ -27,6 +27,7 @@
 package com.almasb.spaceinvaders;
 
 import com.almasb.ents.Entity;
+import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.asset.AssetLoader;
@@ -34,6 +35,7 @@ import com.almasb.fxgl.asset.Texture;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.RenderLayer;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
@@ -43,11 +45,14 @@ import com.almasb.spaceinvaders.component.InvincibleComponent;
 import com.almasb.spaceinvaders.component.OwnerComponent;
 import com.almasb.spaceinvaders.component.SubTypeComponent;
 import com.almasb.spaceinvaders.control.EnemyControl;
+import com.almasb.spaceinvaders.control.MeteorControl;
 import com.almasb.spaceinvaders.control.PlayerControl;
 import javafx.geometry.HorizontalDirection;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.util.Duration;
+
+import java.util.Random;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -62,9 +67,27 @@ public final class EntityFactory {
         ATTACK_RATE, LIFE
     }
 
+    private enum RenderLayer implements com.almasb.fxgl.entity.RenderLayer {
+        BACKGROUND(100),
+        METEORS(200);
+
+        private final int index;
+
+        RenderLayer(int index) {
+            this.index = index;
+        }
+
+        @Override
+        public int index() {
+            return index;
+        }
+    }
+
     private static final AssetLoader assetLoader = GameApplication.getService(ServiceType.ASSET_LOADER);
 
     private static Texture textureExplosion;
+
+    private static final Random random = new Random();
 
     // we don't have to do this in code
     // we could just pre-format the texture specifically for the game
@@ -86,13 +109,59 @@ public final class EntityFactory {
 
     public static Entity newBackground(double w, double h) {
         GameEntity bg = new GameEntity();
-        Texture bgTexture = assetLoader.loadTexture("background.png");
+        Texture bgTexture = assetLoader.loadTexture("background/background.png");
         bgTexture.setFitWidth(w);
         bgTexture.setFitHeight(h);
 
         bg.getMainViewComponent().setGraphics(bgTexture);
+        bg.getMainViewComponent().setRenderLayer(RenderLayer.BACKGROUND);
 
         return bg;
+    }
+
+    public static Entity newMeteor() {
+        double w = FXGL.getDouble("settings.width");
+        double h = FXGL.getDouble("settings.height");
+        double x = 0, y = 0;
+
+        // these are deliberately arbitrary to create illusion of randomness
+        if (random.nextBoolean()) {
+            // left or right
+            if (random.nextBoolean()) {
+                x = -50;
+            } else {
+                x = w + 50;
+            }
+
+            y = random.nextInt((int)h);
+        } else {
+            // top or bot
+            if (random.nextBoolean()) {
+                y = -50;
+            } else {
+                y = h + 50;
+            }
+
+            x = random.nextInt((int) w);
+        }
+
+        GameEntity meteor = new GameEntity();
+        meteor.getPositionComponent().setValue(x, y);
+
+        String textureName = "background/meteor" + (random.nextInt(4) + 1) + ".png";
+
+        meteor.getMainViewComponent().setTexture(textureName);
+        meteor.getMainViewComponent().setRenderLayer(RenderLayer.METEORS);
+
+        meteor.addControl(new MeteorControl());
+
+        // add offscreen clean a bit later so that they are not cleaned from start
+        GameApplication.getService(ServiceType.MASTER_TIMER)
+                .runOnceAfter(() -> {
+                    meteor.addControl(new OffscreenCleanControl());
+                }, Duration.seconds(5));
+
+        return meteor;
     }
 
     public static GameEntity newPlayer(double x, double y) {
