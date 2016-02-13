@@ -85,7 +85,7 @@ public class PlayerControl extends AbstractControl {
         if (!canShoot)
             return;
 
-        Entity bullet = EntityFactory.newBullet(getEntity());
+        Entity bullet = EntityFactory.newLaser(getEntity());
 
         getEntity().getWorld().addEntity(bullet);
 

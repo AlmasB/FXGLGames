@@ -40,16 +40,23 @@ import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.entity.control.ProjectileControl;
+import com.almasb.fxgl.physics.HitBox;
 import com.almasb.spaceinvaders.component.HPComponent;
 import com.almasb.spaceinvaders.component.InvincibleComponent;
 import com.almasb.spaceinvaders.component.OwnerComponent;
 import com.almasb.spaceinvaders.component.SubTypeComponent;
+import com.almasb.spaceinvaders.control.BulletControl;
 import com.almasb.spaceinvaders.control.EnemyControl;
 import com.almasb.spaceinvaders.control.MeteorControl;
 import com.almasb.spaceinvaders.control.PlayerControl;
+import javafx.geometry.BoundingBox;
 import javafx.geometry.HorizontalDirection;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.effect.BlendMode;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Glow;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 import java.util.Random;
@@ -169,7 +176,9 @@ public final class EntityFactory {
         player.getTypeComponent().setValue(EntityType.PLAYER);
         player.getPositionComponent().setValue(x, y);
 
-        Texture texture = assetLoader.loadTexture("player.png");
+        Texture texture = assetLoader.loadTexture("player2.png");
+        texture.setPreserveRatio(true);
+        texture.setFitHeight(40);
 
         player.getMainViewComponent().setView(new EntityView(texture), true);
 
@@ -210,6 +219,31 @@ public final class EntityFactory {
         bullet.addControl(new ProjectileControl(new Point2D(0, Entities.getType(owner).isType(EntityType.PLAYER) ? -1 : 1), 10));
         bullet.addComponent(new OwnerComponent(Entities.getType(owner).getValue()));
         bullet.addControl(new OffscreenCleanControl());
+
+        return bullet;
+    }
+
+    public static Entity newLaser(Entity owner) {
+        GameEntity bullet = new GameEntity();
+        bullet.getTypeComponent().setValue(EntityType.BULLET);
+
+        Point2D center = Entities.getBBox(owner)
+                .getCenterWorld()
+                .add(-4.5, -20);
+
+        bullet.getPositionComponent().setValue(center);
+
+        bullet.getBoundingBoxComponent().addHitBox(new HitBox("HIT", new BoundingBox(0, 0, 9, 20)));
+        bullet.addComponent(new CollidableComponent(true));
+        bullet.getMainViewComponent().setTexture("laser1.png");
+        bullet.addComponent(new OwnerComponent(Entities.getType(owner).getValue()));
+        bullet.addControl(new OffscreenCleanControl());
+        bullet.addControl(new BulletControl(500));
+
+        DropShadow shadow = new DropShadow(22, Color.LIGHTBLUE);
+        shadow.setInput(new Glow(0.8));
+
+        bullet.getMainViewComponent().getView().setEffect(shadow);
 
         return bullet;
     }

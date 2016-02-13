@@ -31,6 +31,7 @@ import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.component.MainViewComponent;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.entity.control.ProjectileControl;
 import com.almasb.fxgl.gameplay.Achievement;
@@ -80,7 +81,7 @@ public class SpaceInvadersApp extends GameApplication {
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
         settings.setIntroEnabled(false);
-        settings.setMenuEnabled(true);
+        settings.setMenuEnabled(false);
         settings.setShowFPS(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
@@ -147,6 +148,8 @@ public class SpaceInvadersApp extends GameApplication {
     }
 
     private void initGame(SaveData data) {
+        //MainViewComponent.turnOnDebugBBox(Color.YELLOW);
+
         highScoreName = data.getName();
         highScore = data.getHighScore();
 
@@ -288,8 +291,8 @@ public class SpaceInvadersApp extends GameApplication {
 
         Parent ui = getAssetLoader().loadFXML(Asset.FXML_MAIN_UI, uiController);
 
-        uiController.getLabelScore().textProperty().bind(score.asString("Score:[%d]"));
-        uiController.getLabelHighScore().setText("HiScore:[" + highScore + "](" + highScoreName + ")");
+        uiController.getLabelScore().textProperty().bind(score.asString("Score: %d"));
+        uiController.getLabelHighScore().setText("HiScore: " + highScore + " " + highScoreName + "");
 
         IntStream.range(0, lives.get())
                 .forEach(i -> uiController.addLife());
@@ -297,7 +300,7 @@ public class SpaceInvadersApp extends GameApplication {
         getGameScene().addUINode(ui);
     }
 
-    private boolean runningFirstTime = true;
+    private boolean runningFirstTime = false;
 
     @Override
     protected void onUpdate() {
