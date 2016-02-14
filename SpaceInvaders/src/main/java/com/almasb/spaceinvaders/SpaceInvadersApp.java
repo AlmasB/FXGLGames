@@ -105,7 +105,7 @@ public class SpaceInvadersApp extends GameApplication {
 
     @Override
     protected void initAssets() {
-        EntityFactory.preLoad();
+        getAssetLoader().cache();
     }
 
     private GameEntity player;

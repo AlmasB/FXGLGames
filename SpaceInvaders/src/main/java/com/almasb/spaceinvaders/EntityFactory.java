@@ -45,10 +45,8 @@ import com.almasb.spaceinvaders.component.HPComponent;
 import com.almasb.spaceinvaders.component.InvincibleComponent;
 import com.almasb.spaceinvaders.component.OwnerComponent;
 import com.almasb.spaceinvaders.component.SubTypeComponent;
-import com.almasb.spaceinvaders.control.BulletControl;
-import com.almasb.spaceinvaders.control.EnemyControl;
-import com.almasb.spaceinvaders.control.MeteorControl;
-import com.almasb.spaceinvaders.control.PlayerControl;
+import com.almasb.spaceinvaders.control.*;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.HorizontalDirection;
 import javafx.geometry.Point2D;
@@ -56,9 +54,16 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.Random;
 
 /**
@@ -92,27 +97,7 @@ public final class EntityFactory {
 
     private static final AssetLoader assetLoader = GameApplication.getService(ServiceType.ASSET_LOADER);
 
-    private static Texture textureExplosion;
-
     private static final Random random = new Random();
-
-    // we don't have to do this in code
-    // we could just pre-format the texture specifically for the game
-    public static void preLoad() {
-        if (textureExplosion != null)
-            return;
-
-        textureExplosion = assetLoader.loadTexture("explosion.png");
-        int h = 1536 / 6;
-        Texture textureCombined = textureExplosion.subTexture(new Rectangle2D(0, 0, 2048, h));
-
-        for (int i = 1; i < 6; i++) {
-            textureCombined = textureCombined
-                    .superTexture(textureExplosion.subTexture(new Rectangle2D(0, h*i, 2048, h)), HorizontalDirection.RIGHT);
-        }
-
-        textureExplosion = textureCombined;
-    }
 
     public static Entity newBackground(double w, double h) {
         GameEntity bg = new GameEntity();
@@ -199,6 +184,7 @@ public final class EntityFactory {
 
         enemy.getMainViewComponent().setView(new EntityView(texture), true);
         enemy.addComponent(new CollidableComponent(true));
+        enemy.addComponent(new HPComponent(2));
         enemy.addControl(new EnemyControl());
 
         return enemy;
@@ -235,15 +221,23 @@ public final class EntityFactory {
 
         bullet.getBoundingBoxComponent().addHitBox(new HitBox("HIT", new BoundingBox(0, 0, 9, 20)));
         bullet.addComponent(new CollidableComponent(true));
-        bullet.getMainViewComponent().setTexture("laser1.png");
         bullet.addComponent(new OwnerComponent(Entities.getType(owner).getValue()));
         bullet.addControl(new OffscreenCleanControl());
         bullet.addControl(new BulletControl(500));
 
-        DropShadow shadow = new DropShadow(22, Color.LIGHTBLUE);
+        DropShadow shadow = new DropShadow(22, Color.DARKBLUE);
         shadow.setInput(new Glow(0.8));
 
-        bullet.getMainViewComponent().getView().setEffect(shadow);
+        EntityView view = new EntityView();
+        view.addNode(assetLoader.loadTexture("laser1.png"));
+
+        Texture t = assetLoader.loadTexture("laser2.png");
+        t.relocate(-2, -20);
+
+        view.addNode(t);
+        view.setEffect(shadow);
+
+        bullet.getMainViewComponent().setView(view);
 
         return bullet;
     }
@@ -276,7 +270,7 @@ public final class EntityFactory {
         GameEntity explosion = new GameEntity();
         explosion.getPositionComponent().setValue(position.subtract(40, 40));
 
-        Texture animation = textureExplosion.toStaticAnimatedTexture(48, Duration.seconds(2));
+        Texture animation = assetLoader.loadTexture("explosion.png").toStaticAnimatedTexture(48, Duration.seconds(2));
         animation.setFitWidth(80);
         animation.setFitHeight(80);
 
@@ -284,5 +278,19 @@ public final class EntityFactory {
         explosion.addControl(new ExpireCleanControl(Duration.seconds(1.8)));
 
         return explosion;
+    }
+
+    public static Entity newLaserHit(Point2D position) {
+        GameEntity laserHit = new GameEntity();
+        laserHit.getPositionComponent().setValue(position.subtract(15, 15));
+
+        Texture hit = assetLoader.loadTexture("laser_hit.png");
+        hit.setFitWidth(15);
+        hit.setFitHeight(15);
+
+        laserHit.getMainViewComponent().setGraphics(hit);
+        laserHit.addControl(new LaserHitControl());
+
+        return laserHit;
     }
 }

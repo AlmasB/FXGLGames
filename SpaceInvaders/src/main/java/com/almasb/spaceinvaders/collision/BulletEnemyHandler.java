@@ -30,11 +30,19 @@ import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.entity.component.MainViewComponent;
+import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.spaceinvaders.EntityFactory;
+import com.almasb.spaceinvaders.component.HPComponent;
 import com.almasb.spaceinvaders.component.InvincibleComponent;
 import com.almasb.spaceinvaders.component.OwnerComponent;
 import com.almasb.spaceinvaders.event.GameEvent;
+import javafx.geometry.Point2D;
+import javafx.scene.effect.BlendMode;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -54,13 +62,33 @@ public class BulletEnemyHandler extends CollisionHandler {
             return;
         }
 
-        Entity explosion = EntityFactory.newExplosion(Entities.getBBox(enemy).getCenterWorld());
-        enemy.getWorld().addEntity(explosion);
-
+        Point2D hitPosition = bullet.getComponentUnsafe(PositionComponent.class).getValue();
         bullet.removeFromWorld();
-        enemy.removeFromWorld();
 
-        GameApplication.getService(ServiceType.AUDIO_PLAYER).playSound("explosion.wav");
-        GameApplication.getService(ServiceType.EVENT_BUS).fireEvent(new GameEvent(GameEvent.ENEMY_KILLED));
+        HPComponent hp = enemy.getComponentUnsafe(HPComponent.class);
+        hp.setValue(hp.getValue() - 1);
+
+        if (hp.getValue() <= 0) {
+            Entity explosion = EntityFactory.newExplosion(Entities.getBBox(enemy).getCenterWorld());
+            enemy.getWorld().addEntity(explosion);
+
+            enemy.removeFromWorld();
+
+            // TODO: do this via a listener to entity world, i.e. when they are actually removed
+            GameApplication.getService(ServiceType.AUDIO_PLAYER).playSound("explosion.wav");
+            GameApplication.getService(ServiceType.EVENT_BUS).fireEvent(new GameEvent(GameEvent.ENEMY_KILLED));
+        } else {
+            Entity laserHit = EntityFactory.newLaserHit(hitPosition);
+
+            enemy.getWorld().addEntity(laserHit);
+
+            enemy.getComponentUnsafe(MainViewComponent.class).getView().setBlendMode(BlendMode.RED);
+
+            GameApplication.getService(ServiceType.MASTER_TIMER)
+                    .runOnceAfter(() -> {
+                        if (enemy.isActive())
+                            enemy.getComponentUnsafe(MainViewComponent.class).getView().setBlendMode(null);
+                    }, Duration.seconds(0.33));
+        }
     }
 }
