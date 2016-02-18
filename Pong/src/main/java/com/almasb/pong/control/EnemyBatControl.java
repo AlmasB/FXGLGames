@@ -26,8 +26,10 @@
 
 package com.almasb.pong.control;
 
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.pong.EntityTypes;
+import com.almasb.ents.Entity;
+import com.almasb.fxgl.entity.component.BoundingBoxComponent;
+import com.almasb.fxgl.entity.component.TypeComponent;
+import com.almasb.pong.EntityType;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -36,13 +38,14 @@ public class EnemyBatControl extends BatControl {
     private Entity ball;
 
     @Override
-    public void onUpdate(Entity entity) {
-        super.onUpdate(entity);
+    public void onUpdate(Entity entity, double tpf) {
+        super.onUpdate(entity, tpf);
 
         if (ball == null) {
             entity.getWorld()
-                    .getEntities(EntityTypes.Type.BALL)
+                    .getEntitiesByComponent(TypeComponent.class)
                     .stream()
+                    .filter(e -> e.getComponentUnsafe(TypeComponent.class).isType(EntityType.BALL))
                     .findAny()
                     .ifPresent(b -> ball = b);
         } else {
@@ -51,14 +54,17 @@ public class EnemyBatControl extends BatControl {
     }
 
     private void moveAI() {
-        boolean isBallToLeft = ball.getRightX() <= entity.getX();
+        BoundingBoxComponent ballBox = ball.getComponentUnsafe(BoundingBoxComponent.class);
+        BoundingBoxComponent batBox = getEntity().getComponentUnsafe(BoundingBoxComponent.class);
 
-        if (ball.getY() < entity.getY()) {
+        boolean isBallToLeft = ballBox.getMaxXWorld() <= batBox.getMinXWorld();
+
+        if (ballBox.getMinYWorld() < batBox.getMinYWorld()) {
             if (isBallToLeft)
                 up();
             else
                 down();
-        } else if (ball.getBottomY() > entity.getBottomY()) {
+        } else if (ballBox.getMinYWorld() > batBox.getMinYWorld()) {
             if (isBallToLeft)
                 down();
             else

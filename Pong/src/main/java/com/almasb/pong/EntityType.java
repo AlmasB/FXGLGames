@@ -26,14 +26,10 @@
 
 package com.almasb.pong;
 
-import com.almasb.fxgl.entity.EntityType;
-
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class EntityTypes {
-    public enum Type implements EntityType {
-        PLAYER_BAT, ENEMY_BAT, BALL,
-        WALL, LEFT_WALL, RIGHT_WALL
-    }
+public enum  EntityType {
+    PLAYER_BAT, ENEMY_BAT, BALL,
+    WALL, LEFT_WALL, RIGHT_WALL
 }

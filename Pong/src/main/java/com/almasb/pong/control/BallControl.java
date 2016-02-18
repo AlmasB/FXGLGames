@@ -26,24 +26,24 @@
 
 package com.almasb.pong.control;
 
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.control.AbstractControl;
-import com.almasb.fxgl.physics.PhysicsEntity;
+import com.almasb.ents.AbstractControl;
+import com.almasb.ents.Entity;
+import com.almasb.fxgl.physics.PhysicsComponent;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class BallControl extends AbstractControl {
 
-    private PhysicsEntity ball;
+    private PhysicsComponent ball;
 
     @Override
-    protected void initEntity(Entity entity) {
-        ball = (PhysicsEntity) entity;
+    public void onAdded(Entity entity) {
+        ball = entity.getComponentUnsafe(PhysicsComponent.class);
     }
 
     @Override
-    public void onUpdate(Entity entity) {
+    public void onUpdate(Entity entity, double tpf) {
         if (Math.abs(ball.getLinearVelocity().getX()) < 5) {
             ball.setLinearVelocity(Math.signum(ball.getLinearVelocity().getX()) * 5,
                     ball.getLinearVelocity().getY());

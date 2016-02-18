@@ -26,33 +26,40 @@
 
 package com.almasb.pong.control;
 
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.control.AbstractControl;
-import com.almasb.fxgl.physics.PhysicsEntity;
+import com.almasb.ents.AbstractControl;
+import com.almasb.ents.Entity;
+import com.almasb.fxgl.entity.component.BoundingBoxComponent;
+import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.physics.PhysicsComponent;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class BatControl extends AbstractControl {
-    private PhysicsEntity bat;
+
+    protected PositionComponent position;
+    protected PhysicsComponent bat;
+    protected BoundingBoxComponent bbox;
 
     @Override
-    protected void initEntity(Entity entity) {
-        bat = (PhysicsEntity) entity;
+    public void onAdded(Entity entity) {
+        bat = entity.getComponentUnsafe(PhysicsComponent.class);
+        position = entity.getComponentUnsafe(PositionComponent.class);
+        bbox = entity.getComponentUnsafe(BoundingBoxComponent.class);
     }
 
     @Override
-    public void onUpdate(Entity entity) {}
+    public void onUpdate(Entity entity, double tpf) {}
 
     public void up() {
-        if (bat.getY() >= 5)
+        if (position.getY() >= 5)
             bat.setLinearVelocity(0, -5);
         else
             stop();
     }
 
     public void down() {
-        if (bat.getBottomY() <= 600 - 5)
+        if (bbox.getMaxYWorld() <= 600 - 5)
             bat.setLinearVelocity(0, 5);
         else
             stop();
