@@ -103,6 +103,21 @@ public class SpaceInvadersApp extends GameApplication {
         input.addInputMapping(new InputMapping("Shoot", KeyCode.F));
     }
 
+    @OnUserAction(name = "Move Left", type = ActionType.ON_ACTION)
+    public void moveLeft() {
+        playerControl.left();
+    }
+
+    @OnUserAction(name = "Move Right", type = ActionType.ON_ACTION)
+    public void moveRight() {
+        playerControl.right();
+    }
+
+    @OnUserAction(name = "Shoot", type = ActionType.ON_ACTION)
+    public void shoot() {
+        playerControl.shoot();
+    }
+
     @Override
     protected void initAssets() {
         getAssetLoader().cache();
@@ -205,21 +220,6 @@ public class SpaceInvadersApp extends GameApplication {
         getGameWorld().addEntity(bonus);
     }
 
-    @OnUserAction(name = "Move Left", type = ActionType.ON_ACTION)
-    public void moveLeft() {
-        playerControl.left();
-    }
-
-    @OnUserAction(name = "Move Right", type = ActionType.ON_ACTION)
-    public void moveRight() {
-        playerControl.right();
-    }
-
-    @OnUserAction(name = "Shoot", type = ActionType.ON_ACTION)
-    public void shoot() {
-        playerControl.shoot();
-    }
-
     private void initLevel() {
         for (int y = 0; y < 5; y++) {
             for (int x = 0; x < 8; x++) {
@@ -236,21 +236,25 @@ public class SpaceInvadersApp extends GameApplication {
         getInput().setProcessActions(true);
     }
 
+    private void cleanupLevel() {
+        getGameWorld().getEntitiesByType(
+                EntityFactory.EntityType.BULLET,
+                EntityFactory.EntityType.BONUS,
+                EntityFactory.EntityType.WALL)
+                .forEach(Entity::removeFromWorld);
+    }
+
     private void nextLevel() {
         getInput().setProcessActions(false);
 
-        // do cleanup of the old level first
-        getGameWorld().getEntitiesByType(EntityFactory.EntityType.BULLET)
-                .forEach(Entity::removeFromWorld);
-        getGameWorld().getEntitiesByType(EntityFactory.EntityType.WALL)
-                .forEach(Entity::removeFromWorld);
+        cleanupLevel();
 
         level.set(level.get() + 1);
 
         GameEntity levelInfo = new GameEntity();
         levelInfo.getPositionComponent().setValue(getWidth() / 2 - UIFactory.widthOf("Level " + level.get(), 44) / 2, 0);
         levelInfo.getMainViewComponent().setView(new EntityView(UIFactory.newText("Level " + level.get(), Color.AQUAMARINE, 44)), true);
-        levelInfo.addControl(new ExpireCleanControl(Duration.seconds(2.4)));
+        levelInfo.addControl(new ExpireCleanControl(Duration.seconds(LEVEL_START_DELAY)));
 
         PhysicsComponent pComponent = new PhysicsComponent();
         pComponent.setBodyType(BodyType.DYNAMIC);
@@ -266,12 +270,12 @@ public class SpaceInvadersApp extends GameApplication {
         GameEntity ground = new GameEntity();
         ground.getPositionComponent().setY(getHeight() / 2);
         ground.getMainViewComponent().setView(new EntityView(new Rectangle(getWidth(), 100, Color.TRANSPARENT)), true);
-        ground.addControl(new ExpireCleanControl(Duration.seconds(2.4)));
+        ground.addControl(new ExpireCleanControl(Duration.seconds(LEVEL_START_DELAY)));
         ground.addComponent(new PhysicsComponent());
 
         getGameWorld().addEntities(levelInfo, ground);
 
-        getMasterTimer().runOnceAfter(this::initLevel, Duration.seconds(2.4));
+        getMasterTimer().runOnceAfter(this::initLevel, Duration.seconds(LEVEL_START_DELAY));
 
         getAudioPlayer().playSound(Asset.SOUND_NEW_LEVEL);
     }
@@ -375,12 +379,12 @@ public class SpaceInvadersApp extends GameApplication {
 
     private void onEnemyKilled(GameEvent event) {
         enemiesDestroyed.set(enemiesDestroyed.get() + 1);
-        score.set(score.get() + SCORE_ENEMY_KILL);
+        score.set(score.get() + SCORE_ENEMY_KILL * (getGameWorld().getGameDifficulty().ordinal() + SCORE_DIFFICULTY_MODIFIER));
 
         if (enemiesDestroyed.get() % 40 == 0)
             nextLevel();
 
-        if (Math.random() < 0.75) {
+        if (Math.random() < BONUS_SPAWN_CHANCE) {
             spawnBonus(Math.random() * (getWidth() - 50), Math.random() * getHeight() / 3, EntityFactory.BonusType.LIFE);
         }
     }

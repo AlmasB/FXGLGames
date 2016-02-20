@@ -261,7 +261,7 @@ public final class EntityFactory {
 
         bonus.addComponent(new SubTypeComponent(type));
         bonus.addComponent(new CollidableComponent(true));
-        bonus.addControl(new ProjectileControl(new Point2D(0, 1), 7.5));
+        bonus.addControl(new BonusControl());
 
         return bonus;
     }

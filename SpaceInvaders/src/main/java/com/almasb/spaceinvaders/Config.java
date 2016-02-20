@@ -37,11 +37,26 @@ public final class Config {
     public static final int WIDTH = 650;
     public static final int HEIGHT = 800;
 
+    /**
+     * Seconds to show level info.
+     */
+    public static final double LEVEL_START_DELAY = 2.4;
+
     public static final int SCORE_ENEMY_KILL = 250;
+    public static final int SCORE_DIFFICULTY_MODIFIER = 1;
 
     public static final int START_LIVES = 3;
 
+    public static final double BONUS_SPAWN_CHANCE = 0.25;
+    public static final int BONUS_MOVE_SPEED = 150;
+
     public static final double PLAYER_MOVE_SPEED = 300;
+
+    /**
+     * Attack speed, bullet per second.
+     */
+    public static final double PLAYER_ATTACK_SPEED = 1.0;
+    public static final double PLAYER_BONUS_ATTACK_SPEED = 0.1;
 
     public static final double INVINCIBILITY_TIME = 1.0;
 

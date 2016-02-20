@@ -33,6 +33,8 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
 import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.time.FXGLMasterTimer;
+import com.almasb.fxgl.time.MasterTimer;
 import com.almasb.spaceinvaders.Config;
 import com.almasb.spaceinvaders.EntityFactory;
 import com.almasb.spaceinvaders.component.InvincibleComponent;
@@ -48,13 +50,15 @@ public class PlayerControl extends AbstractControl {
 
     private PositionComponent position;
     private BoundingBoxComponent bbox;
-    private double dx = 0;
-
     private InvincibleComponent invicibility;
 
-    private boolean canShoot = true;
+    private MasterTimer timer;
 
-    private double delay = 0.5;
+    private double dx = 0;
+    private double attackSpeed = Config.PLAYER_ATTACK_SPEED;
+
+    private boolean canShoot = true;
+    private long lastTimeShot = 0;
 
     @Override
     public void onAdded(Entity entity) {
@@ -62,13 +66,18 @@ public class PlayerControl extends AbstractControl {
         bbox = entity.getComponentUnsafe(BoundingBoxComponent.class);
         invicibility = entity.getComponentUnsafe(InvincibleComponent.class);
 
-        GameApplication.getService(ServiceType.MASTER_TIMER)
-                .runAtInterval(() -> canShoot = true, Duration.seconds(delay));
+        timer = GameApplication.getService(ServiceType.MASTER_TIMER);
     }
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
         dx = Config.PLAYER_MOVE_SPEED * tpf;
+
+        if (!canShoot) {
+            if ((timer.getNow() - lastTimeShot) / 1000000000.0 >= 1.0 / attackSpeed) {
+                canShoot = true;
+            }
+        }
     }
 
     public void left() {
@@ -85,14 +94,15 @@ public class PlayerControl extends AbstractControl {
         if (!canShoot)
             return;
 
+        canShoot = false;
+        lastTimeShot = timer.getNow();
+
         Entity bullet = EntityFactory.newLaser(getEntity());
 
         getEntity().getWorld().addEntity(bullet);
 
         GameApplication.getService(ServiceType.AUDIO_PLAYER)
                 .playSound("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
-
-        canShoot = false;
     }
 
     public void enableInvincibility() {
@@ -105,5 +115,9 @@ public class PlayerControl extends AbstractControl {
 
     public boolean isInvincible() {
         return invicibility.getValue();
+    }
+
+    public void increaseAttackSpeed(double value) {
+        attackSpeed += value;
     }
 }
