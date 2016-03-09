@@ -28,9 +28,9 @@ package com.almasb.spaceinvaders;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.ServiceType;
-import com.almasb.fxgl.asset.Texture;
 import com.almasb.fxgl.scene.GameScene;
 import com.almasb.fxgl.scene.Viewport;
+import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxgl.ui.UIController;
 import com.almasb.fxgl.ui.UIFactory;
 import javafx.animation.Animation;
@@ -40,7 +40,6 @@ import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;

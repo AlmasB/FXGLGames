@@ -101,6 +101,8 @@ public class SpaceInvadersApp extends GameApplication {
         input.addInputMapping(new InputMapping("Move Left", KeyCode.A));
         input.addInputMapping(new InputMapping("Move Right", KeyCode.D));
         input.addInputMapping(new InputMapping("Shoot", KeyCode.F));
+
+
     }
 
     @OnUserAction(name = "Move Left", type = ActionType.ON_ACTION)
@@ -233,7 +235,7 @@ public class SpaceInvadersApp extends GameApplication {
         spawnWall(getWidth() - 160, getHeight() - 100);
         spawnWall(getWidth() - 80, getHeight() - 100);
 
-        getInput().setProcessActions(true);
+        getInput().setProcessInput(true);
     }
 
     private void cleanupLevel() {
@@ -245,7 +247,7 @@ public class SpaceInvadersApp extends GameApplication {
     }
 
     private void nextLevel() {
-        getInput().setProcessActions(false);
+        getInput().setProcessInput(false);
 
         cleanupLevel();
 
@@ -307,7 +309,7 @@ public class SpaceInvadersApp extends GameApplication {
     private boolean runningFirstTime = false;
 
     @Override
-    protected void onUpdate() {
+    protected void onUpdate(double tpf) {
         if (runningFirstTime) {
             getDisplay().showConfirmationBox("Play Tutorial?", yes -> {
                 if (yes)

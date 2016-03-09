@@ -31,11 +31,10 @@ import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.asset.AssetLoader;
-import com.almasb.fxgl.asset.Texture;
+import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.GameEntity;
-import com.almasb.fxgl.entity.RenderLayer;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
@@ -46,24 +45,13 @@ import com.almasb.spaceinvaders.component.InvincibleComponent;
 import com.almasb.spaceinvaders.component.OwnerComponent;
 import com.almasb.spaceinvaders.component.SubTypeComponent;
 import com.almasb.spaceinvaders.control.*;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.BoundingBox;
-import javafx.geometry.HorizontalDirection;
 import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
-import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.Random;
 
 /**
@@ -105,15 +93,15 @@ public final class EntityFactory {
         bgTexture.setFitWidth(w);
         bgTexture.setFitHeight(h);
 
-        bg.getMainViewComponent().setGraphics(bgTexture);
+        bg.getMainViewComponent().setView(bgTexture);
         bg.getMainViewComponent().setRenderLayer(RenderLayer.BACKGROUND);
 
         return bg;
     }
 
     public static Entity newMeteor() {
-        double w = FXGL.getDouble("settings.width");
-        double h = FXGL.getDouble("settings.height");
+        double w = FXGL.getSettings().getWidth();
+        double h = FXGL.getSettings().getHeight();
         double x = 0, y = 0;
 
         // these are deliberately arbitrary to create illusion of randomness
@@ -274,7 +262,7 @@ public final class EntityFactory {
         animation.setFitWidth(80);
         animation.setFitHeight(80);
 
-        explosion.getMainViewComponent().setGraphics(animation);
+        explosion.getMainViewComponent().setView(animation);
         explosion.addControl(new ExpireCleanControl(Duration.seconds(1.8)));
 
         return explosion;
@@ -288,7 +276,7 @@ public final class EntityFactory {
         hit.setFitWidth(15);
         hit.setFitHeight(15);
 
-        laserHit.getMainViewComponent().setGraphics(hit);
+        laserHit.getMainViewComponent().setView(hit);
         laserHit.addControl(new LaserHitControl());
 
         return laserHit;

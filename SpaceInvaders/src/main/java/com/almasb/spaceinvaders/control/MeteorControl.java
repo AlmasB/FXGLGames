@@ -48,8 +48,8 @@ public class MeteorControl extends AbstractControl {
         rotation = entity.getComponentUnsafe(RotationComponent.class);
         position = entity.getComponentUnsafe(PositionComponent.class);
 
-        double w = FXGL.getDouble("settings.width");
-        double h = FXGL.getDouble("settings.height");
+        double w = FXGL.getSettings().getWidth();
+        double h = FXGL.getSettings().getHeight();
 
         velocity = new Point2D(position.getX() < w / 2 ? 1 : -1, position.getY() < h / 2 ? 1 : -1)
             .normalize().multiply(Math.random() * 5 + 50);
