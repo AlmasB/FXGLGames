@@ -34,8 +34,11 @@ import com.almasb.fxgl.input.ActionType;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.InputMapping;
 import com.almasb.fxgl.input.OnUserAction;
+import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
+import com.almasb.fxgl.physics.PhysicsParticleComponent;
 import com.almasb.fxgl.settings.GameSettings;
+import javafx.geometry.BoundingBox;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -85,11 +88,18 @@ public class DemoApp extends GameApplication {
         ParticleGroupDef def = new ParticleGroupDef();
         def.setTypes(EnumSet.of(ParticleType.WATER));
 
-        Entity water = getPhysicsWorld().newPhysicsParticleEntity(550, -200, 40, 250, Color.DARKBLUE, def);
+        PhysicsParticleComponent physics = new PhysicsParticleComponent();
+        physics.setColor(Color.DARKBLUE);
+        physics.setDefinition(def);
+
+        GameEntity water = new GameEntity();
+        water.getPositionComponent().setValue(550, -200);
+        water.getBoundingBoxComponent().addHitBox(new HitBox("TEST", new BoundingBox(0, 0, 40, 250)));
+        water.addComponent(physics);
 
         GameEntity box = new GameEntity();
         box.getPositionComponent().setValue(600, 450);
-        box.getMainViewComponent().setGraphics(new EntityView(new Rectangle(40, 40, Color.BLUE)), true);
+        box.getMainViewComponent().setView(new Rectangle(40, 40, Color.BLUE), true);
 
         PhysicsComponent component = new PhysicsComponent();
         component.setBodyType(BodyType.DYNAMIC);
@@ -115,14 +125,14 @@ public class DemoApp extends GameApplication {
     }
 
     @Override
-    protected void onUpdate() {
+    protected void onUpdate(double tpf) {
 
     }
 
     private Entity spawnWall(double x, double y, double w, double h) {
         GameEntity entity = new GameEntity();
         entity.getPositionComponent().setValue(x, y);
-        entity.getMainViewComponent().setGraphics(new EntityView(new Rectangle(w, h)), true);
+        entity.getMainViewComponent().setView(new Rectangle(w, h), true);
         entity.addComponent(new PhysicsComponent());
 
         getGameWorld().addEntity(entity);
