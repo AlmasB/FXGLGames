@@ -116,11 +116,11 @@ public class PongApp extends GameApplication {
     }
 
     @Override
-    protected void onUpdate() {}
+    protected void onUpdate(double tpf) {}
 
     private void initBackground() {
         GameEntity bg = new GameEntity();
-        bg.getMainViewComponent().setGraphics(new Rectangle(getWidth(), getHeight(), Color.rgb(0, 0, 5)));
+        bg.getMainViewComponent().setView(new Rectangle(getWidth(), getHeight(), Color.rgb(0, 0, 5)));
 
         getGameWorld().addEntity(bg);
     }

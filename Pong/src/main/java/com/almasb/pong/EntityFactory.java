@@ -53,7 +53,7 @@ public class EntityFactory {
         ball.getTypeComponent().setValue(EntityType.BALL);
         ball.getPositionComponent().setValue(x, y);
         ball.getBoundingBoxComponent().addHitBox(new HitBox("BODY", new BoundingBox(0, 0, 10, 10), BoundingShape.CIRCLE));
-        ball.getMainViewComponent().setGraphics(new Circle(5, Color.LIGHTGRAY));
+        ball.getMainViewComponent().setView(new Circle(5, Color.LIGHTGRAY));
 
         PhysicsComponent ballPhysics = new PhysicsComponent();
         ballPhysics.setBodyType(BodyType.DYNAMIC);
