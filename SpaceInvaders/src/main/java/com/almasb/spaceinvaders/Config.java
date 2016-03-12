@@ -56,7 +56,7 @@ public final class Config {
      * Attack speed, bullet per second.
      */
     public static final double PLAYER_ATTACK_SPEED = 2.0;
-    public static final double PLAYER_BONUS_ATTACK_SPEED = 0.1;
+    public static final double PLAYER_BONUS_ATTACK_SPEED = 0.25;
 
     public static final double INVINCIBILITY_TIME = 1.0;
 

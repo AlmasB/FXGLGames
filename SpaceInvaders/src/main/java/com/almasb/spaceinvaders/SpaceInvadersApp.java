@@ -55,6 +55,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -100,7 +101,7 @@ public class SpaceInvadersApp extends GameApplication {
 
         input.addInputMapping(new InputMapping("Move Left", KeyCode.A));
         input.addInputMapping(new InputMapping("Move Right", KeyCode.D));
-        input.addInputMapping(new InputMapping("Shoot", KeyCode.F));
+        input.addInputMapping(new InputMapping("Shoot", MouseButton.PRIMARY));
 
 
     }
@@ -328,19 +329,19 @@ public class SpaceInvadersApp extends GameApplication {
         // TODO: ideally we must obtain dynamic key codes because the keys
         // may have been reassigned
         TutorialStep step1 = new TutorialStep("Press A to move left", Asset.DIALOG_MOVE_LEFT, () -> {
-            getInput().mockKeyPress(KeyCode.A, InputModifier.NONE);
+            getInput().mockKeyPress(KeyCode.A);
         });
 
         TutorialStep step2 = new TutorialStep("Press D to move right", Asset.DIALOG_MOVE_RIGHT, () -> {
-            getInput().mockKeyRelease(KeyCode.A, InputModifier.NONE);
-            getInput().mockKeyPress(KeyCode.D, InputModifier.NONE);
+            getInput().mockKeyRelease(KeyCode.A);
+            getInput().mockKeyPress(KeyCode.D);
         });
 
         TutorialStep step3 = new TutorialStep("Press F to shoot", Asset.DIALOG_SHOOT, () -> {
-            getInput().mockKeyRelease(KeyCode.D, InputModifier.NONE);
+            getInput().mockKeyRelease(KeyCode.D);
 
-            getInput().mockKeyPress(KeyCode.F, InputModifier.NONE);
-            getInput().mockKeyRelease(KeyCode.F, InputModifier.NONE);
+            getInput().mockButtonPress(MouseButton.PRIMARY, 0, 0);
+            getInput().mockButtonRelease(MouseButton.PRIMARY);
         });
 
         Text tutorialText = UIFactory.newText("", Color.AQUA, 24);
@@ -387,14 +388,17 @@ public class SpaceInvadersApp extends GameApplication {
             nextLevel();
 
         if (Math.random() < BONUS_SPAWN_CHANCE) {
-            spawnBonus(Math.random() * (getWidth() - 50), Math.random() * getHeight() / 3, EntityFactory.BonusType.LIFE);
+            int bonusSize = EntityFactory.BonusType.values().length;
+
+            spawnBonus(Math.random() * (getWidth() - 50), Math.random() * getHeight() / 3,
+                    EntityFactory.BonusType.values()[(int)(Math.random()*bonusSize)]);
         }
     }
 
     private void onBonusPickup(BonusPickupEvent event) {
         switch (event.getType()) {
             case ATTACK_RATE:
-                System.out.println("NOT IMPLEMENTED!");
+                playerControl.increaseAttackSpeed(PLAYER_BONUS_ATTACK_SPEED);
                 break;
             case LIFE:
                 lives.set(lives.get() + 1);

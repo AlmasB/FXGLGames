@@ -64,7 +64,13 @@ public final class EntityFactory {
     }
 
     public enum BonusType {
-        ATTACK_RATE, LIFE
+        ATTACK_RATE("powerup_atk_rate.png"), LIFE("life.png");
+
+        final String textureName;
+
+        BonusType(String textureName) {
+            this.textureName = textureName;
+        }
     }
 
     private enum RenderLayer implements com.almasb.fxgl.entity.RenderLayer {
@@ -163,19 +169,15 @@ public final class EntityFactory {
     }
 
     public static Entity newEnemy(double x, double y) {
-        GameEntity enemy = new GameEntity();
-        enemy.getTypeComponent().setValue(EntityType.ENEMY);
-        enemy.getPositionComponent().setValue(x, y);
-
-        Texture texture = assetLoader.loadTexture("enemy" + ((int)(Math.random() * 3) + 1) + ".png")
-                .toStaticAnimatedTexture(2, Duration.seconds(2));
-
-        enemy.getMainViewComponent().setView(new EntityView(texture), true);
-        enemy.addComponent(new CollidableComponent(true));
-        enemy.addComponent(new HPComponent(2));
-        enemy.addControl(new EnemyControl());
-
-        return enemy;
+        return Entities.builder()
+                .type(EntityType.ENEMY)
+                .at(x, y)
+                .viewFromNodeWithBBox(assetLoader
+                        .loadTexture("enemy" + ((int)(Math.random() * 3) + 1) + ".png")
+                        .toStaticAnimatedTexture(2, Duration.seconds(2)))
+                .with(new CollidableComponent(true), new HPComponent(2))
+                .with(new EnemyControl())
+                .build();
     }
 
     public static Entity newBullet(Entity owner) {
@@ -231,27 +233,22 @@ public final class EntityFactory {
     }
 
     public static Entity newWall(double x, double y) {
-        GameEntity wall = new GameEntity();
-        wall.getTypeComponent().setValue(EntityType.WALL);
-        wall.getPositionComponent().setValue(x, y);
-        wall.getMainViewComponent().setView(new EntityView(assetLoader.loadTexture("wall.png")), true);
-        wall.addComponent(new CollidableComponent(true));
-        wall.addComponent(new HPComponent(7));
-
-        return wall;
+        return Entities.builder()
+                .type(EntityType.WALL)
+                .at(x, y)
+                .viewFromTextureWithBBox("wall.png")
+                .with(new CollidableComponent(true), new HPComponent(7))
+                .build();
     }
 
     public static Entity newBonus(double x, double y, BonusType type) {
-        GameEntity bonus = new GameEntity();
-        bonus.getTypeComponent().setValue(EntityType.BONUS);
-        bonus.getPositionComponent().setValue(x, y);
-        bonus.getMainViewComponent().setView(new EntityView(assetLoader.loadTexture("life.png")), true);
-
-        bonus.addComponent(new SubTypeComponent(type));
-        bonus.addComponent(new CollidableComponent(true));
-        bonus.addControl(new BonusControl());
-
-        return bonus;
+        return Entities.builder()
+                .type(EntityType.BONUS)
+                .at(x, y)
+                .viewFromTextureWithBBox(type.textureName)
+                .with(new SubTypeComponent(type), new CollidableComponent(true))
+                .with(new BonusControl())
+                .build();
     }
 
     public static Entity newExplosion(Point2D position) {
