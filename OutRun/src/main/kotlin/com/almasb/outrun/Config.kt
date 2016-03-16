@@ -26,51 +26,10 @@
 
 package com.almasb.outrun
 
-import com.almasb.ents.AbstractControl
-import com.almasb.ents.Entity
-import com.almasb.fxgl.entity.component.PositionComponent
-
 /**
  *
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-class PlayerControl : AbstractControl() {
-
-    private lateinit var position: PositionComponent
-
-    private var speed = 0.0
-    private var dy = 0.0
-
-    override fun onAdded(entity: Entity) {
-        position = entity.getComponentUnsafe(PositionComponent::class.java)
-    }
-
-    override fun onUpdate(entity: Entity, tpf: Double) {
-        speed = tpf * 200
-
-        dy += tpf / 5;
-
-        position.y -= dy
-    }
-
-    fun up() {
-        position.translateY(-speed)
-    }
-
-    fun down() {
-        position.translateY(speed)
-    }
-
-    fun left() {
-        position.translateX(-speed)
-    }
-
-    fun right() {
-        position.translateX(speed)
-    }
-
-    fun reset() {
-        dy = 0.0
-    }
+data class Config(val tileSize: Int) {
 }

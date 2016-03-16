@@ -39,11 +39,14 @@ import javafx.scene.shape.Rectangle
  */
 class EntityFactory {
 
+    //private lateinit var config: Config
+
     companion object {
         fun newPlayer(x: Double, y: Double): GameEntity {
             return Entities.builder()
+                    .type(EntityType.PLAYER)
                     .at(x, y)
-                    .viewFromNodeWithBBox(Rectangle(40.0, 80.0))
+                    .viewFromTextureWithBBox("player.png")
                     .with(CollidableComponent(true))
                     .with(PlayerControl())
                     .build()
@@ -51,8 +54,19 @@ class EntityFactory {
 
         fun newBlock(x: Double, y: Double): GameEntity {
             return Entities.builder()
+                    .type(EntityType.OBSTACLE)
                     .at(x, y)
-                    .viewFromNodeWithBBox(Rectangle(40.0, 40.0, Color.RED))
+                    .viewFromTextureWithBBox("wall.png")
+                    .with(CollidableComponent(true))
+                    .build()
+        }
+
+        fun newFinishLine(y: Int): GameEntity {
+            return Entities.builder()
+                    .type(EntityType.FINISH)
+                    .at(0.0, y * 40.0)
+                    //.viewFromTextureWithBBox("wall.png")
+                    .viewFromNodeWithBBox(Rectangle(600.0, 40.0))
                     .with(CollidableComponent(true))
                     .build()
         }

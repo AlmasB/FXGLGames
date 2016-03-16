@@ -26,10 +26,12 @@
 
 package com.almasb.outrun
 
+import com.almasb.ents.Entity
 import com.almasb.fxgl.app.GameApplication
 import com.almasb.fxgl.entity.GameEntity
 import com.almasb.fxgl.input.UserAction
 import com.almasb.fxgl.parser.TextLevelParser
+import com.almasb.fxgl.physics.CollisionHandler
 import com.almasb.fxgl.settings.GameSettings
 import javafx.application.Application
 import javafx.scene.input.KeyCode
@@ -86,6 +88,7 @@ class OutRunApp : GameApplication() {
         val parser = TextLevelParser()
         parser.emptyChar = '0'
         parser.addEntityProducer('1', { x, y -> EntityFactory.newBlock(x*40.0, y*40.0) })
+        parser.addEntityProducer('F', { x, y -> EntityFactory.newFinishLine(y) })
 
         val level = parser.parse("level0.txt")
 
@@ -99,7 +102,20 @@ class OutRunApp : GameApplication() {
         gameScene.viewport.bindToEntity(player, width / 2, height - 80)
     }
 
-    override fun initPhysics() { }
+    override fun initPhysics() {
+        physicsWorld.addCollisionHandler(object : CollisionHandler(EntityType.PLAYER, EntityType.OBSTACLE) {
+            override fun onCollisionBegin(player: Entity, wall: Entity) {
+                // reset player to last checkpoint
+                playerControl.reset()
+            }
+        })
+
+        physicsWorld.addCollisionHandler(object : CollisionHandler(EntityType.PLAYER, EntityType.FINISH) {
+            override fun onCollisionBegin(player: Entity, finish: Entity) {
+                display.showMessageBox("Your Time: ${now / 1000000000.0} s")
+            }
+        })
+    }
 
     override fun initUI() { }
 
