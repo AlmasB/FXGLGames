@@ -33,8 +33,14 @@ import com.almasb.fxgl.input.UserAction
 import com.almasb.fxgl.parser.TextLevelParser
 import com.almasb.fxgl.physics.CollisionHandler
 import com.almasb.fxgl.settings.GameSettings
+import com.almasb.fxgl.ui.ProgressBar
+import com.almasb.fxgl.ui.UIFactory
+import javafx.animation.FadeTransition
 import javafx.application.Application
+import javafx.beans.property.SimpleIntegerProperty
 import javafx.scene.input.KeyCode
+import javafx.scene.paint.Color
+import javafx.util.Duration
 
 /**
  * An example racing game in FXGL (using Kotlin).
@@ -49,6 +55,7 @@ class OutRunApp : GameApplication() {
             height = 800;
             title = "OutRun"
             version = "0.1"
+            setShowFPS(false)
             isIntroEnabled = false
             isMenuEnabled = false
         }
@@ -59,11 +66,11 @@ class OutRunApp : GameApplication() {
     private lateinit var playerControl: PlayerControl
 
     override fun initInput() {
-//        input.addAction(object : UserAction("Move Up") {
-//            override fun onAction() {
-//                playerControl.up()
-//            }
-//        }, KeyCode.W)
+        input.addAction(object : UserAction("Boost") {
+            override fun onAction() {
+                playerControl.boost()
+            }
+        }, KeyCode.W)
 //
 //        input.addAction(object : UserAction("Move Down") {
 //            override fun onAction() {
@@ -87,7 +94,7 @@ class OutRunApp : GameApplication() {
     override fun initGame() {
         val parser = TextLevelParser()
         parser.emptyChar = '0'
-        parser.addEntityProducer('1', { x, y -> EntityFactory.newBlock(x*40.0, y*40.0) })
+        parser.addEntityProducer('1', { x, y -> EntityFactory.newObstacle(x*40.0, y*40.0) })
         parser.addEntityProducer('F', { x, y -> EntityFactory.newFinishLine(y) })
 
         val level = parser.parse("level0.txt")
@@ -98,6 +105,10 @@ class OutRunApp : GameApplication() {
         playerControl = player.getControlUnsafe(PlayerControl::class.java)
         gameWorld.addEntity(player)
 
+        val bg = EntityFactory.newBackground()
+        bg.positionComponent.yProperty().bind(gameScene.viewport.yProperty())
+        gameWorld.addEntity(bg)
+
         gameScene.viewport.setBounds(0, 0, 600, level.height*40)
         gameScene.viewport.bindToEntity(player, width / 2, height - 80)
     }
@@ -107,19 +118,69 @@ class OutRunApp : GameApplication() {
             override fun onCollisionBegin(player: Entity, wall: Entity) {
                 // reset player to last checkpoint
                 playerControl.reset()
+                wall.getControlUnsafe(ObstacleControl::class.java).hit()
             }
         })
 
         physicsWorld.addCollisionHandler(object : CollisionHandler(EntityType.PLAYER, EntityType.FINISH) {
             override fun onCollisionBegin(player: Entity, finish: Entity) {
-                display.showMessageBox("Your Time: ${now / 1000000000.0} s")
+                display.showConfirmationBox("Your Time: ${now / 1000000000.0} s\n" +
+                        "Press YES to close the game", { yes -> exit() })
             }
         })
     }
 
-    override fun initUI() { }
+    override fun initUI() {
+        val label = UIFactory.newText("", 72.0)
+        label.translateX = width / 2
+        label.translateY = height / 2
 
-    override fun onUpdate(tpf: Double) { }
+        val count = SimpleIntegerProperty(3)
+
+        label.textProperty().bind(count.asString())
+
+        gameScene.addUINode(label)
+
+        masterTimer.runAtInterval( {
+            if (count.get() == 1) {
+                gameScene.removeUINode(label)
+                return@runAtInterval
+            }
+
+            count.set(count.get() - 1)
+            val animation = FadeTransition(Duration.seconds(0.33), label)
+            animation.fromValue = 0.0
+            animation.toValue = 1.0
+            animation.play()
+        }, Duration.seconds(1.0))
+
+        // BOOST
+
+        val boostBar = ProgressBar(false);
+        boostBar.setWidth(100.0)
+        boostBar.setHeight(15.0)
+        boostBar.setFill(Color.GREEN.brighter())
+        boostBar.setTraceFill(Color.GREEN.brighter())
+        boostBar.translateX = width - 200
+        boostBar.translateY = 25.0
+        boostBar.isLabelVisible = false
+        boostBar.setMaxValue(100.0)
+        boostBar.currentValueProperty().bind(playerControl.boost)
+
+        gameScene.addUINode(boostBar)
+    }
+
+    var firstTime = true
+
+    override fun onUpdate(tpf: Double) {
+        if (firstTime) {
+            display.showMessageBox("OutRun Demo\n" +
+                    "W - Boost\n" +
+                    "A - Move Left\n" +
+                    "D - Move Right")
+            firstTime = false
+        }
+    }
 }
 
 fun main(args: Array<String>) {

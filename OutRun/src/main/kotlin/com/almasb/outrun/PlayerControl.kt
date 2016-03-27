@@ -28,7 +28,14 @@ package com.almasb.outrun
 
 import com.almasb.ents.AbstractControl
 import com.almasb.ents.Entity
+import com.almasb.fxgl.entity.component.BoundingBoxComponent
+import com.almasb.fxgl.entity.component.MainViewComponent
 import com.almasb.fxgl.entity.component.PositionComponent
+import javafx.animation.FadeTransition
+import javafx.beans.property.SimpleDoubleProperty
+import javafx.beans.property.SimpleIntegerProperty
+import javafx.scene.Node
+import javafx.util.Duration
 
 /**
  *
@@ -42,6 +49,8 @@ class PlayerControl : AbstractControl() {
     private var speed = 0.0
     private var dy = 0.0
 
+    val boost = SimpleDoubleProperty(100.0)
+
     override fun onAdded(entity: Entity) {
         position = entity.getComponentUnsafe(PositionComponent::class.java)
     }
@@ -49,9 +58,11 @@ class PlayerControl : AbstractControl() {
     override fun onUpdate(entity: Entity, tpf: Double) {
         speed = tpf * 200
 
-        dy += tpf / 5;
+        dy += tpf / 4;
 
         position.y -= dy
+
+        boost.set(Math.min(boost.get() + tpf * 5, 100.0))
     }
 
     fun up() {
@@ -63,14 +74,35 @@ class PlayerControl : AbstractControl() {
     }
 
     fun left() {
-        position.translateX(-speed)
+        if (position.x >= speed)
+            position.translateX(-speed)
     }
 
     fun right() {
-        position.translateX(speed)
+        if (position.x + getEntity().getComponentUnsafe(BoundingBoxComponent::class.java).width + speed <= 600)
+            position.translateX(speed)
+    }
+
+    fun boost() {
+        if (boost.get() <= speed * 2)
+            return
+
+        boost.set(Math.max(boost.get() - speed / 2, 0.0))
+        position.y -= speed
     }
 
     fun reset() {
         dy = 0.0
+        val view = getEntity().getComponentUnsafe(MainViewComponent::class.java).view
+
+        val fade = FadeTransition(Duration.seconds(1.0), view)
+        with(fade) {
+            fromValue = 1.0
+            toValue = 0.0
+            cycleCount = 2
+            isAutoReverse = true
+        }
+
+        fade.play()
     }
 }

@@ -26,11 +26,17 @@
 
 package com.almasb.outrun
 
+import com.almasb.fxgl.app.FXGL
+import com.almasb.fxgl.app.GameApplication
+import com.almasb.fxgl.app.ServiceType
 import com.almasb.fxgl.entity.Entities
+import com.almasb.fxgl.entity.EntityView
 import com.almasb.fxgl.entity.GameEntity
+import com.almasb.fxgl.entity.RenderLayer
 import com.almasb.fxgl.entity.component.CollidableComponent
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
+import java.util.*
 
 /**
  *
@@ -42,6 +48,32 @@ class EntityFactory {
     //private lateinit var config: Config
 
     companion object {
+        fun newBackground(): GameEntity {
+            val view = EntityView()
+            view.renderLayer = object : RenderLayer {
+
+                override fun index(): Int {
+                    return 0
+                }
+
+                override fun name(): String {
+                    return "BACKGROUND"
+                }
+            }
+
+            view.addNode(Rectangle(600.0, 800.0, Color.color(0.0, 0.5, 0.0)))
+
+            val road = Rectangle(440.0, 800.0, Color.color(0.25, 0.25, 0.25))
+            road.translateX = 80.0
+            view.addNode(road)
+
+            return Entities.builder()
+                    .type(EntityType.BACKGROUND)
+                    .at(0.0, 0.0)
+                    .viewFromNode(view)
+                    .build()
+        }
+
         fun newPlayer(x: Double, y: Double): GameEntity {
             return Entities.builder()
                     .type(EntityType.PLAYER)
@@ -52,12 +84,20 @@ class EntityFactory {
                     .build()
         }
 
-        fun newBlock(x: Double, y: Double): GameEntity {
+        fun newObstacle(x: Double, y: Double): GameEntity {
+            val textures = arrayOf(
+                    "cone_up.png".to("cone_down.png"),
+                    "barrel_blue_up.png".to("barrel_blue_down.png")
+                    )
+
+            val index = Random().nextInt(textures.size)
+
             return Entities.builder()
                     .type(EntityType.OBSTACLE)
                     .at(x, y)
-                    .viewFromTextureWithBBox("wall.png")
+                    .viewFromTextureWithBBox(textures[index].first)
                     .with(CollidableComponent(true))
+                    .with(ObstacleControl(textures[index].first, textures[index].second))
                     .build()
         }
 

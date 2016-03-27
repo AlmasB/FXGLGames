@@ -26,11 +26,26 @@
 
 package com.almasb.outrun
 
+import com.almasb.ents.AbstractControl
+import com.almasb.ents.Entity
+import com.almasb.fxgl.entity.component.CollidableComponent
+import com.almasb.fxgl.entity.component.MainViewComponent
+
 /**
  *
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-enum class EntityType {
-    BACKGROUND, PLAYER, OBSTACLE, FINISH
+class ObstacleControl(
+        private val textureUp: String,
+        private val textureDown: String) : AbstractControl() {
+
+    override fun onUpdate(entity: Entity, tpf: Double) {
+
+    }
+
+    fun hit() {
+        entity.removeComponent(CollidableComponent::class.java)
+        entity.getComponentUnsafe(MainViewComponent::class.java).setTexture(textureDown)
+    }
 }
