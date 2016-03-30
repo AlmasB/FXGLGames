@@ -45,6 +45,7 @@ import javafx.util.Duration
 class PlayerControl : AbstractControl() {
 
     private lateinit var position: PositionComponent
+    private lateinit var bbox: BoundingBoxComponent
 
     private var speed = 0.0
     private var dy = 0.0
@@ -53,6 +54,7 @@ class PlayerControl : AbstractControl() {
 
     override fun onAdded(entity: Entity) {
         position = entity.getComponentUnsafe(PositionComponent::class.java)
+        bbox = entity.getComponentUnsafe(BoundingBoxComponent::class.java)
     }
 
     override fun onUpdate(entity: Entity, tpf: Double) {
@@ -60,10 +62,18 @@ class PlayerControl : AbstractControl() {
 
         dy += tpf / 4;
 
+        if (position.x < 80 || bbox.maxXWorld > 600 - 80) {
+            if (dy > 0.017) {
+                dy -= tpf
+            }
+        }
+
         position.y -= dy
 
         boost.set(Math.min(boost.get() + tpf * 5, 100.0))
     }
+
+    fun getSpeed() = dy
 
     fun up() {
         position.translateY(-speed)
@@ -79,7 +89,7 @@ class PlayerControl : AbstractControl() {
     }
 
     fun right() {
-        if (position.x + getEntity().getComponentUnsafe(BoundingBoxComponent::class.java).width + speed <= 600)
+        if (bbox.maxXWorld + speed <= 600)
             position.translateX(speed)
     }
 

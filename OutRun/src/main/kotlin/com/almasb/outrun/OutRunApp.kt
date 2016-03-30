@@ -40,6 +40,7 @@ import javafx.application.Application
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.scene.input.KeyCode
 import javafx.scene.paint.Color
+import javafx.scene.text.Text
 import javafx.util.Duration
 
 /**
@@ -130,6 +131,8 @@ class OutRunApp : GameApplication() {
         })
     }
 
+    private lateinit var ui: Text
+
     override fun initUI() {
         val label = UIFactory.newText("", 72.0)
         label.translateX = width / 2
@@ -168,6 +171,14 @@ class OutRunApp : GameApplication() {
         boostBar.currentValueProperty().bind(playerControl.boost)
 
         gameScene.addUINode(boostBar)
+
+        // UI text
+
+        ui = UIFactory.newText("", 16.0)
+        ui.translateX = 50.0
+        ui.translateY = 50.0
+
+        gameScene.addUINode(ui)
     }
 
     var firstTime = true
@@ -179,6 +190,8 @@ class OutRunApp : GameApplication() {
                     "A - Move Left\n" +
                     "D - Move Right")
             firstTime = false
+        } else {
+            ui.text = "Speed: %.2f".format(playerControl.getSpeed())
         }
     }
 }
