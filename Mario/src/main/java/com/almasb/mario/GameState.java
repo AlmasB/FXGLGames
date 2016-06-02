@@ -26,11 +26,7 @@
 
 package com.almasb.mario;
 
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.FXGLEvent;
-import com.almasb.mario.EntityType.Event;
-import com.almasb.mario.EntityType.Type;
-
+import com.almasb.ents.Entity;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point2D;
@@ -58,8 +54,8 @@ public class GameState {
         ui.bindTextScore(score);
 
         lives.addListener((obs, oldLives, newLives) -> {
-            if (newLives.intValue() == 0)
-                app.getSceneManager().fireFXGLEvent(new FXGLEvent(Event.GAME_OVER), Type.PLAYER);
+            //if (newLives.intValue() == 0)
+                //app.getSceneManager().fireFXGLEvent(new FXGLEvent(Event.GAME_OVER), Type.PLAYER);
         });
 
         score.addListener((obs, oldScore, newScore) -> {
@@ -73,11 +69,11 @@ public class GameState {
     }
 
     public void addScoreFromCoin(Entity coin) {
-        ui.playScoreAnimation(100, coin.localToScene(0, 0), () -> score.set(score.get() + 100));
+        //ui.playScoreAnimation(100, coin.localToScene(0, 0), () -> score.set(score.get() + 100));
     }
 
     public void addScoreFromEnemyKill(Entity enemy) {
-        ui.playScoreAnimation(500, enemy.localToScene(0, 0), () -> score.set(score.get() + 500));
+        //ui.playScoreAnimation(500, enemy.localToScene(0, 0), () -> score.set(score.get() + 500));
     }
 
     public void addLife() {
@@ -108,12 +104,12 @@ public class GameState {
     }
 
     public void gameWin() {
-        app.pause();
+        //app.pause();
         ui.showMessage("YOU HAVE WON!");
     }
 
     public void gameLose() {
-        app.pause();
+        //app.pause();
         ui.showMessage("DEMO OVER!");
     }
 }

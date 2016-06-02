@@ -31,7 +31,12 @@ import java.util.List;
 
 import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.gameplay.Level;
+import com.almasb.fxgl.input.UserAction;
+import com.almasb.fxgl.parser.TextLevelParser;
+import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.mario.collision.PlayerCheckpointHandler;
 import com.almasb.mario.collision.PlayerEnemyHandler;
@@ -39,9 +44,8 @@ import com.almasb.mario.collision.PlayerFinishHandler;
 import com.almasb.mario.collision.PlayerPickupHandler;
 import com.almasb.mario.collision.PlayerProjectileHandler;
 import com.almasb.mario.collision.ProjectileEnemyHandler;
-import com.almasb.mario.control.PhysicsControl;
-import com.almasb.mario.control.SeekingControl;
 
+import com.almasb.mario.control.PlayerControl;
 import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
 import javafx.geometry.Point2D;
@@ -61,7 +65,8 @@ public class MarioApp extends GameApplication {
 
     private Physics physics = new Physics(this);
 
-    private Entity player;
+    private GameEntity player;
+    private PlayerControl playerControl;
 
     private List<Point2D> arrowTrajectory = new ArrayList<>();
 
@@ -83,11 +88,41 @@ public class MarioApp extends GameApplication {
 
     @Override
     protected void initAssets() {
-        //assets = assetManager.cache();
+        getAssetLoader().cache();
     }
 
     @Override
     protected void initGame() {
+        TextLevelParser levelParser = new TextLevelParser();
+        levelParser.setEmptyChar(' ');
+
+        levelParser.addEntityProducer('c', EntityFactory::makeCheckpoint);
+        levelParser.addEntityProducer('f', EntityFactory::makeFinish);
+
+        levelParser.addEntityProducer('g', EntityFactory::makePickupCoin);
+
+        levelParser.addEntityProducer('b', EntityFactory::makePlatformBegin);
+        levelParser.addEntityProducer('e', EntityFactory::makePlatformEnd);
+        levelParser.addEntityProducer('p', EntityFactory::makePlatform);
+        levelParser.addEntityProducer('i', EntityFactory::makePlatformInvisible);
+        levelParser.addEntityProducer('0', EntityFactory::makeBlock);
+        levelParser.addEntityProducer('1', EntityFactory::makePlatformLift);
+        levelParser.addEntityProducer('2', EntityFactory::makePlatformCarry);
+
+
+        levelParser.addEntityProducer('s', EntityFactory::makePlayer);
+
+        Level level = levelParser.parse("levels/0.txt");
+
+        player = (GameEntity) level.getEntities().stream().filter(e -> e.hasControl(PlayerControl.class)).findAny().get();
+        playerControl = player.getControlUnsafe(PlayerControl.class);
+
+        getGameWorld().setLevel(level);
+
+
+
+
+
 //        ui = new UIOverlay(getWidth(), getHeight(), assets);
 //        gameState = new GameState(this, ui);
 //
@@ -137,6 +172,10 @@ public class MarioApp extends GameApplication {
 //        initEventHandlers();
 //        sceneManager.bindViewportOriginX(player, (int)getWidth() / 2);
 //        sceneManager.setUIMouseTransparent(true);
+
+
+        getGameScene().getViewport().bindToEntity(player, getWidth() / 2, getHeight() / 2);
+        getGameScene().getViewport().setBounds(0, 0, level.getWidth() * BLOCK_SIZE, level.getHeight() * BLOCK_SIZE);
     }
 
     @Override
@@ -194,28 +233,26 @@ public class MarioApp extends GameApplication {
 
     @Override
     protected void initInput() {
-//        inputManager.addAction(new UserAction("Jump") {
-//            @Override
-//            protected void onActionBegin() {
-//                player.getControl(PhysicsControl.class).jump();
-//            }
-//        }, KeyCode.W);
-//
-//        inputManager.addAction(new UserAction("Left") {
-//            @Override
-//            protected void onAction() {
-//                player.setScaleX(-1);
-//                physics.moveX(player, -5);
-//            }
-//        }, KeyCode.A);
-//
-//        inputManager.addAction(new UserAction("Right") {
-//            @Override
-//            protected void onAction() {
-//                player.setScaleX(1);
-//                physics.moveX(player, 5);
-//            }
-//        }, KeyCode.D);
+        getInput().addAction(new UserAction("Jump") {
+            @Override
+            protected void onActionBegin() {
+                playerControl.jump();
+            }
+        }, KeyCode.W);
+
+        getInput().addAction(new UserAction("Left") {
+            @Override
+            protected void onAction() {
+                playerControl.left();
+            }
+        }, KeyCode.A);
+
+        getInput().addAction(new UserAction("Right") {
+            @Override
+            protected void onAction() {
+                playerControl.right();
+            }
+        }, KeyCode.D);
 //
 //        inputManager.addAction(new UserAction("Spawn Bomb") {
 //            @Override

@@ -24,26 +24,11 @@
  * SOFTWARE.
  */
 
-package com.almasb.mario;
+package com.almasb.mario.types;
 
-public enum EntityType {
-
-    PLAYER, PROJECTILE, PLATFORM, CHECKPOINT, FINISH, PICKUP, ENEMY
-
-//    public enum ProjectileType {
-//        ARROW, GHOST_BOMB, SPHERE_GUARD,
-//        ENEMY
-//    }
-//
-//    public enum EnemyType {
-//        SNAKE, PLANT
-//    }
-//
-//    public enum Event implements FXGLEventType {
-//        DEATH, GAME_OVER,
-//        HIT_BY_ARROW, HIT_BY_GHOST_BOMB, HIT_BY_SPHERE_GUARD,
-//        PICKUP_COIN, PICKUP_GHOST_BOMB,
-//        REACH_CHECKPOINT, REACH_FINISH,
-//        ENEMY_ATTACK
-//    }
+/**
+ * @author Almas Baimagambetov (almaslvl@gmail.com)
+ */
+public enum PlatformType {
+    NORMAL, INVISIBLE
 }

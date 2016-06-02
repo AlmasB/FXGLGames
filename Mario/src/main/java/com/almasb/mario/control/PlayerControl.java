@@ -28,61 +28,61 @@ package com.almasb.mario.control;
 
 import com.almasb.ents.AbstractControl;
 import com.almasb.ents.Entity;
-import com.almasb.mario.Physics;
-
+import com.almasb.fxgl.physics.PhysicsComponent;
 import javafx.geometry.Point2D;
 
 /**
- * Allows moving an entity with physics collision
- * rules, including gravity effect
- *
- * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
- * @version 1.0
- *
+ * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class PhysicsControl extends AbstractControl {
+public class PlayerControl extends AbstractControl {
 
-    private Physics physics;
-    private Point2D velocity = new Point2D(0, 0);
+    private static final int MAX_SPEED = 5;
 
-    public PhysicsControl(Physics physics) {
-        this.physics = physics;
-    }
+    private Point2D acceleration = Point2D.ZERO;
+
+    private PhysicsComponent physics;
 
     @Override
     public void onAdded(Entity entity) {
-//        entity.setProperty("jumping", false);
-//        entity.setProperty("g", true);
+        physics = entity.getComponentUnsafe(PhysicsComponent.class);
     }
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
-//        if (entity.<Boolean>getProperty("g")) {
-//            velocity = velocity.add(0, 1);
-//            if (velocity.getY() > 10)
-//                velocity = new Point2D(velocity.getX(), 10);
-//
-//            physics.moveY(entity, (int)velocity.getY());
-//        }
+        physics.setLinearVelocity(physics.getLinearVelocity().add(acceleration));
+
+        limitVelocity();
+
+        acceleration = Point2D.ZERO;
     }
 
-    public boolean moveX(int value) {
-        return physics.moveX(getEntity(), value);
-    }
+    private void limitVelocity() {
+        Point2D vel = physics.getLinearVelocity();
 
-    public void moveY(int value) {
-        physics.moveY(getEntity(), value);
+        if (vel.getX() < -MAX_SPEED)
+            vel = new Point2D(-MAX_SPEED, vel.getY());
+
+        if (vel.getX() > MAX_SPEED)
+            vel = new Point2D(MAX_SPEED, vel.getY());
+
+        if (vel.getY() < -MAX_SPEED)
+            vel = new Point2D(vel.getX(), -MAX_SPEED);
+
+        if (vel.getY() > MAX_SPEED)
+            vel = new Point2D(vel.getX(), MAX_SPEED);
+
+        physics.setLinearVelocity(vel);
     }
 
     public void jump() {
-//        if (entity.<Boolean>getProperty("jumping"))
-//            return;
-//
-//        entity.setProperty("jumping", true);
-//        velocity = velocity.add(0, -25);
+        acceleration = acceleration.add(0, -10);
     }
 
-    public Point2D getVelocity() {
-        return velocity;
+    public void right() {
+        acceleration = acceleration.add(1, 0);
+    }
+
+    public void left() {
+        acceleration = acceleration.add(-1, 0);
     }
 }

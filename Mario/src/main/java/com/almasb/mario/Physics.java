@@ -31,7 +31,6 @@ import java.util.List;
 
 import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.mario.EntityType.Type;
 
 public class Physics {
 
