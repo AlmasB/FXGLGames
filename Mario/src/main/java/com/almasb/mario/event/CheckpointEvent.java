@@ -24,23 +24,29 @@
  * SOFTWARE.
  */
 
-package com.almasb.mario.collision;
+package com.almasb.mario.event;
 
 import com.almasb.ents.Entity;
-import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.mario.EntityType;
-import com.almasb.mario.event.CheckpointEvent;
+import javafx.beans.NamedArg;
+import javafx.event.Event;
+import javafx.event.EventType;
 
-public class PlayerCheckpointHandler extends CollisionHandler {
+/**
+ * @author Almas Baimagambetov (almaslvl@gmail.com)
+ */
+public class CheckpointEvent extends Event {
 
-    public PlayerCheckpointHandler() {
-        super(EntityType.PLAYER, EntityType.CHECKPOINT);
+    public static final EventType<CheckpointEvent> ANY
+            = new EventType<>(Event.ANY, "CHECKPOINT_EVENT");
+
+    private Entity checkpoint;
+
+    public CheckpointEvent(@NamedArg("eventType") EventType<? extends Event> eventType, Entity checkpoint) {
+        super(eventType);
+        this.checkpoint = checkpoint;
     }
 
-    @Override
-    public void onCollisionBegin(Entity a, Entity checkpoint) {
-        FXGL.getEventBus().fireEvent(new CheckpointEvent(CheckpointEvent.ANY, checkpoint));
+    public Entity getCheckpoint() {
+        return checkpoint;
     }
 }

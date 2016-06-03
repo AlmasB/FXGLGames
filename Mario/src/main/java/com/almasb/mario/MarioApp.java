@@ -31,29 +31,27 @@ import java.util.List;
 
 import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.effect.ParticleControl;
+import com.almasb.fxgl.effect.ParticleEmitter;
+import com.almasb.fxgl.effect.ParticleEmitters;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.component.CollidableComponent;
+import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.gameplay.Level;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.parser.TextLevelParser;
-import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.mario.collision.PlayerCheckpointHandler;
-import com.almasb.mario.collision.PlayerEnemyHandler;
-import com.almasb.mario.collision.PlayerFinishHandler;
 import com.almasb.mario.collision.PlayerPickupHandler;
-import com.almasb.mario.collision.PlayerProjectileHandler;
-import com.almasb.mario.collision.ProjectileEnemyHandler;
 
 import com.almasb.mario.control.PlayerControl;
-import javafx.animation.SequentialTransition;
-import javafx.animation.TranslateTransition;
+import com.almasb.mario.event.CheckpointEvent;
+import com.almasb.mario.event.PickupEvent;
 import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
-import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 
 public class MarioApp extends GameApplication {
@@ -93,6 +91,9 @@ public class MarioApp extends GameApplication {
 
     @Override
     protected void initGame() {
+        ui = new UIOverlay(getWidth(), getHeight());
+        gameState = new GameState(this, ui);
+
         TextLevelParser levelParser = new TextLevelParser();
         levelParser.setEmptyChar(' ');
 
@@ -117,14 +118,14 @@ public class MarioApp extends GameApplication {
         player = (GameEntity) level.getEntities().stream().filter(e -> e.hasControl(PlayerControl.class)).findAny().get();
         playerControl = player.getControlUnsafe(PlayerControl.class);
 
+        gameState.updateCheckpoint(player.getPositionComponent().getValue());
+
         getGameWorld().setLevel(level);
 
+        initEventHandlers();
 
 
 
-
-//        ui = new UIOverlay(getWidth(), getHeight(), assets);
-//        gameState = new GameState(this, ui);
 //
 //        parser = new LevelParser(assets);
 //        level = parser.getLevel();
@@ -180,15 +181,40 @@ public class MarioApp extends GameApplication {
 
     @Override
     protected void initPhysics() {
-//        physicsManager.addCollisionHandler(new PlayerPickupHandler());
-//        physicsManager.addCollisionHandler(new PlayerCheckpointHandler());
-//        physicsManager.addCollisionHandler(new PlayerFinishHandler());
-//        physicsManager.addCollisionHandler(new PlayerEnemyHandler());
-//        physicsManager.addCollisionHandler(new ProjectileEnemyHandler());
-//        physicsManager.addCollisionHandler(new PlayerProjectileHandler());
+        getPhysicsWorld().addCollisionHandler(new PlayerPickupHandler());
+        getPhysicsWorld().addCollisionHandler(new PlayerCheckpointHandler());
+
+//        getPhysicsWorld().addCollisionHandler(new PlayerFinishHandler());
+//        getPhysicsWorld().addCollisionHandler(new PlayerEnemyHandler());
+//        getPhysicsWorld().addCollisionHandler(new ProjectileEnemyHandler());
+//        getPhysicsWorld().addCollisionHandler(new PlayerProjectileHandler());
     }
 
     private void initEventHandlers() {
+        getEventBus().addEventHandler(PickupEvent.COIN, event -> {
+            gameState.addScoreFromCoin(event.getPickup());
+            event.getPickup().removeFromWorld();
+        });
+
+        getEventBus().addEventHandler(CheckpointEvent.ANY, event -> {
+            event.getCheckpoint().getComponentUnsafe(CollidableComponent.class).setValue(false);
+
+            Point2D position = event.getCheckpoint().getComponentUnsafe(PositionComponent.class).getValue();
+            gameState.updateCheckpoint(position);
+
+            ParticleEmitter emitter = ParticleEmitters.newImplosionEmitter();
+            emitter.setColorFunction(() -> Color.GOLD);
+
+            Entities.builder()
+                    .at(position)
+                    .with(new ParticleControl(emitter))
+                    .with(new ExpireCleanControl(Duration.seconds(0.8)))
+                    .buildAndAttach(getGameWorld());
+        });
+
+
+
+
 //        player.addFXGLEventHandler(Event.DEATH, event -> {
 //            gameState.loseLife();
 //            player.setPosition(gameState.getCheckpoint());
@@ -198,12 +224,7 @@ public class MarioApp extends GameApplication {
 //        player.addFXGLEventHandler(Event.GAME_OVER, event -> {
 //            gameState.gameLose();
 //        });
-//
-//        player.addFXGLEventHandler(Event.PICKUP_COIN, event -> {
-//            Entity coin = event.getSource();
-//            sceneManager.removeEntity(coin);
-//            gameState.addScoreFromCoin(coin);
-//        });
+
 //
 //        player.addFXGLEventHandler(Event.PICKUP_GHOST_BOMB, event -> {
 //            Entity bomb = event.getSource();
@@ -228,7 +249,7 @@ public class MarioApp extends GameApplication {
 
     @Override
     protected void initUI() {
-        //sceneManager.addUINodes(ui);
+        getGameScene().addUINode(ui);
     }
 
     @Override

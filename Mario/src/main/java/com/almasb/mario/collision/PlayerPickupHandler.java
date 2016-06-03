@@ -27,8 +27,12 @@
 package com.almasb.mario.collision;
 
 import com.almasb.ents.Entity;
+import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.mario.EntityType;
+import com.almasb.mario.event.PickupEvent;
+import com.almasb.mario.types.PickupType;
+import com.almasb.mario.types.SubTypeComponent;
 
 public class PlayerPickupHandler extends CollisionHandler {
 
@@ -37,19 +41,19 @@ public class PlayerPickupHandler extends CollisionHandler {
     }
 
     @Override
-    public void onCollisionBegin(Entity a, Entity b) {
-//        PickupType type = b.getProperty(Property.SUB_TYPE);
-//
-//        switch (type) {
-//            case COIN:
-//                a.fireFXGLEvent(new FXGLEvent(Event.PICKUP_COIN, b));
-//                break;
-//            case GHOST_BOMB:
-//                a.fireFXGLEvent(new FXGLEvent(Event.PICKUP_GHOST_BOMB, b));
-//                break;
-//            default:
-//                System.out.println("Warning: unknown type of pickup: " + type);
-//                break;
-//        }
+    public void onCollisionBegin(Entity a, Entity pickup) {
+        PickupType type = (PickupType) pickup.getComponentUnsafe(SubTypeComponent.class).getValue();
+
+        switch (type) {
+            case COIN:
+                FXGL.getEventBus().fireEvent(new PickupEvent(PickupEvent.COIN, pickup));
+                break;
+            case GHOST_BOMB:
+                //a.fireFXGLEvent(new FXGLEvent(Event.PICKUP_GHOST_BOMB, b));
+                break;
+            default:
+                System.out.println("Warning: unknown type of pickup: " + type);
+                break;
+        }
     }
 }

@@ -27,9 +27,12 @@
 package com.almasb.mario;
 
 import com.almasb.ents.Entity;
+import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.scene.Viewport;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 
 public class GameState {
 
@@ -69,7 +72,12 @@ public class GameState {
     }
 
     public void addScoreFromCoin(Entity coin) {
-        //ui.playScoreAnimation(100, coin.localToScene(0, 0), () -> score.set(score.get() + 100));
+        PositionComponent position = coin.getComponentUnsafe(PositionComponent.class);
+
+        Point2D point = position.getValue();
+        Viewport viewport = app.getGameScene().getViewport();
+
+        ui.playScoreAnimation(100, point.subtract(viewport.getOrigin()), () -> score.set(score.get() + 100));
     }
 
     public void addScoreFromEnemyKill(Entity enemy) {

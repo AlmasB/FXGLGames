@@ -24,23 +24,32 @@
  * SOFTWARE.
  */
 
-package com.almasb.mario.collision;
+package com.almasb.mario.event;
 
 import com.almasb.ents.Entity;
-import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.mario.EntityType;
-import com.almasb.mario.event.CheckpointEvent;
+import javafx.beans.NamedArg;
+import javafx.event.Event;
+import javafx.event.EventType;
 
-public class PlayerCheckpointHandler extends CollisionHandler {
+/**
+ * @author Almas Baimagambetov (almaslvl@gmail.com)
+ */
+public class PickupEvent extends Event {
 
-    public PlayerCheckpointHandler() {
-        super(EntityType.PLAYER, EntityType.CHECKPOINT);
+    public static final EventType<PickupEvent> ANY
+            = new EventType<>(Event.ANY, "PICKUP_EVENT");
+
+    public static final EventType<PickupEvent> COIN
+            = new EventType<>(ANY, "COIN_PICKUP");
+
+    private Entity pickup;
+
+    public PickupEvent(@NamedArg("eventType") EventType<? extends Event> eventType, Entity pickup) {
+        super(eventType);
+        this.pickup = pickup;
     }
 
-    @Override
-    public void onCollisionBegin(Entity a, Entity checkpoint) {
-        FXGL.getEventBus().fireEvent(new CheckpointEvent(CheckpointEvent.ANY, checkpoint));
+    public Entity getPickup() {
+        return pickup;
     }
 }
