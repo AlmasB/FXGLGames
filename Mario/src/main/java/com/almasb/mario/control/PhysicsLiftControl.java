@@ -28,61 +28,36 @@ package com.almasb.mario.control;
 
 import com.almasb.ents.AbstractControl;
 import com.almasb.ents.Entity;
-import com.almasb.mario.Physics;
+import com.almasb.ents.component.Required;
+import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.physics.PhysicsComponent;
 
-import javafx.geometry.Point2D;
+@Required(PhysicsComponent.class)
+public class PhysicsLiftControl extends AbstractControl {
 
-/**
- * Allows moving an entity with physics collision
- * rules, including gravity effect
- *
- * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
- * @version 1.0
- *
- */
-public class PhysicsControl extends AbstractControl {
+    private double spawnY;
+    private boolean movingUp = true;
 
-    private Physics physics;
-    private Point2D velocity = new Point2D(0, 0);
+    private PositionComponent position;
+    private PhysicsComponent physics;
 
-    public PhysicsControl(Physics physics) {
-        this.physics = physics;
+    public PhysicsLiftControl(double spawnY) {
+        this.spawnY = spawnY;
     }
 
     @Override
     public void onAdded(Entity entity) {
-//        entity.setProperty("jumping", false);
-//        entity.setProperty("g", true);
+        position = entity.getComponentUnsafe(PositionComponent.class);
+        physics = entity.getComponentUnsafe(PhysicsComponent.class);
     }
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
-//        if (entity.<Boolean>getProperty("g")) {
-//            velocity = velocity.add(0, 1);
-//            if (velocity.getY() > 10)
-//                velocity = new Point2D(velocity.getX(), 10);
-//
-//            physics.moveY(entity, (int)velocity.getY());
-//        }
-    }
+        physics.setLinearVelocity(0, 60 * tpf * (movingUp ? - 1 : 1));
 
-    public boolean moveX(int value) {
-        return physics.moveX(getEntity(), value);
-    }
-
-    public void moveY(int value) {
-        physics.moveY(getEntity(), value);
-    }
-
-    public void jump() {
-//        if (entity.<Boolean>getProperty("jumping"))
-//            return;
-//
-//        entity.setProperty("jumping", true);
-//        velocity = velocity.add(0, -25);
-    }
-
-    public Point2D getVelocity() {
-        return velocity;
+        if (position.getY() - spawnY > 90 && physics.getLinearVelocity().getY() > 0)
+            movingUp = !movingUp;
+        else if (position.getY() - spawnY < -90 && physics.getLinearVelocity().getY() < 0)
+            movingUp = !movingUp;
     }
 }

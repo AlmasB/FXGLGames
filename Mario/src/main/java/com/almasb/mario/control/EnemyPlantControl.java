@@ -29,9 +29,9 @@ package com.almasb.mario.control;
 //import com.almasb.fxgl.entity.Control;
 //import com.almasb.fxgl.entity.Entity;
 //import com.almasb.fxgl.time.TimerManager;
-//import com.almasb.mario.EntityType.ProjectileType;
-//import com.almasb.mario.EntityType.Property;
-//import com.almasb.mario.EntityType.Type;
+//import com.almasb.mario.type.EntityType.ProjectileType;
+//import com.almasb.mario.type.EntityType.Property;
+//import com.almasb.mario.type.EntityType.Type;
 //
 //import javafx.geometry.Point2D;
 //import javafx.scene.paint.Color;

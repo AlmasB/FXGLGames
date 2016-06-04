@@ -28,8 +28,14 @@ package com.almasb.mario.control;
 
 import com.almasb.ents.AbstractControl;
 import com.almasb.ents.Entity;
+import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.entity.component.BoundingBoxComponent;
 import com.almasb.fxgl.physics.PhysicsComponent;
+import com.almasb.mario.type.EntityType;
+import com.almasb.mario.event.DeathEvent;
 import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -41,19 +47,31 @@ public class PlayerControl extends AbstractControl {
     private Point2D acceleration = Point2D.ZERO;
 
     private PhysicsComponent physics;
+    private BoundingBoxComponent bbox;
+
+    private double tpf;
 
     @Override
     public void onAdded(Entity entity) {
+        bbox = entity.getComponentUnsafe(BoundingBoxComponent.class);
         physics = entity.getComponentUnsafe(PhysicsComponent.class);
     }
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
+        this.tpf = tpf;
+
         physics.setLinearVelocity(physics.getLinearVelocity().add(acceleration));
 
         limitVelocity();
 
-        acceleration = Point2D.ZERO;
+        acceleration = acceleration.multiply(0.25);
+
+        //acceleration = Point2D.ZERO;
+
+        if (bbox.getMaxYWorld() > FXGL.getSettings().getHeight()) {
+            FXGL.getEventBus().fireEvent(new DeathEvent(DeathEvent.ANY));
+        }
     }
 
     private void limitVelocity() {
@@ -74,15 +92,29 @@ public class PlayerControl extends AbstractControl {
         physics.setLinearVelocity(vel);
     }
 
+    private boolean canJump() {
+        double minX = bbox.getMinXWorld();
+        double maxY = bbox.getMaxYWorld();
+
+        return FXGL.getGame()
+                .getGameWorld()
+                .getEntitiesByType(EntityType.PLATFORM)
+                .stream()
+                .filter(e -> Entities.getBBox(e).isWithin(new Rectangle2D(minX, maxY, bbox.getWidth(), 5)))
+                .findAny()
+                .isPresent();
+    }
+
     public void jump() {
-        acceleration = acceleration.add(0, -10);
+        if (canJump())
+            acceleration = acceleration.add(0, -10);
     }
 
     public void right() {
-        acceleration = acceleration.add(1, 0);
+        acceleration = acceleration.add(10 * tpf, 0);
     }
 
     public void left() {
-        acceleration = acceleration.add(-1, 0);
+        acceleration = acceleration.add(-10 * tpf, 0);
     }
 }

@@ -29,10 +29,10 @@ package com.almasb.mario.collision;
 import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.mario.EntityType;
+import com.almasb.mario.type.EntityType;
 import com.almasb.mario.event.PickupEvent;
-import com.almasb.mario.types.PickupType;
-import com.almasb.mario.types.SubTypeComponent;
+import com.almasb.mario.type.PickupType;
+import com.almasb.mario.type.SubTypeComponent;
 
 public class PlayerPickupHandler extends CollisionHandler {
 

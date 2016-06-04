@@ -28,7 +28,7 @@ package com.almasb.mario.collision;
 
 import com.almasb.ents.Entity;
 import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.mario.EntityType;
+import com.almasb.mario.type.EntityType;
 
 public class PlayerProjectileHandler extends CollisionHandler {
 

@@ -24,11 +24,17 @@
  * SOFTWARE.
  */
 
-package com.almasb.mario.types;
+package com.almasb.mario.event;
+
+import javafx.beans.NamedArg;
+import javafx.event.Event;
+import javafx.event.EventType;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public enum PickupType {
-    COIN, GHOST_BOMB
+public class GameOverEvent extends Event {
+    public GameOverEvent(@NamedArg("eventType") EventType<? extends Event> eventType) {
+        super(eventType);
+    }
 }

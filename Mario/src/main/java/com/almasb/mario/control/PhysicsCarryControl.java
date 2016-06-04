@@ -24,22 +24,40 @@
  * SOFTWARE.
  */
 
-package com.almasb.mario.types;
+package com.almasb.mario.control;
 
-import com.almasb.ents.component.ObjectComponent;
+import com.almasb.ents.AbstractControl;
+import com.almasb.ents.Entity;
+import com.almasb.ents.component.Required;
+import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.physics.PhysicsComponent;
 
-/**
- * @author Almas Baimagambetov (almaslvl@gmail.com)
- */
-public class SubTypeComponent extends ObjectComponent<Object> {
+@Required(PhysicsComponent.class)
+public class PhysicsCarryControl extends AbstractControl {
 
-    /**
-     * Constructs an object value component with given
-     * initial value.
-     *
-     * @param initialValue the initial value
-     */
-    public SubTypeComponent(Object initialValue) {
-        super(initialValue);
+    private double spawnY;
+    private boolean movingLeft = false;
+
+    private PositionComponent position;
+    private PhysicsComponent physics;
+
+    public PhysicsCarryControl(double spawnY) {
+        this.spawnY = spawnY;
+    }
+
+    @Override
+    public void onAdded(Entity entity) {
+        position = entity.getComponentUnsafe(PositionComponent.class);
+        physics = entity.getComponentUnsafe(PhysicsComponent.class);
+    }
+
+    @Override
+    public void onUpdate(Entity entity, double tpf) {
+        physics.setLinearVelocity(60 * tpf * (movingLeft ? - 1 : 1), 0);
+
+        if (position.getX() - spawnY > 90 && physics.getLinearVelocity().getX() > 0)
+            movingLeft = !movingLeft;
+        else if (position.getX() - spawnY < -90 && physics.getLinearVelocity().getX() < 0)
+            movingLeft = !movingLeft;
     }
 }

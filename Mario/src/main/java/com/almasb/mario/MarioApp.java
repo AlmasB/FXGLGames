@@ -44,10 +44,13 @@ import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.parser.TextLevelParser;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.mario.collision.PlayerCheckpointHandler;
+import com.almasb.mario.collision.PlayerFinishHandler;
 import com.almasb.mario.collision.PlayerPickupHandler;
 
 import com.almasb.mario.control.PlayerControl;
 import com.almasb.mario.event.CheckpointEvent;
+import com.almasb.mario.event.DeathEvent;
+import com.almasb.mario.event.Events;
 import com.almasb.mario.event.PickupEvent;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
@@ -58,17 +61,14 @@ public class MarioApp extends GameApplication {
 
     public static final int BLOCK_SIZE = 32;
 
-    private LevelParser parser;
-    private Level level;
-
-    private Physics physics = new Physics(this);
-
     private GameEntity player;
     private PlayerControl playerControl;
 
-    private List<Point2D> arrowTrajectory = new ArrayList<>();
+    public GameEntity getPlayer() {
+        return player;
+    }
 
-    private Entity[][] grid;
+    private List<Point2D> arrowTrajectory = new ArrayList<>();
 
     private GameState gameState;
     private UIOverlay ui;
@@ -124,14 +124,6 @@ public class MarioApp extends GameApplication {
 
         initEventHandlers();
 
-
-
-//
-//        parser = new LevelParser(assets);
-//        level = parser.getLevel();
-//        player = parser.getPlayer();
-//        player.addControl(new PhysicsControl(physics));
-//        gameState.updateCheckpoint(player.getPosition());
 //
 //        grid = new Entity[level.getWidth()][level.getHeight()];
 //        physics.setGrid(grid);
@@ -183,8 +175,9 @@ public class MarioApp extends GameApplication {
     protected void initPhysics() {
         getPhysicsWorld().addCollisionHandler(new PlayerPickupHandler());
         getPhysicsWorld().addCollisionHandler(new PlayerCheckpointHandler());
+        getPhysicsWorld().addCollisionHandler(new PlayerFinishHandler());
 
-//        getPhysicsWorld().addCollisionHandler(new PlayerFinishHandler());
+
 //        getPhysicsWorld().addCollisionHandler(new PlayerEnemyHandler());
 //        getPhysicsWorld().addCollisionHandler(new ProjectileEnemyHandler());
 //        getPhysicsWorld().addCollisionHandler(new PlayerProjectileHandler());
@@ -212,18 +205,30 @@ public class MarioApp extends GameApplication {
                     .buildAndAttach(getGameWorld());
         });
 
+        getEventBus().addEventHandler(DeathEvent.ANY, event -> {
+            gameState.loseLife();
+            player.getControlUnsafe(com.almasb.fxgl.physics.PhysicsControl.class)
+                    .reposition(gameState.getCheckpoint());
 
+            ParticleEmitter emitter = ParticleEmitters.newExplosionEmitter();
+            emitter.setColorFunction(() -> Color.GOLD);
 
+            Entities.builder()
+                    .at(gameState.getCheckpoint())
+                    .with(new ParticleControl(emitter))
+                    .with(new ExpireCleanControl(Duration.seconds(0.8)))
+                    .buildAndAttach(getGameWorld());
+        });
 
-//        player.addFXGLEventHandler(Event.DEATH, event -> {
-//            gameState.loseLife();
-//            player.setPosition(gameState.getCheckpoint());
-//            particleManager.spawnExplosion(gameState.getCheckpoint().add(16, 16), Color.GOLD, 40, 40);
-//        });
-//
-//        player.addFXGLEventHandler(Event.GAME_OVER, event -> {
-//            gameState.gameLose();
-//        });
+        getEventBus().addEventHandler(Events.GAME_OVER, event -> {
+            gameState.gameLose();
+            pause();
+        });
+
+        getEventBus().addEventHandler(Events.REACH_FINISH, event -> {
+            gameState.gameWin();
+            pause();
+        });
 
 //
 //        player.addFXGLEventHandler(Event.PICKUP_GHOST_BOMB, event -> {
@@ -232,19 +237,6 @@ public class MarioApp extends GameApplication {
 //            gameState.addGhostBomb();
 //        });
 //
-//        player.addFXGLEventHandler(Event.REACH_CHECKPOINT, event -> {
-//            Entity checkpointEntity = event.getSource();
-//            checkpointEntity.setCollidable(false);
-//            Point2D pos = checkpointEntity.getPosition();
-//
-//            gameState.updateCheckpoint(pos);
-//
-//            particleManager.spawnImplosion(pos.add(16, 16), Color.GOLD, 40, 40);
-//        });
-//
-//        player.addFXGLEventHandler(Event.REACH_FINISH, event -> {
-//            gameState.gameWin();
-//        });
     }
 
     @Override
@@ -308,13 +300,9 @@ public class MarioApp extends GameApplication {
     }
 
     @Override
-    protected void onUpdate(double tpf) {
-//        if (player.getTranslateY() >= getHeight()) {
-//            player.fireFXGLEvent(new FXGLEvent(Event.DEATH));
-//        }
-    }
+    protected void onUpdate(double tpf) {}
 
-    double dx, dy;
+    //double dx, dy;
 
 //    private void shoot() {
 //        Entity arrow = new Entity(Type.PROJECTILE);

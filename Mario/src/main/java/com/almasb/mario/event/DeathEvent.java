@@ -24,34 +24,21 @@
  * SOFTWARE.
  */
 
-package com.almasb.mario.control;
+package com.almasb.mario.event;
 
-//import com.almasb.fxgl.GameApplication;
-//import com.almasb.fxgl.entity.AbstractControl;
-//import com.almasb.fxgl.entity.Entity;
-//
-//public class LiftControl extends AbstractControl {
-//
-//    private double spawnY;
-//    private boolean movingUp = true;
-//
-//    public LiftControl(double spawnY) {
-//        this.spawnY = spawnY;
-//    }
-//
-//    @Override
-//    public void onUpdate(Entity entity, long now) {
-//        entity.translate(0, movingUp ? -1 : 1);
-//
-//        if (Math.abs(entity.getPosition().getY() - spawnY) > 90) {
-//            movingUp = !movingUp;
-//        }
-//    }
-//
-//
-//    @Override
-//    protected void initEntity(Entity entity) {
-//        // TODO Auto-generated method stub
-//
-//    }
-//}
+import javafx.beans.NamedArg;
+import javafx.event.Event;
+import javafx.event.EventType;
+
+/**
+ * @author Almas Baimagambetov (almaslvl@gmail.com)
+ */
+public class DeathEvent extends Event {
+
+    public static final EventType<DeathEvent> ANY
+            = new EventType<>(Event.ANY, "DEATH_EVENT");
+
+    public DeathEvent(@NamedArg("eventType") EventType<? extends Event> eventType) {
+        super(eventType);
+    }
+}

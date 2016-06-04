@@ -29,14 +29,16 @@ package com.almasb.mario;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.component.CollidableComponent;
-import com.almasb.fxgl.entity.control.LiftControl;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
+import com.almasb.mario.control.PhysicsCarryControl;
+import com.almasb.mario.control.PhysicsLiftControl;
 import com.almasb.mario.control.PlayerControl;
-import com.almasb.mario.types.PickupType;
-import com.almasb.mario.types.PlatformType;
-import com.almasb.mario.types.SubTypeComponent;
+import com.almasb.mario.type.EntityType;
+import com.almasb.mario.type.PickupType;
+import com.almasb.mario.type.PlatformType;
+import com.almasb.mario.type.SubTypeComponent;
 import javafx.geometry.BoundingBox;
 import org.jbox2d.dynamics.BodyType;
 
@@ -127,24 +129,19 @@ public class EntityFactory {
     }
 
     public static GameEntity makePlatformLift(double x, double y) {
-        return Entities.builder()
-                .at(x * BLOCK_SIZE, y * BLOCK_SIZE)
-                .type(EntityType.PLATFORM)
-                .viewFromTextureWithBBox("platform.png")
-                //.with(new CollidableComponent(true))
-                .with(new SubTypeComponent(PlatformType.NORMAL))
-                //.with(new LiftControl())
-                .build();
+        GameEntity e = makePlatform(x, y);
+        Entities.getPhysics(e).setBodyType(BodyType.KINEMATIC);
+        e.addControl(new PhysicsLiftControl(y * BLOCK_SIZE));
+
+        return e;
     }
 
     public static GameEntity makePlatformCarry(double x, double y) {
-        return Entities.builder()
-                .at(x * BLOCK_SIZE, y * BLOCK_SIZE)
-                .type(EntityType.PLATFORM)
-                .viewFromTextureWithBBox("platform.png")
-                //.with(new CollidableComponent(true))
-                .with(new SubTypeComponent(PlatformType.NORMAL))
-                .build();
+        GameEntity e = makePlatform(x, y);
+        Entities.getPhysics(e).setBodyType(BodyType.KINEMATIC);
+        e.addControl(new PhysicsCarryControl(x * BLOCK_SIZE));
+
+        return e;
     }
 
     public static GameEntity makeBlock(double x, double y) {
@@ -156,6 +153,59 @@ public class EntityFactory {
 
         return e;
     }
+
+
+//        parser.addEntityProducer('3', this::makePlatformLiftCarry);
+//
+//
+//        parser.addEntityProducer('A', this::makeEnemySnake);
+//        parser.addEntityProducer('B', this::makeEnemyPlant);
+
+//    private Entity makeEnemySnake(double x, double y) {
+//        Entity snake = makeGenericEnemy(x, y);
+//        snake.setProperty(Property.SUB_TYPE, EnemyType.SNAKE);
+//        snake.setGraphics(assets.getTexture("snake2.png").toStaticAnimatedTexture(6, Duration.seconds(3)));
+//        snake.addControl(new PatrolControl(x * MarioApp.BLOCK_SIZE));
+//        //snake.addControl(new AIProximityControl(player));
+//        return snake;
+//    }
+//
+//    private Entity makeEnemyPlant(double x, double y) {
+//        Entity plant = makeGenericEnemy(x, y);
+//        plant.setProperty(Property.SUB_TYPE, EnemyType.PLANT);
+//        plant.setGraphics(assets.getTexture("enemy_plant.png").toStaticAnimatedTexture(4, Duration.seconds(3)));
+//        //plant.addControl(new AIProximityControl(player));
+//        plant.addControl(new EnemyPlantControl(player));
+//        return plant;
+//    }
+
+
+
+//
+//    private Entity makePlatformLift(double x, double y) {
+//        Entity platform = makeGenericPlatform(x, y);
+//        platform.setProperty(Property.SUB_TYPE, PlatformType.NORMAL);
+//        platform.setGraphics(assets.getTexture("platform.png"));
+//        platform.addControl(new PhysicsLiftControl(y * MarioApp.BLOCK_SIZE));
+//        return platform;
+//    }
+//
+//    private Entity makePlatformCarry(double x, double y) {
+//        Entity platform = makeGenericPlatform(x, y);
+//        platform.setProperty(Property.SUB_TYPE, PlatformType.NORMAL);
+//        platform.setGraphics(assets.getTexture("platform.png"));
+//        platform.addControl(new PatrolControl(x * MarioApp.BLOCK_SIZE));
+//        return platform;
+//    }
+//
+//    private Entity makePlatformLiftCarry(double x, double y) {
+//        Entity platform = makeGenericPlatform(x, y);
+//        platform.setProperty(Property.SUB_TYPE, PlatformType.NORMAL);
+//        platform.setGraphics(assets.getTexture("platform.png"));
+//        platform.addControl(new PhysicsLiftControl(y * MarioApp.BLOCK_SIZE));
+//        platform.addControl(new PatrolControl(x * MarioApp.BLOCK_SIZE));
+//        return platform;
+//    }
 
     public static GameEntity makePlayer(double x, double y) {
         PhysicsComponent physics = new PhysicsComponent();

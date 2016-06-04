@@ -24,23 +24,11 @@
  * SOFTWARE.
  */
 
-package com.almasb.mario.collision;
+package com.almasb.mario.type;
 
-import com.almasb.ents.Entity;
-import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.mario.type.EntityType;
-import com.almasb.mario.event.Events;
-import javafx.event.Event;
-
-public class PlayerFinishHandler extends CollisionHandler {
-
-    public PlayerFinishHandler() {
-        super(EntityType.PLAYER, EntityType.FINISH);
-    }
-
-    @Override
-    public void onCollisionBegin(Entity a, Entity b) {
-        FXGL.getEventBus().fireEvent(new Event(Events.REACH_FINISH));
-    }
+/**
+ * @author Almas Baimagambetov (almaslvl@gmail.com)
+ */
+public enum PlatformType {
+    NORMAL, INVISIBLE
 }

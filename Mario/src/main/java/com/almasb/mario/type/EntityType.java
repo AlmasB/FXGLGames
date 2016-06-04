@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-package com.almasb.mario;
+package com.almasb.mario.type;
 
 public enum EntityType {
 

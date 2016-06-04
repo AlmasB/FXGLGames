@@ -24,11 +24,19 @@
  * SOFTWARE.
  */
 
-package com.almasb.mario.types;
+package com.almasb.mario.event;
+
+import javafx.event.Event;
+import javafx.event.EventType;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public enum PlatformType {
-    NORMAL, INVISIBLE
+public class Events {
+
+    public static final EventType<Event> GAME_OVER
+            = new EventType<>(Event.ANY, "GAME_OVER");
+
+    public static final EventType<Event> REACH_FINISH
+            = new EventType<>(Event.ANY, "REACH_FINISH");
 }
