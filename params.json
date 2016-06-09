@@ -1,0 +1,6 @@
+{
+  "name": "Fxglgames",
+  "tagline": "This repo contains sample games built with FXGL",
+  "body": "## FXGLGames\r\nThis repo contains sample games built with <a href=\"https://github.com/AlmasB/FXGL\">FXGL</a> Game Library.\r\n\r\n## Build\r\n```bash\r\ncd PROJECT_NAME\r\nmvn package\r\n```\r\nThis will produce a standalone executable with that project in <code>target/</code>.\r\n\r\n## Run\r\n```bash\r\ncd target/\r\njava -jar PROJECT_NAME-VERSION.jar\r\n```\r\nOR simply double-click the jar file if the extensions are correctly set on your machine.\r\n\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
