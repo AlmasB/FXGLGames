@@ -3,7 +3,7 @@ markdown:         kramdown
 highlighter:      rouge
 
 # Permalinks
-permalink:       /FXGLGames/:categories/:title/
+permalink:        /:categories/:title/
 #permalink:        /:year/:month/:day/:title/
 
 # Setup
@@ -11,7 +11,7 @@ title:            FXGLGames
 tagline:          'A Jekyll theme'
 description:      'A brazen two-column <a href="http://jekyllrb.com" target="_blank">Jekyll</a> theme that pairs a prominent sidebar with uncomplicated content. Made by <a href="https://twitter.com/mdo" target="_blank">@mdo</a>.'
 url:              "https://almasb.github.io"
-baseurl:          "/"
+baseurl:          "/FXGLGames/"
 
 author:
   name:           'Mark Otto'
