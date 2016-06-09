@@ -3,8 +3,7 @@ markdown:         kramdown
 highlighter:      rouge
 
 # Permalinks
-permalink:        /:categories/:title/
-#permalink:        /:year/:month/:day/:title/
+permalink:        /:year/:month/:day/:title/
 
 # Setup
 title:            FXGLGames
