@@ -26,10 +26,6 @@
 
 package com.almasb.mario;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.effect.ParticleControl;
 import com.almasb.fxgl.effect.ParticleEmitter;
@@ -46,7 +42,6 @@ import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.mario.collision.PlayerCheckpointHandler;
 import com.almasb.mario.collision.PlayerFinishHandler;
 import com.almasb.mario.collision.PlayerPickupHandler;
-
 import com.almasb.mario.control.PlayerControl;
 import com.almasb.mario.event.CheckpointEvent;
 import com.almasb.mario.event.DeathEvent;
@@ -56,6 +51,9 @@ import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MarioApp extends GameApplication {
 

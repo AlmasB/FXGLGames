@@ -50,16 +50,16 @@ class EntityFactory {
     companion object {
         fun newBackground(): GameEntity {
             val view = EntityView()
-            view.renderLayer = object : RenderLayer {
-
-                override fun index(): Int {
-                    return 0
-                }
-
-                override fun name(): String {
-                    return "BACKGROUND"
-                }
-            }
+//            view.renderLayer = object : RenderLayer {
+//
+//                override fun index(): Int {
+//                    return 0
+//                }
+//
+//                override fun name(): String {
+//                    return "BACKGROUND"
+//                }
+//            }
 
             view.addNode(Rectangle(600.0, 800.0, Color.color(0.0, 0.5, 0.0)))
 

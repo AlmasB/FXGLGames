@@ -27,8 +27,10 @@
 package com.almasb.outrun
 
 import com.almasb.ents.Entity
+import com.almasb.fxgl.app.ApplicationMode
 import com.almasb.fxgl.app.GameApplication
 import com.almasb.fxgl.entity.GameEntity
+import com.almasb.fxgl.entity.RenderLayer
 import com.almasb.fxgl.input.UserAction
 import com.almasb.fxgl.parser.TextLevelParser
 import com.almasb.fxgl.physics.CollisionHandler
@@ -38,6 +40,7 @@ import com.almasb.fxgl.ui.UIFactory
 import javafx.animation.FadeTransition
 import javafx.application.Application
 import javafx.beans.property.SimpleIntegerProperty
+import javafx.beans.value.ChangeListener
 import javafx.scene.input.KeyCode
 import javafx.scene.paint.Color
 import javafx.scene.text.Text
@@ -59,6 +62,7 @@ class OutRunApp : GameApplication() {
             setShowFPS(false)
             isIntroEnabled = false
             isMenuEnabled = false
+            applicationMode = ApplicationMode.DEBUG
         }
     }
 
@@ -108,6 +112,16 @@ class OutRunApp : GameApplication() {
 
         val bg = EntityFactory.newBackground()
         bg.positionComponent.yProperty().bind(gameScene.viewport.yProperty())
+        bg.mainViewComponent.renderLayer = object : RenderLayer {
+
+            override fun index(): Int {
+                return 0
+            }
+
+            override fun name(): String {
+                return "BACKGROUND"
+            }
+        }
         gameWorld.addEntity(bg)
 
         gameScene.viewport.setBounds(0, 0, 600, level.height*40)
@@ -144,18 +158,20 @@ class OutRunApp : GameApplication() {
 
         gameScene.addUINode(label)
 
-        masterTimer.runAtInterval( {
-            if (count.get() == 1) {
-                gameScene.removeUINode(label)
-                return@runAtInterval
-            }
-
+        val timerAction = masterTimer.runAtInterval( {
             count.set(count.get() - 1)
             val animation = FadeTransition(Duration.seconds(0.33), label)
             animation.fromValue = 0.0
             animation.toValue = 1.0
             animation.play()
         }, Duration.seconds(1.0))
+
+        count.addListener({ o, old, newValue ->
+            if (newValue.toInt() == 0) {
+                timerAction.expire()
+                gameScene.removeUINode(label)
+            }
+        })
 
         // BOOST
 
