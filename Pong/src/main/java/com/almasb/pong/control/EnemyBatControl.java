@@ -42,12 +42,12 @@ public class EnemyBatControl extends BatControl {
         super.onUpdate(entity, tpf);
 
         if (ball == null) {
-            entity.getWorld()
-                    .getEntitiesByComponent(TypeComponent.class)
-                    .stream()
-                    .filter(e -> e.getComponentUnsafe(TypeComponent.class).isType(EntityType.BALL))
-                    .findAny()
-                    .ifPresent(b -> ball = b);
+            for (Entity e : entity.getWorld().getEntitiesByComponent(TypeComponent.class)) {
+                if (e.getComponentUnsafe(TypeComponent.class).isType(EntityType.BALL)) {
+                    ball = e;
+                    break;
+                }
+            }
         } else {
             moveAI();
         }

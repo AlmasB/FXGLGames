@@ -44,9 +44,18 @@ public class BallControl extends AbstractControl {
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
-        if (Math.abs(ball.getLinearVelocity().getX()) < 5) {
-            ball.setLinearVelocity(Math.signum(ball.getLinearVelocity().getX()) * 5,
+        limitVelocity();
+    }
+
+    private void limitVelocity() {
+        if (Math.abs(ball.getLinearVelocity().getX()) < 5 * 60) {
+            ball.setLinearVelocity(Math.signum(ball.getLinearVelocity().getX()) * 5 * 60,
                     ball.getLinearVelocity().getY());
+        }
+
+        if (Math.abs(ball.getLinearVelocity().getY()) > 5 * 60 * 2) {
+            ball.setLinearVelocity(ball.getLinearVelocity().getX(),
+                    Math.signum(ball.getLinearVelocity().getY()) * 5 * 60);
         }
     }
 }

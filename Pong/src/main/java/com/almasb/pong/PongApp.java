@@ -93,11 +93,9 @@ public class PongApp extends GameApplication {
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BALL, EntityType.WALL) {
             @Override
             protected void onHitBoxTrigger(Entity a, Entity b, HitBox boxA, HitBox boxB) {
-                HitBox box = boxA.getShape() == BoundingShape.CIRCLE ? boxB : boxA;
-
-                if (box.getName().equals("LEFT")) {
+                if (boxB.getName().equals("LEFT")) {
                     scoreEnemy.set(scoreEnemy.get() + 1);
-                } else if (box.getName().equals("RIGHT")) {
+                } else if (boxB.getName().equals("RIGHT")) {
                     scorePlayer.set(scorePlayer.get() + 1);
                 }
             }

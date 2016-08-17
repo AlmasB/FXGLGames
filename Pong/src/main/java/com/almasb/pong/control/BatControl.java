@@ -53,14 +53,14 @@ public class BatControl extends AbstractControl {
 
     public void up() {
         if (position.getY() >= 5)
-            bat.setLinearVelocity(0, -5);
+            bat.setLinearVelocity(0, -5 * 60);
         else
             stop();
     }
 
     public void down() {
         if (bbox.getMaxYWorld() <= 600 - 5)
-            bat.setLinearVelocity(0, 5);
+            bat.setLinearVelocity(0, 5 * 60);
         else
             stop();
     }

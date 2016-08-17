@@ -52,7 +52,7 @@ public class EntityFactory {
         GameEntity ball = new GameEntity();
         ball.getTypeComponent().setValue(EntityType.BALL);
         ball.getPositionComponent().setValue(x, y);
-        ball.getBoundingBoxComponent().addHitBox(new HitBox("BODY", new BoundingBox(0, 0, 10, 10), BoundingShape.CIRCLE));
+        ball.getBoundingBoxComponent().addHitBox(new HitBox("BODY", BoundingShape.circle(5)));
         ball.getMainViewComponent().setView(new Circle(5, Color.LIGHTGRAY));
 
         PhysicsComponent ballPhysics = new PhysicsComponent();
@@ -63,7 +63,7 @@ public class EntityFactory {
         def.setRestitution(1.0f);
 
         ballPhysics.setFixtureDef(def);
-        ballPhysics.setOnPhysicsInitialized(() -> ballPhysics.setLinearVelocity(5, -5));
+        ballPhysics.setOnPhysicsInitialized(() -> ballPhysics.setLinearVelocity(5 * 60, -5 * 60));
 
         ball.addComponent(ballPhysics);
         ball.addComponent(new CollidableComponent(true));
