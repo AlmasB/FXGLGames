@@ -65,7 +65,7 @@ public class PlayerControl extends AbstractControl {
 
         limitVelocity();
 
-        acceleration = acceleration.multiply(0.25);
+        acceleration = acceleration.multiply(0.15);
 
         //acceleration = Point2D.ZERO;
 
@@ -96,7 +96,7 @@ public class PlayerControl extends AbstractControl {
         double minX = bbox.getMinXWorld();
         double maxY = bbox.getMaxYWorld();
 
-        return FXGL.getGame()
+        return FXGL.getApp()
                 .getGameWorld()
                 .getEntitiesByType(EntityType.PLATFORM)
                 .stream()

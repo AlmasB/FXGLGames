@@ -220,7 +220,7 @@ public class EntityFactory {
                 .with(new PlayerControl())
                 .build();
 
-        p.getBoundingBoxComponent().addHitBox(new HitBox("BODY", new BoundingBox(0, 0, 30, 30), BoundingShape.CIRCLE));
+        p.getBoundingBoxComponent().addHitBox(new HitBox("BODY", BoundingShape.circle(15)));
 
         return p;
     }

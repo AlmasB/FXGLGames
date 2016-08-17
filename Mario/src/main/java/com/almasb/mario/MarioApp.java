@@ -30,6 +30,7 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.effect.ParticleControl;
 import com.almasb.fxgl.effect.ParticleEmitter;
 import com.almasb.fxgl.effect.ParticleEmitters;
+import com.almasb.fxgl.effect.Vignette;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.component.CollidableComponent;
@@ -50,6 +51,8 @@ import com.almasb.mario.event.PickupEvent;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
@@ -175,7 +178,6 @@ public class MarioApp extends GameApplication {
         getPhysicsWorld().addCollisionHandler(new PlayerCheckpointHandler());
         getPhysicsWorld().addCollisionHandler(new PlayerFinishHandler());
 
-
 //        getPhysicsWorld().addCollisionHandler(new PlayerEnemyHandler());
 //        getPhysicsWorld().addCollisionHandler(new ProjectileEnemyHandler());
 //        getPhysicsWorld().addCollisionHandler(new PlayerProjectileHandler());
@@ -239,7 +241,12 @@ public class MarioApp extends GameApplication {
 
     @Override
     protected void initUI() {
-        getGameScene().addUINode(ui);
+        Vignette vignette = new Vignette(1280, 720, 600);
+        vignette.setIntensity(0.15);
+        //vignette.setRadius(200);
+        //vignette.setColor(Color.RED);
+
+        getGameScene().addUINodes(ui, vignette);
     }
 
     @Override
