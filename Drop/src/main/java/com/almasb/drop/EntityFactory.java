@@ -27,14 +27,13 @@
 package com.almasb.drop;
 
 import com.almasb.ents.Entity;
-import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.app.ServiceType;
-import com.almasb.fxgl.asset.AssetLoader;
-import com.almasb.fxgl.entity.EntityView;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.component.CollidableComponent;
+import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 
 /**
+ * Responsible for creating new entities.
+ *
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class EntityFactory {
@@ -43,33 +42,23 @@ public class EntityFactory {
         DROPLET, BUCKET
     }
 
-    private static AssetLoader assetLoader;
-
-    static {
-        assetLoader = GameApplication.getService(ServiceType.ASSET_LOADER);
-    }
-
     public static Entity newDroplet(double x, double y) {
-        GameEntity droplet = new GameEntity();
-        droplet.getTypeComponent().setValue(EntityType.DROPLET);
-        droplet.getPositionComponent().setValue(x, y);
-        droplet.getMainViewComponent().setView(new EntityView(assetLoader.loadTexture("droplet.png")), true);
-
-        droplet.addComponent(new CollidableComponent(true));
-        droplet.addControl(new DropletControl());
-
-        return droplet;
+        return Entities.builder()
+                .type(EntityType.DROPLET)
+                .at(x, y)
+                .viewFromTextureWithBBox("droplet.png")
+                .with(new CollidableComponent(true))
+                .with(new DropletControl(), new OffscreenCleanControl())
+                .build();
     }
 
     public static Entity newBucket(double x, double y) {
-        GameEntity bucket = new GameEntity();
-        bucket.getTypeComponent().setValue(EntityType.BUCKET);
-        bucket.getPositionComponent().setValue(x, y);
-        bucket.getMainViewComponent().setView(new EntityView(assetLoader.loadTexture("bucket.png")), true);
-
-        bucket.addComponent(new CollidableComponent(true));
-        bucket.addControl(new BucketControl());
-
-        return bucket;
+        return Entities.builder()
+                .type(EntityType.BUCKET)
+                .at(x, y)
+                .viewFromTextureWithBBox("bucket.png")
+                .with(new CollidableComponent(true))
+                .with(new BucketControl())
+                .build();
     }
 }

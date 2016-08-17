@@ -28,10 +28,6 @@ package com.almasb.drop;
 
 import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.app.ServiceType;
-import com.almasb.fxgl.asset.Texture;
-import com.almasb.fxgl.entity.EntityView;
-import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
@@ -49,6 +45,8 @@ public class DropApp extends GameApplication {
 
     @Override
     protected void initSettings(GameSettings settings) {
+        settings.setTitle("Drop");
+        settings.setVersion("0.2");
         settings.setWidth(480);
         settings.setHeight(800);
         settings.setIntroEnabled(false);
@@ -76,9 +74,7 @@ public class DropApp extends GameApplication {
     }
 
     @Override
-    protected void initAssets() {
-
-    }
+    protected void initAssets() {}
 
     @Override
     protected void initGame() {
@@ -110,14 +106,10 @@ public class DropApp extends GameApplication {
     }
 
     @Override
-    protected void initUI() {
-
-    }
+    protected void initUI() {}
 
     @Override
-    protected void onUpdate() {
-
-    }
+    protected void onUpdate(double tpf) {}
 
     public static void main(String[] args) {
         launch(args);
