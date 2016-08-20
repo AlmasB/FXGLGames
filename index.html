@@ -116,13 +116,73 @@ public class BasicGameApp extends GameApplication {
 }
                             </code></pre>
                             
+                            <h2>Basic Usage (Kotlin)</h2>
+                            
+                            <pre><code>
+class BasicGameApp : GameApplication() {
+
+    override fun initSettings(settings: GameSettings) {
+        with(settings) {
+            width = 800
+            height = 600
+            title = "Basic Game App"
+            version = "0.1"
+            // other settings
+        }
+    }
+
+    override fun initInput() { }
+
+    override fun initAssets() { }
+
+    override fun initGame() { }
+
+    override fun initPhysics() { }
+
+    override fun initUI() { }
+
+    override fun onUpdate(tpf: Double) { }
+}
+
+fun main(args: Array<String>) {
+    Application.launch(BasicGameApp::class.java, *args)
+}
+                            </code></pre>
+                            
                         </div>
 						</section>
+                        
+                        
 						<section class="spotlight">
-							<div class="image"><img src="images/pic02.jpg" alt="" /></div><div class="content">
-								<h2>Tortor dolore feugiat<br />
-								elementum magna</h2>
-								<p>Aliquam ut ex ut augue consectetur interdum. Donec hendrerit imperdiet. Mauris eleifend fringilla nullam aenean mi ligula.</p>
+							<div class="content">
+								<h2>Maven</h2>
+                                
+                                <pre><code>
+<repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+</repository>
+
+<dependency>
+    <groupId>com.github.AlmasB</groupId>
+    <artifactId>FXGL</artifactId>
+    <version>0.2.6</version>
+</dependency>
+                                </code></pre>
+							</div>
+                            
+                        <div class="content">
+								<h2>Gradle</h2>
+                                
+                                <pre><code>
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    compile 'com.github.AlmasB:FXGL:0.2.6'
+}
+                                </code></pre>
 							</div>
 						</section>
 						<section class="spotlight">
