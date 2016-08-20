@@ -11,11 +11,11 @@ email: almaslvl@gmail.com
 baseurl: "/FXGLGames" # the subpath of your site, e.g. /blog
 url: "http://almasb.github.io" # the base hostname & protocol for your site
 social:
-  twitter: https://twitter.com/<username>
+  #twitter: https://twitter.com/<username>
   github: https://github.com/AlmasB
-  linkedin-square: https://linkedin.com/in/<username>
-  facebook-official: https://facebook.com/<username>
-  google-plus-square: https://plus.google.com/u/0/+<username>
+  linkedin-square: https://linkedin.com/in/AlmasB
+  #facebook-official: https://facebook.com/<username>
+  google-plus-square: https://plus.google.com/u/0/+AlmasB
   #email: /contact/
   #flickr:
   #instagram:
