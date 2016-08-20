@@ -42,7 +42,9 @@ import javafx.geometry.Rectangle2D;
  */
 public class PlayerControl extends AbstractControl {
 
-    private static final int MAX_SPEED = 5;
+    private static final int MAX_SPEED = 5 * 60;
+    private static final int INSTANT_SPEED = 10 * 60;
+    private static final double SLOW_FACTOR = 0.12;
 
     private Point2D acceleration = Point2D.ZERO;
 
@@ -65,9 +67,7 @@ public class PlayerControl extends AbstractControl {
 
         limitVelocity();
 
-        acceleration = acceleration.multiply(0.15);
-
-        //acceleration = Point2D.ZERO;
+        acceleration = acceleration.multiply(SLOW_FACTOR);
 
         if (bbox.getMaxYWorld() > FXGL.getSettings().getHeight()) {
             FXGL.getEventBus().fireEvent(new DeathEvent(DeathEvent.ANY));
@@ -107,14 +107,14 @@ public class PlayerControl extends AbstractControl {
 
     public void jump() {
         if (canJump())
-            acceleration = acceleration.add(0, -10);
+            acceleration = acceleration.add(0, -INSTANT_SPEED);
     }
 
     public void right() {
-        acceleration = acceleration.add(10 * tpf, 0);
+        acceleration = acceleration.add(INSTANT_SPEED * tpf, 0);
     }
 
     public void left() {
-        acceleration = acceleration.add(-10 * tpf, 0);
+        acceleration = acceleration.add(-INSTANT_SPEED * tpf, 0);
     }
 }
