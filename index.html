@@ -7,18 +7,19 @@ layout: landing
 							<h2>{{ site.title }}</h2>
 							<p>{{ site.description | markdownify }}</p>
 							<ul class="actions">
-								<li><a href="#" class="button special">Activate</a></li>
-							</ul>
+								<li><a href="https://github.com/AlmasB/FXGL" class="button special">Star on GitHub</a></li>
+                              <li><a href="https://github.com/AlmasB/FXGL/wiki" class="button special">View Wiki</a></li>
+                          </ul>
 						</div>
 						<a href="#one" class="more scrolly">Learn More</a>
 					</section>
 
 				<!-- One -->
-					<section id="one" class="wrapper style1 special">
+					<section id="one" class="wrapper alt style2">
 						<div class="inner">
 							<header class="major">
 								<h2>Good for:</h2>
-								<ul>
+								<ul class="alt">
                                   <li>2D or casual UI based games</li>
                                   <li>Hobby & academic projects</li>
                                   <li>Learning & practising game development</li>
@@ -27,43 +28,12 @@ layout: landing
 							</header>
                           <header class="major">
 								<h2>Not so good for:</h2>
-								<ul>
+								<ul class="alt">
                                   <li>3D, mobile or web (until JavaFX can painlessly support these)</li>
                                   <li>Commercial projects</li>
                               </ul>
 							</header>
-                            
-							<ul class="icons major">
-								<li><span class="icon fa-diamond major style1"><span class="label">Lorem</span></span></li>
-								<li><span class="icon fa-heart-o major style2"><span class="label">Ipsum</span></span></li>
-								<li><span class="icon fa-code major style3"><span class="label">Dolor</span></span></li>
-							</ul>
 						</div>
-					</section>
-
-				<!-- Two -->
-					<section id="two" class="wrapper alt style2">
-						<section class="spotlight">
-							<div class="image"><img src="images/pic01.jpg" alt="" /></div><div class="content">
-								<h2>Magna primis lobortis<br />
-								sed ullamcorper</h2>
-								<p>Aliquam ut ex ut augue consectetur interdum. Donec hendrerit imperdiet. Mauris eleifend fringilla nullam aenean mi ligula.</p>
-							</div>
-						</section>
-						<section class="spotlight">
-							<div class="image"><img src="images/pic02.jpg" alt="" /></div><div class="content">
-								<h2>Tortor dolore feugiat<br />
-								elementum magna</h2>
-								<p>Aliquam ut ex ut augue consectetur interdum. Donec hendrerit imperdiet. Mauris eleifend fringilla nullam aenean mi ligula.</p>
-							</div>
-						</section>
-						<section class="spotlight">
-							<div class="image"><img src="images/pic03.jpg" alt="" /></div><div class="content">
-								<h2>Augue eleifend aliquet<br />
-								sed condimentum</h2>
-								<p>Aliquam ut ex ut augue consectetur interdum. Donec hendrerit imperdiet. Mauris eleifend fringilla nullam aenean mi ligula.</p>
-							</div>
-						</section>
 					</section>
 
 				<!-- Three -->
@@ -101,6 +71,67 @@ layout: landing
 								</li>
 							</ul>
 						</div>
+					</section>
+                    
+				<!-- Two -->
+					<section id="two" class="wrapper alt style2">
+						<section class="spotlight">
+							<div class="content">
+                          
+                            <h2>Basic Usage (Java)</h2>
+                            
+                            <pre><code>
+public class BasicGameApp extends GameApplication {
+
+    @Override
+    protected void initSettings(GameSettings settings) {
+        settings.setWidth(800);
+        settings.setHeight(600);
+        settings.setTitle("Basic Game App");
+        settings.setVersion("0.1");
+        // other settings
+    }
+
+    @Override
+    protected void initInput() {}
+
+    @Override
+    protected void initAssets() {}
+
+    @Override
+    protected void initGame() {}
+
+    @Override
+    protected void initPhysics() {}
+
+    @Override
+    protected void initUI() {}
+
+    @Override
+    protected void onUpdate(double tpf) {}
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
+                            </code></pre>
+                            
+                        </div>
+						</section>
+						<section class="spotlight">
+							<div class="image"><img src="images/pic02.jpg" alt="" /></div><div class="content">
+								<h2>Tortor dolore feugiat<br />
+								elementum magna</h2>
+								<p>Aliquam ut ex ut augue consectetur interdum. Donec hendrerit imperdiet. Mauris eleifend fringilla nullam aenean mi ligula.</p>
+							</div>
+						</section>
+						<section class="spotlight">
+							<div class="image"><img src="images/pic03.jpg" alt="" /></div><div class="content">
+								<h2>Augue eleifend aliquet<br />
+								sed condimentum</h2>
+								<p>Aliquam ut ex ut augue consectetur interdum. Donec hendrerit imperdiet. Mauris eleifend fringilla nullam aenean mi ligula.</p>
+							</div>
+						</section>
 					</section>
 
 				<!-- CTA -->
