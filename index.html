@@ -36,36 +36,63 @@ layout: landing
 						</div>
 					</section>
 
-				<!-- Three -->
+<!-- Features -->
 <section id="three" class="wrapper style3 special">
     <div class="inner">
         <header class="major">
             <h2>Latest Release Features</h2>
         </header>
         <ul class="features">
-            <li class="icon fa-cubes">
+            <li class="icon fa-cube">
                 <h3>Graphics & UI</h3>
-                <ul class="actions">
-                    <li>JavaFX 8</li>
-                    <li>Multi-Layer Rendering</li>
-                    <li>Canvas Particle System</li>
-                    <li>Dynamic Texture Manipulation</li>
-                    <li>Sprite Sheet Animations</li>
-                </ul>
+                <div class="table-wrapper">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>JavaFX 8</td>
+                            </tr>
+                            <tr>
+                                <td>Multi-Layer Rendering</td>
+                            </tr>
+                            <tr>
+                                <td>Canvas Particle System</td>
+                            </tr>
+                            <tr>
+                                <td>Dynamic Texture Manipulation</td>
+                            </tr>
+                            <tr>
+                                <td>Sprite Sheet Animations</td>
+                            </tr>
+                            <tr>
+                                <td>Target Screen Resolution (+Fullscreen)</td>
+                            </tr>
+                            <tr>
+                                <td>Customizable Intro Video / Animation</td>
+                            </tr>
+                            <tr>
+                                <td>Customizable Main Menu / Game Menu (3 built-in menu styles)</td>
+                            </tr>
+                            <tr>
+                                <td>Customizable UI elements (Dialogs, Bars, Buttons, etc)</td>
+                            </tr>
+                            <tr>
+                                <td>Customizable Global CSS for menus / UI elements</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </li>
             
             <li class="icon fa-cogs">
                 <h3>Application Framework</h3>
                 <div class="table-wrapper">
                     <table>
-                        <thead>
-                            <tr>
-                                <th>Application Framework</th>
-                            </tr>
-                        </thead>
                         <tbody>
                             <tr>
-                                <td><a href="https://github.com/AlmasB/FXEventBus">FXEventBus</a></td>
+                                <td><a target="_blank" href="https://github.com/AlmasB/FXEventBus">FXEventBus</a></td>
+                            </tr>
+                            <tr>
+                                <td><a target="_blank" href="http://logging.apache.org/log4j/2.x/">Log4j2</a></td>
                             </tr>
                             <tr>
                                 <td>Time Management System (in-game time + real time)</td>
@@ -79,13 +106,42 @@ layout: landing
                             <tr>
                                 <td>Global Services Framework</td>
                             </tr>
-                        </tbody>
-                        <tfoot>
                             <tr>
-                                <td colspan="2"></td>
-                                <td>100.00</td>
+                                <td>Developer Panel</td>
                             </tr>
-                        </tfoot>
+                        </tbody>
+                    </table>
+                </div>
+            </li>
+            
+            <li class="icon fa-keyboard-o">
+                <h3>User Input</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>Key & Mouse Bindings</td>
+                            </tr>
+                            <tr>
+                                <td>Full Input Mocking</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </li>
+            
+            <li class="icon fa-floppy-o">
+                <h3>I/O</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td><a target="_blank" href="https://github.com/AlmasB/EasyIO">EasyIO</a> & Networking (TCP and UDP)</td>
+                            </tr>
+                            <tr>
+                                <td>Asset Management (".png", ".jpg", ".wav", ".mp3", ".txt", ".ttf/.otf", custom)</td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </li>
@@ -93,14 +149,14 @@ layout: landing
     </div>
 </section>
                     
-				<!-- Two -->
-					<section id="two" class="wrapper alt style2">
-						<section class="spotlight">
-							<div class="content">
-                          
-                            <h2>Basic Usage (Java)</h2>
-                            
-                            <pre lang="java"><code>
+<!-- Two -->
+<section id="two" class="wrapper alt style2">
+    <section class="spotlight">
+        <div class="content">
+      
+        <h2>Basic Usage (Java)</h2>
+        
+        <pre lang="java"><code>
 public class BasicGameApp extends GameApplication {
 
     @Override
@@ -134,15 +190,15 @@ public class BasicGameApp extends GameApplication {
         launch(args);
     }
 }
-                            </code></pre>
-                            
-                            </div>
-                            
-                            <div class="content">
-                            
-                            <h2>Basic Usage (Kotlin)</h2>
-                            
-                            <pre lang="kotlin"><code>
+        </code></pre>
+        
+        </div>
+        
+        <div class="content">
+        
+        <h2>Basic Usage (Kotlin)</h2>
+        
+        <pre lang="kotlin"><code>
 class BasicGameApp : GameApplication() {
 
     override fun initSettings(settings: GameSettings) {
@@ -171,10 +227,10 @@ class BasicGameApp : GameApplication() {
 fun main(args: Array<String>) {
     Application.launch(BasicGameApp::class.java, *args)
 }
-                            </code></pre>
-                            
-                        </div>
-						</section>
+        </code></pre>
+        
+    </div>
+    </section>
                         
                         
 						<section class="spotlight">
