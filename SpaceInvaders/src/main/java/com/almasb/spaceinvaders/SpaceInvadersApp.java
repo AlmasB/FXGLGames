@@ -83,7 +83,7 @@ public class SpaceInvadersApp extends GameApplication {
         settings.setHeight(HEIGHT);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
-        settings.setShowFPS(false);
+        settings.setShowFPS(true);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
@@ -141,8 +141,8 @@ public class SpaceInvadersApp extends GameApplication {
 
     @Override
     protected void preInit() {
-        getAudioPlayer().setGlobalSoundVolume(0);
-        getAudioPlayer().setGlobalMusicVolume(0);
+        getAudioPlayer().setGlobalSoundVolume(0.2);
+        getAudioPlayer().setGlobalMusicVolume(0.2);
 
         getNotificationService().setBackgroundColor(Color.DARKBLUE);
 
@@ -151,12 +151,12 @@ public class SpaceInvadersApp extends GameApplication {
         getEventBus().addEventHandler(BonusPickupEvent.ANY, this::onBonusPickup);
     }
 
-    @Override
-    public void loadState(Serializable data) {
-        SaveData saveData = (SaveData) data;
-
-        initGame(saveData);
-    }
+//    @Override
+//    public void loadState(Serializable data) {
+//        SaveData saveData = (SaveData) data;
+//
+//        initGame(saveData);
+//    }
 
     @Override
     protected void initGame() {
@@ -307,7 +307,7 @@ public class SpaceInvadersApp extends GameApplication {
         getGameScene().addUINode(ui);
     }
 
-    private boolean runningFirstTime = false;
+    private boolean runningFirstTime = true;
 
     @Override
     protected void onUpdate(double tpf) {
@@ -414,7 +414,7 @@ public class SpaceInvadersApp extends GameApplication {
             } else {
                 if (score.get() > highScore) {
                     getDisplay().showInputBox("Enter your name", playerName -> {
-                        getSaveLoadManager().save(new SaveData(playerName, score.get()), SAVE_DATA_NAME);
+                        //getSaveLoadManager().save(new SaveData(playerName, score.get()), SAVE_DATA_NAME);
                         exit();
                     });
                 } else {

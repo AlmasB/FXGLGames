@@ -27,6 +27,7 @@
 package com.almasb.spaceinvaders.collision;
 
 import com.almasb.ents.Entity;
+import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.physics.CollisionHandler;
@@ -56,6 +57,6 @@ public class BulletPlayerHandler extends CollisionHandler {
 
         bullet.removeFromWorld();
 
-        GameApplication.getService(ServiceType.EVENT_BUS).fireEvent(new GameEvent(GameEvent.PLAYER_GOT_HIT));
+        FXGL.getService(ServiceType.EVENT_BUS).fireEvent(new GameEvent(GameEvent.PLAYER_GOT_HIT));
     }
 }

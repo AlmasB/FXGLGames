@@ -56,6 +56,6 @@ public class BulletControl extends AbstractControl {
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
-        position.translateY(owner.isType(EntityFactory.EntityType.PLAYER) ? -tpf * speed : tpf * speed);
+        position.translateY(owner.getValue() == (EntityFactory.EntityType.PLAYER) ? -tpf * speed : tpf * speed);
     }
 }

@@ -31,6 +31,7 @@ import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.asset.AssetLoader;
+import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.EntityView;
@@ -50,6 +51,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Scale;
 import javafx.util.Duration;
 
 import java.util.Random;
@@ -89,7 +91,7 @@ public final class EntityFactory {
         }
     }
 
-    private static final AssetLoader assetLoader = GameApplication.getService(ServiceType.ASSET_LOADER);
+    private static final AssetLoader assetLoader = FXGL.getAssetLoader();
 
     private static final Random random = new Random();
 
@@ -142,7 +144,7 @@ public final class EntityFactory {
         meteor.addControl(new MeteorControl());
 
         // add offscreen clean a bit later so that they are not cleaned from start
-        GameApplication.getService(ServiceType.MASTER_TIMER)
+        FXGL.getMasterTimer()
                 .runOnceAfter(() -> {
                     meteor.addControl(new OffscreenCleanControl());
                 }, Duration.seconds(5));
@@ -192,7 +194,7 @@ public final class EntityFactory {
 
         bullet.addComponent(new CollidableComponent(true));
         bullet.getMainViewComponent().setView(new EntityView(assetLoader.loadTexture("tank_bullet.png")), true);
-        bullet.addControl(new ProjectileControl(new Point2D(0, Entities.getType(owner).isType(EntityType.PLAYER) ? -1 : 1), 10));
+        bullet.addControl(new ProjectileControl(new Point2D(0, Entities.getType(owner).isType(EntityType.PLAYER) ? -1 : 1), 10 * 60));
         bullet.addComponent(new OwnerComponent(Entities.getType(owner).getValue()));
         bullet.addControl(new OffscreenCleanControl());
 
@@ -209,7 +211,7 @@ public final class EntityFactory {
 
         bullet.getPositionComponent().setValue(center);
 
-        bullet.getBoundingBoxComponent().addHitBox(new HitBox("HIT", new BoundingBox(0, 0, 9, 20)));
+        bullet.getBoundingBoxComponent().addHitBox(new HitBox("HIT", BoundingShape.box(9, 20)));
         bullet.addComponent(new CollidableComponent(true));
         bullet.addComponent(new OwnerComponent(Entities.getType(owner).getValue()));
         bullet.addControl(new OffscreenCleanControl());
@@ -256,8 +258,10 @@ public final class EntityFactory {
         explosion.getPositionComponent().setValue(position.subtract(40, 40));
 
         Texture animation = assetLoader.loadTexture("explosion.png").toStaticAnimatedTexture(48, Duration.seconds(2));
-        animation.setFitWidth(80);
-        animation.setFitHeight(80);
+        //animation.setFitWidth(80);
+        //animation.setFitHeight(80);
+
+        animation.getTransforms().add(new Scale(0.5, 0.5, 0, 0));
 
         explosion.getMainViewComponent().setView(animation);
         explosion.addControl(new ExpireCleanControl(Duration.seconds(1.8)));

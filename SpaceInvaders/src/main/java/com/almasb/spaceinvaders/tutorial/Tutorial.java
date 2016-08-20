@@ -26,6 +26,7 @@
 
 package com.almasb.spaceinvaders.tutorial;
 
+import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.ui.UIFactory;
@@ -59,9 +60,9 @@ public class Tutorial {
         uiText.setText(step.hint);
         step.action.run();
 
-        GameApplication.getService(ServiceType.AUDIO_PLAYER).playMusic(step.fileName);
+        FXGL.getAudioPlayer().playMusic(step.fileName);
 
-        GameApplication.getService(ServiceType.MASTER_TIMER).runOnceAfter(() -> {
+        FXGL.getMasterTimer().runOnceAfter(() -> {
             if (!tutorialSteps.isEmpty()) {
                 playStep(tutorialSteps.poll());
             } else {

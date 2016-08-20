@@ -27,6 +27,7 @@
 package com.almasb.spaceinvaders.collision;
 
 import com.almasb.ents.Entity;
+import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.entity.Entities;
@@ -69,14 +70,17 @@ public class BulletEnemyHandler extends CollisionHandler {
         hp.setValue(hp.getValue() - 1);
 
         if (hp.getValue() <= 0) {
-            Entity explosion = EntityFactory.newExplosion(Entities.getBBox(enemy).getCenterWorld());
-            enemy.getWorld().addEntity(explosion);
 
-            enemy.removeFromWorld();
+            FXGL.getMasterTimer().runOnceAfter(() -> {
+                Entity explosion = EntityFactory.newExplosion(Entities.getBBox(enemy).getCenterWorld());
+                enemy.getWorld().addEntity(explosion);
+
+                enemy.removeFromWorld();
+            }, Duration.seconds(0.1));
 
             // TODO: do this via a listener to entity world, i.e. when they are actually removed
-            GameApplication.getService(ServiceType.AUDIO_PLAYER).playSound("explosion.wav");
-            GameApplication.getService(ServiceType.EVENT_BUS).fireEvent(new GameEvent(GameEvent.ENEMY_KILLED));
+            FXGL.getService(ServiceType.AUDIO_PLAYER).playSound("explosion.wav");
+            FXGL.getService(ServiceType.EVENT_BUS).fireEvent(new GameEvent(GameEvent.ENEMY_KILLED));
         } else {
             Entity laserHit = EntityFactory.newLaserHit(hitPosition);
 
@@ -84,7 +88,7 @@ public class BulletEnemyHandler extends CollisionHandler {
 
             enemy.getComponentUnsafe(MainViewComponent.class).getView().setBlendMode(BlendMode.RED);
 
-            GameApplication.getService(ServiceType.MASTER_TIMER)
+            FXGL.getService(ServiceType.MASTER_TIMER)
                     .runOnceAfter(() -> {
                         if (enemy.isActive())
                             enemy.getComponentUnsafe(MainViewComponent.class).getView().setBlendMode(null);

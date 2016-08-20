@@ -27,6 +27,7 @@
 package com.almasb.spaceinvaders.collision;
 
 import com.almasb.ents.Entity;
+import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.physics.CollisionHandler;
@@ -49,7 +50,6 @@ public class BonusPlayerHandler extends CollisionHandler {
 
         EntityFactory.BonusType type = (EntityFactory.BonusType) bonus.getComponentUnsafe(SubTypeComponent.class).getValue();
 
-        GameApplication.getService(ServiceType.EVENT_BUS)
-                .fireEvent(new BonusPickupEvent(BonusPickupEvent.ANY, type));
+        FXGL.getEventBus().fireEvent(new BonusPickupEvent(BonusPickupEvent.ANY, type));
     }
 }

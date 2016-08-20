@@ -26,6 +26,7 @@
 
 package com.almasb.spaceinvaders;
 
+import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.scene.GameScene;
@@ -89,7 +90,7 @@ public class GameController implements UIController {
     public void addLife() {
         int numLives = lives.size();
 
-        Texture texture = GameApplication.getService(ServiceType.ASSET_LOADER).loadTexture("life.png");
+        Texture texture = FXGL.getService(ServiceType.ASSET_LOADER).loadTexture("life.png");
         texture.setTranslateX(livesX + 32 * numLives);
         texture.setTranslateY(livesY);
         texture.setFitWidth(16);
@@ -112,7 +113,7 @@ public class GameController implements UIController {
 
         gameScene.addUINode(flash);
 
-        GameApplication.getService(ServiceType.MASTER_TIMER)
+        FXGL.getService(ServiceType.MASTER_TIMER)
                 .runOnceAfter(() -> gameScene.removeUINode(flash), Duration.seconds(1));
     }
 

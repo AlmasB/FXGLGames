@@ -28,6 +28,7 @@ package com.almasb.spaceinvaders.control;
 
 import com.almasb.ents.AbstractControl;
 import com.almasb.ents.Entity;
+import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.audio.AudioPlayer;
@@ -52,11 +53,11 @@ public class EnemyControl extends AbstractControl {
 
     @Override
     public void onAdded(Entity entity) {
-        audioPlayer = GameApplication.getService(ServiceType.AUDIO_PLAYER);
+        audioPlayer = FXGL.getService(ServiceType.AUDIO_PLAYER);
 
-        hTimer = GameApplication.getService(ServiceType.LOCAL_TIMER);
-        vTimer = GameApplication.getService(ServiceType.LOCAL_TIMER);
-        attackTimer = GameApplication.getService(ServiceType.LOCAL_TIMER);
+        hTimer = FXGL.getService(ServiceType.LOCAL_TIMER);
+        vTimer = FXGL.getService(ServiceType.LOCAL_TIMER);
+        attackTimer = FXGL.getService(ServiceType.LOCAL_TIMER);
         hTimer.capture();
         vTimer.capture();
         attackTimer.capture();

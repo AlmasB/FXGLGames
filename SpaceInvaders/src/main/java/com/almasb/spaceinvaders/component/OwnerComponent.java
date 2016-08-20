@@ -33,7 +33,7 @@ import com.almasb.fxgl.entity.component.TypeComponent;
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class OwnerComponent extends TypeComponent {
+public class OwnerComponent extends ObjectComponent<Object> {
     public OwnerComponent(Object entity) {
         super(entity);
     }

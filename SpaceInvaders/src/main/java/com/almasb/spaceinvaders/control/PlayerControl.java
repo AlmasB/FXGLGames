@@ -29,6 +29,7 @@ package com.almasb.spaceinvaders.control;
 import com.almasb.ents.AbstractControl;
 import com.almasb.ents.Entity;
 import com.almasb.ents.component.Required;
+import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
@@ -66,7 +67,7 @@ public class PlayerControl extends AbstractControl {
         bbox = entity.getComponentUnsafe(BoundingBoxComponent.class);
         invicibility = entity.getComponentUnsafe(InvincibleComponent.class);
 
-        timer = GameApplication.getService(ServiceType.MASTER_TIMER);
+        timer = FXGL.getMasterTimer();
     }
 
     @Override
@@ -101,7 +102,7 @@ public class PlayerControl extends AbstractControl {
 
         getEntity().getWorld().addEntity(bullet);
 
-        GameApplication.getService(ServiceType.AUDIO_PLAYER)
+        FXGL.getAudioPlayer()
                 .playSound("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
     }
 
