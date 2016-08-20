@@ -2,8 +2,9 @@
 #
 
 # Site settings
-title: FXGL
+title: FXGL Games
 description: |
+  Games built with FXGL -
   JavaFX Game Development Framework
 owner: AlmasB # or company name
 first_published: 2016 # if migrating another site, the year of your first publish
