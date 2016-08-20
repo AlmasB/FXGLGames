@@ -2,11 +2,10 @@
 #
 
 # Site settings
-title: FXGLGames
+title: FXGL
 description: |
-  Another fine responsive  
-  site template freebie  
-  crafted by [HTML5 UP](http://html5up.net)
+  JavaFX Game Development Framework
+  View on [GitHub](https://github.com/AlmasB/FXGL)
 owner: AlmasB # or company name
 first_published: 2016 # if migrating another site, the year of your first publish
 email: almaslvl@gmail.com
