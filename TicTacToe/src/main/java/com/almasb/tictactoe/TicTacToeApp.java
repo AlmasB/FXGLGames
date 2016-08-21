@@ -6,6 +6,7 @@ import com.almasb.fxgl.settings.GameSettings;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.util.Duration;
 
@@ -53,8 +54,6 @@ public class TicTacToeApp extends GameApplication {
         Line line2 = new Line(getWidth() / 3 * 2, 0, getWidth() / 3 * 2, 0);
         Line line3 = new Line(0, getHeight() / 3, 0, getHeight() / 3);
         Line line4 = new Line(0, getHeight() / 3 * 2, 0, getHeight() / 3 * 2);
-
-
 
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 3; x++) {
@@ -108,7 +107,7 @@ public class TicTacToeApp extends GameApplication {
     private boolean checkGameFinished() {
         for (TileCombo combo : combos) {
             if (combo.isComplete()) {
-                gameOver(combo.getWinSymbol());
+                playWinAnimation(combo);
                 return true;
             }
         }
@@ -125,6 +124,25 @@ public class TicTacToeApp extends GameApplication {
 
         gameOver("DRAW");
         return true;
+    }
+
+    private void playWinAnimation(TileCombo combo) {
+        Line line = new Line();
+        line.setStartX(combo.getTile1().getCenterX());
+        line.setStartY(combo.getTile1().getCenterY());
+        line.setEndX(combo.getTile1().getCenterX());
+        line.setEndY(combo.getTile1().getCenterY());
+        line.setStroke(Color.YELLOW);
+        line.setStrokeWidth(3);
+
+        getGameScene().addUINode(line);
+
+        Timeline timeline = new Timeline();
+        timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(1),
+                new KeyValue(line.endXProperty(), combo.getTile3().getCenterX()),
+                new KeyValue(line.endYProperty(), combo.getTile3().getCenterY())));
+        timeline.setOnFinished(e -> gameOver(combo.getWinSymbol()));
+        timeline.play();
     }
 
     private void gameOver(String winner) {

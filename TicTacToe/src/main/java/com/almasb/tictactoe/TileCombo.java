@@ -13,6 +13,18 @@ public class TileCombo {
         this.tile3 = tile3;
     }
 
+    public Tile getTile1() {
+        return tile1;
+    }
+
+    public Tile getTile2() {
+        return tile2;
+    }
+
+    public Tile getTile3() {
+        return tile3;
+    }
+
     public boolean isComplete() {
         return tile1.getValue() != TileValue.NONE
                 && tile1.getValue() == tile2.getValue()
