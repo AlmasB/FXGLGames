@@ -1,1 +1,0 @@
-Sprites are from: [opengameart.org](http://opengameart.org/content/bevouliin-free-bee-flappy-bird-sprite-sheets).

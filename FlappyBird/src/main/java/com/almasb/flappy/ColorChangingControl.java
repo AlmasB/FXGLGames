@@ -28,6 +28,9 @@ public class ColorChangingControl extends AbstractControl {
     public void onUpdate(Entity entity, double tpf) {
         if (timer.elapsed(interval)) {
             view.setFill(view.getFill() == Color.BLACK ? Color.WHITE : Color.BLACK);
+            FXGL.<FlappyBirdApp>getAppCast()
+                    .colorProperty()
+                    .setValue(view.getFill() == Color.BLACK ? Color.WHITE : Color.BLACK);
             timer.capture();
         }
     }
