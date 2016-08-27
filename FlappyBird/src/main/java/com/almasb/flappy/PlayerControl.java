@@ -22,6 +22,7 @@ public class PlayerControl extends AbstractControl {
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
+        acceleration.x += tpf * 0.1;
         acceleration.y += tpf * 10;
 
         if (acceleration.y < -5)
