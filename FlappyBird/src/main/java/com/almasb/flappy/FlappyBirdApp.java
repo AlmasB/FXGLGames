@@ -14,6 +14,7 @@ import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.texture.Texture;
+import com.almasb.fxgl.ui.UIFactory;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.canvas.GraphicsContext;
@@ -22,6 +23,7 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
@@ -131,26 +133,23 @@ public class FlappyBirdApp extends GameApplication {
                     }
                 }
 
-                System.out.println(particles.size());
+                //System.out.println(particles.size());
 
                 reset = true;
             }
         });
     }
 
-    private static class Particle {
-        private double x, y;
-        private Color color;
-
-        public Particle(double x, double y, Color color) {
-            this.x = x;
-            this.y = y;
-            this.color = color;
-        }
-    }
-
     @Override
-    protected void initUI() {}
+    protected void initUI() {
+        Text uiScore = UIFactory.newText("", 72);
+        uiScore.setTranslateX(getWidth() - 200);
+        uiScore.setTranslateY(50);
+        uiScore.fillProperty().bind(color);
+        uiScore.textProperty().bind(getMasterTimer().tickProperty().asString());
+
+        getGameScene().addUINode(uiScore);
+    }
 
     double time = 0;
 
@@ -161,7 +160,7 @@ public class FlappyBirdApp extends GameApplication {
         if (!particles.isEmpty()) {
             g.setFill(color.getValue().invert());
             g.fillRect(0, 0, getWidth(), getHeight());
-            
+
             time += tpf;
 
             if (time >= 3) {

@@ -2,6 +2,7 @@ package com.almasb.flappy;
 
 import com.almasb.ents.AbstractControl;
 import com.almasb.ents.Entity;
+import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.component.PositionComponent;
 import org.jbox2d.common.Vec2;
@@ -36,5 +37,7 @@ public class PlayerControl extends AbstractControl {
 
     public void jump() {
         acceleration.addLocal(0, -5);
+
+        FXGL.getAudioPlayer().playSound("jump.wav");
     }
 }
