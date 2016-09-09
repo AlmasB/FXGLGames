@@ -6,6 +6,7 @@ import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.component.MainViewComponent;
 import com.almasb.slotmachine.EntityType;
+import com.almasb.slotmachine.SlotMachineApp;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -30,15 +31,13 @@ public class LeverControl extends AbstractControl {
     }
 
     public void trigger() {
+        if (FXGL.<SlotMachineApp>getAppCast().isMachineSpinning())
+            return;
+
         currentTexture = currentTexture.equals("lever0.png") ? "lever1.png" : "lever0.png";
 
         view.setTexture(currentTexture);
 
-        FXGL.getApp()
-                .getGameWorld()
-                .getEntitiesByType(EntityType.WHEEL)
-                .stream()
-                .map(e -> e.getControlUnsafe(WheelControl.class))
-                .forEach(WheelControl::spin);
+        FXGL.<SlotMachineApp>getAppCast().spin();
     }
 }

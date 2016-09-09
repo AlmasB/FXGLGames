@@ -22,10 +22,11 @@ public class SlotMachineFactory {
                 .build();
     }
 
-    public GameEntity buildBackground() {
-        return Entities.builder()
-                .viewFromTexture("bg.png")
-                .build();
+    public GameEntity[] buildBackground() {
+        return new GameEntity[] {
+                Entities.builder().viewFromTexture("bg.png").build(),
+                Entities.builder().at(910, 410).viewFromTexture("coin.gif").build()
+        };
     }
 
     public GameEntity[] buildWheels() {
