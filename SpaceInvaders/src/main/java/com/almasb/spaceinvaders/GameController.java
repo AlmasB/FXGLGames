@@ -27,13 +27,11 @@
 package com.almasb.spaceinvaders;
 
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.scene.GameScene;
 import com.almasb.fxgl.scene.Viewport;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxgl.ui.UIController;
-import com.almasb.fxgl.ui.UIFactory;
 import javafx.animation.Animation;
 import javafx.animation.ScaleTransition;
 import javafx.animation.SequentialTransition;
@@ -75,8 +73,8 @@ public class GameController implements UIController {
 
     @Override
     public void init() {
-        labelScore.setFont(UIFactory.newFont(18));
-        labelHighScore.setFont(UIFactory.newFont(18));
+        labelScore.setFont(FXGL.getUIFactory().newFont(18));
+        labelHighScore.setFont(FXGL.getUIFactory().newFont(18));
     }
 
     public Label getLabelScore() {

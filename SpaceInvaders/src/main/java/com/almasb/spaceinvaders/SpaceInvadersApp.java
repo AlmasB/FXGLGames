@@ -31,16 +31,16 @@ import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.GameEntity;
-import com.almasb.fxgl.entity.component.MainViewComponent;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
-import com.almasb.fxgl.entity.control.ProjectileControl;
 import com.almasb.fxgl.gameplay.Achievement;
 import com.almasb.fxgl.gameplay.AchievementManager;
-import com.almasb.fxgl.input.*;
+import com.almasb.fxgl.input.ActionType;
+import com.almasb.fxgl.input.Input;
+import com.almasb.fxgl.input.InputMapping;
+import com.almasb.fxgl.input.OnUserAction;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxgl.settings.GameSettings;
-import com.almasb.fxgl.ui.UIFactory;
 import com.almasb.spaceinvaders.collision.BonusPlayerHandler;
 import com.almasb.spaceinvaders.collision.BulletEnemyHandler;
 import com.almasb.spaceinvaders.collision.BulletPlayerHandler;
@@ -52,7 +52,6 @@ import com.almasb.spaceinvaders.tutorial.Tutorial;
 import com.almasb.spaceinvaders.tutorial.TutorialStep;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.geometry.Point2D;
 import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -63,7 +62,6 @@ import javafx.util.Duration;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 
-import java.io.Serializable;
 import java.util.stream.IntStream;
 
 import static com.almasb.spaceinvaders.Config.*;
@@ -254,9 +252,11 @@ public class SpaceInvadersApp extends GameApplication {
 
         level.set(level.get() + 1);
 
+        Text levelText = getUIFactory().newText("Level " + level.get(), Color.AQUAMARINE, 44);
+
         GameEntity levelInfo = new GameEntity();
-        levelInfo.getPositionComponent().setValue(getWidth() / 2 - UIFactory.widthOf("Level " + level.get(), 44) / 2, 0);
-        levelInfo.getMainViewComponent().setView(new EntityView(UIFactory.newText("Level " + level.get(), Color.AQUAMARINE, 44)), true);
+        levelInfo.getPositionComponent().setValue(getWidth() / 2 - levelText.getLayoutBounds().getWidth() / 2, 0);
+        levelInfo.getMainViewComponent().setView(new EntityView(levelText), true);
         levelInfo.addControl(new ExpireCleanControl(Duration.seconds(LEVEL_START_DELAY)));
 
         PhysicsComponent pComponent = new PhysicsComponent();
@@ -344,9 +344,9 @@ public class SpaceInvadersApp extends GameApplication {
             getInput().mockButtonRelease(MouseButton.PRIMARY);
         });
 
-        Text tutorialText = UIFactory.newText("", Color.AQUA, 24);
+        Text tutorialText = getUIFactory().newText("", Color.AQUA, 24);
         tutorialText.textProperty().addListener((o, old, newText) -> {
-            tutorialText.setTranslateX(getWidth() / 2 - UIFactory.widthOf(newText, 24) / 2);
+            tutorialText.setTranslateX(getWidth() / 2 - tutorialText.getLayoutBounds().getWidth() / 2);
         });
 
         tutorialText.setTranslateY(getHeight() / 2 - 50);

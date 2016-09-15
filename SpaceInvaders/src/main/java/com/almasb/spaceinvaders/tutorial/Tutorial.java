@@ -27,9 +27,6 @@
 package com.almasb.spaceinvaders.tutorial;
 
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.app.ServiceType;
-import com.almasb.fxgl.ui.UIFactory;
 import javafx.scene.text.Text;
 
 import java.util.ArrayDeque;

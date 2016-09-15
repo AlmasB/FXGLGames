@@ -28,7 +28,6 @@ package com.almasb.spaceinvaders.collision;
 
 import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.component.MainViewComponent;
@@ -36,13 +35,10 @@ import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.spaceinvaders.EntityFactory;
 import com.almasb.spaceinvaders.component.HPComponent;
-import com.almasb.spaceinvaders.component.InvincibleComponent;
 import com.almasb.spaceinvaders.component.OwnerComponent;
 import com.almasb.spaceinvaders.event.GameEvent;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 /**

@@ -27,14 +27,10 @@
 package com.almasb.spaceinvaders.collision;
 
 import com.almasb.ents.Entity;
-import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.spaceinvaders.EntityFactory;
 import com.almasb.spaceinvaders.component.HPComponent;
-import com.almasb.spaceinvaders.component.InvincibleComponent;
 import com.almasb.spaceinvaders.component.OwnerComponent;
-import com.almasb.spaceinvaders.event.GameEvent;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)

@@ -28,11 +28,7 @@ package com.almasb.spaceinvaders;
 
 import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.asset.AssetLoader;
-import com.almasb.fxgl.physics.BoundingShape;
-import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.GameEntity;
@@ -40,14 +36,16 @@ import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.entity.control.ProjectileControl;
+import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
+import com.almasb.fxgl.texture.Texture;
 import com.almasb.spaceinvaders.component.HPComponent;
 import com.almasb.spaceinvaders.component.InvincibleComponent;
 import com.almasb.spaceinvaders.component.OwnerComponent;
 import com.almasb.spaceinvaders.component.SubTypeComponent;
 import com.almasb.spaceinvaders.control.*;
-import javafx.geometry.BoundingBox;
 import javafx.geometry.Point2D;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
 import javafx.scene.paint.Color;
@@ -176,7 +174,7 @@ public final class EntityFactory {
                 .at(x, y)
                 .viewFromNodeWithBBox(assetLoader
                         .loadTexture("enemy" + ((int)(Math.random() * 3) + 1) + ".png")
-                        .toStaticAnimatedTexture(2, Duration.seconds(2)))
+                        .toAnimatedTexture(2, Duration.seconds(2)))
                 .with(new CollidableComponent(true), new HPComponent(2))
                 .with(new EnemyControl())
                 .build();
@@ -257,13 +255,12 @@ public final class EntityFactory {
         GameEntity explosion = new GameEntity();
         explosion.getPositionComponent().setValue(position.subtract(40, 40));
 
-        Texture animation = assetLoader.loadTexture("explosion.png").toStaticAnimatedTexture(48, Duration.seconds(2));
-        //animation.setFitWidth(80);
-        //animation.setFitHeight(80);
-
-        animation.getTransforms().add(new Scale(0.5, 0.5, 0, 0));
+        // texture is 256x256, we want smaller, 80x80
+        // it has 48 frames, hence 80 * 48
+        Texture animation = assetLoader.loadTexture("explosion.png", 80 * 48, 80).toAnimatedTexture(48, Duration.seconds(2));
 
         explosion.getMainViewComponent().setView(animation);
+        explosion.getView().setBlendMode(BlendMode.ADD);
         explosion.addControl(new ExpireCleanControl(Duration.seconds(1.8)));
 
         return explosion;

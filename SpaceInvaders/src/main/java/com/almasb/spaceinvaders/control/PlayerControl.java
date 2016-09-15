@@ -30,16 +30,12 @@ import com.almasb.ents.AbstractControl;
 import com.almasb.ents.Entity;
 import com.almasb.ents.component.Required;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
 import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.fxgl.time.FXGLMasterTimer;
 import com.almasb.fxgl.time.MasterTimer;
 import com.almasb.spaceinvaders.Config;
 import com.almasb.spaceinvaders.EntityFactory;
 import com.almasb.spaceinvaders.component.InvincibleComponent;
-import javafx.util.Duration;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
