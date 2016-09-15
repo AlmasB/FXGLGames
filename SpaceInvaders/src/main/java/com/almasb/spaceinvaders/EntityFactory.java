@@ -49,7 +49,6 @@ import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
 import javafx.scene.paint.Color;
-import javafx.scene.transform.Scale;
 import javafx.util.Duration;
 
 import java.util.Random;
@@ -94,12 +93,10 @@ public final class EntityFactory {
     private static final Random random = new Random();
 
     public static Entity newBackground(double w, double h) {
-        GameEntity bg = new GameEntity();
-        Texture bgTexture = assetLoader.loadTexture("background/background.png");
-        bgTexture.setFitWidth(w);
-        bgTexture.setFitHeight(h);
+        GameEntity bg = Entities.builder()
+                .viewFromNode(assetLoader.loadTexture("background/background.png", w, h))
+                .build();
 
-        bg.getMainViewComponent().setView(bgTexture);
         bg.getMainViewComponent().setRenderLayer(RenderLayer.BACKGROUND);
 
         return bg;
@@ -252,31 +249,25 @@ public final class EntityFactory {
     }
 
     public static Entity newExplosion(Point2D position) {
-        GameEntity explosion = new GameEntity();
-        explosion.getPositionComponent().setValue(position.subtract(40, 40));
+        GameEntity explosion = Entities.builder()
+                .at(position.subtract(40, 40))
+                // texture is 256x256, we want smaller, 80x80
+                // it has 48 frames, hence 80 * 48
+                .viewFromNode(assetLoader.loadTexture("explosion.png", 80 * 48, 80).toAnimatedTexture(48, Duration.seconds(2)))
+                .with(new ExpireCleanControl(Duration.seconds(1.8)))
+                .build();
 
-        // texture is 256x256, we want smaller, 80x80
-        // it has 48 frames, hence 80 * 48
-        Texture animation = assetLoader.loadTexture("explosion.png", 80 * 48, 80).toAnimatedTexture(48, Duration.seconds(2));
-
-        explosion.getMainViewComponent().setView(animation);
+        // slightly better looking effect
         explosion.getView().setBlendMode(BlendMode.ADD);
-        explosion.addControl(new ExpireCleanControl(Duration.seconds(1.8)));
 
         return explosion;
     }
 
     public static Entity newLaserHit(Point2D position) {
-        GameEntity laserHit = new GameEntity();
-        laserHit.getPositionComponent().setValue(position.subtract(15, 15));
-
-        Texture hit = assetLoader.loadTexture("laser_hit.png");
-        hit.setFitWidth(15);
-        hit.setFitHeight(15);
-
-        laserHit.getMainViewComponent().setView(hit);
-        laserHit.addControl(new LaserHitControl());
-
-        return laserHit;
+        return Entities.builder()
+                .at(position.subtract(15, 15))
+                .viewFromNode(assetLoader.loadTexture("laser_hit.png", 15, 15))
+                .with(new LaserHitControl())
+                .build();
     }
 }

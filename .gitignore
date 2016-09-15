@@ -28,3 +28,6 @@ logs/
 /saves
 profiles/
 system/
+
+# Space Invaders #
+hiscore.dat

@@ -88,11 +88,9 @@ public class GameController implements UIController {
     public void addLife() {
         int numLives = lives.size();
 
-        Texture texture = FXGL.getService(ServiceType.ASSET_LOADER).loadTexture("life.png");
+        Texture texture = FXGL.getService(ServiceType.ASSET_LOADER).loadTexture("life.png", 16, 16);
         texture.setTranslateX(livesX + 32 * numLives);
         texture.setTranslateY(livesY);
-        texture.setFitWidth(16);
-        texture.setFitHeight(16);
 
         lives.add(texture);
         gameScene.addUINode(texture);

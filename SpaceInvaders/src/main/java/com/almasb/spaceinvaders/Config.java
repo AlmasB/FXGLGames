@@ -32,7 +32,7 @@ package com.almasb.spaceinvaders;
 public final class Config {
     private Config() {}
 
-    public static final String SAVE_DATA_NAME = "hiscore.dat";
+    public static final String SAVE_DATA_NAME = "./hiscore.dat";
 
     public static final int WIDTH = 650;
     public static final int HEIGHT = 800;
@@ -61,7 +61,7 @@ public final class Config {
     public static final double INVINCIBILITY_TIME = 1.0;
 
     public static final int ACHIEVEMENT_ENEMIES_KILLED = 40;
-    public static final int ACHIEVEMENT_MASTER_SCORER = 50000;
+    public static final int ACHIEVEMENT_MASTER_SCORER = 1000;
 
     public static final class Asset {
         public static final String SOUND_LOSE_LIFE = "lose_life.wav";

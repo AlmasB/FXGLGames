@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.scene.layout.*?>
-
-<?import javafx.scene.control.Label?>
 <!--
   ~ The MIT License (MIT)
   ~
@@ -30,6 +26,10 @@
   ~ SOFTWARE.
   -->
 
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import java.lang.Double?>
 <Pane prefWidth="650" prefHeight="800" xmlns="http://javafx.com/javafx/8.0.60"
       xmlns:fx="http://javafx.com/fxml/1">
 

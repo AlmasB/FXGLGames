@@ -26,6 +26,7 @@
 
 package com.almasb.spaceinvaders;
 
+import com.almasb.easyio.FS;
 import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
@@ -41,6 +42,7 @@ import com.almasb.fxgl.input.OnUserAction;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxgl.settings.GameSettings;
+import com.almasb.fxgl.ui.UI;
 import com.almasb.spaceinvaders.collision.BonusPlayerHandler;
 import com.almasb.spaceinvaders.collision.BulletEnemyHandler;
 import com.almasb.spaceinvaders.collision.BulletPlayerHandler;
@@ -52,7 +54,6 @@ import com.almasb.spaceinvaders.tutorial.Tutorial;
 import com.almasb.spaceinvaders.tutorial.TutorialStep;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
@@ -100,8 +101,6 @@ public class SpaceInvadersApp extends GameApplication {
         input.addInputMapping(new InputMapping("Move Left", KeyCode.A));
         input.addInputMapping(new InputMapping("Move Right", KeyCode.D));
         input.addInputMapping(new InputMapping("Shoot", MouseButton.PRIMARY));
-
-
     }
 
     @OnUserAction(name = "Move Left", type = ActionType.ON_ACTION)
@@ -120,9 +119,7 @@ public class SpaceInvadersApp extends GameApplication {
     }
 
     @Override
-    protected void initAssets() {
-        getAssetLoader().cache();
-    }
+    protected void initAssets() {}
 
     private GameEntity player;
     private PlayerControl playerControl;
@@ -142,30 +139,28 @@ public class SpaceInvadersApp extends GameApplication {
         getAudioPlayer().setGlobalSoundVolume(0.2);
         getAudioPlayer().setGlobalMusicVolume(0.2);
 
-        getNotificationService().setBackgroundColor(Color.DARKBLUE);
-
         getEventBus().addEventHandler(GameEvent.PLAYER_GOT_HIT, this::onPlayerGotHit);
         getEventBus().addEventHandler(GameEvent.ENEMY_KILLED, this::onEnemyKilled);
         getEventBus().addEventHandler(BonusPickupEvent.ANY, this::onBonusPickup);
     }
 
-//    @Override
-//    public void loadState(Serializable data) {
-//        SaveData saveData = (SaveData) data;
-//
-//        initGame(saveData);
-//    }
+    private SaveData savedData = null;
 
     @Override
     protected void initGame() {
-        initGame(highScore == 0
+
+        // we have to use file system directly, since we are running without menus
+        FS.<SaveData>readDataTask(SAVE_DATA_NAME)
+                .onSuccess(data -> savedData = data)
+                .onFailure(ignore -> {})
+                .execute();
+
+        initGame(savedData == null
                 ? new SaveData("CPU", ACHIEVEMENT_MASTER_SCORER)
-                : new SaveData(highScoreName, highScore));
+                : savedData);
     }
 
     private void initGame(SaveData data) {
-        //MainViewComponent.turnOnDebugBBox(Color.YELLOW);
-
         highScoreName = data.getName();
         highScore = data.getHighScore();
 
@@ -296,7 +291,7 @@ public class SpaceInvadersApp extends GameApplication {
     protected void initUI() {
         uiController = new GameController(getGameScene());
 
-        Parent ui = getAssetLoader().loadFXML(Asset.FXML_MAIN_UI, uiController);
+        UI ui = getAssetLoader().loadUI(Asset.FXML_MAIN_UI, uiController);
 
         uiController.getLabelScore().textProperty().bind(score.asString("Score: %d"));
         uiController.getLabelHighScore().setText("HiScore: " + highScore + " " + highScoreName + "");
@@ -304,7 +299,7 @@ public class SpaceInvadersApp extends GameApplication {
         IntStream.range(0, lives.get())
                 .forEach(i -> uiController.addLife());
 
-        getGameScene().addUINode(ui);
+        getGameScene().addUI(ui);
     }
 
     private boolean runningFirstTime = true;
@@ -414,7 +409,10 @@ public class SpaceInvadersApp extends GameApplication {
             } else {
                 if (score.get() > highScore) {
                     getDisplay().showInputBox("Enter your name", playerName -> {
-                        //getSaveLoadManager().save(new SaveData(playerName, score.get()), SAVE_DATA_NAME);
+
+                        // we have to use file system directly, since we are running without menus
+                        FS.writeDataTask(new SaveData(playerName, score.get()), SAVE_DATA_NAME).execute();
+
                         exit();
                     });
                 } else {
