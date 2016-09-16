@@ -29,14 +29,15 @@ package com.almasb.tanks;
 import com.almasb.ents.AbstractControl;
 import com.almasb.ents.Entity;
 import com.almasb.ents.component.Required;
+import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.ServiceType;
-import com.almasb.fxgl.asset.Texture;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
 import com.almasb.fxgl.entity.component.MainViewComponent;
 import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxgl.entity.component.RotationComponent;
+import com.almasb.fxgl.texture.Texture;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 
@@ -61,8 +62,8 @@ public class PlayerControl extends AbstractControl {
         view = Entities.getMainView(entity);
         bbox = Entities.getBBox(entity);
 
-        texture = GameApplication.getService(ServiceType.ASSET_LOADER).loadTexture("player.png");
-        view.setGraphics(texture);
+        texture = FXGL.getAssetLoader().loadTexture("player.png");
+        view.setView(texture);
     }
 
     private double speed = 0;

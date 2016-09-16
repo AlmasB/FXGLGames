@@ -35,6 +35,7 @@ import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.entity.control.ProjectileControl;
+import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Point2D;
@@ -46,14 +47,11 @@ import static com.almasb.tanks.Config.*;
  */
 public class EntityFactory {
 
-    private static final AssetLoader assetLoader = GameApplication.getService(ServiceType.ASSET_LOADER);
-
-
     public static Entity newBullet(double x, double y, Point2D direction) {
         GameEntity bullet = new GameEntity();
         bullet.getPositionComponent().setValue(x, y);
-        bullet.getBoundingBoxComponent().addHitBox(new HitBox("BODY", new BoundingBox(34, 34, 16, 16)));
-        bullet.getMainViewComponent().setGraphics(assetLoader.loadTexture("bullet.png"));
+        bullet.getBoundingBoxComponent().addHitBox(new HitBox("BODY", new Point2D(34, 34), BoundingShape.box(16, 16)));
+        bullet.getMainViewComponent().setTexture("bullet.png");
 
         bullet.addControl(new OffscreenCleanControl());
         bullet.addControl(new ProjectileControl(direction, BULLET_SPEED));

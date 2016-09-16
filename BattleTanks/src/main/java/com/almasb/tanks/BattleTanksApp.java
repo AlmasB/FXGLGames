@@ -30,12 +30,15 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.component.MainViewComponent;
+import com.almasb.fxgl.gameplay.Level;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.parser.TextLevelParser;
+import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.settings.GameSettings;
 import javafx.geometry.BoundingBox;
+import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
@@ -97,20 +100,10 @@ public class BattleTanksApp extends GameApplication {
     }
 
     @Override
-    protected void initAssets() {
-
-    }
+    protected void initAssets() {}
 
     @Override
     protected void initGame() {
-        MainViewComponent.turnOnDebugBBox(Color.RED);
-
-
-
-
-
-
-
         TextLevelParser levelParser = new TextLevelParser();
         levelParser.setEmptyChar('0');
 
@@ -130,34 +123,28 @@ public class BattleTanksApp extends GameApplication {
             return flag;
         });
 
-        try {
-            TextLevelParser.Level level = levelParser.parse("levels/level0.txt");
-            level.getEntities().forEach(getGameWorld()::addEntity);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to load level data: " + e.getMessage());
-        }
+        Level level = levelParser.parse("levels/level0.txt");
+        level.getEntities().forEach(getGameWorld()::addEntity);
 
         playerControl = new PlayerControl();
 
         GameEntity player = new GameEntity();
-        player.getBoundingBoxComponent().addHitBox(new HitBox("BODY", new BoundingBox(10, 10, 54, 54)));
+        player.getBoundingBoxComponent().addHitBox(new HitBox("BODY", new Point2D(10, 10), BoundingShape.box(54, 54)));
         player.addControl(playerControl);
 
         getGameWorld().addEntity(player);
     }
 
     @Override
-    protected void initPhysics() {
-
-    }
+    protected void initPhysics() {}
 
     @Override
-    protected void initUI() {
-
-    }
+    protected void initUI() {}
 
     @Override
-    protected void onUpdate() {
+    protected void onUpdate(double tpf) {}
 
+    public static void main(String[] args) {
+        launch(args);
     }
 }
