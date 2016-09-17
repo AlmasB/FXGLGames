@@ -28,6 +28,7 @@ package com.almasb.geowars.grid;
 
 import com.almasb.ents.Entity;
 import com.almasb.fxgl.gameplay.GameWorld;
+import com.almasb.geowars.component.GraphicsComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;

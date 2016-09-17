@@ -28,6 +28,7 @@ package com.almasb.geowars.grid;
 
 import com.almasb.ents.Entity;
 import com.almasb.fxgl.entity.component.MainViewComponent;
+import com.almasb.geowars.component.GraphicsComponent;
 import javafx.geometry.Point2D;
 
 import com.almasb.ents.AbstractControl;
@@ -43,7 +44,6 @@ import java.util.List;
 public class AdditionalLineControl extends AbstractControl {
 
     private PointMass end11, end12, end21, end22;
-    private Line line;
     private GraphicsContext g;
 
     public AdditionalLineControl(PointMass end11, PointMass end12,
@@ -56,15 +56,7 @@ public class AdditionalLineControl extends AbstractControl {
 
     @Override
     public void onAdded(Entity entity) {
-        entity.getComponent(MainViewComponent.class).ifPresent(viewComponent -> {
-            List<Node> list = viewComponent.getView().getChildrenUnmodifiable();
-            if (!list.isEmpty()) {
-                line = (Line) list.get(0);
-            }
-        });
-
         g = entity.getComponentUnsafe(GraphicsComponent.class).getValue();
-        //assert line != null;
     }
 
     private Point2D position1() {
@@ -77,11 +69,6 @@ public class AdditionalLineControl extends AbstractControl {
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
-//        line.setStartX(position1().getX());
-//        line.setStartY(position1().getY());
-//        line.setEndX(position2().getX());
-//        line.setEndY(position2().getY());
-
         g.strokeLine(position1().getX(), position1().getY(),
                 position2().getX(), position2().getY());
     }

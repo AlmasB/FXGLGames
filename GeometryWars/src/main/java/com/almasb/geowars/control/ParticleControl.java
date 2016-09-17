@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-package com.almasb.geowars;
+package com.almasb.geowars.control;
 
 import com.almasb.ents.AbstractControl;
 import com.almasb.ents.Entity;

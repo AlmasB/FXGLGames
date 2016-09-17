@@ -24,16 +24,16 @@
  * SOFTWARE.
  */
 
-package com.almasb.geowars.grid;
+package com.almasb.geowars.component;
 
 import com.almasb.ents.component.ObjectComponent;
-import javafx.scene.canvas.GraphicsContext;
+import javafx.geometry.Point2D;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class GraphicsComponent extends ObjectComponent<GraphicsContext> {
-    public GraphicsComponent(GraphicsContext g) {
-        super(g);
+public class OldPositionComponent extends ObjectComponent<Point2D> {
+    public OldPositionComponent() {
+        super(Point2D.ZERO);
     }
 }

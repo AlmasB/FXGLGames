@@ -24,16 +24,37 @@
  * SOFTWARE.
  */
 
-package com.almasb.geowars;
+package com.almasb.geowars.control;
 
-import com.almasb.ents.component.ObjectComponent;
+import com.almasb.ents.AbstractControl;
+import com.almasb.ents.Entity;
+import com.almasb.fxgl.entity.component.BoundingBoxComponent;
+import com.almasb.fxgl.entity.control.ProjectileControl;
+import com.almasb.geowars.grid.Grid;
 import javafx.geometry.Point2D;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class OldPositionComponent extends ObjectComponent<Point2D> {
-    public OldPositionComponent() {
-        super(Point2D.ZERO);
+public class BulletControl extends AbstractControl {
+
+    private BoundingBoxComponent bbox;
+
+    private Point2D velocity;
+    private Grid grid;
+
+    public BulletControl(Grid grid) {
+        this.grid = grid;
+    }
+
+    @Override
+    public void onAdded(Entity entity) {
+        velocity = entity.getControlUnsafe(ProjectileControl.class).getVelocity();
+        bbox = entity.getComponentUnsafe(BoundingBoxComponent.class);
+    }
+
+    @Override
+    public void onUpdate(Entity entity, double tpf) {
+        grid.applyExplosiveForce(velocity.magnitude() / 60 * 18, bbox.getCenterWorld(), 80 * 60 * tpf);
     }
 }

@@ -27,8 +27,8 @@ package com.almasb.geowars;
 
 import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
+import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.GameEntity;
@@ -42,16 +42,17 @@ import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxgl.settings.GameSettings;
-import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxgl.time.LocalTimer;
-import com.almasb.geowars.grid.GraphicsComponent;
+import com.almasb.geowars.component.OldPositionComponent;
+import com.almasb.geowars.control.BulletControl;
+import com.almasb.geowars.control.SeekerControl;
+import com.almasb.geowars.control.WandererControl;
+import com.almasb.geowars.component.GraphicsComponent;
 import com.almasb.geowars.grid.Grid;
-import com.almasb.geowars.grid.TestControl;
+import com.almasb.geowars.control.GraphicsUpdateControl;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.geometry.HorizontalDirection;
 import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -82,11 +83,12 @@ public class GeoWarsApp extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("FXGL Geometry Wars");
-        settings.setVersion("0.3dev");
+        settings.setVersion("0.4");
         settings.setFullScreen(false);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
-        settings.setShowFPS(true);
+        settings.setProfilingEnabled(true);
+        settings.setCloseConfirmation(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
@@ -123,7 +125,7 @@ public class GeoWarsApp extends GameApplication {
         }, KeyCode.S);
 
         input.addAction(new UserAction("Shoot") {
-            private LocalTimer timer = getService(ServiceType.LOCAL_TIMER);
+            private LocalTimer timer = FXGL.newLocalTimer();
 
             @Override
             protected void onAction() {
@@ -135,21 +137,8 @@ public class GeoWarsApp extends GameApplication {
         }, MouseButton.PRIMARY);
     }
 
-    private Texture textureExplosion;
-
     @Override
-    protected void initAssets() {
-        textureExplosion = getAssetLoader().loadTexture("explosion.png");
-        int h = 1536 / 6;
-        Texture textureCombined = textureExplosion.subTexture(new Rectangle2D(0, 0, 2048, h));
-
-        for (int i = 1; i < 6; i++) {
-            textureCombined = textureCombined
-                    .superTexture(textureExplosion.subTexture(new Rectangle2D(0, h*i, 2048, h)), HorizontalDirection.RIGHT);
-        }
-
-        textureExplosion = textureCombined;
-    }
+    protected void initAssets() {}
 
     @Override
     protected void initGame() {
@@ -200,9 +189,9 @@ public class GeoWarsApp extends GameApplication {
             protected void onCollisionBegin(Entity a, Entity b) {
                 PositionComponent pos = Entities.getPosition(b);
 
-                pos.translate(pos.getValue().
-                        subtract(Entities.getPosition(player).getValue()).
-                        normalize()
+                pos.translate(pos.getValue()
+                        .subtract(Entities.getPosition(player).getValue())
+                        .normalize()
                         .multiply(100));
             }
         };
@@ -215,8 +204,7 @@ public class GeoWarsApp extends GameApplication {
 
     @Override
     protected void initUI() {
-        Text scoreText = new Text();
-        scoreText.setFont(Font.font(18));
+        Text scoreText = getUIFactory().newText("", Color.WHITE, 18);
         scoreText.setTranslateX(1100);
         scoreText.setTranslateY(50);
         scoreText.textProperty().bind(score.asString("Score: %d"));
@@ -243,7 +231,7 @@ public class GeoWarsApp extends GameApplication {
 
         GameEntity e = new GameEntity();
         e.addComponent(new GraphicsComponent(canvas.getGraphicsContext2D()));
-        e.addControl(new TestControl());
+        e.addControl(new GraphicsUpdateControl());
         e.getMainViewComponent().setView(canvas);
 
         getGameWorld().addEntity(e);
@@ -296,11 +284,7 @@ public class GeoWarsApp extends GameApplication {
     private void spawnExplosion(Point2D point) {
         GameEntity explosion = new GameEntity();
         explosion.getPositionComponent().setValue(point.subtract(40, 40));
-
-        Texture animation = textureExplosion.toStaticAnimatedTexture(48, Duration.seconds(2.0));
-        animation.setFitWidth(80);
-        animation.setFitHeight(80);
-        explosion.getMainViewComponent().setView(animation);
+        explosion.getMainViewComponent().setView(getAssetLoader().loadTexture("explosion.png", 80 * 48, 80).toAnimatedTexture(48, Duration.seconds(2)));
         explosion.addControl(new ExpireCleanControl(Duration.seconds(1.8)));
 
         getGameWorld().addEntity(explosion);
@@ -312,7 +296,7 @@ public class GeoWarsApp extends GameApplication {
         GameEntity bullet = new GameEntity();
         bullet.getTypeComponent().setValue(Type.BULLET);
         bullet.getPositionComponent().setValue(Entities.getBBox(player).getCenterWorld().subtract(14, 4.5));
-        bullet.addControl(new ProjectileControl(getInput().getVectorToMouse(bullet.getPositionComponent().getValue()), 10));
+        bullet.addControl(new ProjectileControl(getInput().getVectorToMouse(bullet.getPositionComponent().getValue()), 10 * 60));
         bullet.addControl(new BulletControl(grid));
         bullet.addControl(new OffscreenCleanControl());
         bullet.getMainViewComponent().setView(new EntityView(getAssetLoader().loadTexture("Bullet.png")), true);

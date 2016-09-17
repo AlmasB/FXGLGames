@@ -24,19 +24,42 @@
  * SOFTWARE.
  */
 
-package com.almasb.geowars.grid;
+package com.almasb.geowars.control;
 
 import com.almasb.ents.AbstractControl;
 import com.almasb.ents.Entity;
+import com.almasb.fxgl.entity.Entities;
+import javafx.geometry.Point2D;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class TestControl extends AbstractControl {
+public class SeekerControl extends AbstractControl {
+
+    private Entity player;
+    private Point2D velocity;
+
+    public SeekerControl(Entity player) {
+        this.player = player;
+        velocity = new Point2D(0, 0);
+    }
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
-        entity.getComponentUnsafe(GraphicsComponent.class).getValue()
-                .clearRect(0, 0, 1280, 720);
+        // translate the seeker
+        Point2D playerDirection = Entities.getPosition(player).getValue()
+                .subtract(Entities.getPosition(entity).getValue())
+                .normalize()
+                .multiply(1000);
+
+        velocity = velocity.add(playerDirection)
+                .multiply(0.65);
+
+        Entities.getPosition(entity).translate(velocity.multiply(tpf * 0.1f));
+
+        // rotate the seeker
+        if (velocity.getX() != 0 && velocity.getY() != 0) {
+            Entities.getRotation(entity).rotateToVector(velocity);
+        }
     }
 }
