@@ -37,6 +37,9 @@ import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
 
 /**
+ * This is an FXGL version of the libGDX simple game tutorial which can be found
+ * here - https://github.com/libgdx/libgdx/wiki/A-simple-game
+ *
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class DropApp extends GameApplication {
@@ -46,12 +49,12 @@ public class DropApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Drop");
-        settings.setVersion("0.2");
+        settings.setVersion("1.0");
         settings.setWidth(480);
         settings.setHeight(800);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
-        settings.setShowFPS(false);
+        settings.setProfilingEnabled(false);
     }
 
     @Override

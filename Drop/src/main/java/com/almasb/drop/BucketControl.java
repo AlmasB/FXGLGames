@@ -32,6 +32,8 @@ import com.almasb.ents.component.Required;
 import com.almasb.fxgl.entity.component.PositionComponent;
 
 /**
+ * Controls the player bucket.
+ *
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 @Required(PositionComponent.class)
