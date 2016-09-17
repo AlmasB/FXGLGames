@@ -15,6 +15,7 @@ import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxgl.ui.UIFactory;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.canvas.GraphicsContext;
@@ -46,37 +47,12 @@ public class FlappyBirdApp extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Flappy Bird Clone");
-        settings.setVersion("0.1");
-        settings.setShowFPS(false);
+        settings.setVersion("0.2");
+        settings.setProfilingEnabled(false);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
         settings.setFullScreen(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
-    }
-
-    @Override
-    protected void preInit() {
-        Music bgm = getAssetLoader().loadMusic("bgm.mp3");
-        bgm.setCycleCount(Integer.MAX_VALUE);
-
-        getAudioPlayer().playMusic(bgm);
-
-        addFXGLListener(new FXGLListener() {
-            @Override
-            public void onPause() {}
-
-            @Override
-            public void onResume() {}
-
-            @Override
-            public void onReset() {}
-
-            @Override
-            public void onExit() {
-                getAudioPlayer().stopMusic(bgm);
-                bgm.dispose();
-            }
-        });
     }
 
     @Override
@@ -106,6 +82,8 @@ public class FlappyBirdApp extends GameApplication {
 
         initBackground();
         initPlayer();
+
+        initBackgroundMusic();
     }
 
     private boolean requestNewGame = false;
@@ -133,8 +111,6 @@ public class FlappyBirdApp extends GameApplication {
                     }
                 }
 
-                //System.out.println(particles.size());
-
                 reset = true;
             }
         });
@@ -142,7 +118,7 @@ public class FlappyBirdApp extends GameApplication {
 
     @Override
     protected void initUI() {
-        Text uiScore = UIFactory.newText("", 72);
+        Text uiScore = getUIFactory().newText("", 72);
         uiScore.setTranslateX(getWidth() - 200);
         uiScore.setTranslateY(50);
         uiScore.fillProperty().bind(color);
@@ -151,7 +127,7 @@ public class FlappyBirdApp extends GameApplication {
         getGameScene().addUINode(uiScore);
     }
 
-    double time = 0;
+    private double time = 0;
 
     @Override
     protected void onUpdate(double tpf) {
@@ -174,8 +150,6 @@ public class FlappyBirdApp extends GameApplication {
 
             p.x += vx * (Math.random() - 0.5) * 0.01;
             p.y += vy * (Math.random() - 0.5) * 0.01;
-
-
 
             g.setFill(p.color);
             g.setGlobalAlpha(Math.max(1 - time / 3, 0));
@@ -213,7 +187,7 @@ public class FlappyBirdApp extends GameApplication {
         playerControl = new PlayerControl();
 
         Texture view = getAssetLoader().loadTexture("player.png")
-                .toStaticAnimatedTexture(2, Duration.seconds(0.33));
+                .toAnimatedTexture(2, Duration.seconds(0.5));
 
         GameEntity player = Entities.builder()
                 .at(100, 100)
@@ -226,6 +200,36 @@ public class FlappyBirdApp extends GameApplication {
 
         getGameScene().getViewport().setBounds(0, 0, Integer.MAX_VALUE, (int) getHeight());
         getGameScene().getViewport().bindToEntity(player, getWidth() / 3, getHeight() / 2);
+    }
+
+    private Music bgm = null;
+
+    private void initBackgroundMusic() {
+        // already initialized
+        if (bgm != null)
+            return;
+
+        bgm = getAssetLoader().loadMusic("bgm.mp3");
+        bgm.setCycleCount(Integer.MAX_VALUE);
+
+        getAudioPlayer().playMusic(bgm);
+
+        addFXGLListener(new FXGLListener() {
+            @Override
+            public void onPause() {}
+
+            @Override
+            public void onResume() {}
+
+            @Override
+            public void onReset() {}
+
+            @Override
+            public void onExit() {
+                getAudioPlayer().stopMusic(bgm);
+                bgm.dispose();
+            }
+        });
     }
 
     public static void main(String[] args) {
