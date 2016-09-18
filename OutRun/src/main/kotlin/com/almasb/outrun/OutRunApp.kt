@@ -58,11 +58,11 @@ class OutRunApp : GameApplication() {
             width = 600
             height = 800;
             title = "OutRun"
-            version = "0.1"
+            version = "0.2"
             setShowFPS(false)
             isIntroEnabled = false
             isMenuEnabled = false
-            applicationMode = ApplicationMode.DEBUG
+            applicationMode = ApplicationMode.DEVELOPER
         }
     }
 
@@ -76,12 +76,6 @@ class OutRunApp : GameApplication() {
                 playerControl.boost()
             }
         }, KeyCode.W)
-//
-//        input.addAction(object : UserAction("Move Down") {
-//            override fun onAction() {
-//                playerControl.down()
-//            }
-//        }, KeyCode.S)
 
         input.addAction(object : UserAction("Move Left") {
             override fun onAction() {
@@ -148,7 +142,7 @@ class OutRunApp : GameApplication() {
     private lateinit var ui: Text
 
     override fun initUI() {
-        val label = UIFactory.newText("", 72.0)
+        val label = uiFactory.newText("", 72.0)
         label.translateX = width / 2
         label.translateY = height / 2
 
@@ -190,7 +184,7 @@ class OutRunApp : GameApplication() {
 
         // UI text
 
-        ui = UIFactory.newText("", 16.0)
+        ui = uiFactory.newText("", 16.0)
         ui.translateX = 50.0
         ui.translateY = 50.0
 
