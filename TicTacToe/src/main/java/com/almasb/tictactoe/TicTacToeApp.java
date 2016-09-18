@@ -1,7 +1,9 @@
 package com.almasb.tictactoe;
 
+import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.settings.GameSettings;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -23,13 +25,13 @@ public class TicTacToeApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("TicTacToe");
-        settings.setVersion("0.1");
+        settings.setVersion("0.2");
         settings.setWidth(600);
         settings.setHeight(600);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
-        settings.setShowFPS(false);
         settings.setProfilingEnabled(false);
+        settings.setCloseConfirmation(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
@@ -39,34 +41,19 @@ public class TicTacToeApp extends GameApplication {
     @Override
     protected void initAssets() {}
 
-    @Override
-    protected void initGame() {}
-
-    @Override
-    protected void initPhysics() {}
-
-    private Tile[][] board = new Tile[3][3];
+    private TileEntity[][] board = new TileEntity[3][3];
     private List<TileCombo> combos = new ArrayList<>();
 
     @Override
-    protected void initUI() {
-        Line line1 = new Line(getWidth() / 3, 0, getWidth() / 3, 0);
-        Line line2 = new Line(getWidth() / 3 * 2, 0, getWidth() / 3 * 2, 0);
-        Line line3 = new Line(0, getHeight() / 3, 0, getHeight() / 3);
-        Line line4 = new Line(0, getHeight() / 3 * 2, 0, getHeight() / 3 * 2);
-
+    protected void initGame() {
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 3; x++) {
-                Tile tile = new Tile();
-                tile.setTranslateX(x * getWidth() / 3);
-                tile.setTranslateY(y * getHeight() / 3);
-
+                TileEntity tile = new TileEntity(x * getWidth() / 3, y * getHeight() / 3);
                 board[x][y] = tile;
-                getGameScene().addUINode(tile);
+
+                getGameWorld().addEntity(tile);
             }
         }
-
-        getGameScene().addUINodes(line1, line2, line3, line4);
 
         combos.clear();
 
@@ -83,6 +70,19 @@ public class TicTacToeApp extends GameApplication {
         // diagonals
         combos.add(new TileCombo(board[0][0], board[1][1], board[2][2]));
         combos.add(new TileCombo(board[2][0], board[1][1], board[0][2]));
+    }
+
+    @Override
+    protected void initPhysics() {}
+
+    @Override
+    protected void initUI() {
+        Line line1 = new Line(getWidth() / 3, 0, getWidth() / 3, 0);
+        Line line2 = new Line(getWidth() / 3 * 2, 0, getWidth() / 3 * 2, 0);
+        Line line3 = new Line(0, getHeight() / 3, 0, getHeight() / 3);
+        Line line4 = new Line(0, getHeight() / 3 * 2, 0, getHeight() / 3 * 2);
+
+        getGameScene().addUINodes(line1, line2, line3, line4);
 
         // animation
         KeyFrame frame1 = new KeyFrame(Duration.seconds(0.5),
@@ -114,9 +114,9 @@ public class TicTacToeApp extends GameApplication {
 
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 3; x++) {
-                Tile tile = board[x][y];
+                TileEntity tile = board[x][y];
                 if (tile.getValue() == TileValue.NONE) {
-                    // at least tile is empty
+                    // at least tileView is empty
                     return false;
                 }
             }
@@ -128,10 +128,10 @@ public class TicTacToeApp extends GameApplication {
 
     private void playWinAnimation(TileCombo combo) {
         Line line = new Line();
-        line.setStartX(combo.getTile1().getCenterX());
-        line.setStartY(combo.getTile1().getCenterY());
-        line.setEndX(combo.getTile1().getCenterX());
-        line.setEndY(combo.getTile1().getCenterY());
+        line.setStartX(combo.getTile1().getCenter().getX());
+        line.setStartY(combo.getTile1().getCenter().getY());
+        line.setEndX(combo.getTile1().getCenter().getX());
+        line.setEndY(combo.getTile1().getCenter().getY());
         line.setStroke(Color.YELLOW);
         line.setStrokeWidth(3);
 
@@ -139,8 +139,8 @@ public class TicTacToeApp extends GameApplication {
 
         Timeline timeline = new Timeline();
         timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(1),
-                new KeyValue(line.endXProperty(), combo.getTile3().getCenterX()),
-                new KeyValue(line.endYProperty(), combo.getTile3().getCenterY())));
+                new KeyValue(line.endXProperty(), combo.getTile3().getCenter().getX()),
+                new KeyValue(line.endYProperty(), combo.getTile3().getCenter().getY())));
         timeline.setOnFinished(e -> gameOver(combo.getWinSymbol()));
         timeline.play();
     }
@@ -154,8 +154,8 @@ public class TicTacToeApp extends GameApplication {
         });
     }
 
-    public void onUserMove(Tile tile) {
-        boolean ok = tile.mark(TileValue.X);
+    public void onUserMove(TileEntity tile) {
+        boolean ok = tile.getControl().mark(TileValue.X);
 
         if (ok) {
             boolean over = checkGameFinished();
@@ -178,9 +178,9 @@ public class TicTacToeApp extends GameApplication {
     private void aiMove() {
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 3; x++) {
-                Tile tile = board[x][y];
+                TileEntity tile = board[x][y];
                 if (tile.getValue() == TileValue.NONE) {
-                    tile.mark(TileValue.O);
+                    tile.getControl().mark(TileValue.O);
                     return;
                 }
             }

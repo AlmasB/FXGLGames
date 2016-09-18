@@ -16,16 +16,15 @@ import javafx.util.Duration;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class Tile extends StackPane {
+public class TileView extends StackPane {
 
     private TicTacToeApp app;
-    private TileValue value = TileValue.NONE;
 
     private Arc arc = new Arc(34, 37, 34, 37, 0, 0);
     private Line line1 = new Line(0, 0, 0, 0);
     private Line line2 = new Line(75, 0, 75, 0);
 
-    public Tile() {
+    public TileView(TileEntity tile) {
         app = FXGL.getAppCast();
 
         Rectangle bg = new Rectangle(app.getWidth() / 3, app.getHeight() / 3, Color.rgb(13, 222, 236));
@@ -46,27 +45,14 @@ public class Tile extends StackPane {
 
         getChildren().addAll(bg, bg2, arc, line1, line2);
 
-        setOnMouseClicked(e -> app.onUserMove(this));
+        tile.getComponentUnsafe(TileValueComponent.class).valueProperty().addListener((observable, oldValue, newValue) -> {
+            animate(newValue);
+        });
+
+        setOnMouseClicked(e -> app.onUserMove(tile));
     }
 
-    public TileValue getValue() {
-        return value;
-    }
-
-    public double getCenterX() {
-        return getTranslateX() + app.getWidth() / 3 / 2;
-    }
-
-    public double getCenterY() {
-        return getTranslateY() + app.getHeight() / 3 / 2;
-    }
-
-    public boolean mark(TileValue value) {
-        if (this.value != TileValue.NONE)
-            return false;
-
-        this.value = value;
-
+    public void animate(TileValue value) {
         if (value == TileValue.O) {
             KeyFrame frame = new KeyFrame(Duration.seconds(0.5),
                     new KeyValue(arc.lengthProperty(), 360));
@@ -89,7 +75,5 @@ public class Tile extends StackPane {
             Timeline timeline = new Timeline(frame1, frame2);
             timeline.play();
         }
-
-        return true;
     }
 }
