@@ -37,13 +37,52 @@ public class TileCombo {
                 && tile1.getValue() == tile3.getValue();
     }
 
-    public boolean isOpenHalfComboX() {
-        if (tiles.stream().anyMatch(t -> t.getValue() == TileValue.O))
+    /**
+     * @return true if all tiles are empty
+     */
+    public boolean isOpen() {
+        return tiles.stream()
+                .allMatch(t -> t.getValue() == TileValue.NONE);
+    }
+
+    /**
+     * @param value tile value
+     * @return true if this combo has 2 of value and an empty slot
+     */
+    public boolean isTwoThirds(TileValue value) {
+        TileValue oppositeValue = value == TileValue.X ? TileValue.O : TileValue.X;
+
+        if (tiles.stream().anyMatch(t -> t.getValue() == oppositeValue))
             return false;
 
-        // TODO: complete
+        return tiles.stream()
+                .filter(t -> t.getValue() == TileValue.NONE)
+                .count() == 1;
+    }
 
-        return true;
+    /**
+     * @param value tile value
+     * @return true if this combo has 1 of value and 2 empty slots
+     */
+    public boolean isOneThird(TileValue value) {
+        TileValue oppositeValue = value == TileValue.X ? TileValue.O : TileValue.X;
+
+        if (tiles.stream().anyMatch(t -> t.getValue() == oppositeValue))
+            return false;
+
+        return tiles.stream()
+                .filter(t -> t.getValue() == TileValue.NONE)
+                .count() == 2;
+    }
+
+    /**
+     * @return first empty tile or null if no empty tiles
+     */
+    public TileEntity getFirstEmpty() {
+        return tiles.stream()
+                .filter(t -> t.getValue() == TileValue.NONE)
+                .findAny()
+                .orElse(null);
     }
 
     public String getWinSymbol() {

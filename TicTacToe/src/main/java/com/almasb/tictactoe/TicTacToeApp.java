@@ -1,9 +1,7 @@
 package com.almasb.tictactoe;
 
-import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.settings.GameSettings;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -44,6 +42,8 @@ public class TicTacToeApp extends GameApplication {
     private TileEntity[][] board = new TileEntity[3][3];
     private List<TileCombo> combos = new ArrayList<>();
 
+    private boolean playerStarts = true;
+
     @Override
     protected void initGame() {
         for (int y = 0; y < 3; y++) {
@@ -70,6 +70,13 @@ public class TicTacToeApp extends GameApplication {
         // diagonals
         combos.add(new TileCombo(board[0][0], board[1][1], board[2][2]));
         combos.add(new TileCombo(board[2][0], board[1][1], board[0][2]));
+
+        if (playerStarts) {
+            playerStarts = false;
+        } else {
+            aiMove();
+            playerStarts = true;
+        }
     }
 
     @Override
@@ -168,22 +175,69 @@ public class TicTacToeApp extends GameApplication {
     }
 
     /**
-     * This AI move simply select first empty tile.
-     * Smarter AI could do something like this in order:
-     *
-     * 1. Check if there is a player's half-combo and prevent that
-     * 2. Check if there is a CPU's half-combo and complete it
-     * 3. Check if there is a 3-tile empty combo.
+     * A decent AI but can lose.
      */
     private void aiMove() {
-        for (int y = 0; y < 3; y++) {
-            for (int x = 0; x < 3; x++) {
-                TileEntity tile = board[x][y];
-                if (tile.getValue() == TileValue.NONE) {
-                    tile.getControl().mark(TileValue.O);
-                    return;
-                }
-            }
+
+        // TODO: separate into strategies
+
+        // 1. Check if there is a CPU's half-combo and complete it
+        TileEntity tile = combos.stream()
+                .filter(c -> c.isTwoThirds(TileValue.O))
+                .findAny()
+                .map(TileCombo::getFirstEmpty)
+                .orElse(null);
+
+        if (tile != null) {
+            tile.getControl().mark(TileValue.O);
+            return;
+        }
+
+        // 2. Check if there is a player's half-combo and prevent that
+        tile = combos.stream()
+                .filter(c -> c.isTwoThirds(TileValue.X))
+                .findAny()
+                .map(TileCombo::getFirstEmpty)
+                .orElse(null);
+
+        if (tile != null) {
+            tile.getControl().mark(TileValue.O);
+            return;
+        }
+
+        // 3. Check if there is a 3-tile empty combo.
+        tile = combos.stream()
+                .filter(c -> c.isOneThird(TileValue.O))
+                .findAny()
+                .map(TileCombo::getFirstEmpty)
+                .orElse(null);
+
+        if (tile != null) {
+            tile.getControl().mark(TileValue.O);
+            return;
+        }
+
+        // 4. Check if there is a 3-tile empty combo.
+        tile = combos.stream()
+                .filter(TileCombo::isOpen)
+                .findAny()
+                .map(TileCombo::getFirstEmpty)
+                .orElse(null);
+
+        if (tile != null) {
+            tile.getControl().mark(TileValue.O);
+            return;
+        }
+
+        // 5. Check any move really
+        tile = combos.stream()
+                .filter(c -> c.getFirstEmpty() != null)
+                .findAny()
+                .map(TileCombo::getFirstEmpty)
+                .orElse(null);
+
+        if (tile != null) {
+            tile.getControl().mark(TileValue.O);
         }
     }
 
