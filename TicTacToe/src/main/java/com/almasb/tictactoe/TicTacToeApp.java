@@ -3,6 +3,9 @@ package com.almasb.tictactoe;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.settings.GameSettings;
+import com.almasb.tictactoe.minimax.AIPlayerMinimax;
+import com.almasb.tictactoe.minimax.Board;
+import com.almasb.tictactoe.minimax.Seed;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -184,11 +187,14 @@ public class TicTacToeApp extends GameApplication {
             c -> c.getFirstEmpty() != null
     );
 
+    private void aiMove() {
+        aiMinimax();
+    }
+
     /**
      * A decent AI but can lose.
      */
-    private void aiMove() {
-
+    private void aiRuleBased() {
         TileEntity tile = aiPredicates.stream()
                 .map(predicate -> {
                     return combos.stream()
@@ -202,6 +208,36 @@ public class TicTacToeApp extends GameApplication {
                 .orElseThrow(() -> new IllegalStateException("No empty tiles"));
 
         tile.getControl().mark(TileValue.O);
+    }
+
+    private Board copyBoard;
+    private AIPlayerMinimax ai;
+
+    /**
+     * Unbeatable AI.
+     */
+    private void aiMinimax() {
+        if (copyBoard == null) {
+            copyBoard = new Board();
+            ai = new AIPlayerMinimax(copyBoard);
+            ai.setSeed(Seed.NOUGHT);
+        }
+
+        for (int y = 0; y < 3; y++) {
+            for (int x = 0; x < 3; x++) {
+                TileEntity tile = board[x][y];
+                if (tile.getValue() == TileValue.X) {
+                    copyBoard.setContent(x, y, Seed.CROSS);
+                } else if (tile.getValue() == TileValue.O) {
+                    copyBoard.setContent(x, y, Seed.NOUGHT);
+                } else {
+                    copyBoard.setContent(x, y, Seed.EMPTY);
+                }
+            }
+        }
+
+        int[] result = ai.move();
+        board[result[1]][result[0]].getControl().mark(TileValue.O);
     }
 
     public static void main(String[] args) {
