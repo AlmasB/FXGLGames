@@ -1,6 +1,7 @@
 package com.almasb.tictactoe;
 
 import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.tictactoe.control.TileControl;
 
 /**
  * Instead of using generic GameEntity we add a few convenience methods.

@@ -1,11 +1,11 @@
 package com.almasb.tictactoe;
 
+import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.settings.GameSettings;
-import com.almasb.tictactoe.minimax.AIPlayerMinimax;
-import com.almasb.tictactoe.minimax.Board;
-import com.almasb.tictactoe.minimax.Seed;
+import com.almasb.tictactoe.control.enemy.MinimaxControl;
+import com.almasb.tictactoe.event.AIEvent;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -14,12 +14,12 @@ import javafx.scene.shape.Line;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * An example of a UI based game.
+ * A classic game of Tic-tac-toe.
+ * Comes with 2 types of AI: rule based and minimax based.
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
@@ -28,7 +28,7 @@ public class TicTacToeApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("TicTacToe");
-        settings.setVersion("0.2");
+        settings.setVersion("0.3");
         settings.setWidth(600);
         settings.setHeight(600);
         settings.setIntroEnabled(false);
@@ -44,10 +44,23 @@ public class TicTacToeApp extends GameApplication {
     @Override
     protected void initAssets() {}
 
+    @Override
+    protected void preInit() {
+        getEventBus().addEventHandler(AIEvent.MOVED, event -> checkGameFinished());
+    }
+
     private TileEntity[][] board = new TileEntity[3][3];
     private List<TileCombo> combos = new ArrayList<>();
 
     private boolean playerStarts = true;
+
+    public TileEntity[][] getBoard() {
+        return board;
+    }
+
+    public List<TileCombo> getCombos() {
+        return combos;
+    }
 
     @Override
     protected void initGame() {
@@ -59,6 +72,12 @@ public class TicTacToeApp extends GameApplication {
                 getGameWorld().addEntity(tile);
             }
         }
+
+        Entity enemy = new Entity();
+
+        // this controls the AI behavior
+        enemy.addControl(new MinimaxControl());
+        getGameWorld().addEntity(enemy);
 
         combos.clear();
 
@@ -174,70 +193,12 @@ public class TicTacToeApp extends GameApplication {
 
             if (!over) {
                 aiMove();
-                checkGameFinished();
             }
         }
     }
-
-    private List<Predicate<TileCombo> > aiPredicates = Arrays.asList(
-            c -> c.isTwoThirds(TileValue.O),
-            c -> c.isTwoThirds(TileValue.X),
-            c -> c.isOneThird(TileValue.O),
-            c -> c.isOpen(),
-            c -> c.getFirstEmpty() != null
-    );
 
     private void aiMove() {
-        aiMinimax();
-    }
-
-    /**
-     * A decent AI but can lose.
-     */
-    private void aiRuleBased() {
-        TileEntity tile = aiPredicates.stream()
-                .map(predicate -> {
-                    return combos.stream()
-                            .filter(predicate)
-                            .findAny()
-                            .map(TileCombo::getFirstEmpty)
-                            .orElse(null);
-                })
-                .filter(t -> t != null)
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("No empty tiles"));
-
-        tile.getControl().mark(TileValue.O);
-    }
-
-    private Board copyBoard;
-    private AIPlayerMinimax ai;
-
-    /**
-     * Unbeatable AI.
-     */
-    private void aiMinimax() {
-        if (copyBoard == null) {
-            copyBoard = new Board();
-            ai = new AIPlayerMinimax(copyBoard);
-            ai.setSeed(Seed.NOUGHT);
-        }
-
-        for (int y = 0; y < 3; y++) {
-            for (int x = 0; x < 3; x++) {
-                TileEntity tile = board[x][y];
-                if (tile.getValue() == TileValue.X) {
-                    copyBoard.setContent(x, y, Seed.CROSS);
-                } else if (tile.getValue() == TileValue.O) {
-                    copyBoard.setContent(x, y, Seed.NOUGHT);
-                } else {
-                    copyBoard.setContent(x, y, Seed.EMPTY);
-                }
-            }
-        }
-
-        int[] result = ai.move();
-        board[result[1]][result[0]].getControl().mark(TileValue.O);
+        getEventBus().fireEvent(new AIEvent(AIEvent.WAITING));
     }
 
     public static void main(String[] args) {

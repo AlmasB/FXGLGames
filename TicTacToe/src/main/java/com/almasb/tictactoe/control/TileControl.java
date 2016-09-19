@@ -1,8 +1,10 @@
-package com.almasb.tictactoe;
+package com.almasb.tictactoe.control;
 
 import com.almasb.ents.AbstractControl;
 import com.almasb.ents.Entity;
 import com.almasb.ents.component.Required;
+import com.almasb.tictactoe.TileValue;
+import com.almasb.tictactoe.TileValueComponent;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)

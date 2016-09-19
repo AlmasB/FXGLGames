@@ -1,29 +1,44 @@
-package com.almasb.tictactoe.minimax;
+package com.almasb.tictactoe.control.enemy;
 
-import java.util.*;
+import com.almasb.fxgl.app.FXGL;
+import com.almasb.tictactoe.TicTacToeApp;
+import com.almasb.tictactoe.TileEntity;
+import com.almasb.tictactoe.TileValue;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * AIPlayer using Minimax algorithm
+ * The minimax algorithm is adapted from
+ * https://www.ntu.edu.sg/home/ehchua/programming/java/JavaGame_TicTacToe_AI.html
  *
- * Adapted from https://www.ntu.edu.sg/home/ehchua/programming/java/JavaGame_TicTacToe_AI.html
+ * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class AIPlayerMinimax extends AIPlayer {
+public class MinimaxControl extends EnemyControl {
 
-    /** Constructor with the given game board */
-    public AIPlayerMinimax(Board board) {
-        super(board);
-    }
+    private TileValue mySeed = TileValue.O;
+    private TileValue oppSeed = TileValue.X;
+    private TileValue[][] cells = new TileValue[3][3];
 
-    /** Get next best move for computer. Return int[2] of {row, col} */
     @Override
-    public int[] move() {
+    public void makeMove() {
+        TileEntity[][] board = FXGL.<TicTacToeApp>getAppCast().getBoard();
+
+        // the algorithm uses [row][col]
+        for (int y = 0; y < 3; y++) {
+            for (int x = 0; x < 3; x++) {
+                cells[y][x] = board[x][y].getValue();
+            }
+        }
+
         int[] result = minimax(2, mySeed); // depth, max turn
-        return new int[] {result[1], result[2]};   // row, col
+
+        board[result[2]][result[1]].getControl().mark(mySeed);
     }
 
     /** Recursive minimax at level of depth for either maximizing or minimizing player.
      Return int[3] of {score, row, col}  */
-    private int[] minimax(int depth, Seed player) {
+    private int[] minimax(int depth, TileValue player) {
         // Generate possible next moves in a List of int[2] of {row, col}.
         List<int[]> nextMoves = generateMoves();
 
@@ -39,7 +54,7 @@ public class AIPlayerMinimax extends AIPlayer {
         } else {
             for (int[] move : nextMoves) {
                 // Try this move for the current "player"
-                cells[move[0]][move[1]].content = player;
+                cells[move[0]][move[1]] = player;
                 if (player == mySeed) {  // mySeed (computer) is maximizing player
                     currentScore = minimax(depth - 1, oppSeed)[0];
                     if (currentScore > bestScore) {
@@ -56,7 +71,7 @@ public class AIPlayerMinimax extends AIPlayer {
                     }
                 }
                 // Undo move
-                cells[move[0]][move[1]].content = Seed.EMPTY;
+                cells[move[0]][move[1]] = TileValue.NONE;
             }
         }
         return new int[] {bestScore, bestRow, bestCol};
@@ -73,9 +88,9 @@ public class AIPlayerMinimax extends AIPlayer {
         }
 
         // Search for empty cells and add to the List
-        for (int row = 0; row < ROWS; ++row) {
-            for (int col = 0; col < COLS; ++col) {
-                if (cells[row][col].content == Seed.EMPTY) {
+        for (int row = 0; row < 3; ++row) {
+            for (int col = 0; col < 3; ++col) {
+                if (cells[row][col] == TileValue.NONE) {
                     nextMoves.add(new int[] {row, col});
                 }
             }
@@ -109,14 +124,14 @@ public class AIPlayerMinimax extends AIPlayer {
         int score = 0;
 
         // First cell
-        if (cells[row1][col1].content == mySeed) {
+        if (cells[row1][col1] == mySeed) {
             score = 1;
-        } else if (cells[row1][col1].content == oppSeed) {
+        } else if (cells[row1][col1] == oppSeed) {
             score = -1;
         }
 
         // Second cell
-        if (cells[row2][col2].content == mySeed) {
+        if (cells[row2][col2] == mySeed) {
             if (score == 1) {   // cell1 is mySeed
                 score = 10;
             } else if (score == -1) {  // cell1 is oppSeed
@@ -124,7 +139,7 @@ public class AIPlayerMinimax extends AIPlayer {
             } else {  // cell1 is empty
                 score = 1;
             }
-        } else if (cells[row2][col2].content == oppSeed) {
+        } else if (cells[row2][col2] == oppSeed) {
             if (score == -1) { // cell1 is oppSeed
                 score = -10;
             } else if (score == 1) { // cell1 is mySeed
@@ -135,7 +150,7 @@ public class AIPlayerMinimax extends AIPlayer {
         }
 
         // Third cell
-        if (cells[row3][col3].content == mySeed) {
+        if (cells[row3][col3] == mySeed) {
             if (score > 0) {  // cell1 and/or cell2 is mySeed
                 score *= 10;
             } else if (score < 0) {  // cell1 and/or cell2 is oppSeed
@@ -143,7 +158,7 @@ public class AIPlayerMinimax extends AIPlayer {
             } else {  // cell1 and cell2 are empty
                 score = 1;
             }
-        } else if (cells[row3][col3].content == oppSeed) {
+        } else if (cells[row3][col3] == oppSeed) {
             if (score < 0) {  // cell1 and/or cell2 is oppSeed
                 score *= 10;
             } else if (score > 1) {  // cell1 and/or cell2 is mySeed
@@ -162,12 +177,12 @@ public class AIPlayerMinimax extends AIPlayer {
     };
 
     /** Returns true if thePlayer wins */
-    private boolean hasWon(Seed thePlayer) {
+    private boolean hasWon(TileValue thePlayer) {
         int pattern = 0b000000000;  // 9-bit pattern for the 9 cells
-        for (int row = 0; row < ROWS; ++row) {
-            for (int col = 0; col < COLS; ++col) {
-                if (cells[row][col].content == thePlayer) {
-                    pattern |= (1 << (row * COLS + col));
+        for (int row = 0; row < 3; ++row) {
+            for (int col = 0; col < 3; ++col) {
+                if (cells[row][col] == thePlayer) {
+                    pattern |= (1 << (row * 3 + col));
                 }
             }
         }
