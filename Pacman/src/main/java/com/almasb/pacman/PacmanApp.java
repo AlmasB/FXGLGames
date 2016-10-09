@@ -36,6 +36,7 @@ import com.almasb.fxgl.gameplay.Level;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.parser.TextLevelParser;
 import com.almasb.fxgl.settings.GameSettings;
+import com.almasb.fxgl.ui.UI;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Parent;
@@ -200,13 +201,13 @@ public class PacmanApp extends GameApplication {
         uiController = new PacmanUIController();
         getMasterTimer().addUpdateListener(uiController);
 
-        Parent fxmlUI = getAssetLoader().loadFXML("pacman_ui.fxml", uiController);
-        fxmlUI.setTranslateX(MAP_SIZE * BLOCK_SIZE);
+        UI fxmlUI = getAssetLoader().loadUI("pacman_ui.fxml", uiController);
+        fxmlUI.getRoot().setTranslateX(MAP_SIZE * BLOCK_SIZE);
 
         uiController.getLabelScore().textProperty().bind(score.asString("Score:\n[%d]"));
         uiController.getLabelTeleport().textProperty().bind(teleports.asString("Teleports:\n[%d]"));
 
-        getGameScene().addUINode(fxmlUI);
+        getGameScene().addUI(fxmlUI);
 
         //System.out.println((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576.0);
     }

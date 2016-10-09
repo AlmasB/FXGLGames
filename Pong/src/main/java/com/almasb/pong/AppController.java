@@ -26,6 +26,7 @@
 
 package com.almasb.pong;
 
+import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.ui.UIController;
 import com.almasb.fxgl.ui.UIFactory;
 import javafx.animation.FadeTransition;
@@ -54,8 +55,8 @@ public class AppController implements UIController {
 
     @Override
     public void init() {
-        labelScorePlayer.setFont(UIFactory.newFont(72));
-        labelScoreEnemy.setFont(UIFactory.newFont(72));
+        labelScorePlayer.setFont(FXGL.getUIFactory().newFont(72));
+        labelScoreEnemy.setFont(FXGL.getUIFactory().newFont(72));
 
         labelScoreEnemy.layoutBoundsProperty().addListener((observable, oldValue, newBounds) -> {
             double width = newBounds.getWidth();

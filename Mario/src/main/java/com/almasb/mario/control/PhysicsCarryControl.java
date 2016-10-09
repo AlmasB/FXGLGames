@@ -53,7 +53,7 @@ public class PhysicsCarryControl extends AbstractControl {
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
-        physics.setLinearVelocity(60 * tpf * (movingLeft ? - 1 : 1), 0);
+        physics.setLinearVelocity(60 * 60 * tpf * (movingLeft ? - 1 : 1), 0);
 
         if (position.getX() - spawnY > 90 && physics.getLinearVelocity().getX() > 0)
             movingLeft = !movingLeft;

@@ -53,7 +53,7 @@ public class PhysicsLiftControl extends AbstractControl {
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
-        physics.setLinearVelocity(0, 60 * tpf * (movingUp ? - 1 : 1));
+        physics.setLinearVelocity(0, 60 * 60 * tpf * (movingUp ? - 1 : 1));
 
         if (position.getY() - spawnY > 90 && physics.getLinearVelocity().getY() > 0)
             movingUp = !movingUp;

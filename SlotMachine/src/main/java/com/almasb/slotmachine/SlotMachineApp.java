@@ -31,7 +31,7 @@ public class SlotMachineApp extends GameApplication {
         settings.setHeight(720);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
-        settings.setShowFPS(false);
+        settings.setProfilingEnabled(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 

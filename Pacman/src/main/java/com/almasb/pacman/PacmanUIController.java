@@ -26,6 +26,7 @@
 
 package com.almasb.pacman;
 
+import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.time.UpdateEvent;
 import com.almasb.fxgl.time.UpdateEventListener;
 import com.almasb.fxgl.ui.UIController;
@@ -73,8 +74,8 @@ public class PacmanUIController implements UIController, UpdateEventListener {
         labelTitle.setEffect(new DropShadow(0.5, 0.5, 1.0, Color.BLACK));
         labelTitle.setTextAlignment(TextAlignment.CENTER);
 
-        labelScore.setFont(UIFactory.newFont(24));
-        labelTeleport.setFont(UIFactory.newFont(24));
+        labelScore.setFont(FXGL.getUIFactory().newFont(24));
+        labelTeleport.setFont(FXGL.getUIFactory().newFont(24));
 
         g = canvas.getGraphicsContext2D();
         g.setFill(Color.GREENYELLOW);

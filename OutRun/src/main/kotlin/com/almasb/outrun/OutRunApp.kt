@@ -59,7 +59,7 @@ class OutRunApp : GameApplication() {
             height = 800;
             title = "OutRun"
             version = "0.2"
-            setShowFPS(false)
+            isProfilingEnabled = false
             isIntroEnabled = false
             isMenuEnabled = false
             applicationMode = ApplicationMode.DEVELOPER

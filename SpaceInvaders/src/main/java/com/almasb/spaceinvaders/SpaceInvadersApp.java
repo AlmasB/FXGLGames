@@ -82,7 +82,7 @@ public class SpaceInvadersApp extends GameApplication {
         settings.setHeight(HEIGHT);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
-        settings.setShowFPS(true);
+        settings.setProfilingEnabled(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
