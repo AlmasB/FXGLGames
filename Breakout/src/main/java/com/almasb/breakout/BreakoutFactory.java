@@ -53,7 +53,6 @@ public class BreakoutFactory extends EntityFactory {
     public Entity newBall(int x, int y) {
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.DYNAMIC);
-        physics.setOnPhysicsInitialized(() -> physics.setBodyLinearVelocity(new Vec2(5, 5)));
 
         FixtureDef fd = new FixtureDef();
         fd.setRestitution(1f);

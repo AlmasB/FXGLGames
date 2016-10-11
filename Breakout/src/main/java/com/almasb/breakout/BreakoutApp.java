@@ -1,5 +1,6 @@
 package com.almasb.breakout;
 
+import com.almasb.breakout.control.BallControl;
 import com.almasb.breakout.control.BatControl;
 import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
@@ -16,6 +17,7 @@ import com.almasb.fxgl.parser.TextLevelParser;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.gameutils.math.GameMath;
+import javafx.animation.PathTransition;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
@@ -24,7 +26,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
+import javafx.scene.shape.QuadCurve;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 /**
@@ -34,6 +38,10 @@ public class BreakoutApp extends GameApplication {
 
     private BatControl getBatControl() {
         return getGameWorld().getEntitiesByType(EntityType.BAT).get(0).getControlUnsafe(BatControl.class);
+    }
+
+    private BallControl getBallControl() {
+        return getGameWorld().getEntitiesByType(EntityType.BALL).get(0).getControlUnsafe(BallControl.class);
     }
 
     @Override
@@ -67,9 +75,7 @@ public class BreakoutApp extends GameApplication {
     }
 
     @Override
-    protected void initAssets() {
-
-    }
+    protected void initAssets() {}
 
     @Override
     protected void initGame() {
@@ -112,7 +118,7 @@ public class BreakoutApp extends GameApplication {
 
         getGameWorld().addEntity(bubbles);
 
-
+        // Level info
     }
 
     @Override
@@ -130,12 +136,24 @@ public class BreakoutApp extends GameApplication {
     @Override
     protected void initUI() {
 
+        Text text = getUIFactory().newText("Level 1", Color.WHITE, 48);
+
+
+        QuadCurve curve = new QuadCurve(-100, 0, getWidth() / 2, getHeight(), getWidth() + 100, 0);
+
+        PathTransition transition = new PathTransition(Duration.seconds(4), curve, text);
+        transition.setOnFinished(e -> {
+            getGameScene().removeUINode(text);
+            getBallControl().release();
+        });
+
+        getGameScene().addUINode(text);
+
+        transition.play();
     }
 
     @Override
-    protected void onUpdate(double tpf) {
-
-    }
+    protected void onUpdate(double tpf) {}
 
     public static void main(String[] args) {
         launch(args);
