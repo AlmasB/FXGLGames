@@ -5,6 +5,7 @@ import com.almasb.breakout.control.BatControl;
 import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.audio.Music;
 import com.almasb.fxgl.effect.ParticleControl;
 import com.almasb.fxgl.effect.ParticleEmitter;
 import com.almasb.fxgl.entity.Entities;
@@ -79,6 +80,10 @@ public class BreakoutApp extends GameApplication {
 
     @Override
     protected void initGame() {
+        Music music = getAssetLoader().loadMusic("BGM01.wav");
+        music.setCycleCount(Integer.MAX_VALUE);
+
+        getAudioPlayer().playMusic(music);
 
         TextLevelParser parser = new TextLevelParser(new BreakoutFactory());
         Level level = parser.parse("levels/level1.txt");
@@ -128,6 +133,7 @@ public class BreakoutApp extends GameApplication {
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BALL, EntityType.BRICK) {
             @Override
             protected void onCollisionBegin(Entity ball, Entity brick) {
+                getAudioPlayer().playSound("brick_hit.wav");
                 brick.removeFromWorld();
             }
         });
