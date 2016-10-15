@@ -1,10 +1,16 @@
 package com.almasb.spacerunner;
 
+import com.almasb.ents.Entity;
+import com.almasb.ents.component.UserDataComponent;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.ScrollingBackgroundView;
+import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.entity.component.TypeComponent;
 import com.almasb.fxgl.input.UserAction;
+import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.spacerunner.control.PlayerControl;
 import javafx.geometry.Orientation;
@@ -47,7 +53,7 @@ public class SpaceRunnerApp extends GameApplication {
 
         getInput().addAction(new UserAction("Shoot") {
             @Override
-            protected void onAction() {
+            protected void onActionBegin() {
                 playerControl.shoot();
             }
         }, KeyCode.F);
@@ -63,18 +69,32 @@ public class SpaceRunnerApp extends GameApplication {
 
         SpaceRunnerFactory factory = FXGL.getInstance(SpaceRunnerFactory.class);
 
-        GameEntity player = (GameEntity) factory.newPlayer(100, getHeight() / 2);
+        GameEntity player = factory.newPlayer(50, getHeight() / 2);
         playerControl = player.getControlUnsafe(PlayerControl.class);
 
         getGameScene().getViewport().setBounds(0, 0, Integer.MAX_VALUE, (int) getHeight());
-        getGameScene().getViewport().bindToEntity(player, 100, getHeight() / 2);
+        getGameScene().getViewport().bindToEntity(player, 50, getHeight() / 2);
 
         getGameWorld().addEntity(player);
+        getGameWorld().addEntity(factory.newEnemy(500, 300));
     }
 
     @Override
     protected void initPhysics() {
+        getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BULLET, EntityType.ENEMY) {
+            @Override
+            protected void onCollisionBegin(Entity bullet, Entity enemy) {
+                EntityType ownerType = (EntityType) bullet.getComponentUnsafe(UserDataComponent.class).getValue();
 
+                if (!Entities.getType(enemy).isType(ownerType)) {
+                    PositionComponent position = Entities.getPosition(enemy);
+                    getGameWorld().addEntity(FXGL.getInstance(SpaceRunnerFactory.class).newEnemy(position.getX() + 500, 300));
+
+                    bullet.removeFromWorld();
+                    enemy.removeFromWorld();
+                }
+            }
+        });
     }
 
     @Override
@@ -83,9 +103,7 @@ public class SpaceRunnerApp extends GameApplication {
     }
 
     @Override
-    protected void onUpdate(double tpf) {
-
-    }
+    protected void onUpdate(double tpf) {}
 
     public static void main(String[] args) {
         launch(args);

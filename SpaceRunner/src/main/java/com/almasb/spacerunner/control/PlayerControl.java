@@ -6,6 +6,7 @@ import com.almasb.ents.component.Required;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.spacerunner.EntityType;
 import com.almasb.spacerunner.SpaceRunnerFactory;
 
 /**
@@ -25,22 +26,32 @@ public class PlayerControl extends AbstractControl {
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
-        speed = tpf * 60;
+        speed = tpf * 300;
 
-        position.translateX(speed);
+        position.translateX(tpf * 60);
     }
 
     public void up() {
+//        if (position.getY() - speed <= 0) {
+//            position.setY(0);
+//            return;
+//        }
+
         position.translateY(-speed);
     }
 
     public void down() {
+//        if (position.getY() + speed <= FXGL.getSettings().getHeight()) {
+//            position.setY(FXGL.getSettings().getHeight());
+//            return;
+//        }
+
         position.translateY(speed);
     }
 
     public void shoot() {
         Entity bullet = FXGL.getInstance(SpaceRunnerFactory.class)
-                .newBullet(position.getX() + 40, position.getY() + 20);
+                .newBullet(position.getX() + 40, position.getY() + 20, EntityType.PLAYER);
 
         getEntity().getWorld().addEntity(bullet);
     }
