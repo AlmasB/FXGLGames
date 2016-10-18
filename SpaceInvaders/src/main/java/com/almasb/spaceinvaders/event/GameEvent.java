@@ -26,7 +26,6 @@
 
 package com.almasb.spaceinvaders.event;
 
-import javafx.beans.NamedArg;
 import javafx.event.Event;
 import javafx.event.EventType;
 
@@ -44,7 +43,10 @@ public class GameEvent extends Event {
     public static final EventType<GameEvent> ENEMY_KILLED =
             new EventType<>(ANY, "ENEMY_KILLED");
 
-    public GameEvent(@NamedArg("eventType") EventType<? extends Event> eventType) {
+    public static final EventType<GameEvent> ENEMY_REACHED_END =
+            new EventType<>(ANY, "ENEMY_REACHED_END");
+
+    public GameEvent(EventType<? extends Event> eventType) {
         super(eventType);
     }
 }

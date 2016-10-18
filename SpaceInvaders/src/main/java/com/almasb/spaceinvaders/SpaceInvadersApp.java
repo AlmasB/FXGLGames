@@ -30,8 +30,10 @@ import com.almasb.easyio.FS;
 import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.animation.AnimationBuilder;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.gameplay.Achievement;
 import com.almasb.fxgl.gameplay.AchievementManager;
@@ -57,6 +59,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.CubicCurve;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -77,7 +80,7 @@ public class SpaceInvadersApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Space Invaders");
-        settings.setVersion("0.6");
+        settings.setVersion("0.7");
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
         settings.setIntroEnabled(false);
@@ -141,6 +144,7 @@ public class SpaceInvadersApp extends GameApplication {
 
         getEventBus().addEventHandler(GameEvent.PLAYER_GOT_HIT, this::onPlayerGotHit);
         getEventBus().addEventHandler(GameEvent.ENEMY_KILLED, this::onEnemyKilled);
+        getEventBus().addEventHandler(GameEvent.ENEMY_REACHED_END, this::onEnemyReachedEnd);
         getEventBus().addEventHandler(BonusPickupEvent.ANY, this::onBonusPickup);
     }
 
@@ -193,8 +197,18 @@ public class SpaceInvadersApp extends GameApplication {
         }, Duration.seconds(3));
     }
 
-    private void spawnEnemy(double x, double y) {
-        Entity enemy = EntityFactory.newEnemy(x, y);
+    private void spawnEnemy() {
+        Entity enemy = EntityFactory.newEnemy(0, 0);
+
+        CubicCurve curve = new CubicCurve(0, 0,
+                getWidth() * 2, getHeight() / 3, -getWidth(), 2 * getHeight() / 3,
+                getWidth(), getHeight());
+
+        Entities.animationBuilder()
+                .duration(Duration.seconds(15))
+                .translate((GameEntity) enemy)
+                .alongPath(curve)
+                .buildAndPlay();
 
         getGameWorld().addEntity(enemy);
     }
@@ -217,9 +231,13 @@ public class SpaceInvadersApp extends GameApplication {
     }
 
     private void initLevel() {
+        int count = 0;
         for (int y = 0; y < 5; y++) {
             for (int x = 0; x < 8; x++) {
-                spawnEnemy(x * (40 + 20), 100 + y * (40 + 20));
+                final int d = count;
+                count++;
+
+                getMasterTimer().runOnceAfter(this::spawnEnemy, Duration.seconds(d * 3));
             }
         }
 
@@ -388,6 +406,19 @@ public class SpaceInvadersApp extends GameApplication {
             spawnBonus(Math.random() * (getWidth() - 50), Math.random() * getHeight() / 3,
                     EntityFactory.BonusType.values()[(int)(Math.random()*bonusSize)]);
         }
+    }
+
+    private void onEnemyReachedEnd(GameEvent event) {
+        enemiesDestroyed.set(enemiesDestroyed.get() + 1);
+
+        lives.set(lives.get() - 1);
+        uiController.loseLife();
+
+        if (lives.get() == 0)
+            showGameOver();
+
+        if (enemiesDestroyed.get() % 40 == 0)
+            nextLevel();
     }
 
     private void onBonusPickup(BonusPickupEvent event) {

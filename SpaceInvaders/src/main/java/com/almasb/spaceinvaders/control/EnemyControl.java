@@ -31,21 +31,22 @@ import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.audio.AudioPlayer;
-import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.entity.component.BoundingBoxComponent;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.spaceinvaders.EntityFactory;
+import com.almasb.spaceinvaders.event.GameEvent;
 import javafx.util.Duration;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class EnemyControl extends AbstractControl {
-    private LocalTimer hTimer;
-    private LocalTimer vTimer;
+
     private LocalTimer attackTimer;
     private Duration nextAttack = Duration.seconds(2);
 
-    private boolean movingRight = true;
+    private BoundingBoxComponent bbox;
 
     private AudioPlayer audioPlayer;
 
@@ -53,28 +54,14 @@ public class EnemyControl extends AbstractControl {
     public void onAdded(Entity entity) {
         audioPlayer = FXGL.getService(ServiceType.AUDIO_PLAYER);
 
-        hTimer = FXGL.getService(ServiceType.LOCAL_TIMER);
-        vTimer = FXGL.getService(ServiceType.LOCAL_TIMER);
         attackTimer = FXGL.getService(ServiceType.LOCAL_TIMER);
-        hTimer.capture();
-        vTimer.capture();
         attackTimer.capture();
+
+        bbox = Entities.getBBox(entity);
     }
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
-        PositionComponent positionComponent = entity.getComponentUnsafe(PositionComponent.class);
-
-        if (hTimer.elapsed(Duration.seconds(2))) {
-            movingRight = !movingRight;
-            hTimer.capture();
-        }
-
-        if (vTimer.elapsed(Duration.seconds(6))) {
-            positionComponent.translateY(20);
-            vTimer.capture();
-        }
-
         if (attackTimer.elapsed(nextAttack)) {
             if (Math.random() < 0.3) {
                 shoot();
@@ -83,7 +70,10 @@ public class EnemyControl extends AbstractControl {
             attackTimer.capture();
         }
 
-        positionComponent.translateX(movingRight ? 1 : -1);
+        if (bbox.getMaxYWorld() >= FXGL.getApp().getHeight()) {
+            FXGL.getEventBus().fireEvent(new GameEvent(GameEvent.ENEMY_REACHED_END));
+            getEntity().removeFromWorld();
+        }
     }
 
     private void shoot() {
