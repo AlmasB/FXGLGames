@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import com.almasb.fxgl.ui.FXGLButton?>
+<?import javafx.scene.shape.Rectangle?>
+
+<?import javafx.scene.control.Label?>
+<?import com.almasb.ncc.CardFrame?>
+<BorderPane prefWidth="1280" prefHeight="720"
+            xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1">
+
+    <left>
+        <StackPane prefWidth="200">
+            <Rectangle width="200" height="720" />
+            <VBox>
+                <FXGLButton text="Menu" />
+                <FXGLButton text="Options" />
+                <FXGLButton text="Exit" />
+            </VBox>
+        </StackPane>
+    </left>
+
+    <center>
+        <VBox prefHeight="680" prefWidth="1080">
+            <HBox fx:id="hboxCombat" prefHeight="200" prefWidth="1080">
+                <VBox prefWidth="200">
+                    <Label fx:id="labelEnemyHP" text="EnemyHP" />
+                    <Label fx:id="labelPlayerHP" text="PlayerHP" />
+                </VBox>
+                <VBox spacing="10">
+                    <HBox fx:id="hboxEnemyCards" spacing="20">
+                        <CardFrame />
+                        <CardFrame />
+                        <CardFrame />
+                        <CardFrame />
+                        <CardFrame />
+                        <CardFrame />
+                    </HBox>
+                    <HBox fx:id="hboxPlayerCards" spacing="20">
+                        <CardFrame />
+                        <CardFrame />
+                        <CardFrame />
+                        <CardFrame />
+                        <CardFrame />
+                        <CardFrame />
+                    </HBox>
+                </VBox>
+            </HBox>
+
+            <HBox fx:id="hboxCards" prefHeight="480" prefWidth="1080">
+                <VBox alignment="CENTER" fx:id="vboxCardsNeutral" prefWidth="180">
+                    <Label fx:id="labelNeutral" text="Neutral" />
+                </VBox>
+                <VBox alignment="CENTER" fx:id="vboxCardsEarth" prefWidth="180">
+                    <Label fx:id="labelEarth" text="Earth" />
+                </VBox>
+                <VBox alignment="CENTER" fx:id="vboxCardsFire" prefWidth="180">
+                    <Label fx:id="labelFire" text="Fire" />
+                </VBox>
+                <VBox alignment="CENTER" fx:id="vboxCardsWater" prefWidth="180">
+                    <Label fx:id="labelWater" text="Water" />
+                </VBox>
+                <VBox alignment="CENTER" fx:id="vboxCardsAir" prefWidth="180">
+                    <Label fx:id="labelAir" text="Air" />
+                </VBox>
+                <VBox alignment="CENTER" fx:id="vboxCardsLightning" prefWidth="180">
+                    <Label fx:id="labelLightning" text="Lightning" />
+                </VBox>
+            </HBox>
+        </VBox>
+    </center>
+
+</BorderPane>
