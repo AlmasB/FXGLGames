@@ -2,6 +2,7 @@ package com.almasb.breakout;
 
 import com.almasb.breakout.control.BallControl;
 import com.almasb.breakout.control.BatControl;
+import com.almasb.breakout.control.BrickControl;
 import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Entities;
@@ -30,8 +31,9 @@ public class BreakoutFactory extends EntityFactory {
         return Entities.builder()
                 .type(EntityType.BRICK)
                 .at(x * 40, y * 40)
-                .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("brick.jpg", 60, 30))
+                .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("brick_blue.png", 232 / 3, 104 / 3))
                 .with(new PhysicsComponent(), new CollidableComponent(true))
+                .with(new BrickControl())
                 .build();
     }
 
@@ -43,7 +45,7 @@ public class BreakoutFactory extends EntityFactory {
         return Entities.builder()
                 .type(EntityType.BAT)
                 .at(FXGL.getSettings().getWidth() / 2 - 50, 30)
-                .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("bat.jpg", 100, 30))
+                .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("bat.png", 464 / 3, 102 / 3))
                 .with(physics, new CollidableComponent(true))
                 .with(new BatControl())
                 .build();

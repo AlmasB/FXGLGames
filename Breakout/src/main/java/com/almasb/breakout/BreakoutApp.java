@@ -2,6 +2,7 @@ package com.almasb.breakout;
 
 import com.almasb.breakout.control.BallControl;
 import com.almasb.breakout.control.BatControl;
+import com.almasb.breakout.control.BrickControl;
 import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
@@ -133,17 +134,14 @@ public class BreakoutApp extends GameApplication {
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BALL, EntityType.BRICK) {
             @Override
             protected void onCollisionBegin(Entity ball, Entity brick) {
-                getAudioPlayer().playSound("brick_hit.wav");
-                brick.removeFromWorld();
+                brick.getControlUnsafe(BrickControl.class).onHit();
             }
         });
     }
 
     @Override
     protected void initUI() {
-
         Text text = getUIFactory().newText("Level 1", Color.WHITE, 48);
-
 
         QuadCurve curve = new QuadCurve(-100, 0, getWidth() / 2, getHeight(), getWidth() + 100, 0);
 
