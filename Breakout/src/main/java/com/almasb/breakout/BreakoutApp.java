@@ -115,11 +115,11 @@ public class BreakoutApp extends GameApplication {
         emitter.setEmissionRate(0.25);
         emitter.setExpireFunction((i, x, y) -> Duration.seconds(3));
         emitter.setVelocityFunction((i, x, y) -> new Point2D(0, -GameMath.random(2f, 4f)));
-        emitter.setSpawnPointFunction((i, x, y) -> new Point2D(GameMath.random(0, (float)getWidth()), getHeight() + GameMath.random(50)));
+        emitter.setSpawnPointFunction((i, x, y) -> new Point2D(GameMath.random(0, (float)getWidth()), y + GameMath.random(50)));
         emitter.setScaleFunction((i, x, y) -> new Point2D(GameMath.random(-0.05f, 0), GameMath.random(-0.05f, 0)));
 
         Entity bubbles = new Entity();
-        bubbles.addComponent(new PositionComponent(0, 0));
+        bubbles.addComponent(new PositionComponent(0, getHeight()));
         bubbles.addControl(new ParticleControl(emitter));
 
         getGameWorld().addEntity(bubbles);
