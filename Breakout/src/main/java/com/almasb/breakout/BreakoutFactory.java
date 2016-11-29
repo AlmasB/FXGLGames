@@ -30,7 +30,7 @@ public class BreakoutFactory extends EntityFactory {
     public Entity newBrick(int x, int y) {
         return Entities.builder()
                 .type(EntityType.BRICK)
-                .at(x * 40, y * 40)
+                .at(x * 40 - 20, y * 40)
                 .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("brick_blue.png", 232 / 3, 104 / 3))
                 .with(new PhysicsComponent(), new CollidableComponent(true))
                 .with(new BrickControl())
