@@ -60,6 +60,7 @@ public class BulletEnemyHandler extends CollisionHandler {
         }
 
         Point2D hitPosition = bullet.getComponentUnsafe(PositionComponent.class).getValue();
+        bullet.setProperty("dead", true);
         bullet.removeFromWorld();
 
         HPComponent hp = enemy.getComponentUnsafe(HPComponent.class);

@@ -29,6 +29,7 @@ package com.almasb.spaceinvaders;
 import com.almasb.easyio.FS;
 import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
+import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.EntityView;
@@ -41,6 +42,7 @@ import com.almasb.fxgl.input.ActionType;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.InputMapping;
 import com.almasb.fxgl.input.OnUserAction;
+import com.almasb.fxgl.logging.Logger;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxgl.settings.GameSettings;
@@ -77,10 +79,12 @@ import static com.almasb.spaceinvaders.Config.*;
  */
 public class SpaceInvadersApp extends GameApplication {
 
+    private Logger log;
+
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Space Invaders");
-        settings.setVersion("0.7");
+        settings.setVersion("0.7.1");
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
         settings.setIntroEnabled(false);
@@ -152,6 +156,7 @@ public class SpaceInvadersApp extends GameApplication {
 
     @Override
     protected void initGame() {
+        log = FXGL.getLogger("SpaceInvaders");
 
         // we have to use file system directly, since we are running without menus
         FS.<SaveData>readDataTask(SAVE_DATA_NAME)
@@ -231,14 +236,14 @@ public class SpaceInvadersApp extends GameApplication {
     }
 
     private void initLevel() {
-        int count = 0;
-        for (int y = 0; y < 5; y++) {
-            for (int x = 0; x < 8; x++) {
-                final int d = count;
-                count++;
+        log.debug("initLevel()");
 
-                getMasterTimer().runOnceAfter(this::spawnEnemy, Duration.seconds(d * 3));
-            }
+        int count = 0;
+        for (int i = 0; i < ENEMIES_PER_LEVEL; i++) {
+            final int d = count;
+            count++;
+
+            getMasterTimer().runOnceAfter(this::spawnEnemy, Duration.seconds(d * 3));
         }
 
         spawnWall(40, getHeight() - 100);
@@ -251,18 +256,29 @@ public class SpaceInvadersApp extends GameApplication {
     }
 
     private void cleanupLevel() {
+        log.debug("cleanupLevel()");
+
         getGameWorld().getEntitiesByType(
-                EntityFactory.EntityType.BULLET,
                 EntityFactory.EntityType.BONUS,
                 EntityFactory.EntityType.WALL)
+                .stream()
+                .filter(Entity::isActive)
+                .forEach(Entity::removeFromWorld);
+
+        getGameWorld().getEntitiesByType(EntityFactory.EntityType.BULLET)
+                .stream()
+                .filter(e -> !e.<Boolean>getProperty("dead"))
                 .forEach(Entity::removeFromWorld);
     }
 
     private void nextLevel() {
+        log.debug("nextLevel()");
+
         getInput().setProcessInput(false);
 
         cleanupLevel();
 
+        enemiesDestroyed.set(0);
         level.set(level.get() + 1);
 
         Text levelText = getUIFactory().newText("Level " + level.get(), Color.AQUAMARINE, 44);
@@ -397,7 +413,7 @@ public class SpaceInvadersApp extends GameApplication {
         enemiesDestroyed.set(enemiesDestroyed.get() + 1);
         score.set(score.get() + SCORE_ENEMY_KILL * (getGameWorld().getGameDifficulty().ordinal() + SCORE_DIFFICULTY_MODIFIER));
 
-        if (enemiesDestroyed.get() % 40 == 0)
+        if (enemiesDestroyed.get() == ENEMIES_PER_LEVEL)
             nextLevel();
 
         if (Math.random() < BONUS_SPAWN_CHANCE) {
@@ -417,7 +433,7 @@ public class SpaceInvadersApp extends GameApplication {
         if (lives.get() == 0)
             showGameOver();
 
-        if (enemiesDestroyed.get() % 40 == 0)
+        if (enemiesDestroyed.get() == ENEMIES_PER_LEVEL)
             nextLevel();
     }
 

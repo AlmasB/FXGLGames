@@ -193,6 +193,8 @@ public final class EntityFactory {
         bullet.addComponent(new OwnerComponent(Entities.getType(owner).getValue()));
         bullet.addControl(new OffscreenCleanControl());
 
+        bullet.setProperty("dead", false);
+
         return bullet;
     }
 
