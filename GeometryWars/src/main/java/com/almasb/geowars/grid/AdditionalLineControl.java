@@ -26,17 +26,11 @@
 
 package com.almasb.geowars.grid;
 
+import com.almasb.ents.AbstractControl;
 import com.almasb.ents.Entity;
-import com.almasb.fxgl.entity.component.MainViewComponent;
 import com.almasb.geowars.component.GraphicsComponent;
 import javafx.geometry.Point2D;
-
-import com.almasb.ents.AbstractControl;
-import javafx.scene.Node;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.shape.Line;
-
-import java.util.List;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)

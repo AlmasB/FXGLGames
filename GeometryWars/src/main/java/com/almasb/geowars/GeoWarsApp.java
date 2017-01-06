@@ -30,26 +30,18 @@ import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.GameEntity;
-import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.fxgl.entity.control.ExpireCleanControl;
-import com.almasb.fxgl.entity.control.OffscreenCleanControl;
-import com.almasb.fxgl.entity.control.ProjectileControl;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.time.LocalTimer;
-import com.almasb.geowars.component.OldPositionComponent;
-import com.almasb.geowars.control.BulletControl;
-import com.almasb.geowars.control.SeekerControl;
-import com.almasb.geowars.control.WandererControl;
 import com.almasb.geowars.component.GraphicsComponent;
-import com.almasb.geowars.grid.Grid;
+import com.almasb.geowars.component.OldPositionComponent;
 import com.almasb.geowars.control.GraphicsUpdateControl;
+import com.almasb.geowars.grid.Grid;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point2D;
@@ -58,7 +50,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -67,16 +58,19 @@ import javafx.util.Duration;
  */
 public class GeoWarsApp extends GameApplication {
 
-    private enum Type {
-        PLAYER, WANDERER, SEEKER, BULLET,
-        SHOCKWAVE,
-        EXPLOSION,
-        PARTICLE
-    }
+    private GeoWarsFactory factory;
 
     private GameEntity player;
 
     private Grid grid;
+
+    public GameEntity getPlayer() {
+        return player;
+    }
+
+    public Grid getGrid() {
+        return grid;
+    }
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -87,7 +81,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setFullScreen(false);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
-        settings.setProfilingEnabled(true);
+        settings.setProfilingEnabled(false);
         settings.setCloseConfirmation(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
@@ -130,7 +124,8 @@ public class GeoWarsApp extends GameApplication {
             @Override
             protected void onAction() {
                 if (timer.elapsed(Duration.seconds(0.17))) {
-                    shoot();
+                    Point2D position = player.getCenter().subtract(14, 4.5);
+                    factory.spawnBullet(position, input.getVectorToMouse(position));
                     timer.capture();
                 }
             }
@@ -145,11 +140,13 @@ public class GeoWarsApp extends GameApplication {
         getAudioPlayer().setGlobalSoundVolume(0.3);
         getAudioPlayer().setGlobalMusicVolume(0.3);
 
-        initBackground();
-        initPlayer();
+        factory = new GeoWarsFactory(getGameWorld());
 
-        getMasterTimer().runAtInterval(this::spawnWanderer, Duration.seconds(2));
-        getMasterTimer().runAtInterval(this::spawnSeeker, Duration.seconds(5));
+        initBackground();
+        player = factory.spawnPlayer();
+
+        getMasterTimer().runAtInterval(() -> factory.spawnWanderer(50, 50), Duration.seconds(2));
+        getMasterTimer().runAtInterval(() -> factory.spawnSeeker(50, 50), Duration.seconds(5));
 
         getAudioPlayer().playMusic("bgm.mp3");
     }
@@ -158,10 +155,10 @@ public class GeoWarsApp extends GameApplication {
     protected void initPhysics() {
         PhysicsWorld physics = getPhysicsWorld();
 
-        CollisionHandler bulletEnemy = new CollisionHandler(Type.BULLET, Type.WANDERER) {
+        CollisionHandler bulletEnemy = new CollisionHandler(EntityType.BULLET, EntityType.WANDERER) {
             @Override
             protected void onCollisionBegin(Entity a, Entity b) {
-                spawnExplosion(Entities.getBBox(b).getCenterWorld());
+                factory.spawnExplosion(Entities.getBBox(b).getCenterWorld());
 
                 a.removeFromWorld();
                 b.removeFromWorld();
@@ -170,9 +167,9 @@ public class GeoWarsApp extends GameApplication {
         };
 
         physics.addCollisionHandler(bulletEnemy);
-        physics.addCollisionHandler(bulletEnemy.copyFor(Type.BULLET, Type.SEEKER));
+        physics.addCollisionHandler(bulletEnemy.copyFor(EntityType.BULLET, EntityType.SEEKER));
 
-        CollisionHandler playerEnemy = new CollisionHandler(Type.PLAYER, Type.WANDERER) {
+        CollisionHandler playerEnemy = new CollisionHandler(EntityType.PLAYER, EntityType.WANDERER) {
             @Override
             protected void onCollisionBegin(Entity a, Entity b) {
                 Entities.getPosition(a).setValue(getRandomPoint());
@@ -182,9 +179,9 @@ public class GeoWarsApp extends GameApplication {
         };
 
         physics.addCollisionHandler(playerEnemy);
-        physics.addCollisionHandler(playerEnemy.copyFor(Type.PLAYER, Type.SEEKER));
+        physics.addCollisionHandler(playerEnemy.copyFor(EntityType.PLAYER, EntityType.SEEKER));
 
-        CollisionHandler shockEnemy = new CollisionHandler(Type.SHOCKWAVE, Type.SEEKER) {
+        CollisionHandler shockEnemy = new CollisionHandler(EntityType.SHOCKWAVE, EntityType.SEEKER) {
             @Override
             protected void onCollisionBegin(Entity a, Entity b) {
                 PositionComponent pos = Entities.getPosition(b);
@@ -197,7 +194,7 @@ public class GeoWarsApp extends GameApplication {
         };
 
         physics.addCollisionHandler(shockEnemy);
-        physics.addCollisionHandler(shockEnemy.copyFor(Type.SHOCKWAVE, Type.WANDERER));
+        physics.addCollisionHandler(shockEnemy.copyFor(EntityType.SHOCKWAVE, EntityType.WANDERER));
     }
 
     private IntegerProperty score = new SimpleIntegerProperty(0);
@@ -240,71 +237,6 @@ public class GeoWarsApp extends GameApplication {
         Point2D spacing = new Point2D(40, 40);
 
         grid = new Grid(size, spacing, getGameWorld(), canvas.getGraphicsContext2D());
-    }
-
-    private void initPlayer() {
-        player = new GameEntity();
-        player.getTypeComponent().setValue(Type.PLAYER);
-        player.getPositionComponent().setValue(getWidth() / 2, getHeight() / 2);
-        player.addComponent(new CollidableComponent(true));
-
-        OldPositionComponent oldPosition = new OldPositionComponent();
-        oldPosition.valueProperty().addListener((obs, old, newPos) -> {
-            Entities.getRotation(player).rotateToVector(newPos.subtract(old));
-        });
-
-        player.addComponent(oldPosition);
-        player.getMainViewComponent().setView(new EntityView(getAssetLoader().loadTexture("Player.png")), true);
-
-        getGameWorld().addEntity(player);
-    }
-
-    private void spawnWanderer() {
-        GameEntity wanderer = new GameEntity();
-        wanderer.getTypeComponent().setValue(Type.WANDERER);
-        wanderer.getPositionComponent().setValue(50, 50);
-        wanderer.addControl(new WandererControl((int)getWidth(), (int)getHeight()));
-        wanderer.addComponent(new CollidableComponent(true));
-        wanderer.getMainViewComponent().setView(new EntityView(getAssetLoader().loadTexture("Wanderer.png")), true);
-
-        getGameWorld().addEntity(wanderer);
-    }
-
-    private void spawnSeeker() {
-        GameEntity seeker = new GameEntity();
-        seeker.getTypeComponent().setValue(Type.SEEKER);
-        seeker.getPositionComponent().setValue(50, 50);
-        seeker.addControl(new SeekerControl(player));
-        seeker.addComponent(new CollidableComponent(true));
-        seeker.getMainViewComponent().setView(new EntityView(getAssetLoader().loadTexture("Seeker.png")), true);
-
-        getGameWorld().addEntity(seeker);
-    }
-
-    private void spawnExplosion(Point2D point) {
-        GameEntity explosion = new GameEntity();
-        explosion.getPositionComponent().setValue(point.subtract(40, 40));
-        explosion.getMainViewComponent().setView(getAssetLoader().loadTexture("explosion.png", 80 * 48, 80).toAnimatedTexture(48, Duration.seconds(2)));
-        explosion.addControl(new ExpireCleanControl(Duration.seconds(1.8)));
-
-        getGameWorld().addEntity(explosion);
-
-        getAudioPlayer().playSound("explosion-0" + (int) (Math.random() * 8 + 1) + ".wav");
-    }
-
-    private void shoot() {
-        GameEntity bullet = new GameEntity();
-        bullet.getTypeComponent().setValue(Type.BULLET);
-        bullet.getPositionComponent().setValue(Entities.getBBox(player).getCenterWorld().subtract(14, 4.5));
-        bullet.addControl(new ProjectileControl(getInput().getVectorToMouse(bullet.getPositionComponent().getValue()), 10 * 60));
-        bullet.addControl(new BulletControl(grid));
-        bullet.addControl(new OffscreenCleanControl());
-        bullet.getMainViewComponent().setView(new EntityView(getAssetLoader().loadTexture("Bullet.png")), true);
-        bullet.addComponent(new CollidableComponent(true));
-
-        getGameWorld().addEntity(bullet);
-
-        getAudioPlayer().playSound("shoot" + (int) (Math.random() * 8 + 1) + ".wav");
     }
 
     private Point2D getRandomPoint() {
