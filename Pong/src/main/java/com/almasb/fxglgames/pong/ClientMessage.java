@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,38 +24,24 @@
  * SOFTWARE.
  */
 
-package com.almasb.pong.control;
+package com.almasb.fxglgames.pong;
 
-import com.almasb.ents.AbstractControl;
-import com.almasb.ents.Entity;
-import com.almasb.fxgl.physics.PhysicsComponent;
+import java.io.Serializable;
 
 /**
- * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
+ * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class BallControl extends AbstractControl {
+public class ClientMessage implements Serializable {
 
-    private PhysicsComponent ball;
+    private static final long serialVersionUID = 1L;
 
-    @Override
-    public void onAdded(Entity entity) {
-        ball = entity.getComponentUnsafe(PhysicsComponent.class);
-    }
+    public boolean up;
+    public boolean down;
+    public boolean stop;
 
-    @Override
-    public void onUpdate(Entity entity, double tpf) {
-        limitVelocity();
-    }
-
-    private void limitVelocity() {
-        if (Math.abs(ball.getLinearVelocity().getX()) < 5 * 60) {
-            ball.setLinearVelocity(Math.signum(ball.getLinearVelocity().getX()) * 5 * 60,
-                    ball.getLinearVelocity().getY());
-        }
-
-        if (Math.abs(ball.getLinearVelocity().getY()) > 5 * 60 * 2) {
-            ball.setLinearVelocity(ball.getLinearVelocity().getX(),
-                    Math.signum(ball.getLinearVelocity().getY()) * 5 * 60);
-        }
+    public ClientMessage(boolean up, boolean down, boolean stop) {
+        this.up = up;
+        this.down = down;
+        this.stop = stop;
     }
 }
