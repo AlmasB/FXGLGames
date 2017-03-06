@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,14 +24,15 @@
  * SOFTWARE.
  */
 
-package com.almasb.drop;
+package com.almasb.fxglgames.drop;
 
-import com.almasb.ents.Entity;
+import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.input.Input;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
+import com.almasb.fxgl.service.Input;
 import com.almasb.fxgl.settings.GameSettings;
 import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
@@ -39,6 +40,9 @@ import javafx.util.Duration;
 /**
  * This is an FXGL version of the libGDX simple game tutorial which can be found
  * here - https://github.com/libgdx/libgdx/wiki/A-simple-game
+ *
+ * The player can move the bucket left and right to catch water droplets.
+ * There are no win/lose conditions.
  *
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
@@ -56,6 +60,7 @@ public class DropApp extends GameApplication {
         settings.setMenuEnabled(false);
         settings.setProfilingEnabled(false);
         settings.setCloseConfirmation(false);
+        settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
     @Override
@@ -78,20 +83,13 @@ public class DropApp extends GameApplication {
     }
 
     @Override
-    protected void initAssets() {}
-
-    @Override
     protected void initGame() {
-        Entity bucket = EntityFactory.newBucket(getWidth() / 2, getHeight() - 200);
+        Entity bucket = getGameWorld().spawn("Bucket", getWidth() / 2, getHeight() - 200);
 
         bucketControl = bucket.getControlUnsafe(BucketControl.class);
 
-        getGameWorld().addEntity(bucket);
-
         getMasterTimer().runAtInterval(() -> {
-            Entity droplet = EntityFactory.newDroplet(Math.random() * (getWidth() - 64), 0);
-
-            getGameWorld().addEntity(droplet);
+            getGameWorld().spawn("Droplet", Math.random() * (getWidth() - 64), 0);
         }, Duration.seconds(1));
     }
 
@@ -99,7 +97,7 @@ public class DropApp extends GameApplication {
     protected void initPhysics() {
         PhysicsWorld physicsWorld = getPhysicsWorld();
 
-        physicsWorld.addCollisionHandler(new CollisionHandler(EntityFactory.EntityType.DROPLET, EntityFactory.EntityType.BUCKET) {
+        physicsWorld.addCollisionHandler(new CollisionHandler(DropType.DROPLET, DropType.BUCKET) {
             @Override
             protected void onCollisionBegin(Entity droplet, Entity bucket) {
                 droplet.removeFromWorld();
@@ -108,12 +106,6 @@ public class DropApp extends GameApplication {
             }
         });
     }
-
-    @Override
-    protected void initUI() {}
-
-    @Override
-    protected void onUpdate(double tpf) {}
 
     public static void main(String[] args) {
         launch(args);
