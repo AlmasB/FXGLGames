@@ -24,12 +24,13 @@
  * SOFTWARE.
  */
 
-package com.almasb.outrun
+package com.almasb.fxglgames.outrun
 
 /**
  *
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-data class Config(val tileSize: Int) {
+enum class EntityType {
+    BACKGROUND, PLAYER, OBSTACLE, FINISH
 }

@@ -24,23 +24,20 @@
  * SOFTWARE.
  */
 
-package com.almasb.outrun
+package com.almasb.fxglgames.outrun
 
-import com.almasb.ents.Entity
 import com.almasb.fxgl.app.ApplicationMode
 import com.almasb.fxgl.app.GameApplication
+import com.almasb.fxgl.ecs.Entity
 import com.almasb.fxgl.entity.GameEntity
-import com.almasb.fxgl.entity.RenderLayer
 import com.almasb.fxgl.input.UserAction
-import com.almasb.fxgl.parser.TextLevelParser
+import com.almasb.fxgl.parser.text.TextLevelParser
 import com.almasb.fxgl.physics.CollisionHandler
 import com.almasb.fxgl.settings.GameSettings
 import com.almasb.fxgl.ui.ProgressBar
-import com.almasb.fxgl.ui.UIFactory
 import javafx.animation.FadeTransition
 import javafx.application.Application
 import javafx.beans.property.SimpleIntegerProperty
-import javafx.beans.value.ChangeListener
 import javafx.scene.input.KeyCode
 import javafx.scene.paint.Color
 import javafx.scene.text.Text
@@ -66,8 +63,6 @@ class OutRunApp : GameApplication() {
         }
     }
 
-    override fun initAssets() { }
-
     private lateinit var playerControl: PlayerControl
 
     override fun initInput() {
@@ -91,34 +86,18 @@ class OutRunApp : GameApplication() {
     }
 
     override fun initGame() {
-        val parser = TextLevelParser()
-        parser.emptyChar = '0'
-        parser.addEntityProducer('1', { x, y -> EntityFactory.newObstacle(x*40.0, y*40.0) })
-        parser.addEntityProducer('F', { x, y -> EntityFactory.newFinishLine(y) })
-
+        val parser = TextLevelParser(gameWorld.getEntityFactory())
         val level = parser.parse("level0.txt")
 
         gameWorld.setLevel(level)
 
-        val player = EntityFactory.newPlayer(width / 2 - 20, level.height*40.0)
+        val player = gameWorld.spawn("player", width / 2 - 20, level.height.toDouble())
         playerControl = player.getControlUnsafe(PlayerControl::class.java)
-        gameWorld.addEntity(player)
 
-        val bg = EntityFactory.newBackground()
+        val bg = gameWorld.spawn("background") as GameEntity
         bg.positionComponent.yProperty().bind(gameScene.viewport.yProperty())
-        bg.mainViewComponent.renderLayer = object : RenderLayer {
 
-            override fun index(): Int {
-                return 0
-            }
-
-            override fun name(): String {
-                return "BACKGROUND"
-            }
-        }
-        gameWorld.addEntity(bg)
-
-        gameScene.viewport.setBounds(0, 0, 600, level.height*40)
+        gameScene.viewport.setBounds(0, 0, 600, level.height)
         gameScene.viewport.bindToEntity(player, width / 2, height - 80)
     }
 

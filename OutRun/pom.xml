@@ -16,21 +16,14 @@
         <maven.compiler.version>3.3</maven.compiler.version>
         <maven.shade.version>2.4.2</maven.shade.version>
 
-        <fxgl.version>0.2.8</fxgl.version>
-        <kotlin.version>1.0.3</kotlin.version>
+        <fxgl.version>0.3.0</fxgl.version>
+        <kotlin.version>1.0.5</kotlin.version>
     </properties>
-
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>
-            <groupId>com.github.AlmasB</groupId>
-            <artifactId>FXGL</artifactId>
+            <groupId>com.github.almasb</groupId>
+            <artifactId>fxgl</artifactId>
             <version>${fxgl.version}</version>
         </dependency>
     </dependencies>
@@ -93,7 +86,7 @@
                             <transformers>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.almasb.outrun.OutRunApp</mainClass>
+                                    <mainClass>com.almasb.fxglgames.outrun.OutRunApp</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>

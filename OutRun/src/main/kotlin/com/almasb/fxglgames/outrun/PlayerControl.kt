@@ -24,17 +24,15 @@
  * SOFTWARE.
  */
 
-package com.almasb.outrun
+package com.almasb.fxglgames.outrun
 
-import com.almasb.ents.AbstractControl
-import com.almasb.ents.Entity
+import com.almasb.fxgl.ecs.AbstractControl
+import com.almasb.fxgl.ecs.Entity
 import com.almasb.fxgl.entity.component.BoundingBoxComponent
-import com.almasb.fxgl.entity.component.MainViewComponent
 import com.almasb.fxgl.entity.component.PositionComponent
+import com.almasb.fxgl.entity.component.ViewComponent
 import javafx.animation.FadeTransition
 import javafx.beans.property.SimpleDoubleProperty
-import javafx.beans.property.SimpleIntegerProperty
-import javafx.scene.Node
 import javafx.util.Duration
 
 /**
@@ -103,7 +101,7 @@ class PlayerControl : AbstractControl() {
 
     fun reset() {
         dy = 0.0
-        val view = getEntity().getComponentUnsafe(MainViewComponent::class.java).view
+        val view = getEntity().getComponentUnsafe(ViewComponent::class.java).view
 
         val fade = FadeTransition(Duration.seconds(1.0), view)
         with(fade) {
