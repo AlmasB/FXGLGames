@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,41 +24,32 @@
  * SOFTWARE.
  */
 
-package com.almasb.spaceinvaders.control;
+package com.almasb.fxglgames.spaceinvaders.collision;
 
-import com.almasb.ents.AbstractControl;
-import com.almasb.ents.Entity;
+import com.almasb.fxgl.annotation.AddCollisionHandler;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.fxgl.entity.component.RotationComponent;
-import javafx.geometry.Point2D;
+import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.physics.CollisionHandler;
+import com.almasb.fxglgames.spaceinvaders.BonusType;
+import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
+import com.almasb.fxglgames.spaceinvaders.component.SubTypeComponent;
+import com.almasb.fxglgames.spaceinvaders.event.BonusPickupEvent;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class MeteorControl extends AbstractControl {
+@AddCollisionHandler
+public class BonusPlayerHandler extends CollisionHandler {
 
-    private RotationComponent rotation;
-    private PositionComponent position;
-
-    private Point2D velocity;
-
-    @Override
-    public void onAdded(Entity entity) {
-        rotation = entity.getComponentUnsafe(RotationComponent.class);
-        position = entity.getComponentUnsafe(PositionComponent.class);
-
-        double w = FXGL.getSettings().getWidth();
-        double h = FXGL.getSettings().getHeight();
-
-        velocity = new Point2D(position.getX() < w / 2 ? 1 : -1, position.getY() < h / 2 ? 1 : -1)
-            .normalize().multiply(Math.random() * 5 + 50);
+    public BonusPlayerHandler() {
+        super(SpaceInvadersType.BONUS, SpaceInvadersType.PLAYER);
     }
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
-        rotation.rotateBy(tpf * 10);
+    protected void onCollisionBegin(Entity bonus, Entity player) {
+        BonusType type = (BonusType) bonus.getComponentUnsafe(SubTypeComponent.class).getValue();
+        bonus.removeFromWorld();
 
-        position.translate(velocity.multiply(tpf));
+        FXGL.getEventBus().fireEvent(new BonusPickupEvent(BonusPickupEvent.ANY, type));
     }
 }

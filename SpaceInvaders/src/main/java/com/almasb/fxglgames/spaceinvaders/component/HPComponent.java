@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,29 +24,15 @@
  * SOFTWARE.
  */
 
-package com.almasb.spaceinvaders;
+package com.almasb.fxglgames.spaceinvaders.component;
 
-import java.io.Serializable;
+import com.almasb.fxgl.ecs.component.IntegerComponent;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class SaveData implements Serializable {
-    private static final long serialVersionUID = 1L;
-
-    private final String name;
-    private final int highScore;
-
-    public SaveData(String name, int highScore) {
-        this.name = name;
-        this.highScore = highScore;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getHighScore() {
-        return highScore;
+public class HPComponent extends IntegerComponent {
+    public HPComponent(int value) {
+        super(value);
     }
 }

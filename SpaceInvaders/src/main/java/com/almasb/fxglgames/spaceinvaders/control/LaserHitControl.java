@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,38 +24,31 @@
  * SOFTWARE.
  */
 
-package com.almasb.spaceinvaders.control;
+package com.almasb.fxglgames.spaceinvaders.control;
 
-import com.almasb.ents.AbstractControl;
-import com.almasb.ents.Entity;
-import com.almasb.ents.component.Required;
-import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.spaceinvaders.EntityFactory;
-import com.almasb.spaceinvaders.component.OwnerComponent;
+import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.EntityView;
+import com.almasb.fxgl.entity.component.ViewComponent;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-@Required(OwnerComponent.class)
-public class BulletControl extends AbstractControl {
+public class LaserHitControl extends AbstractControl {
 
-    private PositionComponent position;
-    private OwnerComponent owner;
-
-    private double speed;
-
-    public BulletControl(double speed) {
-        this.speed = speed;
-    }
+    private EntityView view;
 
     @Override
     public void onAdded(Entity entity) {
-        owner = entity.getComponentUnsafe(OwnerComponent.class);
-        position = entity.getComponentUnsafe(PositionComponent.class);
+        view = entity.getComponentUnsafe(ViewComponent.class).getView();
     }
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
-        position.translateY(owner.getValue() == (EntityFactory.EntityType.PLAYER) ? -tpf * speed : tpf * speed);
+        view.setOpacity(view.getOpacity() - tpf);
+
+        if (view.getOpacity() <= 0) {
+            entity.removeFromWorld();
+        }
     }
 }

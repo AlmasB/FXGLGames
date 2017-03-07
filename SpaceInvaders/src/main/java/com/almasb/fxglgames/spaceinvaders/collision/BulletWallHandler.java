@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,15 +24,36 @@
  * SOFTWARE.
  */
 
-package com.almasb.spaceinvaders.component;
+package com.almasb.fxglgames.spaceinvaders.collision;
 
-import com.almasb.ents.component.IntegerComponent;
+import com.almasb.fxgl.annotation.AddCollisionHandler;
+import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.physics.CollisionHandler;
+import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
+import com.almasb.fxglgames.spaceinvaders.component.HPComponent;
+import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class HPComponent extends IntegerComponent {
-    public HPComponent(int value) {
-        super(value);
+@AddCollisionHandler
+public class BulletWallHandler extends CollisionHandler {
+
+    public BulletWallHandler() {
+        super(SpaceInvadersType.BULLET, SpaceInvadersType.WALL);
+    }
+
+    @Override
+    protected void onCollisionBegin(Entity bullet, Entity wall) {
+        Object owner = bullet.getComponentUnsafe(OwnerComponent.class).getValue();
+
+        if (owner == SpaceInvadersType.ENEMY) {
+            bullet.removeFromWorld();
+
+            HPComponent hp = wall.getComponentUnsafe(HPComponent.class);
+            hp.setValue(hp.getValue() - 1);
+            if (hp.getValue() == 0)
+                wall.removeFromWorld();
+        }
     }
 }

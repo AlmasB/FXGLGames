@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,34 +24,15 @@
  * SOFTWARE.
  */
 
-package com.almasb.spaceinvaders.collision;
+package com.almasb.fxglgames.spaceinvaders.component;
 
-import com.almasb.ents.Entity;
-import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.spaceinvaders.EntityFactory;
-import com.almasb.spaceinvaders.component.HPComponent;
-import com.almasb.spaceinvaders.component.OwnerComponent;
+import com.almasb.fxgl.ecs.component.BooleanComponent;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class BulletWallHandler extends CollisionHandler {
-
-    public BulletWallHandler() {
-        super(EntityFactory.EntityType.BULLET, EntityFactory.EntityType.WALL);
-    }
-
-    @Override
-    protected void onCollisionBegin(Entity bullet, Entity wall) {
-        Object owner = bullet.getComponentUnsafe(OwnerComponent.class).getValue();
-
-        if (owner == EntityFactory.EntityType.ENEMY) {
-            bullet.removeFromWorld();
-
-            HPComponent hp = wall.getComponentUnsafe(HPComponent.class);
-            hp.setValue(hp.getValue() - 1);
-            if (hp.getValue() == 0)
-                wall.removeFromWorld();
-        }
+public class InvincibleComponent extends BooleanComponent {
+    public InvincibleComponent() {
+        super(false);
     }
 }

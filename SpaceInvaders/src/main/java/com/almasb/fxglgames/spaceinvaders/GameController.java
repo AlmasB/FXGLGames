@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,10 +24,9 @@
  * SOFTWARE.
  */
 
-package com.almasb.spaceinvaders;
+package com.almasb.fxglgames.spaceinvaders;
 
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.app.ServiceType;
 import com.almasb.fxgl.scene.GameScene;
 import com.almasb.fxgl.scene.Viewport;
 import com.almasb.fxgl.texture.Texture;
@@ -88,7 +87,7 @@ public class GameController implements UIController {
     public void addLife() {
         int numLives = lives.size();
 
-        Texture texture = FXGL.getService(ServiceType.ASSET_LOADER).loadTexture("life.png", 16, 16);
+        Texture texture = FXGL.getAssetLoader().loadTexture("life.png", 16, 16);
         texture.setTranslateX(livesX + 32 * numLives);
         texture.setTranslateY(livesY);
 
@@ -109,8 +108,7 @@ public class GameController implements UIController {
 
         gameScene.addUINode(flash);
 
-        FXGL.getService(ServiceType.MASTER_TIMER)
-                .runOnceAfter(() -> gameScene.removeUINode(flash), Duration.seconds(1));
+        FXGL.getMasterTimer().runOnceAfter(() -> gameScene.removeUINode(flash), Duration.seconds(1));
     }
 
     private Animation getAnimationLoseLife(Texture texture) {

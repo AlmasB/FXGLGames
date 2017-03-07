@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,15 +24,29 @@
  * SOFTWARE.
  */
 
-package com.almasb.spaceinvaders.component;
+package com.almasb.fxglgames.spaceinvaders.event;
 
-import com.almasb.ents.component.ObjectComponent;
+import com.almasb.fxglgames.spaceinvaders.BonusType;
+import javafx.beans.NamedArg;
+import javafx.event.Event;
+import javafx.event.EventType;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class OwnerComponent extends ObjectComponent<Object> {
-    public OwnerComponent(Object entity) {
-        super(entity);
+public class BonusPickupEvent extends GameEvent {
+
+    public static final EventType<BonusPickupEvent> ANY =
+            new EventType<>(GameEvent.ANY, "BONUS_EVENT");
+
+    private BonusType type;
+
+    public BonusPickupEvent(@NamedArg("eventType") EventType<? extends Event> eventType, BonusType type) {
+        super(eventType);
+        this.type = type;
+    }
+
+    public BonusType getType() {
+        return type;
     }
 }

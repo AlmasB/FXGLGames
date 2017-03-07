@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,15 +24,29 @@
  * SOFTWARE.
  */
 
-package com.almasb.spaceinvaders.component;
+package com.almasb.fxglgames.spaceinvaders.event;
 
-import com.almasb.ents.component.BooleanComponent;
+import javafx.event.Event;
+import javafx.event.EventType;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class InvincibleComponent extends BooleanComponent {
-    public InvincibleComponent() {
-        super(false);
+public class GameEvent extends Event {
+
+    public static final EventType<GameEvent> ANY =
+            new EventType<>(Event.ANY, "GAME_EVENT");
+
+    public static final EventType<GameEvent> PLAYER_GOT_HIT =
+            new EventType<>(ANY, "PLAYER_GOT_HIT");
+
+    public static final EventType<GameEvent> ENEMY_KILLED =
+            new EventType<>(ANY, "ENEMY_KILLED");
+
+    public static final EventType<GameEvent> ENEMY_REACHED_END =
+            new EventType<>(ANY, "ENEMY_REACHED_END");
+
+    public GameEvent(EventType<? extends Event> eventType) {
+        super(eventType);
     }
 }

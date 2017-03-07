@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,19 +24,47 @@
  * SOFTWARE.
  */
 
-package com.almasb.spaceinvaders.control;
+package com.almasb.fxglgames.spaceinvaders.tutorial;
 
-import com.almasb.ents.AbstractControl;
-import com.almasb.ents.Entity;
-import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.spaceinvaders.Config;
+import com.almasb.fxgl.app.FXGL;
+import javafx.scene.text.Text;
+
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Queue;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class BonusControl extends AbstractControl {
-    @Override
-    public void onUpdate(Entity entity, double tpf) {
-        getEntity().getComponentUnsafe(PositionComponent.class).translateY(tpf * Config.BONUS_MOVE_SPEED);
+public class Tutorial {
+
+    private Text uiText;
+    private Runnable onFinish;
+
+    private Queue<TutorialStep> tutorialSteps = new ArrayDeque<>();
+
+    public Tutorial(Text uiText, Runnable onFinish, TutorialStep... steps) {
+        this.uiText = uiText;
+        this.onFinish = onFinish;
+        tutorialSteps.addAll(Arrays.asList(steps));
+    }
+
+    public void play() {
+        playStep(tutorialSteps.poll());
+    }
+
+    private void playStep(TutorialStep step) {
+        uiText.setText(step.hint);
+        step.action.run();
+
+        FXGL.getAudioPlayer().playMusic(step.fileName);
+
+        FXGL.getMasterTimer().runOnceAfter(() -> {
+            if (!tutorialSteps.isEmpty()) {
+                playStep(tutorialSteps.poll());
+            } else {
+                onFinish.run();
+            }
+        }, step.duration);
     }
 }

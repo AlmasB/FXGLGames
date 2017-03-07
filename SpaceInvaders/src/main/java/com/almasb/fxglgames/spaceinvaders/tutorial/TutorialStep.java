@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,38 +24,22 @@
  * SOFTWARE.
  */
 
-package com.almasb.spaceinvaders.collision;
+package com.almasb.fxglgames.spaceinvaders.tutorial;
 
-import com.almasb.ents.Entity;
-import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.app.ServiceType;
-import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.spaceinvaders.EntityFactory;
-import com.almasb.spaceinvaders.component.InvincibleComponent;
-import com.almasb.spaceinvaders.component.OwnerComponent;
-import com.almasb.spaceinvaders.event.GameEvent;
+import javafx.util.Duration;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class BulletPlayerHandler extends CollisionHandler {
+public class TutorialStep {
+    Duration duration;
+    String fileName, hint;
+    Runnable action;
 
-    public BulletPlayerHandler() {
-        super(EntityFactory.EntityType.BULLET, EntityFactory.EntityType.PLAYER);
-    }
-
-    @Override
-    protected void onCollisionBegin(Entity bullet, Entity player) {
-        Object owner = bullet.getComponentUnsafe(OwnerComponent.class).getValue();
-
-        // player shot that bullet so no need to handle collision
-        if (owner == EntityFactory.EntityType.PLAYER
-                || player.getComponentUnsafe(InvincibleComponent.class).getValue()) {
-            return;
-        }
-
-        bullet.removeFromWorld();
-
-        FXGL.getService(ServiceType.EVENT_BUS).fireEvent(new GameEvent(GameEvent.PLAYER_GOT_HIT));
+    public TutorialStep(String hint, String fileName, Runnable action) {
+        this.duration = Duration.seconds(3);
+        this.fileName = fileName;
+        this.hint = hint;
+        this.action = action;
     }
 }

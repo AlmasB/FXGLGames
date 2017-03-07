@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,15 +24,11 @@
  * SOFTWARE.
  */
 
-package com.almasb.spaceinvaders.component;
-
-import com.almasb.ents.component.ObjectComponent;
+package com.almasb.fxglgames.spaceinvaders;
 
 /**
- * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
+ * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class SubTypeComponent extends ObjectComponent<Object> {
-    public SubTypeComponent(Object type) {
-        super(type);
-    }
+public enum SpaceInvadersType {
+    PLAYER, ENEMY, BULLET, WALL, BONUS
 }

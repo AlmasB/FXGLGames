@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,29 +24,29 @@
  * SOFTWARE.
  */
 
-package com.almasb.spaceinvaders.event;
+package com.almasb.fxglgames.spaceinvaders;
 
-import com.almasb.spaceinvaders.EntityFactory;
-import javafx.beans.NamedArg;
-import javafx.event.Event;
-import javafx.event.EventType;
+import java.io.Serializable;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class BonusPickupEvent extends GameEvent {
+public class SaveData implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    public static final EventType<BonusPickupEvent> ANY =
-            new EventType<>(GameEvent.ANY, "BONUS_EVENT");
+    private final String name;
+    private final int highScore;
 
-    private EntityFactory.BonusType type;
-
-    public BonusPickupEvent(@NamedArg("eventType") EventType<? extends Event> eventType, EntityFactory.BonusType type) {
-        super(eventType);
-        this.type = type;
+    public SaveData(String name, int highScore) {
+        this.name = name;
+        this.highScore = highScore;
     }
 
-    public EntityFactory.BonusType getType() {
-        return type;
+    public String getName() {
+        return name;
+    }
+
+    public int getHighScore() {
+        return highScore;
     }
 }

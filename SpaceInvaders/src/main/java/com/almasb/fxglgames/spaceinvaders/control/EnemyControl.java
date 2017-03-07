@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,18 +24,18 @@
  * SOFTWARE.
  */
 
-package com.almasb.spaceinvaders.control;
+package com.almasb.fxglgames.spaceinvaders.control;
 
-import com.almasb.ents.AbstractControl;
-import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.app.ServiceType;
-import com.almasb.fxgl.audio.AudioPlayer;
+import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.entity.GameWorld;
+import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
+import com.almasb.fxgl.service.ServiceType;
 import com.almasb.fxgl.time.LocalTimer;
-import com.almasb.spaceinvaders.EntityFactory;
-import com.almasb.spaceinvaders.event.GameEvent;
+import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
 import javafx.util.Duration;
 
 /**
@@ -48,12 +48,8 @@ public class EnemyControl extends AbstractControl {
 
     private BoundingBoxComponent bbox;
 
-    private AudioPlayer audioPlayer;
-
     @Override
     public void onAdded(Entity entity) {
-        audioPlayer = FXGL.getService(ServiceType.AUDIO_PLAYER);
-
         attackTimer = FXGL.getService(ServiceType.LOCAL_TIMER);
         attackTimer.capture();
 
@@ -77,10 +73,9 @@ public class EnemyControl extends AbstractControl {
     }
 
     private void shoot() {
-        Entity bullet = EntityFactory.newBullet(getEntity());
+        GameWorld world = (GameWorld) getEntity().getWorld();
+        world.spawn("Bullet", new SpawnData(0, 0).put("owner", getEntity()));
 
-        getEntity().getWorld().addEntity(bullet);
-
-        audioPlayer.playSound("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
+        FXGL.getAudioPlayer().playSound("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
     }
 }

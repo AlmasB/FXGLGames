@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,26 +24,27 @@
  * SOFTWARE.
  */
 
-package com.almasb.spaceinvaders;
+package com.almasb.fxglgames.spaceinvaders;
 
-import com.almasb.ents.Entity;
+import com.almasb.fxgl.annotation.SetEntityFactory;
+import com.almasb.fxgl.annotation.Spawns;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.asset.AssetLoader;
-import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.EntityView;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.entity.control.ProjectileControl;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
+import com.almasb.fxgl.service.AssetLoader;
 import com.almasb.fxgl.texture.Texture;
-import com.almasb.spaceinvaders.component.HPComponent;
-import com.almasb.spaceinvaders.component.InvincibleComponent;
-import com.almasb.spaceinvaders.component.OwnerComponent;
-import com.almasb.spaceinvaders.component.SubTypeComponent;
-import com.almasb.spaceinvaders.control.*;
+import com.almasb.fxglgames.spaceinvaders.component.HPComponent;
+import com.almasb.fxglgames.spaceinvaders.component.InvincibleComponent;
+import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;
+import com.almasb.fxglgames.spaceinvaders.component.SubTypeComponent;
+import com.almasb.fxglgames.spaceinvaders.control.*;
+import com.google.inject.Singleton;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.DropShadow;
@@ -56,53 +57,24 @@ import java.util.Random;
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public final class EntityFactory {
-
-    public enum EntityType {
-        PLAYER, ENEMY, BULLET, WALL, BONUS
-    }
-
-    public enum BonusType {
-        ATTACK_RATE("powerup_atk_rate.png"), LIFE("life.png");
-
-        final String textureName;
-
-        BonusType(String textureName) {
-            this.textureName = textureName;
-        }
-    }
-
-    private enum RenderLayer implements com.almasb.fxgl.entity.RenderLayer {
-        BACKGROUND(100),
-        METEORS(200);
-
-        private final int index;
-
-        RenderLayer(int index) {
-            this.index = index;
-        }
-
-        @Override
-        public int index() {
-            return index;
-        }
-    }
+@SetEntityFactory
+@Singleton
+public final class SpaceInvadersFactory implements EntityFactory {
 
     private static final AssetLoader assetLoader = FXGL.getAssetLoader();
 
     private static final Random random = new Random();
 
-    public static Entity newBackground(double w, double h) {
-        GameEntity bg = Entities.builder()
-                .viewFromNode(assetLoader.loadTexture("background/background.png", w, h))
+    @Spawns("Background")
+    public Entity newBackground(SpawnData data) {
+        return Entities.builder()
+                .viewFromNode(assetLoader.loadTexture("background/background.png", Config.WIDTH, Config.HEIGHT))
+                .renderLayer(RenderLayer.BACKGROUND)
                 .build();
-
-        bg.getMainViewComponent().setRenderLayer(RenderLayer.BACKGROUND);
-
-        return bg;
     }
 
-    public static Entity newMeteor() {
+    @Spawns("Meteor")
+    public Entity newMeteor(SpawnData data) {
         double w = FXGL.getSettings().getWidth();
         double h = FXGL.getSettings().getHeight();
         double x = 0, y = 0;
@@ -133,8 +105,18 @@ public final class EntityFactory {
 
         String textureName = "background/meteor" + (random.nextInt(4) + 1) + ".png";
 
-        meteor.getMainViewComponent().setTexture(textureName);
-        meteor.getMainViewComponent().setRenderLayer(RenderLayer.METEORS);
+        meteor.getViewComponent().setTexture(textureName);
+        meteor.getViewComponent().setRenderLayer(new RenderLayer() {
+            @Override
+            public String name() {
+                return "METEORS";
+            }
+
+            @Override
+            public int index() {
+                return 1001;
+            }
+        });
 
         meteor.addControl(new MeteorControl());
 
@@ -147,28 +129,26 @@ public final class EntityFactory {
         return meteor;
     }
 
-    public static GameEntity newPlayer(double x, double y) {
-        GameEntity player = new GameEntity();
-        player.getTypeComponent().setValue(EntityType.PLAYER);
-        player.getPositionComponent().setValue(x, y);
-
+    @Spawns("Player")
+    public GameEntity newPlayer(SpawnData data) {
         Texture texture = assetLoader.loadTexture("player2.png");
         texture.setPreserveRatio(true);
         texture.setFitHeight(40);
 
-        player.getMainViewComponent().setView(new EntityView(texture), true);
-
-        player.addComponent(new CollidableComponent(true));
-        player.addComponent(new InvincibleComponent());
-        player.addControl(new PlayerControl());
-
-        return player;
+        return Entities.builder()
+                .from(data)
+                .type(SpaceInvadersType.PLAYER)
+                .viewFromNodeWithBBox(texture)
+                .with(new CollidableComponent(true), new InvincibleComponent())
+                .with(new PlayerControl())
+                .build();
     }
 
-    public static Entity newEnemy(double x, double y) {
+    @Spawns("Enemy")
+    public Entity newEnemy(SpawnData data) {
         return Entities.builder()
-                .type(EntityType.ENEMY)
-                .at(x, y)
+                .from(data)
+                .type(SpaceInvadersType.ENEMY)
                 .viewFromNodeWithBBox(assetLoader
                         .loadTexture("enemy" + ((int)(Math.random() * 3) + 1) + ".png")
                         .toAnimatedTexture(2, Duration.seconds(2)))
@@ -177,19 +157,22 @@ public final class EntityFactory {
                 .build();
     }
 
-    public static Entity newBullet(Entity owner) {
+    @Spawns("Bullet")
+    public Entity newBullet(SpawnData data) {
+        GameEntity owner = data.get("owner");
+
         GameEntity bullet = new GameEntity();
-        bullet.getTypeComponent().setValue(EntityType.BULLET);
+        bullet.getTypeComponent().setValue(SpaceInvadersType.BULLET);
 
         Point2D center = Entities.getBBox(owner)
                 .getCenterWorld()
-                .add(-8, 20 * (Entities.getType(owner).isType(EntityType.PLAYER) ? -1 : 1));
+                .add(-8, 20 * (owner.isType(SpaceInvadersType.PLAYER) ? -1 : 1));
 
         bullet.getPositionComponent().setValue(center);
 
         bullet.addComponent(new CollidableComponent(true));
-        bullet.getMainViewComponent().setView(new EntityView(assetLoader.loadTexture("tank_bullet.png")), true);
-        bullet.addControl(new ProjectileControl(new Point2D(0, Entities.getType(owner).isType(EntityType.PLAYER) ? -1 : 1), 10 * 60));
+        bullet.getViewComponent().setView(new EntityView(assetLoader.loadTexture("tank_bullet.png")), true);
+        bullet.addControl(new ProjectileControl(new Point2D(0, owner.isType(SpaceInvadersType.PLAYER) ? -1 : 1), 10 * 60));
         bullet.addComponent(new OwnerComponent(Entities.getType(owner).getValue()));
         bullet.addControl(new OffscreenCleanControl());
 
@@ -198,9 +181,12 @@ public final class EntityFactory {
         return bullet;
     }
 
-    public static Entity newLaser(Entity owner) {
+    @Spawns("Laser")
+    public Entity newLaser(SpawnData data) {
+        GameEntity owner = data.get("owner");
+
         GameEntity bullet = new GameEntity();
-        bullet.getTypeComponent().setValue(EntityType.BULLET);
+        bullet.getTypeComponent().setValue(SpaceInvadersType.BULLET);
 
         Point2D center = Entities.getBBox(owner)
                 .getCenterWorld()
@@ -226,33 +212,47 @@ public final class EntityFactory {
         view.addNode(t);
         view.setEffect(shadow);
 
-        bullet.getMainViewComponent().setView(view);
+        bullet.getViewComponent().setView(view);
 
         return bullet;
     }
 
-    public static Entity newWall(double x, double y) {
+    @Spawns("LaserHit")
+    public Entity newLaserHit(SpawnData data) {
         return Entities.builder()
-                .type(EntityType.WALL)
-                .at(x, y)
+                .at(data.getX() - 15, data.getY() - 15)
+                .viewFromNode(assetLoader.loadTexture("laser_hit.png", 15, 15))
+                .with(new LaserHitControl())
+                .build();
+    }
+
+    @Spawns("Wall")
+    public Entity newWall(SpawnData data) {
+        return Entities.builder()
+                .from(data)
+                .type(SpaceInvadersType.WALL)
                 .viewFromTextureWithBBox("wall.png")
                 .with(new CollidableComponent(true), new HPComponent(7))
                 .build();
     }
 
-    public static Entity newBonus(double x, double y, BonusType type) {
+    @Spawns("Bonus")
+    public Entity newBonus(SpawnData data) {
+        BonusType type = data.get("type");
+
         return Entities.builder()
-                .type(EntityType.BONUS)
-                .at(x, y)
+                .from(data)
+                .type(SpaceInvadersType.BONUS)
                 .viewFromTextureWithBBox(type.textureName)
                 .with(new SubTypeComponent(type), new CollidableComponent(true))
                 .with(new BonusControl())
                 .build();
     }
 
-    public static Entity newExplosion(Point2D position) {
+    @Spawns("Explosion")
+    public Entity newExplosion(SpawnData data) {
         GameEntity explosion = Entities.builder()
-                .at(position.subtract(40, 40))
+                .at(data.getX() - 40, data.getY() - 40)
                 // texture is 256x256, we want smaller, 80x80
                 // it has 48 frames, hence 80 * 48
                 .viewFromNode(assetLoader.loadTexture("explosion.png", 80 * 48, 80).toAnimatedTexture(48, Duration.seconds(2)))
@@ -263,13 +263,5 @@ public final class EntityFactory {
         explosion.getView().setBlendMode(BlendMode.ADD);
 
         return explosion;
-    }
-
-    public static Entity newLaserHit(Point2D position) {
-        return Entities.builder()
-                .at(position.subtract(15, 15))
-                .viewFromNode(assetLoader.loadTexture("laser_hit.png", 15, 15))
-                .with(new LaserHitControl())
-                .build();
     }
 }

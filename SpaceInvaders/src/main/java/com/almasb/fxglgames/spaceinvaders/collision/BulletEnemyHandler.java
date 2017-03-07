@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,19 +24,20 @@
  * SOFTWARE.
  */
 
-package com.almasb.spaceinvaders.collision;
+package com.almasb.fxglgames.spaceinvaders.collision;
 
-import com.almasb.ents.Entity;
+import com.almasb.fxgl.annotation.AddCollisionHandler;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.app.ServiceType;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.component.MainViewComponent;
+import com.almasb.fxgl.entity.GameWorld;
 import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.entity.component.ViewComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.spaceinvaders.EntityFactory;
-import com.almasb.spaceinvaders.component.HPComponent;
-import com.almasb.spaceinvaders.component.OwnerComponent;
-import com.almasb.spaceinvaders.event.GameEvent;
+import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
+import com.almasb.fxglgames.spaceinvaders.component.HPComponent;
+import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;
+import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;
 import javafx.util.Duration;
@@ -44,10 +45,11 @@ import javafx.util.Duration;
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
+@AddCollisionHandler
 public class BulletEnemyHandler extends CollisionHandler {
 
     public BulletEnemyHandler() {
-        super(EntityFactory.EntityType.BULLET, EntityFactory.EntityType.ENEMY);
+        super(SpaceInvadersType.BULLET, SpaceInvadersType.ENEMY);
     }
 
     @Override
@@ -55,12 +57,13 @@ public class BulletEnemyHandler extends CollisionHandler {
         Object owner = bullet.getComponentUnsafe(OwnerComponent.class).getValue();
 
         // some enemy shot the bullet, skip collision handling
-        if (owner == EntityFactory.EntityType.ENEMY) {
+        if (owner == SpaceInvadersType.ENEMY) {
             return;
         }
 
+        GameWorld world = (GameWorld) bullet.getWorld();
+
         Point2D hitPosition = bullet.getComponentUnsafe(PositionComponent.class).getValue();
-        bullet.setProperty("dead", true);
         bullet.removeFromWorld();
 
         HPComponent hp = enemy.getComponentUnsafe(HPComponent.class);
@@ -69,26 +72,23 @@ public class BulletEnemyHandler extends CollisionHandler {
         if (hp.getValue() <= 0) {
 
             FXGL.getMasterTimer().runOnceAfter(() -> {
-                Entity explosion = EntityFactory.newExplosion(Entities.getBBox(enemy).getCenterWorld());
-                enemy.getWorld().addEntity(explosion);
-
+                world.spawn("Explosion", Entities.getBBox(enemy).getCenterWorld());
                 enemy.removeFromWorld();
             }, Duration.seconds(0.1));
 
-            // TODO: do this via a listener to entity world, i.e. when they are actually removed
-            FXGL.getService(ServiceType.AUDIO_PLAYER).playSound("explosion.wav");
-            FXGL.getService(ServiceType.EVENT_BUS).fireEvent(new GameEvent(GameEvent.ENEMY_KILLED));
+            FXGL.getAudioPlayer().playSound("explosion.wav");
+            FXGL.getEventBus().fireEvent(new GameEvent(GameEvent.ENEMY_KILLED));
         } else {
-            Entity laserHit = EntityFactory.newLaserHit(hitPosition);
+            world.spawn("LaserHit", hitPosition);
 
-            enemy.getWorld().addEntity(laserHit);
+            // make enemy look red
+            enemy.getComponentUnsafe(ViewComponent.class).getView().setBlendMode(BlendMode.RED);
 
-            enemy.getComponentUnsafe(MainViewComponent.class).getView().setBlendMode(BlendMode.RED);
-
-            FXGL.getService(ServiceType.MASTER_TIMER)
+            // return enemy look to normal
+            FXGL.getMasterTimer()
                     .runOnceAfter(() -> {
                         if (enemy.isActive())
-                            enemy.getComponentUnsafe(MainViewComponent.class).getView().setBlendMode(null);
+                            enemy.getComponentUnsafe(ViewComponent.class).getView().setBlendMode(null);
                     }, Duration.seconds(0.33));
         }
     }
