@@ -35,9 +35,11 @@ import com.almasb.fxgl.gameplay.Level;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.parser.text.TextLevelParser;
 import com.almasb.fxgl.settings.GameSettings;
+import com.almasb.fxgl.time.TimerAction;
 import com.almasb.fxgl.ui.UI;
 import com.almasb.fxglgames.pacman.control.PlayerControl;
 import javafx.scene.input.KeyCode;
+import javafx.util.Duration;
 
 import java.util.Map;
 
@@ -56,6 +58,8 @@ public class PacmanApp extends GameApplication {
     public static final int MAP_SIZE = 21;
 
     private static final int UI_SIZE = 200;
+
+    public static final int TIME_PER_LEVEL = 180;
 
     private GameEntity player;
     private PlayerControl playerControl;
@@ -79,7 +83,7 @@ public class PacmanApp extends GameApplication {
         settings.setWidth(MAP_SIZE * BLOCK_SIZE + UI_SIZE);
         settings.setHeight(MAP_SIZE * BLOCK_SIZE);
         settings.setTitle("Reverse Pac-man");
-        settings.setVersion("0.3");
+        settings.setVersion("0.4");
         settings.setFullScreen(false);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
@@ -135,7 +139,10 @@ public class PacmanApp extends GameApplication {
         vars.put("score", 0);
         vars.put("coins", 0);
         vars.put("teleport", 0);
+        vars.put("time", TIME_PER_LEVEL);
     }
+
+    private TimerAction timerAction;
 
     @Override
     protected void initGame() {
@@ -164,6 +171,17 @@ public class PacmanApp extends GameApplication {
 
         // find out number of coins
         getGameState().setValue("coins", getGameWorld().getEntitiesByType(PacmanType.COIN).size());
+
+        timerAction = getMasterTimer().runAtInterval(
+                () -> getGameState().increment("time", -1),
+                Duration.seconds(1)
+        );
+
+        getGameState().<Integer>addListener("time", (old, now) -> {
+            if (now == 0) {
+                onPlayerKilled();
+            }
+        });
     }
 
     private PacmanUIController uiController;

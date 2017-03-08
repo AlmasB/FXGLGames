@@ -29,12 +29,14 @@ package com.almasb.fxglgames.pacman;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.time.UpdateEvent;
 import com.almasb.fxgl.time.UpdateEventListener;
+import com.almasb.fxgl.ui.ProgressBar;
 import com.almasb.fxgl.ui.UIController;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
@@ -45,18 +47,15 @@ import javafx.scene.text.TextAlignment;
 public class PacmanUIController implements UIController, UpdateEventListener {
 
     @FXML
-    private Label labelTitle;
+    private Pane root;
+
+    private ProgressBar timeBar;
 
     @FXML
     private Label labelScore;
 
     @FXML
     private Label labelTeleport;
-
-    @FXML
-    private Canvas canvas;
-
-    private GraphicsContext g;
 
     public Label getLabelScore() {
         return labelScore;
@@ -68,28 +67,26 @@ public class PacmanUIController implements UIController, UpdateEventListener {
 
     @Override
     public void init() {
-        labelTitle.setFont(Font.font(48));
-        labelTitle.setText("Reverse\nPac-man");
-        labelTitle.setEffect(new DropShadow(0.5, 0.5, 1.0, Color.BLACK));
-        labelTitle.setTextAlignment(TextAlignment.CENTER);
+
+        timeBar = new ProgressBar(false);
+        timeBar.setHeight(50);
+        timeBar.setTranslateX(0);
+        timeBar.setTranslateY(100);
+        timeBar.setRotate(-90);
+        timeBar.setFill(Color.GREEN);
+        timeBar.setLabelVisible(false);
+        timeBar.setMaxValue(PacmanApp.TIME_PER_LEVEL);
+        timeBar.setMinValue(0);
+        timeBar.setCurrentValue(PacmanApp.TIME_PER_LEVEL);
+        timeBar.currentValueProperty().bind(FXGL.getApp().getGameState().intProperty("time"));
+
+        root.getChildren().addAll(timeBar);
 
         labelScore.setFont(FXGL.getUIFactory().newFont(24));
         labelTeleport.setFont(FXGL.getUIFactory().newFont(24));
-
-        g = canvas.getGraphicsContext2D();
-        g.setFill(Color.GREENYELLOW);
     }
-
-    private double y = 50;
 
     @Override
     public void onUpdateEvent(UpdateEvent event) {
-//        y += event.tpf() * 60;
-//
-//        if (y >= 300)
-//            y = 50;
-//
-//        g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-//        g.fillOval(50, y, 3, 3);
     }
 }

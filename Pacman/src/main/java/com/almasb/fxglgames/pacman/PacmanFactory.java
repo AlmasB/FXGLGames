@@ -35,10 +35,12 @@ import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
+import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxglgames.pacman.control.*;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -84,14 +86,9 @@ public class PacmanFactory implements TextEntityFactory {
 
     @SpawnSymbol('P')
     public GameEntity newPlayer(SpawnData data) {
-
-        Rectangle view = new Rectangle(36, 36, Color.BLUE);
-        view.setTranslateX(2);
-        view.setTranslateY(2);
-
-//        Texture view = FXGL.getAssetLoader()
-//                .loadTexture("pacman/player.png")
-//                .toStaticAnimatedTexture(2, Duration.seconds(0.33));
+        Texture view = FXGL.getAssetLoader()
+                .loadTexture("player.png")
+                .toAnimatedTexture(2, Duration.seconds(0.33));
 
         return Entities.builder()
                 .from(data)
