@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,25 +24,31 @@
  * SOFTWARE.
  */
 
-package com.almasb.pacman.control;
-
-import com.almasb.fxgl.app.FXGL;
-import com.almasb.pacman.PacmanApp;
+package com.almasb.fxglgames.pacman.control;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class DiffEnemyControl extends EnemyControl {
+public enum MoveDirection {
+    UP, RIGHT, DOWN, LEFT;
 
-    private PlayerControl playerControl;
+    MoveDirection next() {
+        int index = ordinal() + 1;
 
-    @Override
-    protected MoveDirection updateMoveDirection() {
-
-        if (playerControl == null) {
-            playerControl = ((PacmanApp) FXGL.getApp()).getPlayerControl();
+        if (index == values().length) {
+            index = 0;
         }
 
-        return playerControl.getMoveDirection().next().next();
+        return values()[index];
+    }
+
+    MoveDirection prev() {
+        int index = ordinal() - 1;
+
+        if (index == -1) {
+            index = values().length - 1;
+        }
+
+        return values()[index];
     }
 }

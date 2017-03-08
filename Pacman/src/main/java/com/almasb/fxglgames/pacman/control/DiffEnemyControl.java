@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,23 +24,25 @@
  * SOFTWARE.
  */
 
-package com.almasb.pacman.ai;
+package com.almasb.fxglgames.pacman.control;
 
-import com.almasb.fxgl.ai.Condition;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.GameEntity;
-import com.almasb.pacman.PacmanApp;
+import com.almasb.fxglgames.pacman.PacmanApp;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class PlayerCloseCondition extends Condition {
+public class DiffEnemyControl extends EnemyControl {
+
+    private PlayerControl playerControl;
 
     @Override
-    public boolean evaluate() {
-        GameEntity player = ((PacmanApp) FXGL.getApp()).getPlayer();
+    protected MoveDirection updateMoveDirection() {
 
-        return player.getPositionComponent().distance(getObject().getPositionComponent())
-                < PacmanApp.MAP_SIZE * PacmanApp.BLOCK_SIZE / 3;
+        if (playerControl == null) {
+            playerControl = ((PacmanApp) FXGL.getApp()).getPlayerControl();
+        }
+
+        return playerControl.getMoveDirection().next().next();
     }
 }

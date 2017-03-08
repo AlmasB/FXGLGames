@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,31 +24,23 @@
  * SOFTWARE.
  */
 
-package com.almasb.pacman.collision;
+package com.almasb.fxglgames.pacman.ai;
 
-import com.almasb.ents.Entity;
+import com.almasb.fxgl.ai.Condition;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.pacman.EntityType;
-import com.almasb.pacman.PacmanApp;
+import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxglgames.pacman.PacmanApp;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class PlayerCoinHandler extends CollisionHandler {
-
-    private PacmanApp app;
-
-    public PlayerCoinHandler() {
-        super(EntityType.PLAYER, EntityType.COIN);
-
-        app = (PacmanApp) FXGL.getApp();
-    }
+public class PlayerCloseCondition extends Condition {
 
     @Override
-    protected void onCollisionBegin(Entity player, Entity coin) {
+    public boolean evaluate() {
+        GameEntity player = ((PacmanApp) FXGL.getApp()).getPlayer();
 
-        app.onCoinPickup();
-        coin.removeFromWorld();
+        return player.getPositionComponent().distance(getObject().getPositionComponent())
+                < PacmanApp.MAP_SIZE * PacmanApp.BLOCK_SIZE / 3;
     }
 }

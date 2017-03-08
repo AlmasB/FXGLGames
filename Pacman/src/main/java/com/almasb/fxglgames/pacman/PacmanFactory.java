@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,22 +24,21 @@
  * SOFTWARE.
  */
 
-package com.almasb.pacman;
+package com.almasb.fxglgames.pacman;
 
-import com.almasb.ents.Control;
 import com.almasb.fxgl.ai.AIControl;
+import com.almasb.fxgl.annotation.SetEntityFactory;
+import com.almasb.fxgl.annotation.SpawnSymbol;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.EntityView;
-import com.almasb.fxgl.entity.GameEntity;
-import com.almasb.fxgl.entity.RenderLayer;
+import com.almasb.fxgl.ecs.Control;
+import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
+import com.almasb.fxglgames.pacman.control.*;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import com.almasb.pacman.control.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,41 +51,29 @@ import java.util.stream.IntStream;
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class EntityFactory {
+@SetEntityFactory
+public class PacmanFactory implements TextEntityFactory {
 
-    private static RenderLayer BG = new RenderLayer() {
-        @Override
-        public String name() {
-            return "BG";
-        }
-
-        @Override
-        public int index() {
-            return 0;
-        }
-    };
-
-    public static GameEntity newBlock(double x, double y) {
-        EntityView view = new EntityView(new Rectangle(40, 40));
-        view.setRenderLayer(BG);
-
+    @SpawnSymbol('1')
+    public GameEntity newBlock(SpawnData data) {
         return Entities.builder()
-                .type(EntityType.BLOCK)
-                .viewFromNodeWithBBox(view)
-                .at(x * PacmanApp.BLOCK_SIZE, y * PacmanApp.BLOCK_SIZE)
+                .from(data)
+                .type(PacmanType.BLOCK)
+                .viewFromNodeWithBBox(new EntityView(new Rectangle(40, 40), RenderLayer.BACKGROUND))
                 .build();
     }
 
-    public static GameEntity newCoin(double x, double y) {
+    @SpawnSymbol('0')
+    public GameEntity newCoin(SpawnData data) {
         EntityView view = new EntityView(FXGL.getAssetLoader().loadTexture("coin.png"));
         view.setTranslateX(2.5);
-        view.setRenderLayer(BG);
+        view.setRenderLayer(RenderLayer.BACKGROUND);
 
         return Entities.builder()
-                .type(EntityType.COIN)
+                .from(data)
+                .type(PacmanType.COIN)
                 .bbox(new HitBox("Main", BoundingShape.box(40, 40)))
                 .viewFromNodeWithBBox(view)
-                .at(x * PacmanApp.BLOCK_SIZE, y * PacmanApp.BLOCK_SIZE)
                 .with(new CollidableComponent(true))
 //                .with(new CollidableComponent(true), new DrawableComponent(g -> {
 //                    g.setFill(Color.YELLOW);
@@ -95,7 +82,8 @@ public class EntityFactory {
                 .build();
     }
 
-    public static GameEntity newPlayer(double x, double y) {
+    @SpawnSymbol('P')
+    public GameEntity newPlayer(SpawnData data) {
 
         Rectangle view = new Rectangle(36, 36, Color.BLUE);
         view.setTranslateX(2);
@@ -106,10 +94,10 @@ public class EntityFactory {
 //                .toStaticAnimatedTexture(2, Duration.seconds(0.33));
 
         return Entities.builder()
-                .type(EntityType.PLAYER)
+                .from(data)
+                .type(PacmanType.PLAYER)
                 .bbox(new HitBox("PLAYER_BODY", new Point2D(2, 2), BoundingShape.box(36, 36)))
                 .viewFromNode(view)
-                .at(x * PacmanApp.BLOCK_SIZE, y * PacmanApp.BLOCK_SIZE)
                 .with(new CollidableComponent(true))
                 .with(new PlayerControl())
                 .build();
@@ -147,13 +135,29 @@ public class EntityFactory {
         return control;
     }
 
-    public static GameEntity newEnemy(double x, double y) {
+    @SpawnSymbol('E')
+    public GameEntity newEnemy(SpawnData data) {
         return Entities.builder()
-                .type(EntityType.ENEMY)
+                .from(data)
+                .type(PacmanType.ENEMY)
                 .bbox(new HitBox("ENEMY_BODY", new Point2D(2, 2), BoundingShape.box(36, 36)))
-                .at(x * PacmanApp.BLOCK_SIZE, y * PacmanApp.BLOCK_SIZE)
                 .with(new CollidableComponent(true))
                 .with(getNextEnemyControl(), new PaletteChangingControl(FXGL.getAssetLoader().loadTexture("spritesheet.png")))
                 .build();
+    }
+
+    @Override
+    public char emptyChar() {
+        return ' ';
+    }
+
+    @Override
+    public int blockWidth() {
+        return 40;
+    }
+
+    @Override
+    public int blockHeight() {
+        return 40;
     }
 }

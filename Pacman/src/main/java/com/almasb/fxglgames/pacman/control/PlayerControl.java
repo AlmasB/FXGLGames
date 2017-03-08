@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,20 +24,21 @@
  * SOFTWARE.
  */
 
-package com.almasb.pacman.control;
+package com.almasb.fxglgames.pacman.control;
 
-import com.almasb.astar.AStarGrid;
-import com.almasb.astar.NodeState;
-import com.almasb.ents.AbstractControl;
-import com.almasb.ents.Entity;
+
+import com.almasb.fxgl.ai.pathfinding.AStarGrid;
+import com.almasb.fxgl.ai.pathfinding.NodeState;
 import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
-import com.almasb.fxgl.entity.component.MainViewComponent;
 import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxgl.entity.component.RotationComponent;
-import com.almasb.pacman.EntityType;
-import com.almasb.pacman.PacmanApp;
+import com.almasb.fxgl.entity.component.ViewComponent;
+import com.almasb.fxglgames.pacman.PacmanApp;
+import com.almasb.fxglgames.pacman.PacmanType;
 
 import java.util.List;
 import java.util.Random;
@@ -48,7 +49,7 @@ import java.util.Random;
 public class PlayerControl extends AbstractControl {
     private PositionComponent position;
     private BoundingBoxComponent bbox;
-    private MainViewComponent view;
+    private ViewComponent view;
     private RotationComponent rotation;
 
     private MoveDirection moveDir = MoveDirection.UP;
@@ -61,7 +62,7 @@ public class PlayerControl extends AbstractControl {
     public void onAdded(Entity entity) {
         position = Entities.getPosition(entity);
         bbox = Entities.getBBox(entity);
-        view = Entities.getMainView(entity);
+        view = Entities.getView(entity);
         rotation = Entities.getRotation(entity);
     }
 
@@ -138,7 +139,7 @@ public class PlayerControl extends AbstractControl {
             return;
 
         if (blocks == null) {
-            blocks = FXGL.getApp().getGameWorld().getEntitiesByType(EntityType.BLOCK);
+            blocks = FXGL.getApp().getGameWorld().getEntitiesByType(PacmanType.BLOCK);
         }
 
         double mag = Math.sqrt(dx * dx + dy * dy);

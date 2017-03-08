@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,13 +24,13 @@
  * SOFTWARE.
  */
 
-package com.almasb.pacman.control;
+package com.almasb.fxglgames.pacman.control;
 
-import com.almasb.ents.AbstractControl;
-import com.almasb.ents.Entity;
+import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.component.MainViewComponent;
 import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.entity.component.ViewComponent;
 import com.almasb.fxgl.texture.Texture;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.transform.Scale;
@@ -43,7 +43,7 @@ import java.util.Random;
 public class PaletteChangingControl extends AbstractControl {
 
     private PositionComponent position;
-    private MainViewComponent view;
+    private ViewComponent view;
     private Texture texture;
 
     public PaletteChangingControl(Texture texture) {
@@ -53,7 +53,7 @@ public class PaletteChangingControl extends AbstractControl {
     @Override
     public void onAdded(Entity entity) {
         position = Entities.getPosition(entity);
-        view = Entities.getMainView(entity);
+        view = Entities.getView(entity);
 
         view.setView(texture);
         view.getView().getTransforms().addAll(new Scale(0.26, 0.26, 0, 0));

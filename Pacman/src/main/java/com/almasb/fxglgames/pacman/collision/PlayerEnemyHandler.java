@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,31 +24,32 @@
  * SOFTWARE.
  */
 
-package com.almasb.pacman.control;
+package com.almasb.fxglgames.pacman.collision;
+
+import com.almasb.fxgl.annotation.AddCollisionHandler;
+import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.physics.CollisionHandler;
+import com.almasb.fxglgames.pacman.PacmanApp;
+import com.almasb.fxglgames.pacman.PacmanType;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public enum MoveDirection {
-    UP, RIGHT, DOWN, LEFT;
+@AddCollisionHandler
+public class PlayerEnemyHandler extends CollisionHandler {
 
-    MoveDirection next() {
-        int index = ordinal() + 1;
+    private PacmanApp app;
 
-        if (index == values().length) {
-            index = 0;
-        }
+    public PlayerEnemyHandler() {
+        super(PacmanType.PLAYER, PacmanType.ENEMY);
 
-        return values()[index];
+        app = (PacmanApp) FXGL.getApp();
     }
 
-    MoveDirection prev() {
-        int index = ordinal() - 1;
+    @Override
+    protected void onCollisionBegin(Entity player, Entity enemy) {
 
-        if (index == -1) {
-            index = values().length - 1;
-        }
-
-        return values()[index];
+        app.onPlayerKilled();
     }
 }

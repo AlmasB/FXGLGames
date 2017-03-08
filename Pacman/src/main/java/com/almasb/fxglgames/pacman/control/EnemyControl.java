@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,19 +24,19 @@
  * SOFTWARE.
  */
 
-package com.almasb.pacman.control;
+package com.almasb.fxglgames.pacman.control;
 
-import com.almasb.ents.AbstractControl;
-import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.core.math.Vec2;
+import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
 import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.gameutils.math.GameMath;
-import com.almasb.gameutils.math.Vec2;
+import com.almasb.fxglgames.pacman.PacmanApp;
+import com.almasb.fxglgames.pacman.PacmanType;
 import javafx.geometry.Point2D;
-import com.almasb.pacman.EntityType;
-import com.almasb.pacman.PacmanApp;
 
 import java.util.List;
 import java.util.Random;
@@ -125,7 +125,7 @@ public class EnemyControl extends AbstractControl {
             return;
 
         if (blocks == null) {
-            blocks = FXGL.getApp().getGameWorld().getEntitiesByType(EntityType.BLOCK);
+            blocks = FXGL.getApp().getGameWorld().getEntitiesByType(PacmanType.BLOCK);
         }
 
         long length = Math.round(vector.magnitude());
@@ -157,12 +157,12 @@ public class EnemyControl extends AbstractControl {
             return;
 
         if (blocks == null) {
-            blocks = FXGL.getApp().getGameWorld().getEntitiesByType(EntityType.BLOCK);
+            blocks = FXGL.getApp().getGameWorld().getEntitiesByType(PacmanType.BLOCK);
         }
 
         velocity.set((float) dx, (float) dy);
 
-        int length = GameMath.roundPositive(velocity.length());
+        int length = FXGLMath.roundPositive(velocity.length());
 
         velocity.normalizeLocal();
 

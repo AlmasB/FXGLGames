@@ -3,7 +3,7 @@
  *
  * FXGL - JavaFX Game Library
  *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,30 +24,33 @@
  * SOFTWARE.
  */
 
-package com.almasb.pacman.collision;
+package com.almasb.fxglgames.pacman.collision;
 
-import com.almasb.ents.Entity;
+import com.almasb.fxgl.annotation.AddCollisionHandler;
 import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.pacman.EntityType;
-import com.almasb.pacman.PacmanApp;
+import com.almasb.fxglgames.pacman.PacmanApp;
+import com.almasb.fxglgames.pacman.PacmanType;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class PlayerEnemyHandler extends CollisionHandler {
+@AddCollisionHandler
+public class PlayerCoinHandler extends CollisionHandler {
 
     private PacmanApp app;
 
-    public PlayerEnemyHandler() {
-        super(EntityType.PLAYER, EntityType.ENEMY);
+    public PlayerCoinHandler() {
+        super(PacmanType.PLAYER, PacmanType.COIN);
 
         app = (PacmanApp) FXGL.getApp();
     }
 
     @Override
-    protected void onCollisionBegin(Entity player, Entity enemy) {
+    protected void onCollisionBegin(Entity player, Entity coin) {
 
-        app.onPlayerKilled();
+        app.onCoinPickup();
+        coin.removeFromWorld();
     }
 }
