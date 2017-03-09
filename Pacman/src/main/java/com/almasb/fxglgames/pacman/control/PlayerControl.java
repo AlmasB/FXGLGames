@@ -39,6 +39,8 @@ import com.almasb.fxgl.entity.component.RotationComponent;
 import com.almasb.fxgl.entity.component.ViewComponent;
 import com.almasb.fxglgames.pacman.PacmanApp;
 import com.almasb.fxglgames.pacman.PacmanType;
+import javafx.animation.FadeTransition;
+import javafx.util.Duration;
 
 import java.util.List;
 import java.util.Random;
@@ -130,6 +132,17 @@ public class PlayerControl extends AbstractControl {
         } while (grid.getNodeState(x, y) != NodeState.WALKABLE);
 
         position.setValue(x * PacmanApp.BLOCK_SIZE, y * PacmanApp.BLOCK_SIZE);
+
+        playFadeAnimation();
+    }
+
+    private void playFadeAnimation() {
+        FadeTransition ft = new FadeTransition(Duration.seconds(0.5), view.getView());
+        ft.setFromValue(1);
+        ft.setToValue(0);
+        ft.setAutoReverse(true);
+        ft.setCycleCount(2);
+        ft.play();
     }
 
     private List<Entity> blocks;

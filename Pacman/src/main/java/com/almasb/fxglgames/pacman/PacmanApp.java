@@ -198,6 +198,12 @@ public class PacmanApp extends GameApplication {
         uiController.getLabelTeleport().textProperty().bind(getGameState().intProperty("teleport").asString("Teleports:\n[%d]"));
 
         getGameScene().addUI(ui);
+
+        PauseWindow pauseWindow = new PauseWindow(400, (int)(getHeight() * 2/3), this::pause, this::resume);
+        pauseWindow.setTranslateX(getWidth() / 2 - 400 / 2);
+        pauseWindow.setTranslateY(getHeight() - 30);
+
+        getGameScene().addUINode(pauseWindow);
     }
 
     @Override
