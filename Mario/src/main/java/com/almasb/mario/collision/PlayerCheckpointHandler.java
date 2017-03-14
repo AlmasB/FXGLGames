@@ -26,8 +26,8 @@
 
 package com.almasb.mario.collision;
 
-import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.mario.type.EntityType;
 import com.almasb.mario.event.CheckpointEvent;

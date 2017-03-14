@@ -26,7 +26,7 @@
 
 package com.almasb.mario.type;
 
-import com.almasb.ents.component.ObjectComponent;
+import com.almasb.fxgl.ecs.component.ObjectComponent;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)

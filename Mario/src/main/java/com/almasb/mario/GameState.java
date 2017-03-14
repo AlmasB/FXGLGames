@@ -26,7 +26,7 @@
 
 package com.almasb.mario;
 
-import com.almasb.ents.Entity;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxgl.scene.Viewport;

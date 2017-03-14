@@ -26,8 +26,13 @@
 
 package com.almasb.mario;
 
+import com.almasb.fxgl.annotation.SetEntityFactory;
+import com.almasb.fxgl.annotation.SpawnSymbol;
+import com.almasb.fxgl.annotation.Spawns;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.entity.TextEntityFactory;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
@@ -39,7 +44,6 @@ import com.almasb.mario.type.EntityType;
 import com.almasb.mario.type.PickupType;
 import com.almasb.mario.type.PlatformType;
 import com.almasb.mario.type.SubTypeComponent;
-import javafx.geometry.BoundingBox;
 import org.jbox2d.dynamics.BodyType;
 
 import static com.almasb.mario.MarioApp.BLOCK_SIZE;
@@ -47,37 +51,41 @@ import static com.almasb.mario.MarioApp.BLOCK_SIZE;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class EntityFactory {
+@SetEntityFactory
+public class MarioFactory implements TextEntityFactory {
 
-    private static GameEntity makeGenericPlatform(double x, double y) {
+    private GameEntity makeGenericPlatform(SpawnData data) {
         return Entities.builder()
-                .at(x * BLOCK_SIZE, y * BLOCK_SIZE)
+                .from(data)
                 .type(EntityType.PLATFORM)
                 .with(new SubTypeComponent(PlatformType.NORMAL))
                 .build();
     }
 
-    public static GameEntity makeCheckpoint(double x, double y) {
+    @SpawnSymbol('c')
+    public GameEntity makeCheckpoint(SpawnData data) {
         return Entities.builder()
-                .at(x * BLOCK_SIZE, y * BLOCK_SIZE)
+                .from(data)
                 .type(EntityType.CHECKPOINT)
                 .viewFromTextureWithBBox("checkpoint.png")
                 .with(new CollidableComponent(true))
                 .build();
     }
 
-    public static GameEntity makeFinish(double x, double y) {
+    @SpawnSymbol('f')
+    public GameEntity makeFinish(SpawnData data) {
         return Entities.builder()
-                .at(x * BLOCK_SIZE, y * BLOCK_SIZE)
+                .from(data)
                 .type(EntityType.FINISH)
                 .viewFromTextureWithBBox("finish.png")
                 .with(new CollidableComponent(true))
                 .build();
     }
 
-    public static GameEntity makePickupCoin(double x, double y) {
+    @SpawnSymbol('g')
+    public GameEntity makePickupCoin(SpawnData data) {
         return Entities.builder()
-                .at(x * BLOCK_SIZE, y * BLOCK_SIZE)
+                .from(data)
                 .type(EntityType.PICKUP)
                 .viewFromTextureWithBBox("coin.png")
                 .with(new CollidableComponent(true))
@@ -85,9 +93,10 @@ public class EntityFactory {
                 .build();
     }
 
-    public static GameEntity makePlatformBegin(double x, double y) {
-        GameEntity e = makeGenericPlatform(x, y);
-        e.getMainViewComponent().setTexture("platform_begin.png", true);
+    @SpawnSymbol('b')
+    public GameEntity makePlatformBegin(SpawnData data) {
+        GameEntity e = makeGenericPlatform(data);
+        e.getViewComponent().setTexture("platform_begin.png", true);
 
         PhysicsComponent physics = new PhysicsComponent();
         e.addComponent(physics);
@@ -95,9 +104,10 @@ public class EntityFactory {
         return e;
     }
 
-    public static GameEntity makePlatformEnd(double x, double y) {
-        GameEntity e = makeGenericPlatform(x, y);
-        e.getMainViewComponent().setTexture("platform_end.png", true);
+    @SpawnSymbol('e')
+    public GameEntity makePlatformEnd(SpawnData data) {
+        GameEntity e = makeGenericPlatform(data);
+        e.getViewComponent().setTexture("platform_end.png", true);
 
         PhysicsComponent physics = new PhysicsComponent();
         e.addComponent(physics);
@@ -105,9 +115,10 @@ public class EntityFactory {
         return e;
     }
 
-    public static GameEntity makePlatform(double x, double y) {
-        GameEntity e = makeGenericPlatform(x, y);
-        e.getMainViewComponent().setTexture("platform.png", true);
+    @SpawnSymbol('p')
+    public GameEntity makePlatform(SpawnData data) {
+        GameEntity e = makeGenericPlatform(data);
+        e.getViewComponent().setTexture("platform.png", true);
 
         PhysicsComponent physics = new PhysicsComponent();
         e.addComponent(physics);
@@ -115,38 +126,42 @@ public class EntityFactory {
         return e;
     }
 
-    public static GameEntity makePlatformInvisible(double x, double y) {
+    @SpawnSymbol('i')
+    public GameEntity makePlatformInvisible(SpawnData data) {
         GameEntity e = Entities.builder()
-                .at(x * BLOCK_SIZE, y * BLOCK_SIZE)
+                .from(data)
                 .type(EntityType.PLATFORM)
                 .viewFromTextureWithBBox("platform.png")
                 .with(new CollidableComponent(true))
                 .with(new SubTypeComponent(PlatformType.INVISIBLE))
                 .build();
 
-        e.getMainViewComponent().getView().setVisible(false);
+        e.getViewComponent().getView().setVisible(false);
         return e;
     }
 
-    public static GameEntity makePlatformLift(double x, double y) {
-        GameEntity e = makePlatform(x, y);
+    @SpawnSymbol('1')
+    public GameEntity makePlatformLift(SpawnData data) {
+        GameEntity e = makePlatform(data);
         Entities.getPhysics(e).setBodyType(BodyType.KINEMATIC);
-        e.addControl(new PhysicsLiftControl(y * BLOCK_SIZE));
+        e.addControl(new PhysicsLiftControl(data.getY()));
 
         return e;
     }
 
-    public static GameEntity makePlatformCarry(double x, double y) {
-        GameEntity e = makePlatform(x, y);
+    @SpawnSymbol('2')
+    public GameEntity makePlatformCarry(SpawnData data) {
+        GameEntity e = makePlatform(data);
         Entities.getPhysics(e).setBodyType(BodyType.KINEMATIC);
-        e.addControl(new PhysicsCarryControl(x * BLOCK_SIZE));
+        e.addControl(new PhysicsCarryControl(data.getX()));
 
         return e;
     }
 
-    public static GameEntity makeBlock(double x, double y) {
-        GameEntity e = makeGenericPlatform(x, y);
-        e.getMainViewComponent().setTexture("block.png", true);
+    @SpawnSymbol('0')
+    public GameEntity makeBlock(SpawnData data) {
+        GameEntity e = makeGenericPlatform(data);
+        e.getViewComponent().setTexture("block.png", true);
 
         PhysicsComponent physics = new PhysicsComponent();
         e.addComponent(physics);
@@ -207,12 +222,13 @@ public class EntityFactory {
 //        return platform;
 //    }
 
-    public static GameEntity makePlayer(double x, double y) {
+    @SpawnSymbol('s')
+    public GameEntity makePlayer(SpawnData data) {
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.DYNAMIC);
 
         GameEntity p = Entities.builder()
-                .at(x * BLOCK_SIZE, y * BLOCK_SIZE)
+                .from(data)
                 .type(EntityType.PLAYER)
                 .viewFromTexture("player.png")
                 .with(new CollidableComponent(true))
@@ -223,5 +239,20 @@ public class EntityFactory {
         p.getBoundingBoxComponent().addHitBox(new HitBox("BODY", BoundingShape.circle(15)));
 
         return p;
+    }
+
+    @Override
+    public char emptyChar() {
+        return ' ';
+    }
+
+    @Override
+    public int blockWidth() {
+        return 32;
+    }
+
+    @Override
+    public int blockHeight() {
+        return 32;
     }
 }

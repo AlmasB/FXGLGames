@@ -26,8 +26,8 @@
 
 package com.almasb.mario.control;
 
-import com.almasb.ents.AbstractControl;
-import com.almasb.ents.Entity;
+import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Entity;
 
 public abstract class EnemyControl extends AbstractControl {
 

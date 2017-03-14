@@ -26,11 +26,12 @@
 
 package com.almasb.mario.control;
 
-import com.almasb.ents.AbstractControl;
-import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
+import com.almasb.fxgl.entity.component.ViewComponent;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.mario.type.EntityType;
 import com.almasb.mario.event.DeathEvent;
@@ -42,14 +43,16 @@ import javafx.geometry.Rectangle2D;
  */
 public class PlayerControl extends AbstractControl {
 
-    private static final int MAX_SPEED = 5 * 60;
-    private static final int INSTANT_SPEED = 10 * 60;
-    private static final double SLOW_FACTOR = 0.12;
+    private static final int MAX_SPEED = 4 * 60;
+    private static final int JUMP_SPEED = 5 * 60;
+    private static final int INSTANT_SPEED = 2 * 60;
+    private static final double SLOW_FACTOR = 0.02;
 
     private Point2D acceleration = Point2D.ZERO;
 
     private PhysicsComponent physics;
     private BoundingBoxComponent bbox;
+    private ViewComponent view;
 
     private double tpf;
 
@@ -57,6 +60,7 @@ public class PlayerControl extends AbstractControl {
     public void onAdded(Entity entity) {
         bbox = entity.getComponentUnsafe(BoundingBoxComponent.class);
         physics = entity.getComponentUnsafe(PhysicsComponent.class);
+        view = Entities.getView(entity);
     }
 
     @Override
@@ -67,7 +71,7 @@ public class PlayerControl extends AbstractControl {
 
         limitVelocity();
 
-        acceleration = acceleration.multiply(SLOW_FACTOR);
+        acceleration = new Point2D(acceleration.multiply(SLOW_FACTOR / 1).getX(), acceleration.multiply(SLOW_FACTOR).getY());
 
         if (bbox.getMaxYWorld() > FXGL.getSettings().getHeight()) {
             FXGL.getEventBus().fireEvent(new DeathEvent(DeathEvent.ANY));
@@ -83,11 +87,11 @@ public class PlayerControl extends AbstractControl {
         if (vel.getX() > MAX_SPEED)
             vel = new Point2D(MAX_SPEED, vel.getY());
 
-        if (vel.getY() < -MAX_SPEED)
-            vel = new Point2D(vel.getX(), -MAX_SPEED);
+        if (vel.getY() < -MAX_SPEED * 2)
+            vel = new Point2D(vel.getX(), -MAX_SPEED * 2);
 
-        if (vel.getY() > MAX_SPEED)
-            vel = new Point2D(vel.getX(), MAX_SPEED);
+        if (vel.getY() > MAX_SPEED * 2)
+            vel = new Point2D(vel.getX(), MAX_SPEED * 2);
 
         physics.setLinearVelocity(vel);
     }
@@ -107,14 +111,21 @@ public class PlayerControl extends AbstractControl {
 
     public void jump() {
         if (canJump())
-            acceleration = acceleration.add(0, -INSTANT_SPEED);
+            acceleration = acceleration.add(0, -JUMP_SPEED);
     }
 
     public void right() {
-        acceleration = acceleration.add(INSTANT_SPEED * tpf, 0);
+        acceleration = acceleration.add(INSTANT_SPEED * tpf * 100, 0);
+        view.getView().setScaleX(1);
     }
 
     public void left() {
-        acceleration = acceleration.add(-INSTANT_SPEED * tpf, 0);
+        acceleration = acceleration.add(-INSTANT_SPEED * tpf * 100, 0);
+        view.getView().setScaleX(-1);
+    }
+
+    public void stop() {
+        //acceleration = new Point2D(0, acceleration.getY());
+        physics.setLinearVelocity(Math.abs(physics.getVelocityX()) / physics.getVelocityX(), physics.getVelocityY());
     }
 }

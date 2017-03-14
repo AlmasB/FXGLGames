@@ -26,7 +26,7 @@
 
 package com.almasb.mario.event;
 
-import com.almasb.ents.Entity;
+import com.almasb.fxgl.ecs.Entity;
 import javafx.beans.NamedArg;
 import javafx.event.Event;
 import javafx.event.EventType;

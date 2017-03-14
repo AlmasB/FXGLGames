@@ -38,7 +38,7 @@ import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.gameplay.Level;
 import com.almasb.fxgl.input.UserAction;
-import com.almasb.fxgl.parser.TextLevelParser;
+import com.almasb.fxgl.parser.text.TextLevelParser;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.mario.collision.PlayerCheckpointHandler;
 import com.almasb.mario.collision.PlayerFinishHandler;
@@ -51,8 +51,6 @@ import com.almasb.mario.event.PickupEvent;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
@@ -82,7 +80,8 @@ public class MarioApp extends GameApplication {
         settings.setVersion("0.1");
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
-        settings.setShowFPS(true);
+        settings.setProfilingEnabled(false);
+        settings.setCloseConfirmation(false);
     }
 
     @Override
@@ -95,24 +94,23 @@ public class MarioApp extends GameApplication {
         ui = new UIOverlay(getWidth(), getHeight());
         gameState = new GameState(this, ui);
 
-        TextLevelParser levelParser = new TextLevelParser();
-        levelParser.setEmptyChar(' ');
+        TextLevelParser levelParser = new TextLevelParser(getGameWorld().getEntityFactory());
 
-        levelParser.addEntityProducer('c', EntityFactory::makeCheckpoint);
-        levelParser.addEntityProducer('f', EntityFactory::makeFinish);
-
-        levelParser.addEntityProducer('g', EntityFactory::makePickupCoin);
-
-        levelParser.addEntityProducer('b', EntityFactory::makePlatformBegin);
-        levelParser.addEntityProducer('e', EntityFactory::makePlatformEnd);
-        levelParser.addEntityProducer('p', EntityFactory::makePlatform);
-        levelParser.addEntityProducer('i', EntityFactory::makePlatformInvisible);
-        levelParser.addEntityProducer('0', EntityFactory::makeBlock);
-        levelParser.addEntityProducer('1', EntityFactory::makePlatformLift);
-        levelParser.addEntityProducer('2', EntityFactory::makePlatformCarry);
-
-
-        levelParser.addEntityProducer('s', EntityFactory::makePlayer);
+//        levelParser.addEntityProducer('c', MarioFactory::makeCheckpoint);
+//        levelParser.addEntityProducer('f', MarioFactory::makeFinish);
+//
+//        levelParser.addEntityProducer('g', MarioFactory::makePickupCoin);
+//
+//        levelParser.addEntityProducer('b', MarioFactory::makePlatformBegin);
+//        levelParser.addEntityProducer('e', MarioFactory::makePlatformEnd);
+//        levelParser.addEntityProducer('p', MarioFactory::makePlatform);
+//        levelParser.addEntityProducer('i', MarioFactory::makePlatformInvisible);
+//        levelParser.addEntityProducer('0', MarioFactory::makeBlock);
+//        levelParser.addEntityProducer('1', MarioFactory::makePlatformLift);
+//        levelParser.addEntityProducer('2', MarioFactory::makePlatformCarry);
+//
+//
+//        levelParser.addEntityProducer('s', MarioFactory::makePlayer);
 
         Level level = levelParser.parse("levels/0.txt");
 
@@ -169,7 +167,7 @@ public class MarioApp extends GameApplication {
 
 
         getGameScene().getViewport().bindToEntity(player, getWidth() / 2, getHeight() / 2);
-        getGameScene().getViewport().setBounds(0, 0, level.getWidth() * BLOCK_SIZE, level.getHeight() * BLOCK_SIZE);
+        getGameScene().getViewport().setBounds(0, 0, level.getWidth(), level.getHeight());
     }
 
     @Override
@@ -263,12 +261,22 @@ public class MarioApp extends GameApplication {
             protected void onAction() {
                 playerControl.left();
             }
+
+            @Override
+            protected void onActionEnd() {
+                playerControl.stop();
+            }
         }, KeyCode.A);
 
         getInput().addAction(new UserAction("Right") {
             @Override
             protected void onAction() {
                 playerControl.right();
+            }
+
+            @Override
+            protected void onActionEnd() {
+                playerControl.stop();
             }
         }, KeyCode.D);
 //
