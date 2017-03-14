@@ -26,9 +26,9 @@
 
 package com.almasb.geowars.control;
 
-import com.almasb.ents.AbstractControl;
-import com.almasb.ents.Entity;
-import com.almasb.fxgl.entity.component.MainViewComponent;
+import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.component.ViewComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
@@ -52,7 +52,7 @@ public class ParticleControl extends AbstractControl {
 
     @Override
     public void onAdded(Entity entity) {
-        entity.getComponent(MainViewComponent.class).ifPresent(view -> view.getView().setEffect(new DropShadow(5, color)));
+        entity.getComponent(ViewComponent.class).ifPresent(view -> view.getView().setEffect(new DropShadow(5, color)));
     }
 
     @Override

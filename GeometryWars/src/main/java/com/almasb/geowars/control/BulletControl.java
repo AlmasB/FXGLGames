@@ -26,8 +26,8 @@
 
 package com.almasb.geowars.control;
 
-import com.almasb.ents.AbstractControl;
-import com.almasb.ents.Entity;
+import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
 import com.almasb.fxgl.entity.control.ProjectileControl;
 import com.almasb.geowars.grid.Grid;

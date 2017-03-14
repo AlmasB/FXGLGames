@@ -2,12 +2,13 @@ package com.almasb.geowars;
 
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.GameWorld;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.entity.control.ProjectileControl;
-import com.almasb.fxgl.gameplay.GameWorld;
 import com.almasb.geowars.component.OldPositionComponent;
 import com.almasb.geowars.control.BulletControl;
 import com.almasb.geowars.control.SeekerControl;
@@ -18,7 +19,7 @@ import javafx.util.Duration;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class GeoWarsFactory {
+public class GeoWarsFactory implements EntityFactory {
 
     private GameWorld world;
 

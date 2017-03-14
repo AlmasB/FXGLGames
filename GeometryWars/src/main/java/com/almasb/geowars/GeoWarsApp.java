@@ -25,17 +25,17 @@
  */
 package com.almasb.geowars;
 
-import com.almasb.ents.Entity;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
+import com.almasb.fxgl.service.Input;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.geowars.component.GraphicsComponent;
@@ -219,7 +219,7 @@ public class GeoWarsApp extends GameApplication {
 
     private void initBackground() {
         GameEntity bg = new GameEntity();
-        bg.getMainViewComponent().setTexture("background.png");
+        bg.getViewComponent().setTexture("background.png");
 
         getGameWorld().addEntity(bg);
 
@@ -229,7 +229,7 @@ public class GeoWarsApp extends GameApplication {
         GameEntity e = new GameEntity();
         e.addComponent(new GraphicsComponent(canvas.getGraphicsContext2D()));
         e.addControl(new GraphicsUpdateControl());
-        e.getMainViewComponent().setView(canvas);
+        e.getViewComponent().setView(canvas);
 
         getGameWorld().addEntity(e);
 
