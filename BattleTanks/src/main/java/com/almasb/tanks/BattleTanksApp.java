@@ -27,21 +27,18 @@
 package com.almasb.tanks;
 
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.entity.EntityView;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.GameEntity;
-import com.almasb.fxgl.entity.component.MainViewComponent;
 import com.almasb.fxgl.gameplay.Level;
-import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
-import com.almasb.fxgl.parser.TextLevelParser;
+import com.almasb.fxgl.parser.text.TextLevelParser;
 import com.almasb.fxgl.physics.BoundingShape;
+import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
+import com.almasb.fxgl.service.Input;
 import com.almasb.fxgl.settings.GameSettings;
-import javafx.geometry.BoundingBox;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
-import javafx.scene.paint.Color;
-import javafx.util.Duration;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -50,11 +47,13 @@ public class BattleTanksApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("BattleTanks");
-        settings.setVersion("0.2-SNAPSHOT");
+        settings.setVersion("0.2dev");
         settings.setWidth(840);
         settings.setHeight(840);
         settings.setMenuEnabled(false);
         settings.setIntroEnabled(false);
+        settings.setProfilingEnabled(false);
+        settings.setCloseConfirmation(false);
     }
 
     private PlayerControl playerControl;
@@ -100,31 +99,11 @@ public class BattleTanksApp extends GameApplication {
     }
 
     @Override
-    protected void initAssets() {}
-
-    @Override
     protected void initGame() {
-        TextLevelParser levelParser = new TextLevelParser();
-        levelParser.setEmptyChar('0');
-
-        levelParser.addEntityProducer('1', (x, y) -> {
-            GameEntity wall = new GameEntity();
-            wall.getPositionComponent().setValue(x * 84, y * 84);
-            wall.getMainViewComponent().setView(new EntityView(getAssetLoader().loadTexture("wall.png")), true);
-
-            return wall;
-        });
-
-        levelParser.addEntityProducer('F', (x, y) -> {
-            GameEntity flag = new GameEntity();
-            flag.getPositionComponent().setValue(x * 84, y * 84);
-            flag.getMainViewComponent().setView(new EntityView(getAssetLoader().loadTexture("flag.png")), true);
-
-            return flag;
-        });
+        TextLevelParser levelParser = new TextLevelParser(getGameWorld().getEntityFactory());
 
         Level level = levelParser.parse("levels/level0.txt");
-        level.getEntities().forEach(getGameWorld()::addEntity);
+        getGameWorld().setLevel(level);
 
         playerControl = new PlayerControl();
 
@@ -136,13 +115,15 @@ public class BattleTanksApp extends GameApplication {
     }
 
     @Override
-    protected void initPhysics() {}
-
-    @Override
-    protected void initUI() {}
-
-    @Override
-    protected void onUpdate(double tpf) {}
+    protected void initPhysics() {
+        getPhysicsWorld().addCollisionHandler(new CollisionHandler(BattleTanksType.BULLET, BattleTanksType.WALL) {
+            @Override
+            protected void onCollisionBegin(Entity bullet, Entity wall) {
+                bullet.removeFromWorld();
+                wall.removeFromWorld();
+            }
+        });
+    }
 
     public static void main(String[] args) {
         launch(args);

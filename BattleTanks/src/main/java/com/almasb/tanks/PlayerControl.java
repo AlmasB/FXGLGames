@@ -26,15 +26,14 @@
 
 package com.almasb.tanks;
 
-import com.almasb.ents.AbstractControl;
-import com.almasb.ents.Entity;
-import com.almasb.ents.component.Required;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.app.ServiceType;
+import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.ecs.component.Required;
 import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
-import com.almasb.fxgl.entity.component.MainViewComponent;
+import com.almasb.fxgl.entity.component.ViewComponent;
 import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxgl.entity.component.RotationComponent;
 import com.almasb.fxgl.texture.Texture;
@@ -51,7 +50,7 @@ public class PlayerControl extends AbstractControl {
     private PositionComponent position;
     private RotationComponent rotation;
     private BoundingBoxComponent bbox;
-    private MainViewComponent view;
+    private ViewComponent view;
 
     private Texture texture;
 
@@ -59,7 +58,7 @@ public class PlayerControl extends AbstractControl {
     public void onAdded(Entity entity) {
         position = Entities.getPosition(entity);
         rotation = Entities.getRotation(entity);
-        view = Entities.getMainView(entity);
+        view = Entities.getView(entity);
         bbox = Entities.getBBox(entity);
 
         texture = FXGL.getAssetLoader().loadTexture("player.png");
@@ -107,15 +106,9 @@ public class PlayerControl extends AbstractControl {
     }
 
     public void shoot() {
-        Entity entity = EntityFactory.newBullet(
-                position.getX(),
-                position.getY(),
-                angleToVector());
-
-        //System.out.println(bbox.getCenterWorld());
-        System.out.println(Entities.getBBox(entity).getWidth() + " " + Entities.getBBox(entity).getHeight());
-
-        getEntity().getWorld().addEntity(entity);
+        Entity entity = FXGL.getApp()
+                .getGameWorld()
+                .spawn("Bullet", new SpawnData(position.getX(), position.getY()).put("direction", angleToVector()));
     }
 
     private Point2D angleToVector() {
