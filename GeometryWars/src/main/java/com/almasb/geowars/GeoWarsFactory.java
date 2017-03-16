@@ -1,10 +1,10 @@
 package com.almasb.geowars;
 
+import com.almasb.fxgl.annotation.SetEntityFactory;
+import com.almasb.fxgl.annotation.Spawns;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.EntityFactory;
-import com.almasb.fxgl.entity.GameEntity;
-import com.almasb.fxgl.entity.GameWorld;
+import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
@@ -19,15 +19,28 @@ import javafx.util.Duration;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
+@SetEntityFactory
 public class GeoWarsFactory implements EntityFactory {
+
+    private Point2D[] spawnPoints = new Point2D[] {
+            new Point2D(50, 50),
+            new Point2D(FXGL.getApp().getWidth() - 50, 50),
+            new Point2D(FXGL.getApp().getWidth() - 50, FXGL.getApp().getHeight() - 50),
+            new Point2D(50, FXGL.getApp().getHeight() - 50)
+    };
 
     private GameWorld world;
 
-    public GeoWarsFactory(GameWorld world) {
-        this.world = world;
+    public GeoWarsFactory() {
+        this.world = FXGL.getApp().getGameWorld();
     }
 
-    public GameEntity spawnPlayer() {
+    private Point2D getRandomSpawnPoint() {
+        return spawnPoints[FXGLMath.random(3)];
+    }
+
+    @Spawns("Player")
+    public GameEntity spawnPlayer(SpawnData data) {
         // TODO: move this to proper PlayerControl
         OldPositionComponent oldPosition = new OldPositionComponent();
         oldPosition.valueProperty().addListener((obs, old, newPos) -> {
@@ -35,18 +48,18 @@ public class GeoWarsFactory implements EntityFactory {
         });
 
         return Entities.builder()
-                .type(EntityType.PLAYER)
+                .type(GeoWarsType.PLAYER)
                 .at(FXGL.getApp().getWidth() / 2, FXGL.getApp().getHeight() / 2)
                 .viewFromTextureWithBBox("Player.png")
                 .with(new CollidableComponent(true), oldPosition)
-                .buildAndAttach(world);
+                .build();
     }
 
     public GameEntity spawnBullet(Point2D position, Point2D direction) {
         FXGL.getAudioPlayer().playSound("shoot" + (int) (Math.random() * 8 + 1) + ".wav");
 
         return Entities.builder()
-                .type(EntityType.BULLET)
+                .type(GeoWarsType.BULLET)
                 .at(position)
                 .viewFromTextureWithBBox("Bullet.png")
                 .with(new CollidableComponent(true))
@@ -56,33 +69,36 @@ public class GeoWarsFactory implements EntityFactory {
                 .buildAndAttach(world);
     }
 
-    public GameEntity spawnWanderer(double x, double y) {
+    @Spawns("Wanderer")
+    public GameEntity spawnWanderer(SpawnData data) {
         return Entities.builder()
-                .type(EntityType.WANDERER)
-                .at(x, y)
+                .type(GeoWarsType.WANDERER)
+                .at(getRandomSpawnPoint())
                 .viewFromTextureWithBBox("Wanderer.png")
                 .with(new CollidableComponent(true))
-                .with(new WandererControl((int)FXGL.getApp().getWidth(), (int)FXGL.getApp().getHeight()))
-                .buildAndAttach(world);
+                .with(new WandererControl())
+                .build();
     }
 
-    public GameEntity spawnSeeker(double x, double y) {
+    @Spawns("Seeker")
+    public GameEntity spawnSeeker(SpawnData data) {
         return Entities.builder()
-                .type(EntityType.SEEKER)
-                .at(x, y)
+                .type(GeoWarsType.SEEKER)
+                .at(getRandomSpawnPoint())
                 .viewFromTextureWithBBox("Seeker.png")
                 .with(new CollidableComponent(true))
                 .with(new SeekerControl(FXGL.<GeoWarsApp>getAppCast().getPlayer()))
-                .buildAndAttach(world);
+                .build();
     }
 
-    public GameEntity spawnExplosion(Point2D point) {
+    @Spawns("Explosion")
+    public GameEntity spawnExplosion(SpawnData data) {
         FXGL.getAudioPlayer().playSound("explosion-0" + (int) (Math.random() * 8 + 1) + ".wav");
 
         return Entities.builder()
-                .at(point.subtract(40, 40))
+                .at(data.getX() - 40, data.getY() - 40)
                 .viewFromNode(FXGL.getAssetLoader().loadTexture("explosion.png", 80 * 48, 80).toAnimatedTexture(48, Duration.seconds(2)))
                 .with(new ExpireCleanControl(Duration.seconds(1.8)))
-                .buildAndAttach(world);
+                .build();
     }
 }

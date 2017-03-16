@@ -29,6 +29,7 @@ package com.almasb.geowars.control;
 import com.almasb.fxgl.ecs.AbstractControl;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.entity.GameEntity;
 import javafx.geometry.Point2D;
 
 /**
@@ -36,30 +37,42 @@ import javafx.geometry.Point2D;
  */
 public class SeekerControl extends AbstractControl {
 
-    private Entity player;
-    private Point2D velocity;
+    private static final int MOVE_SPEED = 250;
 
-    public SeekerControl(Entity player) {
+    // TODO: use Vec2 to avoid GC
+    private Point2D velocity = Point2D.ZERO;
+    private GameEntity player;
+    private GameEntity seeker;
+
+    public SeekerControl(GameEntity player) {
         this.player = player;
-        velocity = new Point2D(0, 0);
+    }
+
+    @Override
+    public void onAdded(Entity entity) {
+        seeker = (GameEntity) entity;
     }
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
-        // translate the seeker
-        Point2D playerDirection = Entities.getPosition(player).getValue()
-                .subtract(Entities.getPosition(entity).getValue())
+        move(tpf);
+        rotate();
+    }
+
+    private void move(double tpf) {
+        Point2D directionToPlayer = player.getCenter()
+                .subtract(seeker.getCenter())
                 .normalize()
-                .multiply(1000);
+                .multiply(MOVE_SPEED);
 
-        velocity = velocity.add(playerDirection)
-                .multiply(0.65);
+        velocity = velocity.add(directionToPlayer).multiply(tpf);
 
-        Entities.getPosition(entity).translate(velocity.multiply(tpf * 0.1f));
+        seeker.translate(velocity);
+    }
 
-        // rotate the seeker
-        if (velocity.getX() != 0 && velocity.getY() != 0) {
-            Entities.getRotation(entity).rotateToVector(velocity);
+    private void rotate() {
+        if (!velocity.equals(Point2D.ZERO)) {
+            seeker.rotateToVector(velocity);
         }
     }
 }

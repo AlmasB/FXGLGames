@@ -53,12 +53,12 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+import java.util.Map;
+
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class GeoWarsApp extends GameApplication {
-
-    private GeoWarsFactory factory;
 
     private GameEntity player;
 
@@ -93,28 +93,28 @@ public class GeoWarsApp extends GameApplication {
         input.addAction(new UserAction("Move Left") {
             @Override
             protected void onAction() {
-                Entities.getPosition(player).translate(-5, 0);
+                player.translateX(-5);
             }
         }, KeyCode.A);
 
         input.addAction(new UserAction("Move Right") {
             @Override
             protected void onAction() {
-                Entities.getPosition(player).translate(5, 0);
+                player.translateX(5);
             }
         }, KeyCode.D);
 
         input.addAction(new UserAction("Move Up") {
             @Override
             protected void onAction() {
-                Entities.getPosition(player).translate(0, -5);
+                player.translateY(-5);
             }
         }, KeyCode.W);
 
         input.addAction(new UserAction("Move Down") {
             @Override
             protected void onAction() {
-                Entities.getPosition(player).translate(0, 5);
+                player.translateY(5);
             }
         }, KeyCode.S);
 
@@ -125,7 +125,8 @@ public class GeoWarsApp extends GameApplication {
             protected void onAction() {
                 if (timer.elapsed(Duration.seconds(0.17))) {
                     Point2D position = player.getCenter().subtract(14, 4.5);
-                    factory.spawnBullet(position, input.getVectorToMouse(position));
+                    getGameWorld().<GeoWarsFactory>getEntityFactory()
+                            .spawnBullet(position, input.getVectorToMouse(position));
                     timer.capture();
                 }
             }
@@ -133,20 +134,20 @@ public class GeoWarsApp extends GameApplication {
     }
 
     @Override
-    protected void initAssets() {}
+    protected void initGameVars(Map<String, Object> vars) {
+        vars.put("score", 0);
+    }
 
     @Override
     protected void initGame() {
-        getAudioPlayer().setGlobalSoundVolume(0.3);
-        getAudioPlayer().setGlobalMusicVolume(0.3);
-
-        factory = new GeoWarsFactory(getGameWorld());
+        getAudioPlayer().setGlobalSoundVolume(0.0);
+        getAudioPlayer().setGlobalMusicVolume(0.0);
 
         initBackground();
-        player = factory.spawnPlayer();
+        player = (GameEntity) getGameWorld().spawn("Player");
 
-        getMasterTimer().runAtInterval(() -> factory.spawnWanderer(50, 50), Duration.seconds(2));
-        getMasterTimer().runAtInterval(() -> factory.spawnSeeker(50, 50), Duration.seconds(5));
+        getMasterTimer().runAtInterval(() -> getGameWorld().spawn("Wanderer"), Duration.seconds(2));
+        getMasterTimer().runAtInterval(() -> getGameWorld().spawn("Seeker"), Duration.seconds(5));
 
         getAudioPlayer().playMusic("bgm.mp3");
     }
@@ -155,10 +156,10 @@ public class GeoWarsApp extends GameApplication {
     protected void initPhysics() {
         PhysicsWorld physics = getPhysicsWorld();
 
-        CollisionHandler bulletEnemy = new CollisionHandler(EntityType.BULLET, EntityType.WANDERER) {
+        CollisionHandler bulletEnemy = new CollisionHandler(GeoWarsType.BULLET, GeoWarsType.WANDERER) {
             @Override
             protected void onCollisionBegin(Entity a, Entity b) {
-                factory.spawnExplosion(Entities.getBBox(b).getCenterWorld());
+                getGameWorld().spawn("Explosion", Entities.getBBox(b).getCenterWorld());
 
                 a.removeFromWorld();
                 b.removeFromWorld();
@@ -167,9 +168,9 @@ public class GeoWarsApp extends GameApplication {
         };
 
         physics.addCollisionHandler(bulletEnemy);
-        physics.addCollisionHandler(bulletEnemy.copyFor(EntityType.BULLET, EntityType.SEEKER));
+        physics.addCollisionHandler(bulletEnemy.copyFor(GeoWarsType.BULLET, GeoWarsType.SEEKER));
 
-        CollisionHandler playerEnemy = new CollisionHandler(EntityType.PLAYER, EntityType.WANDERER) {
+        CollisionHandler playerEnemy = new CollisionHandler(GeoWarsType.PLAYER, GeoWarsType.WANDERER) {
             @Override
             protected void onCollisionBegin(Entity a, Entity b) {
                 Entities.getPosition(a).setValue(getRandomPoint());
@@ -179,9 +180,9 @@ public class GeoWarsApp extends GameApplication {
         };
 
         physics.addCollisionHandler(playerEnemy);
-        physics.addCollisionHandler(playerEnemy.copyFor(EntityType.PLAYER, EntityType.SEEKER));
+        physics.addCollisionHandler(playerEnemy.copyFor(GeoWarsType.PLAYER, GeoWarsType.SEEKER));
 
-        CollisionHandler shockEnemy = new CollisionHandler(EntityType.SHOCKWAVE, EntityType.SEEKER) {
+        CollisionHandler shockEnemy = new CollisionHandler(GeoWarsType.SHOCKWAVE, GeoWarsType.SEEKER) {
             @Override
             protected void onCollisionBegin(Entity a, Entity b) {
                 PositionComponent pos = Entities.getPosition(b);
@@ -194,17 +195,15 @@ public class GeoWarsApp extends GameApplication {
         };
 
         physics.addCollisionHandler(shockEnemy);
-        physics.addCollisionHandler(shockEnemy.copyFor(EntityType.SHOCKWAVE, EntityType.WANDERER));
+        physics.addCollisionHandler(shockEnemy.copyFor(GeoWarsType.SHOCKWAVE, GeoWarsType.WANDERER));
     }
-
-    private IntegerProperty score = new SimpleIntegerProperty(0);
 
     @Override
     protected void initUI() {
         Text scoreText = getUIFactory().newText("", Color.WHITE, 18);
         scoreText.setTranslateX(1100);
         scoreText.setTranslateY(50);
-        scoreText.textProperty().bind(score.asString("Score: %d"));
+        scoreText.textProperty().bind(getGameState().intProperty("score").asString("Score: %d"));
 
         getGameScene().addUINodes(scoreText);
     }
@@ -244,11 +243,11 @@ public class GeoWarsApp extends GameApplication {
     }
 
     private void addScoreKill() {
-        score.set(score.get() + 100);
+        getGameState().increment("score", +100);
     }
 
     private void deductScoreDeath() {
-        score.set(score.get() - 1000);
+        getGameState().increment("score", -1000);
     }
 
     public static void main(String[] args) {
