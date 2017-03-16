@@ -20,9 +20,9 @@ import java.util.stream.Collectors;
  */
 public class SlotMachineApp extends GameApplication {
 
-    private SlotMachineFactory entityFactory;
-    private IntegerProperty money;
+    private static final int START_MONEY = 500;
 
+    private SlotMachineFactory entityFactory;
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Slot Machine");
@@ -32,28 +32,24 @@ public class SlotMachineApp extends GameApplication {
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
         settings.setProfilingEnabled(false);
+        settings.setCloseConfirmation(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
     @Override
-    protected void initInput() {}
-
-    @Override
-    protected void initAssets() {}
+    protected void initGameVars(Map<String, Object> vars) {
+        vars.put("money", START_MONEY);
+    }
 
     @SuppressWarnings("ConfusingArgumentToVarargsMethod")
     @Override
     protected void initGame() {
-        money = new SimpleIntegerProperty(500);
         entityFactory = new SlotMachineFactory();
 
         getGameWorld().addEntities(entityFactory.buildWheels());
         getGameWorld().addEntities(entityFactory.buildBackground());
         getGameWorld().addEntity(entityFactory.buildLever());
     }
-
-    @Override
-    protected void initPhysics() {}
 
     @Override
     protected void initUI() {
@@ -66,13 +62,10 @@ public class SlotMachineApp extends GameApplication {
         textMoney.setTranslateY(50);
         textMoney.setFont(Font.font(36));
         textMoney.setFill(Color.WHITE);
-        textMoney.textProperty().bind(money.asString("$%d"));
+        textMoney.textProperty().bind(getGameState().intProperty("money").asString("$%d"));
 
         getGameScene().addUINode(textMoney);
     }
-
-    @Override
-    protected void onUpdate(double tpf) {}
 
     private List<Integer> spinValues = new ArrayList<>();
 
@@ -88,7 +81,7 @@ public class SlotMachineApp extends GameApplication {
 
     public List<WheelControl> getWheels() {
         return getGameWorld()
-                .getEntitiesByType(EntityType.WHEEL)
+                .getEntitiesByType(SlotMachineType.WHEEL)
                 .stream()
                 .map(e -> e.getControlUnsafe(WheelControl.class))
                 .collect(Collectors.toList());
@@ -119,7 +112,7 @@ public class SlotMachineApp extends GameApplication {
             reward = -100;
         }
 
-        money.set(money.get() + reward);
+        getGameState().increment("money", reward);
     }
 
     public static void main(String[] args) {

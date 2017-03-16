@@ -5,7 +5,6 @@ import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.slotmachine.control.LeverControl;
 import com.almasb.slotmachine.control.WheelControl;
 
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -33,7 +32,7 @@ public class SlotMachineFactory {
         return IntStream.range(0, 5)
                 .mapToObj(i -> {
                     return Entities.builder()
-                            .type(EntityType.WHEEL)
+                            .type(SlotMachineType.WHEEL)
                             .at(50 + 240 * i, 70)
                             .viewFromTexture("elements.png")
                             .with(new WheelControl())

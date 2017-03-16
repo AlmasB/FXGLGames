@@ -1,11 +1,10 @@
 package com.almasb.slotmachine.control;
 
-import com.almasb.ents.AbstractControl;
-import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.component.MainViewComponent;
-import com.almasb.slotmachine.EntityType;
+import com.almasb.fxgl.entity.component.ViewComponent;
 import com.almasb.slotmachine.SlotMachineApp;
 
 /**
@@ -13,12 +12,12 @@ import com.almasb.slotmachine.SlotMachineApp;
  */
 public class LeverControl extends AbstractControl {
 
-    private MainViewComponent view;
+    private ViewComponent view;
     private String currentTexture = "lever0.png";
 
     @Override
     public void onAdded(Entity entity) {
-        view = Entities.getMainView(entity);
+        view = Entities.getView(entity);
 
         view.getView().setOnMouseClicked(e -> {
             trigger();
