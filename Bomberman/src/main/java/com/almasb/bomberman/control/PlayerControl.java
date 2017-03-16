@@ -1,11 +1,12 @@
 package com.almasb.bomberman.control;
 
 import com.almasb.bomberman.BombermanApp;
-import com.almasb.ents.AbstractControl;
-import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.PositionComponent;
 import javafx.util.Duration;
 
@@ -42,11 +43,9 @@ public class PlayerControl extends AbstractControl {
         int x = position.getGridX(BombermanApp.TILE_SIZE);
         int y = position.getGridY(BombermanApp.TILE_SIZE);
 
-        GameEntity bomb = FXGL.<BombermanApp>getAppCast()
-                .getEntityFactory()
-                .newBomb(x, y, BombermanApp.TILE_SIZE / 2);
-
-        getEntity().getWorld().addEntity(bomb);
+        Entity bomb = FXGL.getApp()
+                .getGameWorld()
+                .spawn("Bomb", new SpawnData(x * 40, y * 40).put("radius", BombermanApp.TILE_SIZE / 2));
 
         FXGL.getMasterTimer().runOnceAfter(() -> {
             bomb.getControlUnsafe(BombControl.class).explode();

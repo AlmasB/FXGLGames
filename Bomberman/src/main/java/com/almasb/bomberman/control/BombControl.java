@@ -1,10 +1,10 @@
 package com.almasb.bomberman.control;
 
 import com.almasb.bomberman.BombermanApp;
-import com.almasb.bomberman.EntityType;
-import com.almasb.ents.AbstractControl;
-import com.almasb.ents.Entity;
+import com.almasb.bomberman.BombermanType;
 import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
 
@@ -13,9 +13,9 @@ import com.almasb.fxgl.entity.component.BoundingBoxComponent;
  */
 public class BombControl extends AbstractControl {
 
-    private double radius;
+    private int radius;
 
-    public BombControl(double radius) {
+    public BombControl(int radius) {
         this.radius = radius;
     }
 
@@ -31,7 +31,7 @@ public class BombControl extends AbstractControl {
                 .getGameWorld()
                 .getEntitiesInRange(bbox.range(radius, radius))
                 .stream()
-                .filter(e -> Entities.getType(e).isType(EntityType.WALL))
+                .filter(e -> Entities.getType(e).isType(BombermanType.WALL))
                 .forEach(e -> {
                     FXGL.<BombermanApp>getAppCast().onWallDestroyed(e);
                     e.removeFromWorld();

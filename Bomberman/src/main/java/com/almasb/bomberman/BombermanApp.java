@@ -27,17 +27,17 @@
 package com.almasb.bomberman;
 
 import com.almasb.bomberman.control.PlayerControl;
-import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.gameplay.Level;
 import com.almasb.fxgl.input.UserAction;
-import com.almasb.fxgl.parser.TextLevelParser;
+import com.almasb.fxgl.parser.text.TextLevelParser;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.settings.GameSettings;
-import com.almasb.gameutils.math.GameMath;
 import javafx.scene.input.KeyCode;
 
 /**
@@ -45,20 +45,21 @@ import javafx.scene.input.KeyCode;
  */
 public class BombermanApp extends GameApplication {
 
-    public static final int TILE_SIZE = 80;
+    public static final int TILE_SIZE = 40;
 
     private GameEntity player;
     private PlayerControl playerControl;
 
     @Override
     protected void initSettings(GameSettings settings) {
-        settings.setTitle("BombermanApp");
+        settings.setTitle("Bomberman App");
         settings.setVersion("0.1");
-        settings.setWidth(10 * TILE_SIZE);
-        settings.setHeight(10 * TILE_SIZE);
+        settings.setWidth(800);
+        settings.setHeight(800);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
-        settings.setShowFPS(false);
+        settings.setProfilingEnabled(false);
+        settings.setCloseConfirmation(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
@@ -101,32 +102,19 @@ public class BombermanApp extends GameApplication {
     }
 
     @Override
-    protected void initAssets() {}
-
-    private BombermanFactory entityFactory;
-
-    public BombermanFactory getEntityFactory() {
-        return entityFactory;
-    }
-
-    @Override
     protected void initGame() {
-        entityFactory = new BombermanFactory();
-
-        TextLevelParser levelParser = new TextLevelParser(entityFactory);
+        TextLevelParser levelParser = new TextLevelParser(getGameWorld().getEntityFactory());
 
         Level level = levelParser.parse("levels/0.txt");
-
-        player = entityFactory.newPlayer(0, 0);
-        playerControl = player.getControlUnsafe(PlayerControl.class);
-        level.getEntities().add(player);
-
         getGameWorld().setLevel(level);
+
+        player = (GameEntity) getGameWorld().spawn("Player");
+        playerControl = player.getControlUnsafe(PlayerControl.class);
     }
 
     @Override
     protected void initPhysics() {
-        getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.PLAYER, EntityType.POWERUP) {
+        getPhysicsWorld().addCollisionHandler(new CollisionHandler(BombermanType.PLAYER, BombermanType.POWERUP) {
             @Override
             protected void onCollisionBegin(Entity pl, Entity powerup) {
                 powerup.removeFromWorld();
@@ -142,12 +130,11 @@ public class BombermanApp extends GameApplication {
     protected void onUpdate(double tpf) {}
 
     public void onWallDestroyed(Entity wall) {
-        if (GameMath.randomBoolean()) {
+        if (FXGLMath.randomBoolean()) {
             int x = Entities.getPosition(wall).getGridX(BombermanApp.TILE_SIZE);
             int y = Entities.getPosition(wall).getGridY(BombermanApp.TILE_SIZE);
 
-            GameEntity powerup = entityFactory.newPowerup(x, y);
-            getGameWorld().addEntity(powerup);
+            getGameWorld().spawn("Powerup", x*40, y*40);
         }
     }
 

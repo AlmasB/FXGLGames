@@ -2,57 +2,75 @@ package com.almasb.bomberman;
 
 import com.almasb.bomberman.control.BombControl;
 import com.almasb.bomberman.control.PlayerControl;
+import com.almasb.fxgl.annotation.SetEntityFactory;
+import com.almasb.fxgl.annotation.SpawnSymbol;
+import com.almasb.fxgl.annotation.Spawns;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.entity.TextEntityFactory;
 import com.almasb.fxgl.entity.component.CollidableComponent;
-import com.almasb.fxgl.parser.EntityFactory;
-import com.almasb.fxgl.parser.EntityProducer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class BombermanFactory extends EntityFactory {
+@SetEntityFactory
+public class BombermanFactory implements TextEntityFactory {
 
-    public BombermanFactory() {
-        super('0');
-    }
-
-    @EntityProducer('w')
-    public GameEntity newWall(int x, int y) {
+    @SpawnSymbol('w')
+    public GameEntity newWall(SpawnData data) {
         return Entities.builder()
-                .type(EntityType.WALL)
-                .at(x * BombermanApp.TILE_SIZE, y * BombermanApp.TILE_SIZE)
-                .viewFromNodeWithBBox(new Rectangle(BombermanApp.TILE_SIZE, BombermanApp.TILE_SIZE))
+                .type(BombermanType.WALL)
+                .from(data)
+                .viewFromNodeWithBBox(new Rectangle(40, 40))
                 .build();
     }
 
-    public GameEntity newPlayer(int x, int y) {
+    @Spawns("Player")
+    public GameEntity newPlayer(SpawnData data) {
         return Entities.builder()
-                .type(EntityType.PLAYER)
-                .at(x * BombermanApp.TILE_SIZE, y * BombermanApp.TILE_SIZE)
+                .type(BombermanType.PLAYER)
+                .from(data)
                 .viewFromNodeWithBBox(new Rectangle(BombermanApp.TILE_SIZE, BombermanApp.TILE_SIZE, Color.BLUE))
                 .with(new CollidableComponent(true))
                 .with(new PlayerControl())
                 .build();
     }
 
-    public GameEntity newBomb(int x, int y, double radius) {
+    @Spawns("Bomb")
+    public GameEntity newBomb(SpawnData data) {
         return Entities.builder()
-                .type(EntityType.BOMB)
-                .at(x * BombermanApp.TILE_SIZE, y * BombermanApp.TILE_SIZE)
+                .type(BombermanType.BOMB)
+                .from(data)
                 .viewFromNodeWithBBox(new Rectangle(BombermanApp.TILE_SIZE, BombermanApp.TILE_SIZE, Color.RED))
-                .with(new BombControl(radius))
+                .with(new BombControl(data.get("radius")))
                 .build();
     }
 
-    public GameEntity newPowerup(int x, int y) {
+    @Spawns("Powerup")
+    public GameEntity newPowerup(SpawnData data) {
         return Entities.builder()
-                .type(EntityType.POWERUP)
-                .at(x * BombermanApp.TILE_SIZE, y * BombermanApp.TILE_SIZE)
+                .type(BombermanType.POWERUP)
+                .from(data)
                 .viewFromNodeWithBBox(new Rectangle(BombermanApp.TILE_SIZE, BombermanApp.TILE_SIZE, Color.YELLOW))
                 .with(new CollidableComponent(true))
                 .build();
+    }
+
+    @Override
+    public char emptyChar() {
+        return '0';
+    }
+
+    @Override
+    public int blockWidth() {
+        return 40;
+    }
+
+    @Override
+    public int blockHeight() {
+        return 40;
     }
 }
