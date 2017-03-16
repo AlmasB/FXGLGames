@@ -31,7 +31,7 @@ public class BombControl extends AbstractControl {
                 .getGameWorld()
                 .getEntitiesInRange(bbox.range(radius, radius))
                 .stream()
-                .filter(e -> Entities.getType(e).isType(BombermanType.WALL))
+                .filter(e -> Entities.getType(e).isType(BombermanType.BRICK))
                 .forEach(e -> {
                     FXGL.<BombermanApp>getAppCast().onWallDestroyed(e);
                     e.removeFromWorld();

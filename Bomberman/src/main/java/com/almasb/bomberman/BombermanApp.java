@@ -54,8 +54,8 @@ public class BombermanApp extends GameApplication {
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Bomberman App");
         settings.setVersion("0.1");
-        settings.setWidth(800);
-        settings.setHeight(800);
+        settings.setWidth(600);
+        settings.setHeight(600);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
         settings.setProfilingEnabled(false);
@@ -108,6 +108,8 @@ public class BombermanApp extends GameApplication {
         Level level = levelParser.parse("levels/0.txt");
         getGameWorld().setLevel(level);
 
+        getGameWorld().spawn("BG");
+
         player = (GameEntity) getGameWorld().spawn("Player");
         playerControl = player.getControlUnsafe(PlayerControl.class);
     }
@@ -122,12 +124,6 @@ public class BombermanApp extends GameApplication {
             }
         });
     }
-
-    @Override
-    protected void initUI() {}
-
-    @Override
-    protected void onUpdate(double tpf) {}
 
     public void onWallDestroyed(Entity wall) {
         if (FXGLMath.randomBoolean()) {

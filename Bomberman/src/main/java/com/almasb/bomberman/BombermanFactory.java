@@ -5,12 +5,11 @@ import com.almasb.bomberman.control.PlayerControl;
 import com.almasb.fxgl.annotation.SetEntityFactory;
 import com.almasb.fxgl.annotation.SpawnSymbol;
 import com.almasb.fxgl.annotation.Spawns;
-import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.GameEntity;
-import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.entity.TextEntityFactory;
+import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 /**
@@ -19,12 +18,29 @@ import javafx.scene.shape.Rectangle;
 @SetEntityFactory
 public class BombermanFactory implements TextEntityFactory {
 
+    @Spawns("BG")
+    public GameEntity newBackground(SpawnData data) {
+        return Entities.builder()
+                .at(0, 0)
+                .viewFromNode(new EntityView(new Rectangle(600, 600, Color.LIGHTGREEN), RenderLayer.BACKGROUND))
+                .build();
+    }
+
     @SpawnSymbol('w')
     public GameEntity newWall(SpawnData data) {
         return Entities.builder()
                 .type(BombermanType.WALL)
                 .from(data)
-                .viewFromNodeWithBBox(new Rectangle(40, 40))
+                .viewFromNode(new Rectangle(40, 40, Color.GRAY.saturate()))
+                .build();
+    }
+
+    @SpawnSymbol('b')
+    public GameEntity newBrick(SpawnData data) {
+        return Entities.builder()
+                .type(BombermanType.BRICK)
+                .from(data)
+                .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("brick.png", 40, 40))
                 .build();
     }
 
@@ -44,7 +60,7 @@ public class BombermanFactory implements TextEntityFactory {
         return Entities.builder()
                 .type(BombermanType.BOMB)
                 .from(data)
-                .viewFromNodeWithBBox(new Rectangle(BombermanApp.TILE_SIZE, BombermanApp.TILE_SIZE, Color.RED))
+                .viewFromNodeWithBBox(new Circle(BombermanApp.TILE_SIZE / 2, Color.BLACK))
                 .with(new BombControl(data.get("radius")))
                 .build();
     }

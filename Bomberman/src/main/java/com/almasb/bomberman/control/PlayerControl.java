@@ -1,13 +1,15 @@
 package com.almasb.bomberman.control;
 
 import com.almasb.bomberman.BombermanApp;
+import com.almasb.bomberman.BombermanType;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.ecs.AbstractControl;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.entity.component.TypeComponent;
+import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
 /**
@@ -54,18 +56,33 @@ public class PlayerControl extends AbstractControl {
     }
 
     public void moveRight() {
-        position.translateX(BombermanApp.TILE_SIZE);
+        if (canMove(new Point2D(40, 0)))
+            position.translateX(BombermanApp.TILE_SIZE);
     }
 
     public void moveLeft() {
-        position.translateX(-BombermanApp.TILE_SIZE);
+        if (canMove(new Point2D(-40, 0)))
+            position.translateX(-BombermanApp.TILE_SIZE);
     }
 
     public void moveUp() {
-        position.translateY(-BombermanApp.TILE_SIZE);
+        if (canMove(new Point2D(0, -40)))
+            position.translateY(-BombermanApp.TILE_SIZE);
     }
 
     public void moveDown() {
-        position.translateY(BombermanApp.TILE_SIZE);
+        if (canMove(new Point2D(0, 40)))
+            position.translateY(BombermanApp.TILE_SIZE);
+    }
+
+    private boolean canMove(Point2D direction) {
+        return !FXGL.getApp()
+                .getGameWorld()
+                .getEntityAt(position.getValue().add(direction))
+                .flatMap(e -> e.getComponent(TypeComponent.class))
+                .filter(type -> type.isType(BombermanType.BRICK)
+                        || type.isType(BombermanType.WALL)
+                        || type.isType(BombermanType.BOMB))
+                .isPresent();
     }
 }
