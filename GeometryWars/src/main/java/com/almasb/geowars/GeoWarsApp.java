@@ -25,6 +25,8 @@
  */
 package com.almasb.geowars;
 
+import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.FXGL;
@@ -32,15 +34,18 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxgl.service.Input;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.time.LocalTimer;
+import com.almasb.fxgl.ui.WheelMenu;
 import com.almasb.geowars.component.GraphicsComponent;
 import com.almasb.geowars.component.OldPositionComponent;
 import com.almasb.geowars.control.GraphicsUpdateControl;
+import com.almasb.geowars.control.RicochetControl;
 import com.almasb.geowars.grid.Grid;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -77,7 +82,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("FXGL Geometry Wars");
-        settings.setVersion("0.4");
+        settings.setVersion("0.5");
         settings.setFullScreen(false);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
@@ -125,29 +130,64 @@ public class GeoWarsApp extends GameApplication {
             protected void onAction() {
                 if (timer.elapsed(Duration.seconds(0.17))) {
                     Point2D position = player.getCenter().subtract(14, 4.5);
-                    getGameWorld().<GeoWarsFactory>getEntityFactory()
-                            .spawnBullet(position, input.getVectorToMouse(position));
+
+                    GameEntity bullet = getGameWorld().<GeoWarsFactory>getEntityFactory().spawnBullet(position, input.getVectorToMouse(position));
+
+                    if (getGameState().getObject("weaponType") == WeaponType.RICOCHET) {
+                        bullet.removeControl(OffscreenCleanControl.class);
+                        bullet.addControl(new RicochetControl());
+                    }
+
+                    if (getGameState().getObject("weaponType") == WeaponType.BEAM) {
+                        Point2D toMouse = input.getVectorToMouse(position).normalize().multiply(10);
+                        Point2D pos = position;
+
+                        for (int i = 0; i < 7; i++) {
+                            getGameWorld().<GeoWarsFactory>getEntityFactory().spawnBullet(pos.add(toMouse), toMouse);
+                            pos = pos.add(toMouse);
+                        }
+                    }
+
+                    if (getGameState().getObject("weaponType") == WeaponType.WAVE) {
+                        Point2D toMouse = input.getVectorToMouse(position);
+                        double baseAngle = new Vec2(toMouse.getX(), toMouse.getY()).angle() + 45;
+                        for (int i = 0; i < 7; i++) {
+                            Vec2 vec = Vec2.fromAngle(baseAngle);
+                            getGameWorld().<GeoWarsFactory>getEntityFactory().spawnBullet(position, new Point2D(vec.x, vec.y));
+
+                            baseAngle += 45;
+                        }
+                    }
+
                     timer.capture();
                 }
             }
-        }, MouseButton.PRIMARY);
+        }, KeyCode.F);
+
+        input.addAction(new UserAction("Weapon Menu") {
+            @Override
+            protected void onActionBegin() {
+                openWeaponMenu();
+            }
+        }, MouseButton.SECONDARY);
     }
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("score", 0);
+        vars.put("weaponType", WeaponType.NORMAL);
     }
 
     @Override
     protected void initGame() {
-        getAudioPlayer().setGlobalSoundVolume(0.0);
-        getAudioPlayer().setGlobalMusicVolume(0.0);
+        getAudioPlayer().setGlobalSoundVolume(0.5);
+        getAudioPlayer().setGlobalMusicVolume(0.1);
 
         initBackground();
         player = (GameEntity) getGameWorld().spawn("Player");
 
         getMasterTimer().runAtInterval(() -> getGameWorld().spawn("Wanderer"), Duration.seconds(2));
-        getMasterTimer().runAtInterval(() -> getGameWorld().spawn("Seeker"), Duration.seconds(5));
+        getMasterTimer().runAtInterval(() -> getGameWorld().spawn("Seeker"), Duration.seconds(4));
 
         getAudioPlayer().playMusic("bgm.mp3");
     }
@@ -198,6 +238,8 @@ public class GeoWarsApp extends GameApplication {
         physics.addCollisionHandler(shockEnemy.copyFor(GeoWarsType.SHOCKWAVE, GeoWarsType.WANDERER));
     }
 
+    private WheelMenu weaponMenu;
+
     @Override
     protected void initUI() {
         Text scoreText = getUIFactory().newText("", Color.WHITE, 18);
@@ -205,7 +247,24 @@ public class GeoWarsApp extends GameApplication {
         scoreText.setTranslateY(50);
         scoreText.textProperty().bind(getGameState().intProperty("score").asString("Score: %d"));
 
-        getGameScene().addUINodes(scoreText);
+        WeaponType[] weaponTypes = WeaponType.values();
+
+        weaponMenu = new WheelMenu(
+                weaponTypes[0].toString(),
+                weaponTypes[1].toString(),
+                weaponTypes[2].toString(),
+                weaponTypes[3].toString()
+        );
+
+        weaponMenu.setSelectionHandler(typeName -> {
+            WeaponType type = WeaponType.valueOf(typeName);
+            getGameState().setValue("weaponType", type);
+            getAudioPlayer().playSound(typeName.toLowerCase() + ".wav");
+        });
+
+        getGameScene().addUINodes(scoreText, weaponMenu);
+
+        weaponMenu.close();
     }
 
     @Override
@@ -236,6 +295,12 @@ public class GeoWarsApp extends GameApplication {
         Point2D spacing = new Point2D(40, 40);
 
         grid = new Grid(size, spacing, getGameWorld(), canvas.getGraphicsContext2D());
+    }
+
+    private void openWeaponMenu() {
+        weaponMenu.setTranslateX(getInput().getMouseXWorld() - 20);
+        weaponMenu.setTranslateY(getInput().getMouseYWorld() - 70);
+        weaponMenu.open();
     }
 
     private Point2D getRandomPoint() {
