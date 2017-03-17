@@ -1,7 +1,7 @@
 package com.almasb.flappy;
 
-import com.almasb.ents.AbstractControl;
-import com.almasb.ents.Entity;
+import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.component.CollidableComponent;
@@ -33,7 +33,7 @@ public class WallBuildingControl extends AbstractControl {
         Rectangle wall = new Rectangle(width, height);
         wall.setArcWidth(25);
         wall.setArcHeight(25);
-        wall.fillProperty().bind(FXGL.<FlappyBirdApp>getAppCast().colorProperty());
+        wall.fillProperty().bind(FXGL.getApp().getGameState().objectProperty("stageColor"));
         return wall;
     }
 

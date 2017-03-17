@@ -1,7 +1,7 @@
 package com.almasb.flappy;
 
-import com.almasb.ents.AbstractControl;
-import com.almasb.ents.Entity;
+import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.time.LocalTimer;
@@ -20,17 +20,21 @@ public class ColorChangingControl extends AbstractControl {
 
     @Override
     public void onAdded(Entity entity) {
-        view = (Rectangle) Entities.getMainView(entity).getView().getNodes().get(0);
+        // hacky, assumes that first node is Rectangle
+        view = (Rectangle) Entities.getView(entity).getView().getNodes().get(0);
         timer = FXGL.newLocalTimer();
     }
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
         if (timer.elapsed(interval)) {
-            view.setFill(view.getFill() == Color.BLACK ? Color.WHITE : Color.BLACK);
-            FXGL.<FlappyBirdApp>getAppCast()
-                    .colorProperty()
-                    .setValue(view.getFill() == Color.BLACK ? Color.WHITE : Color.BLACK);
+
+            Color nextViewColor = ((Color)view.getFill()).invert();
+            Color stageColor = nextViewColor.invert();
+
+            view.setFill(nextViewColor);
+            FXGL.getApp().getGameState().setValue("stageColor", stageColor);
+
             timer.capture();
         }
     }

@@ -1,8 +1,7 @@
 package com.almasb.flappy;
 
-import com.almasb.ents.Entity;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
-import com.almasb.fxgl.app.FXGLListener;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.audio.Music;
 import com.almasb.fxgl.entity.Entities;
@@ -12,12 +11,9 @@ import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
+import com.almasb.fxgl.service.listener.FXGLListener;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.texture.Texture;
-import com.almasb.fxgl.ui.UIFactory;
-import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
@@ -29,6 +25,7 @@ import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -36,11 +33,6 @@ import java.util.List;
 public class FlappyBirdApp extends GameApplication {
 
     private PlayerControl playerControl;
-    private ObjectProperty<Color> color = new SimpleObjectProperty<>();
-
-    public ObjectProperty<Color> colorProperty() {
-        return color;
-    }
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -74,12 +66,12 @@ public class FlappyBirdApp extends GameApplication {
     }
 
     @Override
-    protected void initAssets() {}
+    protected void initGameVars(Map<String, Object> vars) {
+        vars.put("stageColor", Color.BLACK);
+    }
 
     @Override
     protected void initGame() {
-        color.setValue(Color.BLACK);
-
         initBackground();
         initPlayer();
 
@@ -106,7 +98,7 @@ public class FlappyBirdApp extends GameApplication {
                 for (int y = 0; y < (int) image.getHeight(); y++) {
                     for (int x = 0; x < (int) image.getWidth(); x++) {
                         Particle p = new Particle(x, y, reader.getColor(x, y));
-                        if (!p.color.equals(color.get() == Color.WHITE ? Color.BLACK : Color.WHITE))
+                        if (!p.color.equals(getGameState().getObject("stageColor") == Color.WHITE ? Color.BLACK : Color.WHITE))
                             particles.add(p);
                     }
                 }
@@ -121,7 +113,7 @@ public class FlappyBirdApp extends GameApplication {
         Text uiScore = getUIFactory().newText("", 72);
         uiScore.setTranslateX(getWidth() - 200);
         uiScore.setTranslateY(50);
-        uiScore.fillProperty().bind(color);
+        uiScore.fillProperty().bind(getGameState().objectProperty("stageColor"));
         uiScore.textProperty().bind(getMasterTimer().tickProperty().asString());
 
         getGameScene().addUINode(uiScore);
@@ -134,7 +126,7 @@ public class FlappyBirdApp extends GameApplication {
         GraphicsContext g = getGameScene().getGraphicsContext();
 
         if (!particles.isEmpty()) {
-            g.setFill(color.getValue().invert());
+            g.setFill(getGameState().<Color>getObject("stageColor").invert());
             g.fillRect(0, 0, getWidth(), getHeight());
 
             time += tpf;

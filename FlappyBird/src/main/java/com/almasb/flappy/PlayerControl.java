@@ -1,11 +1,11 @@
 package com.almasb.flappy;
 
-import com.almasb.ents.AbstractControl;
-import com.almasb.ents.Entity;
+import com.almasb.fxgl.core.math.Vec2;
+import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.gameutils.math.Vec2;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
