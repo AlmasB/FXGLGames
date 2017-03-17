@@ -16,20 +16,13 @@
         <maven.compiler.version>3.3</maven.compiler.version>
         <maven.shade.version>2.4.2</maven.shade.version>
 
-        <fxgl.version>0.2.4</fxgl.version>
+        <fxgl.version>0.3.0</fxgl.version>
     </properties>
-
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>
-            <groupId>com.github.AlmasB</groupId>
-            <artifactId>FXGL</artifactId>
+            <groupId>com.github.almasb</groupId>
+            <artifactId>fxgl</artifactId>
             <version>${fxgl.version}</version>
         </dependency>
     </dependencies>

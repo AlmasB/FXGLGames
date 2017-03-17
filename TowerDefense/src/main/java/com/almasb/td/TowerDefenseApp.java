@@ -5,11 +5,9 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.GameEntity;
-import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
+import com.almasb.fxgl.service.Input;
 import com.almasb.fxgl.settings.GameSettings;
-import com.almasb.fxgl.ui.UIFactory;
-import com.almasb.td.collision.BulletEnemyHandler;
 import com.almasb.td.event.EnemyKilledEvent;
 import com.almasb.td.event.EnemyReachedGoalEvent;
 import javafx.beans.property.BooleanProperty;
@@ -59,6 +57,8 @@ public class TowerDefenseApp extends GameApplication {
         settings.setHeight(600);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
+        settings.setProfilingEnabled(false);
+        settings.setCloseConfirmation(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
@@ -73,9 +73,6 @@ public class TowerDefenseApp extends GameApplication {
             }
         }, MouseButton.PRIMARY);
     }
-
-    @Override
-    protected void initAssets() {}
 
     @Override
     protected void initGame() {
@@ -99,29 +96,14 @@ public class TowerDefenseApp extends GameApplication {
         getEventBus().addEventHandler(EnemyReachedGoalEvent.ANY, e -> gameOver());
     }
 
-    @Override
-    protected void initPhysics() {
-        getPhysicsWorld().addCollisionHandler(new BulletEnemyHandler());
-    }
-
-    @Override
-    protected void initUI() {}
-
-    @Override
-    protected void onUpdate(double tpf) {}
-
     private void spawnEnemy() {
         numEnemies.set(numEnemies.get() - 1);
 
-        GameEntity enemy = EntityFactory.spawnEnemy(enemySpawnPoint.getX(), enemySpawnPoint.getY());
-
-        getGameWorld().addEntity(enemy);
+        getGameWorld().spawn("Enemy", enemySpawnPoint.getX(), enemySpawnPoint.getY());
     }
 
     private void placeTower() {
-        GameEntity tower = EntityFactory.spawnTower(getInput().getMouseXWorld(), getInput().getMouseYWorld());
-
-        getGameWorld().addEntity(tower);
+        getGameWorld().spawn("Tower", getInput().getMousePositionWorld());
     }
 
     private void onEnemyKilled(EnemyKilledEvent event) {
@@ -134,7 +116,7 @@ public class TowerDefenseApp extends GameApplication {
         GameEntity enemy = event.getEnemy();
         Point2D position = Entities.getPosition(enemy).getValue();
 
-        Text xMark = UIFactory.newText("X", Color.RED, 24);
+        Text xMark = getUIFactory().newText("X", Color.RED, 24);
 
         EntityView view = new EntityView(xMark);
         view.setTranslateX(position.getX());
