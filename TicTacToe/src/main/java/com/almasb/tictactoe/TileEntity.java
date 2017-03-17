@@ -15,7 +15,7 @@ public class TileEntity extends GameEntity {
         setY(y);
         addComponent(new TileValueComponent());
 
-        getMainViewComponent().setView(new TileView(this), true);
+        getViewComponent().setView(new TileView(this), true);
         addControl(new TileControl());
     }
 

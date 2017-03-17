@@ -1,6 +1,6 @@
 package com.almasb.tictactoe;
 
-import com.almasb.ents.component.ObjectComponent;
+import com.almasb.fxgl.ecs.component.ObjectComponent;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)

@@ -1,6 +1,6 @@
 package com.almasb.tictactoe;
 
-import com.almasb.ents.Entity;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.settings.GameSettings;
@@ -104,9 +104,6 @@ public class TicTacToeApp extends GameApplication {
     }
 
     @Override
-    protected void initPhysics() {}
-
-    @Override
     protected void initUI() {
         Line line1 = new Line(getWidth() / 3, 0, getWidth() / 3, 0);
         Line line2 = new Line(getWidth() / 3 * 2, 0, getWidth() / 3 * 2, 0);
@@ -131,9 +128,6 @@ public class TicTacToeApp extends GameApplication {
         Timeline timeline = new Timeline(frame1, frame2, frame3, frame4);
         timeline.play();
     }
-
-    @Override
-    protected void onUpdate(double tpf) {}
 
     private boolean checkGameFinished() {
         for (TileCombo combo : combos) {
