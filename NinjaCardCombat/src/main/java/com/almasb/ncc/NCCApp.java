@@ -1,8 +1,8 @@
 package com.almasb.ncc;
 
-import com.almasb.ents.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.ui.UI;
@@ -28,17 +28,8 @@ public class NCCApp extends GameApplication {
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
         settings.setProfilingEnabled(false);
+        settings.setCloseConfirmation(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
-    }
-
-    @Override
-    protected void initInput() {
-
-    }
-
-    @Override
-    protected void initAssets() {
-
     }
 
     @Override
@@ -55,9 +46,6 @@ public class NCCApp extends GameApplication {
 //            System.out.println(event);
 //        });
     }
-
-    @Override
-    protected void initPhysics() {}
 
     @Override
     protected void initUI() {
@@ -95,9 +83,6 @@ public class NCCApp extends GameApplication {
 
         return view;
     }
-
-    @Override
-    protected void onUpdate(double tpf) {}
 
     public static void main(String[] args) {
         launch(args);
