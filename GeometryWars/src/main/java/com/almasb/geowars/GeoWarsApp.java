@@ -31,9 +31,13 @@ import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.effect.ParticleControl;
+import com.almasb.fxgl.effect.ParticleEmitter;
+import com.almasb.fxgl.effect.ParticleEmitters;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
@@ -51,9 +55,11 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -89,6 +95,12 @@ public class GeoWarsApp extends GameApplication {
         settings.setProfilingEnabled(false);
         settings.setCloseConfirmation(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
+    }
+
+    @Override
+    protected void initAssets() {
+        // preload explosion sprite sheet
+        getAssetLoader().loadTexture("explosion.png", 80 * 48, 80);
     }
 
     @Override
@@ -162,7 +174,7 @@ public class GeoWarsApp extends GameApplication {
                     timer.capture();
                 }
             }
-        }, KeyCode.F);
+        }, MouseButton.PRIMARY);
 
         input.addAction(new UserAction("Weapon Menu") {
             @Override
@@ -175,19 +187,21 @@ public class GeoWarsApp extends GameApplication {
     @Override
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("score", 0);
+        vars.put("time", 30);
         vars.put("weaponType", WeaponType.NORMAL);
     }
 
     @Override
     protected void initGame() {
-        getAudioPlayer().setGlobalSoundVolume(0.5);
-        getAudioPlayer().setGlobalMusicVolume(0.1);
+        getAudioPlayer().setGlobalSoundVolume(0.0);
+        getAudioPlayer().setGlobalMusicVolume(0.0);
 
         initBackground();
         player = (GameEntity) getGameWorld().spawn("Player");
 
         getMasterTimer().runAtInterval(() -> getGameWorld().spawn("Wanderer"), Duration.seconds(2));
         getMasterTimer().runAtInterval(() -> getGameWorld().spawn("Seeker"), Duration.seconds(4));
+        getMasterTimer().runAtInterval(() -> getGameState().increment("time", -1), Duration.seconds(1));
 
         getAudioPlayer().playMusic("bgm.mp3");
     }
@@ -198,11 +212,11 @@ public class GeoWarsApp extends GameApplication {
 
         CollisionHandler bulletEnemy = new CollisionHandler(GeoWarsType.BULLET, GeoWarsType.WANDERER) {
             @Override
-            protected void onCollisionBegin(Entity a, Entity b) {
-                getGameWorld().spawn("Explosion", Entities.getBBox(b).getCenterWorld());
+            protected void onCollisionBegin(Entity bullet, Entity wanderer) {
+                getGameWorld().spawn("Explosion", Entities.getBBox(wanderer).getCenterWorld());
 
-                a.removeFromWorld();
-                b.removeFromWorld();
+                bullet.removeFromWorld();
+                wanderer.removeFromWorld();
                 addScoreKill();
             }
         };
@@ -247,6 +261,21 @@ public class GeoWarsApp extends GameApplication {
         scoreText.setTranslateY(50);
         scoreText.textProperty().bind(getGameState().intProperty("score").asString("Score: %d"));
 
+        Text timerText = getUIFactory().newText("", Color.WHITE, 18);
+        timerText.layoutBoundsProperty().addListener((o, old, bounds) -> {
+            timerText.setTranslateX(getWidth() / 2 - bounds.getWidth() / 2);
+        });
+
+        timerText.setTranslateX(getWidth() / 2);
+        timerText.setTranslateY(60);
+        timerText.textProperty().bind(getGameState().intProperty("time").asString());
+
+        Circle timerCircle = new Circle(40, 40, 40, null);
+        timerCircle.setStrokeWidth(2);
+        timerCircle.setStroke(Color.AQUA);
+        timerCircle.setTranslateX(getWidth() / 2 - 40);
+        timerCircle.setTranslateY(60 - 40 - 5);
+
         WeaponType[] weaponTypes = WeaponType.values();
 
         weaponMenu = new WheelMenu(
@@ -262,7 +291,7 @@ public class GeoWarsApp extends GameApplication {
             getAudioPlayer().playSound(typeName.toLowerCase() + ".wav");
         });
 
-        getGameScene().addUINodes(scoreText, weaponMenu);
+        getGameScene().addUINodes(scoreText, timerText, timerCircle, weaponMenu);
 
         weaponMenu.close();
     }
