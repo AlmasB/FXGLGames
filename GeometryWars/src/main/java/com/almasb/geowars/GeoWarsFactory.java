@@ -9,6 +9,7 @@ import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.entity.control.ProjectileControl;
+import com.almasb.geowars.component.HPComponent;
 import com.almasb.geowars.component.OldPositionComponent;
 import com.almasb.geowars.control.*;
 import javafx.geometry.Point2D;
@@ -74,18 +75,20 @@ public class GeoWarsFactory implements EntityFactory {
                 .type(GeoWarsType.WANDERER)
                 .at(getRandomSpawnPoint())
                 .viewFromTextureWithBBox("Wanderer.png")
-                .with(new CollidableComponent(true))
+                .with(new HPComponent(1), new CollidableComponent(true))
                 .with(new WandererControl())
                 .build();
     }
 
     @Spawns("Seeker")
     public GameEntity spawnSeeker(SpawnData data) {
+        boolean red = FXGLMath.randomBoolean(0.25f);
+
         return Entities.builder()
                 .type(GeoWarsType.SEEKER)
                 .at(getRandomSpawnPoint())
-                .viewFromTextureWithBBox("Seeker.png")
-                .with(new CollidableComponent(true))
+                .viewFromTextureWithBBox(red ? "RedSeeker.png" : "Seeker.png")
+                .with(new HPComponent(red ? 3 : 1), new CollidableComponent(true))
                 .with(new SeekerControl(FXGL.<GeoWarsApp>getAppCast().getPlayer()))
                 .build();
     }

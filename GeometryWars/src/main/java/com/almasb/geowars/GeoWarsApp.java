@@ -47,11 +47,13 @@ import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxgl.ui.WheelMenu;
 import com.almasb.geowars.component.GraphicsComponent;
+import com.almasb.geowars.component.HPComponent;
 import com.almasb.geowars.component.OldPositionComponent;
 import com.almasb.geowars.control.GraphicsUpdateControl;
 import com.almasb.geowars.control.PlayerControl;
 import com.almasb.geowars.control.RicochetControl;
 import com.almasb.geowars.grid.Grid;
+import javafx.animation.TranslateTransition;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point2D;
@@ -59,6 +61,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -90,7 +93,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("FXGL Geometry Wars");
-        settings.setVersion("0.5");
+        settings.setVersion("0.6");
         settings.setFullScreen(false);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
@@ -142,7 +145,9 @@ public class GeoWarsApp extends GameApplication {
 
             @Override
             protected void onAction() {
-                if (timer.elapsed(Duration.seconds(0.17))) {
+                WeaponType type = getGameState().getObject("weaponType");
+
+                if (timer.elapsed(type.delay)) {
                     Point2D position = player.getCenter().subtract(14, 4.5);
 
                     GameEntity bullet = getGameWorld().<GeoWarsFactory>getEntityFactory().spawnBullet(position, input.getVectorToMouse(position));
@@ -189,21 +194,23 @@ public class GeoWarsApp extends GameApplication {
     @Override
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("score", 0);
-        vars.put("time", 30);
+        vars.put("multiplier", 1);
+        vars.put("kills", 0);
+        vars.put("time", 180);
         vars.put("weaponType", WeaponType.NORMAL);
     }
 
     @Override
     protected void initGame() {
-        getAudioPlayer().setGlobalSoundVolume(0.0);
-        getAudioPlayer().setGlobalMusicVolume(0.0);
+        getAudioPlayer().setGlobalSoundVolume(0.1);
+        getAudioPlayer().setGlobalMusicVolume(0.1);
 
         initBackground();
         player = (GameEntity) getGameWorld().spawn("Player");
         playerControl = player.getControlUnsafe(PlayerControl.class);
 
-        //getMasterTimer().runAtInterval(() -> getGameWorld().spawn("Wanderer"), Duration.seconds(2));
-        //getMasterTimer().runAtInterval(() -> getGameWorld().spawn("Seeker"), Duration.seconds(4));
+        getMasterTimer().runAtInterval(() -> getGameWorld().spawn("Wanderer"), Duration.seconds(1));
+        getMasterTimer().runAtInterval(() -> getGameWorld().spawn("Seeker"), Duration.seconds(2));
         getMasterTimer().runAtInterval(() -> getGameState().increment("time", -1), Duration.seconds(1));
 
         getAudioPlayer().playMusic("bgm.mp3");
@@ -215,12 +222,17 @@ public class GeoWarsApp extends GameApplication {
 
         CollisionHandler bulletEnemy = new CollisionHandler(GeoWarsType.BULLET, GeoWarsType.WANDERER) {
             @Override
-            protected void onCollisionBegin(Entity bullet, Entity wanderer) {
-                getGameWorld().spawn("Explosion", Entities.getBBox(wanderer).getCenterWorld());
-
+            protected void onCollisionBegin(Entity bullet, Entity enemy) {
                 bullet.removeFromWorld();
-                wanderer.removeFromWorld();
-                addScoreKill();
+
+                HPComponent hp = enemy.getComponentUnsafe(HPComponent.class);
+                hp.setValue(hp.getValue() - 1);
+
+                if (hp.getValue() == 0) {
+                    getGameWorld().spawn("Explosion", Entities.getBBox(enemy).getCenterWorld());
+                    enemy.removeFromWorld();
+                    addScoreKill();
+                }
             }
         };
 
@@ -261,8 +273,8 @@ public class GeoWarsApp extends GameApplication {
     protected void initUI() {
         Text scoreText = getUIFactory().newText("", Color.WHITE, 18);
         scoreText.setTranslateX(1100);
-        scoreText.setTranslateY(50);
-        scoreText.textProperty().bind(getGameState().intProperty("score").asString("Score: %d"));
+        scoreText.setTranslateY(70);
+        scoreText.textProperty().bind(getGameState().intProperty("score").asString());
 
         Text timerText = getUIFactory().newText("", Color.WHITE, 18);
         timerText.layoutBoundsProperty().addListener((o, old, bounds) -> {
@@ -307,6 +319,15 @@ public class GeoWarsApp extends GameApplication {
         grid.update();
     }
 
+    @Override
+    protected void onPostUpdate(double tpf) {
+        if (getGameState().getInt("time") == 0) {
+            getDisplay().showConfirmationBox("Demo Over. Press anything to exit. Your score: " + getGameState().getInt("score"), yes -> {
+                exit();
+            });
+        }
+    }
+
     private void initBackground() {
         GameEntity bg = new GameEntity();
         bg.getViewComponent().setTexture("background.png");
@@ -340,11 +361,46 @@ public class GeoWarsApp extends GameApplication {
     }
 
     private void addScoreKill() {
-        getGameState().increment("score", +100);
+        getGameState().increment("kills", 1);
+        if (getGameState().getInt("kills") == 15) {
+            getGameState().setValue("kills", 0);
+            getGameState().increment("multiplier", +1);
+        }
+
+        final int multiplier = getGameState().getInt("multiplier");
+
+        Text bonusText = getUIFactory().newText("+100" + (multiplier == 1 ? "" : "x" + multiplier), Color.WHITE, 18);
+        bonusText.setTranslateX(1100);
+        bonusText.setTranslateY(0);
+
+        getGameScene().addUINode(bonusText);
+
+        TranslateTransition tt = new TranslateTransition(Duration.seconds(0.5), bonusText);
+        tt.setToY(70);
+        tt.setOnFinished(e -> {
+            getGameState().increment("score", +100*multiplier);
+            getGameScene().removeUINode(bonusText);
+        });
+        tt.play();
     }
 
     private void deductScoreDeath() {
         getGameState().increment("score", -1000);
+        getGameState().setValue("kills", 0);
+        getGameState().setValue("multiplier", 1);
+
+        Text bonusText = getUIFactory().newText("-1000", Color.WHITE, 18);
+        bonusText.setTranslateX(1100);
+        bonusText.setTranslateY(70);
+
+        getGameScene().addUINode(bonusText);
+
+        TranslateTransition tt = new TranslateTransition(Duration.seconds(0.5), bonusText);
+        tt.setToY(0);
+        tt.setOnFinished(e -> {
+            getGameScene().removeUINode(bonusText);
+        });
+        tt.play();
     }
 
     public static void main(String[] args) {
