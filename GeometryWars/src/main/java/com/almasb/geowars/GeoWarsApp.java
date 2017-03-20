@@ -49,6 +49,7 @@ import com.almasb.fxgl.ui.WheelMenu;
 import com.almasb.geowars.component.GraphicsComponent;
 import com.almasb.geowars.component.OldPositionComponent;
 import com.almasb.geowars.control.GraphicsUpdateControl;
+import com.almasb.geowars.control.PlayerControl;
 import com.almasb.geowars.control.RicochetControl;
 import com.almasb.geowars.grid.Grid;
 import javafx.beans.property.IntegerProperty;
@@ -72,6 +73,7 @@ import java.util.Map;
 public class GeoWarsApp extends GameApplication {
 
     private GameEntity player;
+    private PlayerControl playerControl;
 
     private Grid grid;
 
@@ -110,28 +112,28 @@ public class GeoWarsApp extends GameApplication {
         input.addAction(new UserAction("Move Left") {
             @Override
             protected void onAction() {
-                player.translateX(-5);
+                playerControl.left();
             }
         }, KeyCode.A);
 
         input.addAction(new UserAction("Move Right") {
             @Override
             protected void onAction() {
-                player.translateX(5);
+                playerControl.right();
             }
         }, KeyCode.D);
 
         input.addAction(new UserAction("Move Up") {
             @Override
             protected void onAction() {
-                player.translateY(-5);
+                playerControl.up();
             }
         }, KeyCode.W);
 
         input.addAction(new UserAction("Move Down") {
             @Override
             protected void onAction() {
-                player.translateY(5);
+                playerControl.down();
             }
         }, KeyCode.S);
 
@@ -198,9 +200,10 @@ public class GeoWarsApp extends GameApplication {
 
         initBackground();
         player = (GameEntity) getGameWorld().spawn("Player");
+        playerControl = player.getControlUnsafe(PlayerControl.class);
 
-        getMasterTimer().runAtInterval(() -> getGameWorld().spawn("Wanderer"), Duration.seconds(2));
-        getMasterTimer().runAtInterval(() -> getGameWorld().spawn("Seeker"), Duration.seconds(4));
+        //getMasterTimer().runAtInterval(() -> getGameWorld().spawn("Wanderer"), Duration.seconds(2));
+        //getMasterTimer().runAtInterval(() -> getGameWorld().spawn("Seeker"), Duration.seconds(4));
         getMasterTimer().runAtInterval(() -> getGameState().increment("time", -1), Duration.seconds(1));
 
         getAudioPlayer().playMusic("bgm.mp3");

@@ -26,12 +26,16 @@
 
 package com.almasb.geowars.control;
 
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.ecs.AbstractControl;
 import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.component.ViewComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
+
+import static java.lang.Math.min;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -52,42 +56,41 @@ public class ParticleControl extends AbstractControl {
 
     @Override
     public void onAdded(Entity entity) {
-        entity.getComponent(ViewComponent.class).ifPresent(view -> view.getView().setEffect(new DropShadow(5, color)));
+        //entity.getComponent(ViewComponent.class).ifPresent(view -> view.getView().setEffect(new DropShadow(5, color)));
     }
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
-//        // movement
-//        entity.translate(velocity.multiply(0.016 * 3f));
-//        velocity = velocity.multiply(1 - 3f * 0.016);
-//        if (Math.abs(velocity.getX()) + Math.abs(velocity.getY()) < 0.001f) {
-//            velocity = new Point2D(0, 0);
-//        }
-//
-//        // rotation and scale
-//        if (velocity.getX() != 0 && velocity.getY() != 0) {
-//            entity.rotateToVector(velocity);
-//        }
-//
-//        // alpha
-//        double speed = velocity.magnitude();
-//        long difTime = System.currentTimeMillis() - spawnTime;
-//        float percentLife = 1 - difTime / lifespan;
-//        double alpha = lesserValue(1.5f, lesserValue(percentLife * 2, speed));
-//        alpha *= alpha;
-//
-//        final double opacity = alpha;
-//        entity.getSceneView().ifPresent(view -> view.setOpacity(opacity));
-//
-//        // is particle expired?
-//        if (difTime > lifespan) {
-//            entity.removeFromWorld();
-//        }
+    public void onUpdate(Entity e, double tpf) {
+        GameEntity entity = (GameEntity) e;
+
+        // movement
+        entity.translate(velocity.multiply(tpf * 3f));
+        velocity = velocity.multiply(1 - 3f * tpf);
+        if (Math.abs(velocity.getX()) + Math.abs(velocity.getY()) < 0.001f) {
+            velocity = new Point2D(0, 0);
+        }
+
+        // rotation and scale
+        if (velocity.getX() != 0 && velocity.getY() != 0) {
+            entity.rotateToVector(velocity);
+        }
+
+        // alpha
+        double speed = velocity.magnitude();
+        long difTime = System.currentTimeMillis() - spawnTime;
+        float percentLife = 1 - difTime / lifespan;
+        double alpha = min(1.5f, min(percentLife * 2, speed));
+        alpha *= alpha;
+
+        final double opacity = alpha;
+        entity.getView().setOpacity(opacity);
+
+        // is particle expired?
+        if (difTime > lifespan) {
+            entity.removeFromWorld();
+        }
     }
 
-    private double lesserValue(double a, double b) {
-        return a < b ? a : b;
-    }
 //
 //    public void applyGravity(Vector3f gravity, float distance) {
 //        Vector3f additionalVelocity = gravity

@@ -10,9 +10,7 @@ import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.entity.control.ProjectileControl;
 import com.almasb.geowars.component.OldPositionComponent;
-import com.almasb.geowars.control.BulletControl;
-import com.almasb.geowars.control.SeekerControl;
-import com.almasb.geowars.control.WandererControl;
+import com.almasb.geowars.control.*;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
@@ -52,6 +50,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .at(FXGL.getApp().getWidth() / 2, FXGL.getApp().getHeight() / 2)
                 .viewFromTextureWithBBox("Player.png")
                 .with(new CollidableComponent(true), oldPosition)
+                .with(new PlayerControl(), new KeepOnScreenControl(true, true))
                 .build();
     }
 
