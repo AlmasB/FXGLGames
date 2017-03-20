@@ -26,13 +26,15 @@
 
 package com.almasb.geowars.control;
 
-import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.core.collection.ObjectMap;
 import com.almasb.fxgl.ecs.AbstractControl;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.GameEntity;
-import com.almasb.fxgl.entity.component.ViewComponent;
+import com.almasb.fxgl.texture.Texture;
 import javafx.geometry.Point2D;
-import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
 import static java.lang.Math.min;
@@ -40,23 +42,59 @@ import static java.lang.Math.min;
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class ParticleControl extends AbstractControl {
+public class ExhaustParticleControl extends AbstractControl {
+
+    private static final Image PARTICLE_IMAGE;
+    private static final ObjectMap<Color, Image> coloredImages = new ObjectMap<>();
+
+    static {
+        PARTICLE_IMAGE = FXGL.getAssetLoader().loadTexture("Glow.png").getImage();
+    }
 
     private Point2D velocity;
     private float lifespan;
     private long spawnTime;
     private Color color;
 
-    public ParticleControl(Point2D velocity, float lifespan, Color color) {
+    public ExhaustParticleControl(Point2D velocity, float lifespan, Color color) {
         this.velocity = velocity;
         this.lifespan = lifespan;
-        this.color = color;
         spawnTime = System.currentTimeMillis();
+        this.color = color;
+
+        if (!coloredImages.containsKey(color)) {
+            colorImage();
+        }
+    }
+
+    private void colorImage() {
+        int w = (int) PARTICLE_IMAGE.getWidth();
+        int h = (int) PARTICLE_IMAGE.getHeight();
+
+        WritableImage coloredImage = new WritableImage(w, h);
+
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+
+                Color c = PARTICLE_IMAGE.getPixelReader().getColor(x, y);
+                c = Color.color(
+                        c.getRed() * color.getRed(),
+                        c.getGreen() * color.getGreen(),
+                        c.getBlue() * color.getBlue(),
+                        c.getOpacity() * color.getOpacity()
+                );
+
+                coloredImage.getPixelWriter().setColor(x, y, c);
+            }
+        }
+
+        coloredImages.put(color, coloredImage);
     }
 
     @Override
-    public void onAdded(Entity entity) {
-        //entity.getComponent(ViewComponent.class).ifPresent(view -> view.getView().setEffect(new DropShadow(5, color)));
+    public void onAdded(Entity e) {
+        GameEntity entity = (GameEntity) e;
+        entity.setView(new Texture(coloredImages.get(color)));
     }
 
     @Override

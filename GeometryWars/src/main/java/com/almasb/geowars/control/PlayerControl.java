@@ -25,7 +25,6 @@ public class PlayerControl extends AbstractControl {
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
-
     }
 
     public void left() {
@@ -52,8 +51,8 @@ public class PlayerControl extends AbstractControl {
         Vec2 position = new Vec2(player.getCenter().getX(), player.getCenter().getY());
         double rotation = player.getRotation();
 
-        Color midColor = Color.color(1f, 0.73f, 0.12f, 0.7f);
-        Color sideColor = Color.color(0.78f, 0.15f, 0.04f, 0.7f);
+        Color midColor = Color.BLUE;
+        Color sideColor = Color.MEDIUMVIOLETRED.brighter();
 
         Vec2 direction = Vec2.fromAngle(rotation);
 
@@ -62,9 +61,7 @@ public class PlayerControl extends AbstractControl {
         Vec2 baseVel = direction.mul(-45f);
         Vec2 perpVel = new Vec2(baseVel.y, -baseVel.x).mulLocal(2f * FXGLMath.sin(t * 10f));
 
-
-
-        // subtract half extent x, y of Glow.png                                                 mul half extent player
+        // subtract half extent x, y of Glow.png                                            mul half extent player
         Vec2 pos = position.sub(new Vec2(17.5, 10)).addLocal(direction.negate().normalizeLocal().mulLocal(20));
 
         // middle stream
@@ -73,60 +70,24 @@ public class PlayerControl extends AbstractControl {
 
         Entities.builder()
                 .at(pos.x, pos.y)
-                //.at(position.x - 17.5, position.y - 10)
-                .viewFromTexture("Glow.png")
-                .with(new ParticleControl(new Point2D(velMid.x, velMid.y), 800, midColor))
+                .with(new ExhaustParticleControl(new Point2D(velMid.x, velMid.y), 800, midColor))
                 .buildAndAttach(FXGL.getApp().getGameWorld());
 
-//        Spatial particleMid = standardParticle.clone();
-//        particleMid.setLocalTranslation(pos);
-//        particleMid.addControl(new ParticleControl(velMid, 800, midColor,
-//                screenWidth, screenHeight));
-//        particleMid.setUserData("affectedByGravity", true);
-//        ((Node) guiNode.getChild("particles")).attachChild(particleMid);
-//
-//        Spatial particleMidGlow = glowParticle.clone();
-//        particleMidGlow.setLocalTranslation(pos);
-//        particleMidGlow.addControl(new ParticleControl(velMid, 800, midColor,
-//                screenWidth, screenHeight));
-//        particleMidGlow.setUserData("affectedByGravity", true);
-//        ((Node) guiNode.getChild("particles")).attachChild(particleMidGlow);
-
         // side streams
-//        Vector3f randVec1 = MonkeyBlasterMain.getVectorFromAngle(new Random()
-//                .nextFloat() * FastMath.PI * 2);
-//        Vector3f randVec2 = MonkeyBlasterMain.getVectorFromAngle(new Random()
-//                .nextFloat() * FastMath.PI * 2);
-//        Vector3f velSide1 = baseVel.add(randVec1.mult(2.4f)).addLocal(perpVel);
-//        Vector3f velSide2 = baseVel.add(randVec2.mult(2.4f)).subtractLocal(
-//                perpVel);
-//
-//        Spatial particleSide1 = standardParticle.clone();
-//        particleSide1.setLocalTranslation(pos);
-//        particleSide1.addControl(new ParticleControl(velSide1, 800, sideColor,
-//                screenWidth, screenHeight));
-//        particleSide1.setUserData("affectedByGravity", true);
-//        ((Node) guiNode.getChild("particles")).attachChild(particleSide1);
-//
-//        Spatial particleSide2 = standardParticle.clone();
-//        particleSide2.setLocalTranslation(pos);
-//        particleSide2.addControl(new ParticleControl(velSide2, 800, sideColor,
-//                screenWidth, screenHeight));
-//        particleSide2.setUserData("affectedByGravity", true);
-//        ((Node) guiNode.getChild("particles")).attachChild(particleSide2);
-//
-//        Spatial particleSide1Glow = glowParticle.clone();
-//        particleSide1Glow.setLocalTranslation(pos);
-//        particleSide1Glow.addControl(new ParticleControl(velSide1, 800,
-//                sideColor, screenWidth, screenHeight));
-//        particleSide1Glow.setUserData("affectedByGravity", true);
-//        ((Node) guiNode.getChild("particles")).attachChild(particleSide1Glow);
-//
-//        Spatial particleSide2Glow = glowParticle.clone();
-//        particleSide2Glow.setLocalTranslation(pos);
-//        particleSide2Glow.addControl(new ParticleControl(velSide2, 800,
-//                sideColor, screenWidth, screenHeight));
-//        particleSide2Glow.setUserData("affectedByGravity", true);
-//        ((Node) guiNode.getChild("particles")).attachChild(particleSide2Glow);
+        Vec2 randVec1 = Vec2.fromAngle(FXGLMath.radiansToDegrees * FXGLMath.random() * FXGLMath.PI2);
+        Vec2 randVec2 = Vec2.fromAngle(FXGLMath.radiansToDegrees * FXGLMath.random() * FXGLMath.PI2);
+
+        Vec2 velSide1 = baseVel.add(randVec1.mulLocal(2.4f)).addLocal(perpVel);
+        Vec2 velSide2 = baseVel.add(randVec2.mulLocal(2.4f)).subLocal(perpVel);
+
+        Entities.builder()
+                .at(pos.x, pos.y)
+                .with(new ExhaustParticleControl(new Point2D(velSide1.x, velSide1.y), 800, sideColor))
+                .buildAndAttach(FXGL.getApp().getGameWorld());
+
+        Entities.builder()
+                .at(pos.x, pos.y)
+                .with(new ExhaustParticleControl(new Point2D(velSide2.x, velSide2.y), 800, sideColor))
+                .buildAndAttach(FXGL.getApp().getGameWorld());
     }
 }
