@@ -31,11 +31,8 @@ import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.ecs.AbstractControl;
 import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
 import javafx.geometry.Point2D;
-
-import java.util.Random;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)

@@ -25,43 +25,28 @@
  */
 package com.almasb.geowars;
 
-import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
-import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.effect.ParticleControl;
-import com.almasb.fxgl.effect.ParticleEmitter;
-import com.almasb.fxgl.effect.ParticleEmitters;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
-import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.fxgl.entity.control.ExpireCleanControl;
-import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxgl.service.Input;
 import com.almasb.fxgl.settings.GameSettings;
-import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxgl.ui.WheelMenu;
 import com.almasb.geowars.component.GraphicsComponent;
 import com.almasb.geowars.component.HPComponent;
 import com.almasb.geowars.component.OldPositionComponent;
 import com.almasb.geowars.control.GraphicsUpdateControl;
 import com.almasb.geowars.control.PlayerControl;
-import com.almasb.geowars.control.RicochetControl;
 import com.almasb.geowars.grid.Grid;
 import javafx.animation.TranslateTransition;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -99,7 +84,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setMenuEnabled(false);
         settings.setProfilingEnabled(false);
         settings.setCloseConfirmation(false);
-        settings.setApplicationMode(ApplicationMode.DEVELOPER);
+        settings.setApplicationMode(ApplicationMode.RELEASE);
     }
 
     @Override
@@ -141,45 +126,9 @@ public class GeoWarsApp extends GameApplication {
         }, KeyCode.S);
 
         input.addAction(new UserAction("Shoot") {
-            private LocalTimer timer = FXGL.newLocalTimer();
-
             @Override
             protected void onAction() {
-                WeaponType type = getGameState().getObject("weaponType");
-
-                if (timer.elapsed(type.delay)) {
-                    Point2D position = player.getCenter().subtract(14, 4.5);
-
-                    GameEntity bullet = getGameWorld().<GeoWarsFactory>getEntityFactory().spawnBullet(position, input.getVectorToMouse(position));
-
-                    if (getGameState().getObject("weaponType") == WeaponType.RICOCHET) {
-                        bullet.removeControl(OffscreenCleanControl.class);
-                        bullet.addControl(new RicochetControl());
-                    }
-
-                    if (getGameState().getObject("weaponType") == WeaponType.BEAM) {
-                        Point2D toMouse = input.getVectorToMouse(position).normalize().multiply(10);
-                        Point2D pos = position;
-
-                        for (int i = 0; i < 7; i++) {
-                            getGameWorld().<GeoWarsFactory>getEntityFactory().spawnBullet(pos.add(toMouse), toMouse);
-                            pos = pos.add(toMouse);
-                        }
-                    }
-
-                    if (getGameState().getObject("weaponType") == WeaponType.WAVE) {
-                        Point2D toMouse = input.getVectorToMouse(position);
-                        double baseAngle = new Vec2(toMouse.getX(), toMouse.getY()).angle() + 45;
-                        for (int i = 0; i < 7; i++) {
-                            Vec2 vec = Vec2.fromAngle(baseAngle);
-                            getGameWorld().<GeoWarsFactory>getEntityFactory().spawnBullet(position, new Point2D(vec.x, vec.y));
-
-                            baseAngle += 45;
-                        }
-                    }
-
-                    timer.capture();
-                }
+                playerControl.shoot(input.getMousePositionWorld());
             }
         }, MouseButton.PRIMARY);
 
@@ -202,7 +151,7 @@ public class GeoWarsApp extends GameApplication {
 
     @Override
     protected void initGame() {
-        getAudioPlayer().setGlobalSoundVolume(0.1);
+        getAudioPlayer().setGlobalSoundVolume(0.2);
         getAudioPlayer().setGlobalMusicVolume(0.1);
 
         initBackground();
@@ -251,20 +200,21 @@ public class GeoWarsApp extends GameApplication {
         physics.addCollisionHandler(playerEnemy);
         physics.addCollisionHandler(playerEnemy.copyFor(GeoWarsType.PLAYER, GeoWarsType.SEEKER));
 
-        CollisionHandler shockEnemy = new CollisionHandler(GeoWarsType.SHOCKWAVE, GeoWarsType.SEEKER) {
-            @Override
-            protected void onCollisionBegin(Entity a, Entity b) {
-                PositionComponent pos = Entities.getPosition(b);
-
-                pos.translate(pos.getValue()
-                        .subtract(Entities.getPosition(player).getValue())
-                        .normalize()
-                        .multiply(100));
-            }
-        };
-
-        physics.addCollisionHandler(shockEnemy);
-        physics.addCollisionHandler(shockEnemy.copyFor(GeoWarsType.SHOCKWAVE, GeoWarsType.WANDERER));
+        // TODO: add shockwave skill
+//        CollisionHandler shockEnemy = new CollisionHandler(GeoWarsType.SHOCKWAVE, GeoWarsType.SEEKER) {
+//            @Override
+//            protected void onCollisionBegin(Entity a, Entity b) {
+//                PositionComponent pos = Entities.getPosition(b);
+//
+//                pos.translate(pos.getValue()
+//                        .subtract(Entities.getPosition(player).getValue())
+//                        .normalize()
+//                        .multiply(100));
+//            }
+//        };
+//
+//        physics.addCollisionHandler(shockEnemy);
+//        physics.addCollisionHandler(shockEnemy.copyFor(GeoWarsType.SHOCKWAVE, GeoWarsType.WANDERER));
     }
 
     private WheelMenu weaponMenu;

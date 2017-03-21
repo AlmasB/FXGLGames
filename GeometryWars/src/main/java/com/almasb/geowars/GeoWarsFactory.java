@@ -4,7 +4,10 @@ import com.almasb.fxgl.annotation.SetEntityFactory;
 import com.almasb.fxgl.annotation.Spawns;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.entity.*;
+import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.entity.EntityFactory;
+import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
@@ -21,18 +24,15 @@ import javafx.util.Duration;
 @SetEntityFactory
 public class GeoWarsFactory implements EntityFactory {
 
+    /**
+     * These correspond to top-left, top-right, bottom-right, bottom-left.
+     */
     private Point2D[] spawnPoints = new Point2D[] {
             new Point2D(50, 50),
             new Point2D(FXGL.getApp().getWidth() - 50, 50),
             new Point2D(FXGL.getApp().getWidth() - 50, FXGL.getApp().getHeight() - 50),
             new Point2D(50, FXGL.getApp().getHeight() - 50)
     };
-
-    private GameWorld world;
-
-    public GeoWarsFactory() {
-        this.world = FXGL.getApp().getGameWorld();
-    }
 
     private Point2D getRandomSpawnPoint() {
         return spawnPoints[FXGLMath.random(3)];
@@ -55,18 +55,19 @@ public class GeoWarsFactory implements EntityFactory {
                 .build();
     }
 
-    public GameEntity spawnBullet(Point2D position, Point2D direction) {
+    @Spawns("Bullet")
+    public GameEntity spawnBullet(SpawnData data) {
         FXGL.getAudioPlayer().playSound("shoot" + (int) (Math.random() * 8 + 1) + ".wav");
 
         return Entities.builder()
                 .type(GeoWarsType.BULLET)
-                .at(position)
+                .from(data)
                 .viewFromTextureWithBBox("Bullet.png")
                 .with(new CollidableComponent(true))
-                .with(new ProjectileControl(direction, 600),
+                .with(new ProjectileControl(data.get("direction"), 600),
                         new BulletControl(FXGL.<GeoWarsApp>getAppCast().getGrid()),
                         new OffscreenCleanControl())
-                .buildAndAttach(world);
+                .build();
     }
 
     @Spawns("Wanderer")

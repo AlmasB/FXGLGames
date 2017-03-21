@@ -76,10 +76,6 @@ public class PointMass {
         applyVelocity();
 
         damping = initialDamping;
-
-//        if (position.getY() < 0.01) {
-//            position = new Point2D(position.getX(), 0);
-//        }
     }
 
     public Point2D getPosition() {

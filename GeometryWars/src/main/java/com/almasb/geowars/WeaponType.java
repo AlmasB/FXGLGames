@@ -11,7 +11,7 @@ public enum WeaponType {
     BEAM(Duration.seconds(0.17 * 7)),
     WAVE(Duration.seconds(0.17 * 10));
 
-    final Duration delay;
+    public final Duration delay;
 
     WeaponType(Duration delay) {
         this.delay = delay;

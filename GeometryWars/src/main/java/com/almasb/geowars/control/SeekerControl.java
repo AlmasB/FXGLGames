@@ -28,7 +28,6 @@ package com.almasb.geowars.control;
 
 import com.almasb.fxgl.ecs.AbstractControl;
 import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
 import javafx.geometry.Point2D;
 

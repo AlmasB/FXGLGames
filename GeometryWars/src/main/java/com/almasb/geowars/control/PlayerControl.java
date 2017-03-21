@@ -7,6 +7,10 @@ import com.almasb.fxgl.ecs.AbstractControl;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.entity.control.OffscreenCleanControl;
+import com.almasb.fxgl.time.LocalTimer;
+import com.almasb.geowars.WeaponType;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 
@@ -18,6 +22,8 @@ public class PlayerControl extends AbstractControl {
     private GameEntity player;
     private long spawnTime = System.currentTimeMillis();
 
+    private LocalTimer weaponTimer = FXGL.newLocalTimer();
+
     @Override
     public void onAdded(Entity entity) {
         player = (GameEntity) entity;
@@ -25,6 +31,57 @@ public class PlayerControl extends AbstractControl {
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
+    }
+
+    public void shoot(Point2D shootPoint) {
+        WeaponType type = FXGL.getApp().getGameState().getObject("weaponType");
+
+        if (weaponTimer.elapsed(type.delay)) {
+            Point2D position = player.getCenter().subtract(14, 4.5);
+            Point2D vectorToMouse = shootPoint.subtract(position);
+
+            GameEntity bullet = spawnBullet(position, vectorToMouse);
+
+            switch (type) {
+                case RICOCHET:
+                    bullet.removeControl(OffscreenCleanControl.class);
+                    bullet.addControl(new RicochetControl());
+                    break;
+
+                case BEAM:
+                    Point2D toMouse = vectorToMouse.normalize().multiply(10);
+                    Point2D pos = position;
+
+                    for (int i = 0; i < 7; i++) {
+                        spawnBullet(pos.add(toMouse), toMouse);
+                        pos = pos.add(toMouse);
+                    }
+                    break;
+
+                case WAVE:
+                    double baseAngle = new Vec2(vectorToMouse.getX(), vectorToMouse.getY()).angle() + 45;
+                    for (int i = 0; i < 7; i++) {
+                        Vec2 vec = Vec2.fromAngle(baseAngle);
+                        spawnBullet(position, new Point2D(vec.x, vec.y));
+
+                        baseAngle += 45;
+                    }
+                    break;
+
+                case NORMAL:
+                    default:
+                    break;
+            }
+
+            weaponTimer.capture();
+        }
+    }
+
+    private GameEntity spawnBullet(Point2D position, Point2D direction) {
+        return (GameEntity) FXGL.getApp().getGameWorld().spawn("Bullet",
+                new SpawnData(position.getX(), position.getY())
+                        .put("direction", direction)
+        );
     }
 
     public void left() {
