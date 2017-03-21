@@ -2,6 +2,7 @@ package com.almasb.td;
 
 import com.almasb.fxgl.annotation.SetEntityFactory;
 import com.almasb.fxgl.annotation.Spawns;
+import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.GameEntity;
@@ -10,6 +11,7 @@ import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.td.control.EnemyControl;
 import com.almasb.td.control.TowerControl;
+import com.almasb.td.tower.TowerDataComponent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -32,11 +34,21 @@ public class TowerDefenseFactory implements EntityFactory {
 
     @Spawns("Tower")
     public GameEntity spawnTower(SpawnData data) {
+        TowerDataComponent towerComponent;
+        try {
+            towerComponent = FXGL.getAssetLoader()
+                    .loadKV("Tower" + data.get("index") + ".kv")
+                    .to(TowerDataComponent.class);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse KV file: " + e);
+        }
+
         return Entities.builder()
-                //.type(TowerDefenseType.ENEMY)
+                .type(TowerDefenseType.TOWER)
                 .from(data)
-                .viewFromNode(new Rectangle(40, 40, Color.BLACK))
-                //.with(new CollidableComponent(true))
+                .viewFromNode(new Rectangle(40, 40, data.get("color")))
+                .with(new CollidableComponent(true), towerComponent)
                 .with(new TowerControl())
                 .build();
     }
