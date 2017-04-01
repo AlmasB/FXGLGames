@@ -24,6 +24,16 @@ import javafx.util.Duration;
 @SetEntityFactory
 public class GeoWarsFactory implements EntityFactory {
 
+    private GeoWarsConfig config;
+
+    public GeoWarsFactory() {
+        try {
+            config = FXGL.getAssetLoader().loadKV("config.kv").to(GeoWarsConfig.class);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Failed to parse KV file: " + e);
+        }
+    }
+
     /**
      * These correspond to top-left, top-right, bottom-right, bottom-left.
      */
@@ -72,25 +82,35 @@ public class GeoWarsFactory implements EntityFactory {
 
     @Spawns("Wanderer")
     public GameEntity spawnWanderer(SpawnData data) {
+        boolean red = FXGLMath.randomBoolean((float)config.getRedEnemyChance());
+
+        int moveSpeed = red ? config.getRedEnemyMoveSpeed()
+                : FXGLMath.random(100, config.getWandererMaxMoveSpeed());
+
         return Entities.builder()
                 .type(GeoWarsType.WANDERER)
                 .at(getRandomSpawnPoint())
-                .viewFromTextureWithBBox("Wanderer.png")
-                .with(new HPComponent(1), new CollidableComponent(true))
-                .with(new WandererControl())
+                .viewFromTextureWithBBox(red ? "RedWanderer.png" : "Wanderer.png")
+                .with(new HPComponent(red ? config.getRedEnemyHealth() : config.getEnemyHealth()),
+                        new CollidableComponent(true))
+                .with(new WandererControl(moveSpeed))
                 .build();
     }
 
     @Spawns("Seeker")
     public GameEntity spawnSeeker(SpawnData data) {
-        boolean red = FXGLMath.randomBoolean(0.25f);
+        boolean red = FXGLMath.randomBoolean((float)config.getRedEnemyChance());
+
+        int moveSpeed = red ? config.getRedEnemyMoveSpeed()
+                : FXGLMath.random(150, config.getSeekerMaxMoveSpeed());
 
         return Entities.builder()
                 .type(GeoWarsType.SEEKER)
                 .at(getRandomSpawnPoint())
                 .viewFromTextureWithBBox(red ? "RedSeeker.png" : "Seeker.png")
-                .with(new HPComponent(red ? 3 : 1), new CollidableComponent(true))
-                .with(new SeekerControl(FXGL.<GeoWarsApp>getAppCast().getPlayer()))
+                .with(new HPComponent(red ? config.getRedEnemyHealth() : config.getEnemyHealth()),
+                        new CollidableComponent(true))
+                .with(new SeekerControl(FXGL.<GeoWarsApp>getAppCast().getPlayer(), moveSpeed))
                 .build();
     }
 

@@ -36,15 +36,16 @@ import javafx.geometry.Point2D;
  */
 public class SeekerControl extends AbstractControl {
 
-    private static final int MOVE_SPEED = 250;
-
     // TODO: use Vec2 to avoid GC
     private Point2D velocity = Point2D.ZERO;
     private GameEntity player;
     private GameEntity seeker;
 
-    public SeekerControl(GameEntity player) {
+    private int moveSpeed;
+
+    public SeekerControl(GameEntity player, int moveSpeed) {
         this.player = player;
+        this.moveSpeed = moveSpeed;
     }
 
     @Override
@@ -62,7 +63,7 @@ public class SeekerControl extends AbstractControl {
         Point2D directionToPlayer = player.getCenter()
                 .subtract(seeker.getCenter())
                 .normalize()
-                .multiply(MOVE_SPEED);
+                .multiply(moveSpeed);
 
         velocity = velocity.add(directionToPlayer).multiply(tpf);
 
