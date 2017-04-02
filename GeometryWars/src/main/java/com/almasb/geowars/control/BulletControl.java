@@ -26,17 +26,28 @@
 
 package com.almasb.geowars.control;
 
+import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.ecs.AbstractControl;
 import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
+import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.entity.control.ProjectileControl;
+import com.almasb.fxgl.texture.Texture;
 import com.almasb.geowars.grid.Grid;
 import javafx.geometry.Point2D;
+import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class BulletControl extends AbstractControl {
+
+    static {
+        ExhaustParticleControl.colorImage(Color.GOLD);
+    }
 
     private BoundingBoxComponent bbox;
 
@@ -56,5 +67,13 @@ public class BulletControl extends AbstractControl {
     @Override
     public void onUpdate(Entity entity, double tpf) {
         grid.applyExplosiveForce(velocity.magnitude() / 60 * 18, bbox.getCenterWorld(), 80 * 60 * tpf);
+
+        if (bbox.getMinXWorld() < 0) {
+            Entities.builder()
+                    .at(0, bbox.getCenterWorld().getY())
+                    .viewFromNode(new Texture(ExhaustParticleControl.coloredImages.get(Color.GOLD)))
+                    .with(new ProjectileControl(new Point2D(1, FXGLMath.random(-1, 1)), 100), new ExpireCleanControl(Duration.seconds(1.2)))
+                    .buildAndAttach(FXGL.getApp().getGameWorld());
+        }
     }
 }

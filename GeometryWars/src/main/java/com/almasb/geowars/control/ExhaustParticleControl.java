@@ -45,7 +45,7 @@ import static java.lang.Math.min;
 public class ExhaustParticleControl extends AbstractControl {
 
     private static final Image PARTICLE_IMAGE;
-    private static final ObjectMap<Color, Image> coloredImages = new ObjectMap<>();
+    public static final ObjectMap<Color, Image> coloredImages = new ObjectMap<>();
 
     static {
         PARTICLE_IMAGE = FXGL.getAssetLoader().loadTexture("Glow.png").getImage();
@@ -63,11 +63,12 @@ public class ExhaustParticleControl extends AbstractControl {
         this.color = color;
 
         if (!coloredImages.containsKey(color)) {
-            colorImage();
+            colorImage(color);
         }
     }
 
-    private void colorImage() {
+    // TODO: this will be removed, FXGL 0.3.1+ supports colorization
+    public static void colorImage(Color color) {
         int w = (int) PARTICLE_IMAGE.getWidth();
         int h = (int) PARTICLE_IMAGE.getHeight();
 
