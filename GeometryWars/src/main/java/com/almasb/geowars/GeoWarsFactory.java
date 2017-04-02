@@ -34,14 +34,16 @@ public class GeoWarsFactory implements EntityFactory {
         }
     }
 
+    private static final int SPAWN_DISTANCE = 50;
+
     /**
      * These correspond to top-left, top-right, bottom-right, bottom-left.
      */
     private Point2D[] spawnPoints = new Point2D[] {
-            new Point2D(50, 50),
-            new Point2D(FXGL.getApp().getWidth() - 50, 50),
-            new Point2D(FXGL.getApp().getWidth() - 50, FXGL.getApp().getHeight() - 50),
-            new Point2D(50, FXGL.getApp().getHeight() - 50)
+            new Point2D(SPAWN_DISTANCE, SPAWN_DISTANCE),
+            new Point2D(FXGL.getApp().getWidth() - SPAWN_DISTANCE, SPAWN_DISTANCE),
+            new Point2D(FXGL.getApp().getWidth() - SPAWN_DISTANCE, FXGL.getApp().getHeight() - SPAWN_DISTANCE),
+            new Point2D(SPAWN_DISTANCE, FXGL.getApp().getHeight() - SPAWN_DISTANCE)
     };
 
     private Point2D getRandomSpawnPoint() {

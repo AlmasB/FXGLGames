@@ -42,6 +42,7 @@ import com.almasb.geowars.component.OldPositionComponent;
 import com.almasb.geowars.control.GraphicsUpdateControl;
 import com.almasb.geowars.control.PlayerControl;
 import com.almasb.geowars.grid.Grid;
+import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
@@ -78,7 +79,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("FXGL Geometry Wars");
-        settings.setVersion("0.6");
+        settings.setVersion("0.6.5");
         settings.setFullScreen(false);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
@@ -259,6 +260,21 @@ public class GeoWarsApp extends GameApplication {
         getGameScene().addUINodes(scoreText, timerText, timerCircle, weaponMenu);
 
         weaponMenu.close();
+
+        Text beware = getUIFactory().newText("Beware! Seekers get smarter every time!", Color.AQUA, 24);
+        beware.setTranslateX(getWidth() / 2 - beware.getLayoutBounds().getWidth() / 2);
+        beware.setTranslateY(getHeight() / 2);
+        beware.setOpacity(0);
+
+        getGameScene().addUINode(beware);
+
+        FadeTransition ft = new FadeTransition(Duration.seconds(2), beware);
+        ft.setCycleCount(2);
+        ft.setAutoReverse(true);
+        ft.setFromValue(0);
+        ft.setToValue(1);
+        ft.setOnFinished(e -> getGameScene().removeUINode(beware));
+        ft.play();
     }
 
     @Override
