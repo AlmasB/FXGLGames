@@ -126,4 +126,15 @@ public class GeoWarsFactory implements EntityFactory {
                 .with(new ExpireCleanControl(Duration.seconds(1.8)))
                 .build();
     }
+
+    @Spawns("Crystal")
+    public GameEntity spawnCrystal(SpawnData data) {
+        return Entities.builder()
+                .type(GeoWarsType.CRYSTAL)
+                .from(data)
+                .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("YellowCrystal.png").toAnimatedTexture(8, Duration.seconds(1)))
+                .with(new CollidableComponent(true))
+                .with(new ExpireCleanControl(Duration.seconds(10)))
+                .build();
+    }
 }

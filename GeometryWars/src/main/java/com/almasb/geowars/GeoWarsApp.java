@@ -85,7 +85,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setMenuEnabled(false);
         settings.setProfilingEnabled(false);
         settings.setCloseConfirmation(false);
-        settings.setApplicationMode(ApplicationMode.RELEASE);
+        settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
     @Override
@@ -161,6 +161,7 @@ public class GeoWarsApp extends GameApplication {
 
         getMasterTimer().runAtInterval(() -> getGameWorld().spawn("Wanderer"), Duration.seconds(1));
         getMasterTimer().runAtInterval(() -> getGameWorld().spawn("Seeker"), Duration.seconds(2));
+        getMasterTimer().runAtInterval(() -> getGameWorld().spawn("Crystal", getRandomPoint()), Duration.seconds(4));
         getMasterTimer().runAtInterval(() -> getGameState().increment("time", -1), Duration.seconds(1));
 
         getAudioPlayer().playMusic("bgm.mp3");
