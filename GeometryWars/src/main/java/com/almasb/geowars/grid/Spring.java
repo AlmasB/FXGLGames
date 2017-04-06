@@ -29,8 +29,6 @@ package com.almasb.geowars.grid;
 import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.core.pool.Pools;
 import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.entity.GameWorld;
-import javafx.geometry.Point2D;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -44,8 +42,7 @@ public class Spring {
     private final float stiffness;
     private final float damping;
 
-    public Spring(PointMass end1, PointMass end2, double stiffness, double damping,
-                  boolean visible, Entity defaultLine, GameWorld world) {
+    public Spring(PointMass end1, PointMass end2, double stiffness, double damping, boolean visible, Entity gridEntity) {
         this.end1 = end1;
         this.end2 = end2;
         this.stiffness = (float) stiffness;
@@ -53,8 +50,7 @@ public class Spring {
         lengthAtRest = end1.getPosition().distance(end2.getPosition().x, end2.getPosition().y) * 0.95f;
 
         if (visible) {
-            defaultLine.addControl(new LineControl(end1, end2));
-            world.addEntity(defaultLine);
+            gridEntity.getControlUnsafe(GridControl.class).addControl(new LineControl(end1, end2));
         }
     }
 

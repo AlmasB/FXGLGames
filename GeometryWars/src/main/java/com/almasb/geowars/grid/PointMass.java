@@ -27,7 +27,6 @@
 package com.almasb.geowars.grid;
 
 import com.almasb.fxgl.core.math.Vec2;
-import javafx.geometry.Point2D;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)

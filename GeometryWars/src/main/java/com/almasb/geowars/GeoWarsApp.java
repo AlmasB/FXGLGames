@@ -31,7 +31,6 @@ import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.GameEntity;
-import com.almasb.fxgl.entity.RenderLayer;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
@@ -298,21 +297,20 @@ public class GeoWarsApp extends GameApplication {
     }
 
     private void initBackground() {
-        EntityView backgroundView = new EntityView(getAssetLoader().loadTexture("background.png"), RenderLayer.BACKGROUND);
+        EntityView backgroundView = new EntityView(getAssetLoader().loadTexture("background.png", getWidth(), getHeight()));
         getGameScene().addGameView(backgroundView);
 
         Canvas canvas = new Canvas(getWidth(), getHeight());
         canvas.getGraphicsContext2D().setStroke(new Color(0.118, 0.118, 0.545, 1));
 
-        GameEntity e = new GameEntity();
-        e.addComponent(new GraphicsComponent(canvas.getGraphicsContext2D()));
-        e.addControl(new GraphicsUpdateControl());
-        e.getViewComponent().setView(canvas);
+        Entities.builder()
+                .viewFromNode(canvas)
+                .with(new GraphicsComponent(canvas.getGraphicsContext2D()))
+                .with(new GraphicsUpdateControl())
+                .buildAndAttach(getGameWorld());
 
-        getGameWorld().addEntity(e);
-
-        Rectangle size = new Rectangle(0, 0, 1280, 720);
-        Point2D spacing = new Point2D(40, 40);
+        Rectangle size = new Rectangle(0, 0, getWidth(), getHeight());
+        Point2D spacing = new Point2D(38.8, 40);
 
         grid = new Grid(size, spacing, getGameWorld(), canvas.getGraphicsContext2D());
     }

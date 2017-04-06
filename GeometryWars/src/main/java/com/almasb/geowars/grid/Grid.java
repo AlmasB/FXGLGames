@@ -33,13 +33,10 @@ import com.almasb.fxgl.entity.GameWorld;
 import com.almasb.geowars.component.GraphicsComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -53,14 +50,10 @@ public class Grid {
     private List<Spring> springs = new ArrayList<>();
     private PointMass[][] points;
 
-    private GraphicsContext g;
-
     public Grid(Rectangle size, Point2D spacing, GameWorld world, GraphicsContext g) {
         int numColumns = (int) (size.getWidth() / spacing.getX()) + 2;
         int numRows = (int) (size.getHeight() / spacing.getY()) + 2;
         points = new PointMass[numColumns][numRows];
-
-        this.g = g;
 
         PointMass[][] fixedPoints = new PointMass[numColumns][numRows];
 
@@ -76,53 +69,41 @@ public class Grid {
             xCoord = 0;
         }
 
+        Entity gridEntity = new Entity();
+        gridEntity.addComponent(new GraphicsComponent(g));
+        gridEntity.addControl(new GridControl());
+
         // link the point masses with springs
         for (int y = 0; y < numRows; y++) {
             for (int x = 0; x < numColumns; x++) {
                 if (x == 0 || y == 0 || x == numColumns - 1 || y == numRows - 1) {
-                    springs.add(new Spring(fixedPoints[x][y], points[x][y], 0.5, 0.1, false, null, world));
+                    springs.add(new Spring(fixedPoints[x][y], points[x][y], 0.5, 0.1, false, null));
                 } else if (x % 3 == 0 && y % 3 == 0) {
-                    springs.add(new Spring(fixedPoints[x][y], points[x][y], 0.005, 0.02, false, null, world));
+                    springs.add(new Spring(fixedPoints[x][y], points[x][y], 0.005, 0.02, false, null));
                 }
 
                 if (x > 0) {
-                    springs.add(new Spring(points[x - 1][y], points[x][y], SPRING_STIFFNESS, SPRING_DAMPING, true,
-                            createLine(y % 3 == 0 ? 3 : 1), world));
+                    springs.add(new Spring(points[x - 1][y], points[x][y], SPRING_STIFFNESS, SPRING_DAMPING, true, gridEntity));
                 }
 
                 if (y > 0) {
-                    springs.add(new Spring(points[x][y - 1], points[x][y], SPRING_STIFFNESS, SPRING_DAMPING, true,
-                            createLine(x % 3 == 0 ? 3 : 1), world));
+                    springs.add(new Spring(points[x][y - 1], points[x][y], SPRING_STIFFNESS, SPRING_DAMPING, true, gridEntity));
                 }
 
                 // add additional lines
                 if (x > 0 && y > 0) {
-                    Entity additionalLine = createLine(1);
-                    additionalLine.addControl(new AdditionalLineControl(
+                    gridEntity.getControlUnsafe(GridControl.class).addControl(new AdditionalLineControl(
                             points[x - 1][y], points[x][y],
                             points[x - 1][y - 1], points[x][y - 1]));
-                    world.addEntity(additionalLine);
 
-                    Entity additionalLine2 = createLine(1);
-                    additionalLine2.addControl(new AdditionalLineControl(
+                    gridEntity.getControlUnsafe(GridControl.class).addControl(new AdditionalLineControl(
                             points[x][y - 1], points[x][y],
                             points[x - 1][y - 1], points[x - 1][y]));
-                    world.addEntity(additionalLine2);
                 }
             }
         }
-    }
 
-    private Entity createLine(float thickness) {
-        Entity entity = new Entity();
-
-        Line line = new Line(0, 0, 1, 0);
-        line.setStrokeWidth(thickness);
-        line.setStroke(new Color(0.118, 0.118, 0.545, 0.65));
-
-        entity.addComponent(new GraphicsComponent(g));
-
-        return entity;
+        world.addEntity(gridEntity);
     }
 
     public void update() {

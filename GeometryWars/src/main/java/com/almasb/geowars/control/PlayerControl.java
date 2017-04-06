@@ -3,7 +3,6 @@ package com.almasb.geowars.control;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.core.pool.Pools;
 import com.almasb.fxgl.ecs.AbstractControl;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
