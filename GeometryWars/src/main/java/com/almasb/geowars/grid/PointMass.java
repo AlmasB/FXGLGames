@@ -26,6 +26,7 @@
 
 package com.almasb.geowars.grid;
 
+import com.almasb.fxgl.core.math.Vec2;
 import javafx.geometry.Point2D;
 
 /**
@@ -33,42 +34,27 @@ import javafx.geometry.Point2D;
  */
 public class PointMass {
 
-    private Point2D position;
-    private Point2D velocity = Point2D.ZERO;
-    private Point2D acceleration = Point2D.ZERO;
+    private Vec2 position;
+    private Vec2 velocity = new Vec2();
+    private Vec2 acceleration = new Vec2();
 
-    private final double initialDamping;
-    private double damping;
-    private double inverseMass;
+    private final float initialDamping;
+    private float damping;
+    private float inverseMass;
 
-    public PointMass(Point2D position, double damping, double inverseMass) {
+    public PointMass(Vec2 position, double damping, double inverseMass) {
         this.position = position;
-        this.damping = damping;
-        this.initialDamping = damping;
-        this.inverseMass = inverseMass;
+        this.damping = (float) damping;
+        this.initialDamping = (float) damping;
+        this.inverseMass = (float) inverseMass;
     }
 
-    public void applyForce(Point2D force) {
-        acceleration = acceleration.add(force.multiply(inverseMass));
+    public void applyForce(Vec2 force) {
+        acceleration.addLocal(force.mul(inverseMass));
     }
 
     public void increaseDamping(double factor) {
         damping *= factor;
-    }
-
-    private void applyAcceleration() {
-        velocity = velocity.add(acceleration.multiply(1));
-        acceleration = Point2D.ZERO;
-    }
-
-    private void applyVelocity() {
-        position = position.add(velocity.multiply(0.6));
-
-        if (velocity.magnitude() * velocity.magnitude() < 0.0001) {
-            velocity = Point2D.ZERO;
-        }
-
-        velocity = velocity.multiply(damping);
     }
 
     public void update() {
@@ -78,11 +64,26 @@ public class PointMass {
         damping = initialDamping;
     }
 
-    public Point2D getPosition() {
+    public Vec2 getPosition() {
         return position;
     }
 
-    public Point2D getVelocity() {
+    public Vec2 getVelocity() {
         return velocity;
+    }
+
+    private void applyAcceleration() {
+        velocity = velocity.add(acceleration);
+        acceleration.setZero();
+    }
+
+    private void applyVelocity() {
+        position.addLocal(velocity.mul(0.6f));
+
+        if (velocity.lengthSquared() < 0.0001) {
+            velocity.setZero();
+        }
+
+        velocity.mulLocal(damping);
     }
 }

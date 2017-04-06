@@ -26,6 +26,7 @@
 
 package com.almasb.geowars.grid;
 
+import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.ecs.AbstractControl;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.geowars.component.GraphicsComponent;
@@ -40,6 +41,9 @@ public class AdditionalLineControl extends AbstractControl {
     private PointMass end11, end12, end21, end22;
     private GraphicsContext g;
 
+    private Vec2 position1 = new Vec2();
+    private Vec2 position2 = new Vec2();
+
     public AdditionalLineControl(PointMass end11, PointMass end12,
                                  PointMass end21, PointMass end22) {
         this.end11 = end11;
@@ -53,17 +57,14 @@ public class AdditionalLineControl extends AbstractControl {
         g = entity.getComponentUnsafe(GraphicsComponent.class).getValue();
     }
 
-    private Point2D position1() {
-        return end11.getPosition().midpoint(end12.getPosition());
-    }
-
-    private Point2D position2() {
-        return end21.getPosition().midpoint(end22.getPosition());
-    }
-
     @Override
     public void onUpdate(Entity entity, double tpf) {
-        g.strokeLine(position1().getX(), position1().getY(),
-                position2().getX(), position2().getY());
+        position1.x = end11.getPosition().x + (end12.getPosition().x - end11.getPosition().x) / 2;
+        position1.y = end11.getPosition().y + (end12.getPosition().y - end11.getPosition().y) / 2;
+
+        position2.x = end21.getPosition().x + (end22.getPosition().x - end21.getPosition().x) / 2;
+        position2.y = end21.getPosition().y + (end22.getPosition().y - end21.getPosition().y) / 2;
+
+        g.strokeLine(position1.x, position1.y, position2.x, position2.y);
     }
 }

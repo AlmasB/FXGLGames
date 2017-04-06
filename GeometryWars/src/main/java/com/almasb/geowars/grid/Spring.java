@@ -26,6 +26,8 @@
 
 package com.almasb.geowars.grid;
 
+import com.almasb.fxgl.core.math.Vec2;
+import com.almasb.fxgl.core.pool.Pools;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.GameWorld;
 import javafx.geometry.Point2D;
@@ -37,18 +39,18 @@ public class Spring {
     private final PointMass end1;
     private final PointMass end2;
 
-    private final double lengthAtRest;
+    private final float lengthAtRest;
 
-    private final double stiffness;
-    private final double damping;
+    private final float stiffness;
+    private final float damping;
 
     public Spring(PointMass end1, PointMass end2, double stiffness, double damping,
                   boolean visible, Entity defaultLine, GameWorld world) {
         this.end1 = end1;
         this.end2 = end2;
-        this.stiffness = stiffness;
-        this.damping = damping / 10;
-        lengthAtRest = end1.getPosition().distance(end2.getPosition()) * 0.95f;
+        this.stiffness = (float) stiffness;
+        this.damping = (float) damping / 10;
+        lengthAtRest = end1.getPosition().distance(end2.getPosition().x, end2.getPosition().y) * 0.95f;
 
         if (visible) {
             defaultLine.addControl(new LineControl(end1, end2));
@@ -57,19 +59,29 @@ public class Spring {
     }
 
     public void update() {
-        Point2D currentVector = end1.getPosition().subtract(end2.getPosition());
-        double currentLength = currentVector.magnitude();
+        Vec2 current = Pools.obtain(Vec2.class)
+                .set(end1.getPosition())
+                .subLocal(end2.getPosition());
+
+        float currentLength = current.length();
 
         if (currentLength > lengthAtRest) {
-            Point2D dv = end2.getVelocity().subtract(end1.getVelocity());
+            Vec2 dv = Pools.obtain(Vec2.class)
+                    .set(end2.getVelocity())
+                    .subLocal(end1.getVelocity())
+                    .mulLocal(damping);
 
-            Point2D force = currentVector.normalize()
-                    .multiply(currentLength - lengthAtRest)
-                    .multiply(stiffness)
-                    .subtract(dv.multiply(damping));
+            Vec2 force = current.normalizeLocal()
+                    .mulLocal(currentLength - lengthAtRest)
+                    .mulLocal(stiffness)
+                    .subLocal(dv);
 
-            end1.applyForce(force.multiply(-1));
             end2.applyForce(force);
+            end1.applyForce(force.negateLocal());
+
+            Pools.free(dv);
         }
+
+        Pools.free(current);
     }
 }

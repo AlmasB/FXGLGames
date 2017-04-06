@@ -45,8 +45,11 @@ import javafx.util.Duration;
  */
 public class BulletControl extends AbstractControl {
 
+    private static final Color PARTICLE_COLOR = Color.YELLOW.brighter();
+    private static final Duration PARTICLE_DURATION = Duration.seconds(1.2);
+
     static {
-        ExhaustParticleControl.colorImage(Color.GOLD);
+        ExhaustParticleControl.colorImage(PARTICLE_COLOR);
     }
 
     private BoundingBoxComponent bbox;
@@ -69,11 +72,24 @@ public class BulletControl extends AbstractControl {
         grid.applyExplosiveForce(velocity.magnitude() / 60 * 18, bbox.getCenterWorld(), 80 * 60 * tpf);
 
         if (bbox.getMinXWorld() < 0) {
-            Entities.builder()
-                    .at(0, bbox.getCenterWorld().getY())
-                    .viewFromNode(new Texture(ExhaustParticleControl.coloredImages.get(Color.GOLD)))
-                    .with(new ProjectileControl(new Point2D(1, FXGLMath.random(-1, 1)), 100), new ExpireCleanControl(Duration.seconds(1.2)))
-                    .buildAndAttach(FXGL.getApp().getGameWorld());
+            spawnParticles(0, bbox.getCenterWorld().getY(), 1, FXGLMath.random(-1.0f, 1.0f));
+
+        } else if (bbox.getMaxXWorld() > FXGL.getApp().getWidth()) {
+            spawnParticles(FXGL.getApp().getWidth(), bbox.getCenterWorld().getY(), -1, FXGLMath.random(-1.0f, 1.0f));
+
+        } else if (bbox.getMinYWorld() < 0) {
+            spawnParticles(bbox.getCenterWorld().getX(), 0, FXGLMath.random(-1.0f, 1.0f), 1);
+
+        } else if (bbox.getMaxYWorld() > FXGL.getApp().getHeight()) {
+            spawnParticles(bbox.getCenterWorld().getX(), FXGL.getApp().getHeight(), FXGLMath.random(-1.0f, 1.0f), -1);
         }
+    }
+
+    private void spawnParticles(double x, double y, double dirX, double dirY) {
+        Entities.builder()
+                .at(x, y)
+                .viewFromNode(new Texture(ExhaustParticleControl.coloredImages.get(PARTICLE_COLOR)))
+                .with(new ProjectileControl(new Point2D(dirX, dirY), FXGLMath.random(15, 40)), new ExpireCleanControl(PARTICLE_DURATION))
+                .buildAndAttach(FXGL.getApp().getGameWorld());
     }
 }

@@ -26,6 +26,8 @@
 
 package com.almasb.geowars.grid;
 
+import com.almasb.fxgl.core.math.Vec2;
+import com.almasb.fxgl.core.pool.Pools;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.GameWorld;
 import com.almasb.geowars.component.GraphicsComponent;
@@ -66,8 +68,8 @@ public class Grid {
         float xCoord = 0, yCoord = 0;
         for (int row = 0; row < numRows; row++) {
             for (int column = 0; column < numColumns; column++) {
-                points[column][row] = new PointMass(new Point2D(xCoord, yCoord), POINT_MASS_DAMPING, 1);
-                fixedPoints[column][row] = new PointMass(new Point2D(xCoord, yCoord), POINT_MASS_DAMPING, 0);
+                points[column][row] = new PointMass(new Vec2(xCoord, yCoord), POINT_MASS_DAMPING, 1);
+                fixedPoints[column][row] = new PointMass(new Vec2(xCoord, yCoord), POINT_MASS_DAMPING, 0);
                 xCoord += spacing.getX();
             }
             yCoord += spacing.getY();
@@ -133,45 +135,51 @@ public class Grid {
         }
     }
 
-    public void applyDirectedForce(Point2D force, Point2D position, float radius) {
-        for (int x = 0; x < points.length; x++) {
-            for (int y = 0; y < points[0].length; y++) {
-                if (position.distance(points[x][y].getPosition()) * position.distance(points[x][y].getPosition())
-                        < radius * radius) {
-                    double forceFactor = 10 / (10 + position.distance(points[x][y].getPosition()));
-                    points[x][y].applyForce(force.multiply(forceFactor));
-                }
-            }
-        }
-    }
-
-    public void applyImplosiveForce(double force, Point2D position, float radius) {
-        for (int x = 0; x < points.length; x++) {
-            for (int y = 0; y < points[0].length; y++) {
-                double dist = position.distance(points[x][y].getPosition());
-                dist *= dist;
-                if (dist < radius * radius) {
-                    Point2D forceVec = position.subtract(points[x][y].getPosition());
-                    forceVec = forceVec.multiply(1f * force / (100 + dist));
-                    points[x][y].applyForce(forceVec);
-                    points[x][y].increaseDamping(0.6f);
-                }
-            }
-        }
-    }
+//    public void applyDirectedForce(Point2D force, Point2D position, float radius) {
+//        for (int x = 0; x < points.length; x++) {
+//            for (int y = 0; y < points[0].length; y++) {
+//                if (position.distance(points[x][y].getPosition()) * position.distance(points[x][y].getPosition())
+//                        < radius * radius) {
+//                    double forceFactor = 10 / (10 + position.distance(points[x][y].getPosition()));
+//                    points[x][y].applyForce(force.multiply(forceFactor));
+//                }
+//            }
+//        }
+//    }
+//
+//    public void applyImplosiveForce(double force, Point2D position, float radius) {
+//        for (int x = 0; x < points.length; x++) {
+//            for (int y = 0; y < points[0].length; y++) {
+//                double dist = position.distance(points[x][y].getPosition());
+//                dist *= dist;
+//                if (dist < radius * radius) {
+//                    Point2D forceVec = position.subtract(points[x][y].getPosition());
+//                    forceVec = forceVec.multiply(1f * force / (100 + dist));
+//                    points[x][y].applyForce(forceVec);
+//                    points[x][y].increaseDamping(0.6f);
+//                }
+//            }
+//        }
+//    }
 
     public void applyExplosiveForce(double force, Point2D position, double radius) {
+        Vec2 tmpVec = Pools.obtain(Vec2.class);
+
         for (int x = 0; x < points.length; x++) {
             for (int y = 0; y < points[0].length; y++) {
-                double dist = position.distance(points[x][y].getPosition());
+                double dist = position.distance(points[x][y].getPosition().x, points[x][y].getPosition().y);
                 dist *= dist;
+
                 if (dist < radius * radius) {
-                    Point2D forceVec = position.subtract(points[x][y].getPosition());
-                    forceVec = forceVec.multiply(-10f * force / (10000 + dist));
-                    points[x][y].applyForce(forceVec);
+                    tmpVec.set((float) position.getX(), (float) position.getY());
+                    tmpVec.subLocal(points[x][y].getPosition()).mulLocal((float) (-10f * force / (10000 + dist)));
+
+                    points[x][y].applyForce(tmpVec);
                     points[x][y].increaseDamping(0.6f);
                 }
             }
         }
+
+        Pools.free(tmpVec);
     }
 }

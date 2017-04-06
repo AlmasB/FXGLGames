@@ -42,7 +42,6 @@ import java.util.List;
 public class LineControl extends AbstractControl {
 
     private PointMass end1, end2;
-    private Line line;
     private GraphicsContext g;
 
     public LineControl(PointMass end1, PointMass end2) {
@@ -52,25 +51,12 @@ public class LineControl extends AbstractControl {
 
     @Override
     public void onAdded(Entity entity) {
-        entity.getComponent(ViewComponent.class).ifPresent(viewComponent -> {
-            List<Node> list = viewComponent.getView().getChildrenUnmodifiable();
-            if (!list.isEmpty()) {
-                line = (Line) list.get(0);
-            }
-        });
-
         g = entity.getComponentUnsafe(GraphicsComponent.class).getValue();
-        //assert line != null;
     }
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
-//        line.setStartX(end1.getPosition().getX());
-//        line.setStartY(end1.getPosition().getY());
-//        line.setEndX(end2.getPosition().getX());
-//        line.setEndY(end2.getPosition().getY());
-
-        g.strokeLine(end1.getPosition().getX(), end1.getPosition().getY(),
-                end2.getPosition().getX(), end2.getPosition().getY());
+        g.strokeLine(end1.getPosition().x, end1.getPosition().y,
+                end2.getPosition().x, end2.getPosition().y);
     }
 }

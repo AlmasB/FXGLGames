@@ -3,6 +3,7 @@ package com.almasb.geowars.control;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.math.Vec2;
+import com.almasb.fxgl.core.pool.Pools;
 import com.almasb.fxgl.ecs.AbstractControl;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
@@ -127,7 +128,7 @@ public class PlayerControl extends AbstractControl {
 
         Entities.builder()
                 .at(pos.x, pos.y)
-                .with(new ExhaustParticleControl(new Point2D(velMid.x, velMid.y), 800, midColor))
+                .with(new ExhaustParticleControl(velMid, 800, midColor))
                 .buildAndAttach(FXGL.getApp().getGameWorld());
 
         // side streams
@@ -139,12 +140,24 @@ public class PlayerControl extends AbstractControl {
 
         Entities.builder()
                 .at(pos.x, pos.y)
-                .with(new ExhaustParticleControl(new Point2D(velSide1.x, velSide1.y), 800, sideColor))
+                .with(new ExhaustParticleControl(velSide1, 800, sideColor))
                 .buildAndAttach(FXGL.getApp().getGameWorld());
 
         Entities.builder()
                 .at(pos.x, pos.y)
-                .with(new ExhaustParticleControl(new Point2D(velSide2.x, velSide2.y), 800, sideColor))
+                .with(new ExhaustParticleControl(velSide2, 800, sideColor))
                 .buildAndAttach(FXGL.getApp().getGameWorld());
+
+//        Pools.free(direction);
+//        Pools.free(position);
+//        Pools.free(baseVel);
+//        Pools.free(perpVel);
+//        Pools.free(pos);
+//        Pools.free(randVec);
+//        Pools.free(velMid);
+//        Pools.free(randVec1);
+//        Pools.free(randVec2);
+//        Pools.free(velSide1);
+//        Pools.free(velSide2);
     }
 }

@@ -29,7 +29,9 @@ import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.RenderLayer;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
@@ -79,11 +81,11 @@ public class GeoWarsApp extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("FXGL Geometry Wars");
-        settings.setVersion("0.6.5");
+        settings.setVersion("0.7");
         settings.setFullScreen(false);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
-        settings.setProfilingEnabled(false);
+        settings.setProfilingEnabled(true);
         settings.setCloseConfirmation(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
@@ -296,10 +298,8 @@ public class GeoWarsApp extends GameApplication {
     }
 
     private void initBackground() {
-        GameEntity bg = new GameEntity();
-        bg.getViewComponent().setTexture("background.png");
-
-        getGameWorld().addEntity(bg);
+        EntityView backgroundView = new EntityView(getAssetLoader().loadTexture("background.png"), RenderLayer.BACKGROUND);
+        getGameScene().addGameView(backgroundView);
 
         Canvas canvas = new Canvas(getWidth(), getHeight());
         canvas.getGraphicsContext2D().setStroke(new Color(0.118, 0.118, 0.545, 1));
