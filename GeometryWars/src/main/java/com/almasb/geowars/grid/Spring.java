@@ -37,7 +37,7 @@ public class Spring {
     private final PointMass end1;
     private final PointMass end2;
 
-    private final float lengthAtRest;
+    private final double lengthAtRest;
 
     private final float stiffness;
     private final float damping;
