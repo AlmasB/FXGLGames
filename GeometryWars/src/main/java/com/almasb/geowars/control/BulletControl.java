@@ -89,7 +89,9 @@ public class BulletControl extends AbstractControl {
         Entities.builder()
                 .at(x, y)
                 .viewFromNode(new Texture(ExhaustParticleControl.coloredImages.get(PARTICLE_COLOR)))
-                .with(new ProjectileControl(new Point2D(dirX, dirY), FXGLMath.random(15, 40)), new ExpireCleanControl(PARTICLE_DURATION))
+                .with(new ProjectileControl(new Point2D(dirX, dirY), FXGLMath.random(150, 280)),
+                        new ExpireCleanControl(PARTICLE_DURATION),
+                        new ParticleControl())
                 .buildAndAttach(FXGL.getApp().getGameWorld());
     }
 }

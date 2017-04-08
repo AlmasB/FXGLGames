@@ -35,7 +35,6 @@ import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.texture.Texture;
 import javafx.scene.image.Image;
-import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
 import static java.lang.Math.min;
@@ -70,29 +69,8 @@ public class ExhaustParticleControl extends AbstractControl {
         }
     }
 
-    // TODO: this will be removed, FXGL 0.3.1+ supports colorization
     public static void colorImage(Color color) {
-        int w = (int) PARTICLE_IMAGE.getWidth();
-        int h = (int) PARTICLE_IMAGE.getHeight();
-
-        WritableImage coloredImage = new WritableImage(w, h);
-
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
-
-                Color c = PARTICLE_IMAGE.getPixelReader().getColor(x, y);
-                c = Color.color(
-                        c.getRed() * color.getRed(),
-                        c.getGreen() * color.getGreen(),
-                        c.getBlue() * color.getBlue(),
-                        c.getOpacity() * color.getOpacity()
-                );
-
-                coloredImage.getPixelWriter().setColor(x, y, c);
-            }
-        }
-
-        coloredImages.put(color, coloredImage);
+        coloredImages.put(color, new Texture(PARTICLE_IMAGE).toColor(color).getImage());
     }
 
     @Override
