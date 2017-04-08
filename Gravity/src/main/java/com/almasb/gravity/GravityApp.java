@@ -2,6 +2,8 @@ package com.almasb.gravity;
 
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.parser.LevelParser;
+import com.almasb.fxgl.parser.text.TextLevelParser;
 import com.almasb.fxgl.settings.GameSettings;
 
 /**
@@ -21,6 +23,12 @@ public class GravityApp extends GameApplication {
         settings.setProfilingEnabled(false);
         settings.setCloseConfirmation(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
+    }
+
+    @Override
+    protected void initGame() {
+        LevelParser levelParser = new TextLevelParser(getGameWorld().getEntityFactory());
+        getGameWorld().setLevel(levelParser.parse("levels/level0.txt"));
     }
 
     public static void main(String[] args) {
