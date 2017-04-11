@@ -35,7 +35,6 @@ import com.almasb.fxgl.entity.GameWorld;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
 import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.fxgl.service.ServiceType;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
 import javafx.util.Duration;
@@ -46,15 +45,22 @@ import javafx.util.Duration;
 public class EnemyControl extends AbstractControl {
 
     private LocalTimer attackTimer;
+    private LocalTimer moveTimer;
     private Duration nextAttack = Duration.seconds(2);
+    private Duration nextMove = Duration.seconds(2);
+
+    private boolean moveRight = true;
 
     private PositionComponent position;
     private BoundingBoxComponent bbox;
 
     @Override
     public void onAdded(Entity entity) {
-        attackTimer = FXGL.getService(ServiceType.LOCAL_TIMER);
+        attackTimer = FXGL.newLocalTimer();
         attackTimer.capture();
+
+        moveTimer = FXGL.newLocalTimer();
+        moveTimer.capture();
 
         bbox = Entities.getBBox(entity);
         position = Entities.getPosition(entity);
@@ -70,11 +76,19 @@ public class EnemyControl extends AbstractControl {
             attackTimer.capture();
         }
 
+        if (moveTimer.elapsed(nextMove)) {
+            moveRight = !moveRight;
+            moveTimer.capture();
+        }
+
         if (bbox.getMaxYWorld() >= FXGL.getApp().getHeight()) {
             FXGL.getEventBus().fireEvent(new GameEvent(GameEvent.ENEMY_REACHED_END));
             getEntity().removeFromWorld();
         }
 
+        double speed = tpf * 90 * (moveRight ? 1 : -1);
+
+        position.translateX(speed);
         position.translateY(tpf * 5);
     }
 

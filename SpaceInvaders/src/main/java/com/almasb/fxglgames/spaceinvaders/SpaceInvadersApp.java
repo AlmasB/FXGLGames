@@ -192,7 +192,7 @@ public class SpaceInvadersApp extends GameApplication {
 
         for (int y = 0; y < ENEMY_ROWS; y++) {
             for (int x = 0; x < ENEMIES_PER_ROW; x++) {
-                getGameWorld().spawn("Enemy", 90 + x*60, 150 + y*60);
+                getGameWorld().spawn("Enemy", x*60, 150 + 50 * getGameState().getInt("level") + y*60);
             }
         }
 
@@ -224,6 +224,11 @@ public class SpaceInvadersApp extends GameApplication {
 
         getGameState().setValue("enemiesKilled", 0);
         getGameState().increment("level", +1);
+
+        if (getGameState().getInt("level") == 3) {
+            showGameOver();
+            return;
+        }
 
         getGameWorld().spawn("LevelInfo");
 
@@ -369,7 +374,7 @@ public class SpaceInvadersApp extends GameApplication {
     }
 
     private void showGameOver() {
-        getDisplay().showConfirmationBox("Game Over. Continue?", yes -> {
+        getDisplay().showConfirmationBox("Demo Over. Play Again?", yes -> {
             if (yes) {
                 startNewGame();
             } else {
@@ -377,7 +382,7 @@ public class SpaceInvadersApp extends GameApplication {
                 int score = getGameState().getInt("score");
 
                 if (score > highScore) {
-                    getDisplay().showInputBox("Enter your name", playerName -> {
+                    getDisplay().showInputBox("High Score! Enter your name", playerName -> {
 
                         // we have to use file system directly, since we are running without menus
                         FS.writeDataTask(new SaveData(playerName, score), SAVE_DATA_NAME).execute();

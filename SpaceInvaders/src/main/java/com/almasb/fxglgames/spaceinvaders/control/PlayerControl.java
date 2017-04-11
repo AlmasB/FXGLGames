@@ -27,7 +27,6 @@
 package com.almasb.fxglgames.spaceinvaders.control;
 
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.ecs.AbstractControl;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.ecs.component.Required;
@@ -40,9 +39,7 @@ import com.almasb.fxgl.service.MasterTimer;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxglgames.spaceinvaders.Config;
 import com.almasb.fxglgames.spaceinvaders.component.InvincibleComponent;
-import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 /**
