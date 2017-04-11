@@ -59,6 +59,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+import java.util.Map;
+
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
@@ -75,7 +77,7 @@ public class BreakoutApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Breakout Underwater");
-        settings.setVersion("0.1");
+        settings.setVersion("0.2");
         settings.setWidth(600);
         settings.setHeight(800);
         settings.setIntroEnabled(false);
@@ -103,7 +105,9 @@ public class BreakoutApp extends GameApplication {
     }
 
     @Override
-    protected void initAssets() {}
+    protected void initGameVars(Map<String, Object> vars) {
+        vars.put("lives", 3);
+    }
 
     @Override
     protected void initGame() {
@@ -115,7 +119,6 @@ public class BreakoutApp extends GameApplication {
         TextLevelParser parser = new TextLevelParser(new BreakoutFactory());
         Level level = parser.parse("levels/level1.txt");
         getGameWorld().setLevel(level);
-
 
         getGameWorld().addEntity(Entities.makeScreenBounds(40));
 
@@ -149,8 +152,6 @@ public class BreakoutApp extends GameApplication {
         bubbles.addControl(new ParticleControl(emitter));
 
         getGameWorld().addEntity(bubbles);
-
-        // Level info
     }
 
     @Override
@@ -181,9 +182,6 @@ public class BreakoutApp extends GameApplication {
 
         transition.play();
     }
-
-    @Override
-    protected void onUpdate(double tpf) {}
 
     public static void main(String[] args) {
         launch(args);

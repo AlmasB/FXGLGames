@@ -29,6 +29,9 @@ package com.almasb.fxglgames.breakout;
 import com.almasb.fxgl.annotation.SpawnSymbol;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.effect.ParticleControl;
+import com.almasb.fxgl.effect.ParticleEmitter;
+import com.almasb.fxgl.effect.ParticleEmitters;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.TextEntityFactory;
@@ -39,6 +42,8 @@ import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxglgames.breakout.control.BallControl;
 import com.almasb.fxglgames.breakout.control.BatControl;
 import com.almasb.fxglgames.breakout.control.BrickControl;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 
@@ -83,13 +88,17 @@ public class BreakoutFactory implements TextEntityFactory {
         fd.setDensity(0.03f);
         physics.setFixtureDef(fd);
 
+        ParticleEmitter emitter = ParticleEmitters.newFireEmitter();
+        emitter.setNumParticles(5);
+        emitter.setEmissionRate(0.5);
+
         return Entities.builder()
                 .from(data)
                 .type(BreakoutType.BALL)
-                .bbox(new HitBox("Main", BoundingShape.circle(20)))
-                .viewFromNode(FXGL.getAssetLoader().loadTexture("ball.png", 40, 40))
+                .bbox(new HitBox("Main", BoundingShape.circle(10)))
+                .viewFromNode(new Circle(10, Color.LIGHTCORAL))
                 .with(physics, new CollidableComponent(true))
-                .with(new BallControl())
+                .with(new BallControl(), new ParticleControl(emitter))
                 .build();
     }
 
