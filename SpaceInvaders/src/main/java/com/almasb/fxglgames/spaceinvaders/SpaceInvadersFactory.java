@@ -37,6 +37,7 @@ import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.entity.control.ProjectileControl;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
+import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.service.AssetLoader;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxglgames.spaceinvaders.component.HPComponent;
@@ -50,9 +51,15 @@ import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
+import org.jbox2d.dynamics.BodyType;
+import org.jbox2d.dynamics.FixtureDef;
 
 import java.util.Random;
+
+import static com.almasb.fxglgames.spaceinvaders.Config.LEVEL_START_DELAY;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -263,5 +270,38 @@ public final class SpaceInvadersFactory implements EntityFactory {
         explosion.getView().setBlendMode(BlendMode.ADD);
 
         return explosion;
+    }
+
+    @Spawns("LevelInfo")
+    public Entity newLevelInfo(SpawnData data) {
+        Text levelText = FXGL.getUIFactory().newText("Level " + FXGL.getApp().getGameState().getInt("level"), Color.AQUAMARINE, 44);
+
+        PhysicsComponent pComponent = new PhysicsComponent();
+        pComponent.setBodyType(BodyType.DYNAMIC);
+        pComponent.setOnPhysicsInitialized(() -> pComponent.setLinearVelocity(0, 5));
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.setDensity(0.05f);
+        fixtureDef.setRestitution(0.3f);
+
+        pComponent.setFixtureDef(fixtureDef);
+
+        GameEntity levelInfo = Entities.builder()
+                .at(FXGL.getAppWidth() / 2 - levelText.getLayoutBounds().getWidth() / 2, 0)
+                .viewFromNodeWithBBox(levelText)
+                .with(pComponent)
+                .with(new ExpireCleanControl(Duration.seconds(LEVEL_START_DELAY)))
+                .build();
+
+        levelInfo.setOnActive(() -> {
+            Entities.builder()
+                    .at(0, FXGL.getAppHeight() / 2)
+                    .bbox(new HitBox("ground", BoundingShape.box(FXGL.getAppWidth(), 100)))
+                    .with(new PhysicsComponent())
+                    .with(new ExpireCleanControl(Duration.seconds(LEVEL_START_DELAY)))
+                    .buildAndAttach(FXGL.getApp().getGameWorld());
+        });
+
+        return levelInfo;
     }
 }

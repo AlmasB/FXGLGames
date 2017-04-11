@@ -27,16 +27,23 @@
 package com.almasb.fxglgames.spaceinvaders.control;
 
 import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.ecs.AbstractControl;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.ecs.component.Required;
-import com.almasb.fxgl.entity.GameWorld;
-import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
 import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.entity.component.ViewComponent;
+import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.service.MasterTimer;
+import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxglgames.spaceinvaders.Config;
 import com.almasb.fxglgames.spaceinvaders.component.InvincibleComponent;
+import javafx.geometry.Point2D;
+import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -81,11 +88,15 @@ public class PlayerControl extends AbstractControl {
     public void left() {
         if (position.getX() - dx >= 0)
             position.translateX(-dx);
+
+        spawnParticles();
     }
 
     public void right() {
         if (position.getX() + bbox.getWidth() + dx <= Config.WIDTH)
             position.translateX(dx);
+
+        spawnParticles();
     }
 
     public void shoot() {
@@ -116,5 +127,55 @@ public class PlayerControl extends AbstractControl {
 
     public void increaseAttackSpeed(double value) {
         attackSpeed += value;
+    }
+
+    private Image particle;
+
+    private void spawnParticles() {
+        if (particle == null) {
+            particle = FXGL.getAssetLoader()
+                    .loadTexture("player2.png", 40, 30)
+                    .getImage();
+        }
+
+        Texture t = new Texture(particle);
+
+        Entities.builder()
+                .at(bbox.getCenterWorld().subtract(particle.getWidth() / 2, particle.getHeight() / 2))
+                .viewFromNode(new EntityView(t, new RenderLayer() {
+                    @Override
+                    public String name() {
+                        return "PARTICLES";
+                    }
+
+                    @Override
+                    public int index() {
+                        return 5000;
+                    }
+                }))
+                .with(new ExpireCleanControl(Duration.seconds(0.33)), new OpacityControl())
+                .buildAndAttach(FXGL.getApp().getGameWorld());
+    }
+
+    private static class OpacityControl extends AbstractControl {
+
+        private ViewComponent view;
+        private double millis = 330;
+        private double current = 330;
+
+        @Override
+        public void onAdded(Entity entity) {
+            view = Entities.getView(entity);
+        }
+
+        @Override
+        public void onUpdate(Entity entity, double tpf) {
+            current -= 600 * tpf;
+
+            if (current < 0)
+                current = 0;
+
+            view.getView().setOpacity(current / millis);
+        }
     }
 }

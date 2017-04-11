@@ -31,18 +31,14 @@ import com.almasb.fxgl.annotation.OnUserAction;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.core.logging.Logger;
 import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.gameplay.Achievement;
 import com.almasb.fxgl.gameplay.AchievementManager;
 import com.almasb.fxgl.input.InputMapping;
 import com.almasb.fxgl.io.FS;
-import com.almasb.fxgl.logging.Logger;
-import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.service.Input;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.ui.UI;
@@ -51,17 +47,11 @@ import com.almasb.fxglgames.spaceinvaders.event.BonusPickupEvent;
 import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
 import com.almasb.fxglgames.spaceinvaders.tutorial.Tutorial;
 import com.almasb.fxglgames.spaceinvaders.tutorial.TutorialStep;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.CubicCurve;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
-import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.FixtureDef;
 
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -80,7 +70,7 @@ public class SpaceInvadersApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Space Invaders");
-        settings.setVersion("0.7.5");
+        settings.setVersion("0.8");
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
         settings.setIntroEnabled(false);
@@ -123,11 +113,6 @@ public class SpaceInvadersApp extends GameApplication {
 
     private GameEntity player;
     private PlayerControl playerControl;
-
-//    private IntegerProperty enemiesDestroyed;
-//    private IntegerProperty score;
-//    private IntegerProperty level;
-//    private IntegerProperty lives;
 
     private int highScore;
     private String highScoreName;
@@ -189,20 +174,6 @@ public class SpaceInvadersApp extends GameApplication {
         }, Duration.seconds(3));
     }
 
-    private void spawnEnemy() {
-        Entity enemy = getGameWorld().spawn("Enemy");
-
-        CubicCurve curve = new CubicCurve(0, 0,
-                getWidth() * 2, getHeight() / 3, -getWidth(), 2 * getHeight() / 3,
-                getWidth(), getHeight());
-
-        Entities.animationBuilder()
-                .duration(Duration.seconds(15))
-                .translate((GameEntity) enemy)
-                .alongPath(curve)
-                .buildAndPlay();
-    }
-
     private void spawnPlayer() {
         player = (GameEntity) getGameWorld().spawn("Player", getWidth() / 2 - 20, getHeight() - 40);
         playerControl = player.getControlUnsafe(PlayerControl.class);
@@ -219,12 +190,10 @@ public class SpaceInvadersApp extends GameApplication {
     private void initLevel() {
         log.debug("initLevel()");
 
-        int count = 0;
-        for (int i = 0; i < ENEMIES_PER_LEVEL; i++) {
-            final int d = count;
-            count++;
-
-            getMasterTimer().runOnceAfter(this::spawnEnemy, Duration.seconds(d * 3));
+        for (int y = 0; y < ENEMY_ROWS; y++) {
+            for (int x = 0; x < ENEMIES_PER_ROW; x++) {
+                getGameWorld().spawn("Enemy", 90 + x*60, 150 + y*60);
+            }
         }
 
         spawnWall(40, getHeight() - 100);
@@ -243,8 +212,6 @@ public class SpaceInvadersApp extends GameApplication {
                 SpaceInvadersType.BONUS,
                 SpaceInvadersType.WALL,
                 SpaceInvadersType.BULLET)
-                //.stream()
-                //.filter(Entity::isActive)
                 .forEach(Entity::removeFromWorld);
     }
 
@@ -258,31 +225,7 @@ public class SpaceInvadersApp extends GameApplication {
         getGameState().setValue("enemiesKilled", 0);
         getGameState().increment("level", +1);
 
-        Text levelText = getUIFactory().newText("Level " + getGameState().getInt("level"), Color.AQUAMARINE, 44);
-
-        GameEntity levelInfo = new GameEntity();
-        levelInfo.getPositionComponent().setValue(getWidth() / 2 - levelText.getLayoutBounds().getWidth() / 2, 0);
-        levelInfo.getViewComponent().setView(new EntityView(levelText), true);
-        levelInfo.addControl(new ExpireCleanControl(Duration.seconds(LEVEL_START_DELAY)));
-
-        PhysicsComponent pComponent = new PhysicsComponent();
-        pComponent.setBodyType(BodyType.DYNAMIC);
-        pComponent.setOnPhysicsInitialized(() -> pComponent.setLinearVelocity(0, 5));
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.setDensity(0.05f);
-        fixtureDef.setRestitution(0.3f);
-
-        pComponent.setFixtureDef(fixtureDef);
-        levelInfo.addComponent(pComponent);
-
-        GameEntity ground = new GameEntity();
-        ground.getPositionComponent().setY(getHeight() / 2);
-        ground.getViewComponent().setView(new EntityView(new Rectangle(getWidth(), 100, Color.TRANSPARENT)), true);
-        ground.addControl(new ExpireCleanControl(Duration.seconds(LEVEL_START_DELAY)));
-        ground.addComponent(new PhysicsComponent());
-
-        getGameWorld().addEntities(levelInfo, ground);
+        getGameWorld().spawn("LevelInfo");
 
         getMasterTimer().runOnceAfter(this::initLevel, Duration.seconds(LEVEL_START_DELAY));
 
