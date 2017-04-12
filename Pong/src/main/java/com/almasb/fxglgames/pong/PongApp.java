@@ -103,19 +103,13 @@ public class PongApp extends GameApplication {
 
         addFXGLListener(new FXGLListener() {
             @Override
-            public void onPause() {
-
-            }
+            public void onPause() {}
 
             @Override
-            public void onResume() {
-
-            }
+            public void onResume() {}
 
             @Override
-            public void onReset() {
-
-            }
+            public void onReset() {}
 
             @Override
             public void onExit() {
@@ -146,6 +140,18 @@ public class PongApp extends GameApplication {
             mode = getNet().getConnection().get() instanceof Server ? GameMode.MP_HOST : GameMode.MP_CLIENT;
         } else {
             mode = GameMode.SP;
+
+            getGameState().<Integer>addListener("player1score", (old, newScore) -> {
+                if (newScore == 11) {
+                    showGameOver("Player 1");
+                }
+            });
+
+            getGameState().<Integer>addListener("player2score", (old, newScore) -> {
+                if (newScore == 11) {
+                    showGameOver("Player 2");
+                }
+            });
         }
 
         factory = new PongFactory(mode);
@@ -186,7 +192,6 @@ public class PongApp extends GameApplication {
 
     @Override
     protected void onUpdate(double tpf) {
-
         if (mode == GameMode.MP_HOST) {
             getNet().getConnection().ifPresent(conn -> {
                 conn.send(new ServerMessage(new Vec2((float)ball.getX(), (float)ball.getY()), bat1.getY(), bat2.getY()));
@@ -271,6 +276,10 @@ public class PongApp extends GameApplication {
         } else {
             playerBat.stop();
         }
+    }
+
+    private void showGameOver(String winner) {
+        getDisplay().showMessageBox(winner + " won! Demo over\nThanks for playing", this::exit);
     }
 
     public static void main(String[] args) {
