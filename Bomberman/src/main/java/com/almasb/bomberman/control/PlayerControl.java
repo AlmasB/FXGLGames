@@ -76,13 +76,25 @@ public class PlayerControl extends AbstractControl {
     }
 
     private boolean canMove(Point2D direction) {
-        return !FXGL.getApp()
+        Point2D newPosition = position.getValue().add(direction);
+
+        return FXGL.getApp()
+                .getGameScene()
+                .getViewport()
+                .getVisibleArea()
+                .contains(newPosition)
+
+                &&
+
+                FXGL.getApp()
                 .getGameWorld()
-                .getEntityAt(position.getValue().add(direction))
-                .flatMap(e -> e.getComponent(TypeComponent.class))
+                .getEntitiesAt(newPosition)
+                .stream()
+                .filter(e -> e.hasComponent(TypeComponent.class))
+                .map(e -> e.getComponentUnsafe(TypeComponent.class))
                 .filter(type -> type.isType(BombermanType.BRICK)
                         || type.isType(BombermanType.WALL)
                         || type.isType(BombermanType.BOMB))
-                .isPresent();
+                .count() == 0;
     }
 }
