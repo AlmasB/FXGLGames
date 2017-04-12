@@ -1,9 +1,9 @@
 package com.almasb.flappy;
 
-import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.audio.Music;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.component.CollidableComponent;
@@ -14,17 +14,12 @@ import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.service.listener.FXGLListener;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.texture.Texture;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
-import javafx.scene.image.PixelReader;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -55,14 +50,6 @@ public class FlappyBirdApp extends GameApplication {
                 playerControl.jump();
             }
         }, KeyCode.SPACE);
-
-        getInput().addAction(new UserAction("Exit") {
-            @Override
-            protected void onActionBegin() {
-                pause();
-                exit();
-            }
-        }, KeyCode.L);
     }
 
     @Override
@@ -79,31 +66,13 @@ public class FlappyBirdApp extends GameApplication {
     }
 
     private boolean requestNewGame = false;
-    private boolean reset = false;
-
-    private List<Particle> particles = new ArrayList<>();
 
     @Override
     protected void initPhysics() {
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.PLAYER, EntityType.WALL) {
             @Override
             protected void onCollisionBegin(Entity a, Entity b) {
-                if (reset)
-                    return;
-
-                Image image = getGameScene().getRoot().getScene().snapshot(null);
-
-                PixelReader reader = image.getPixelReader();
-
-                for (int y = 0; y < (int) image.getHeight(); y++) {
-                    for (int x = 0; x < (int) image.getWidth(); x++) {
-                        Particle p = new Particle(x, y, reader.getColor(x, y));
-                        if (!p.color.equals(getGameState().getObject("stageColor") == Color.WHITE ? Color.BLACK : Color.WHITE))
-                            particles.add(p);
-                    }
-                }
-
-                reset = true;
+                requestNewGame = true;
             }
         });
     }
@@ -119,48 +88,15 @@ public class FlappyBirdApp extends GameApplication {
         getGameScene().addUINode(uiScore);
     }
 
-    private double time = 0;
-
-    @Override
-    protected void onUpdate(double tpf) {
-        GraphicsContext g = getGameScene().getGraphicsContext();
-
-        if (!particles.isEmpty()) {
-            g.setFill(getGameState().<Color>getObject("stageColor").invert());
-            g.fillRect(0, 0, getWidth(), getHeight());
-
-            time += tpf;
-
-            if (time >= 3) {
-                requestNewGame = true;
-            }
-        }
-
-        for (Particle p : particles) {
-            double vx = getWidth() / 2 - p.x;
-            double vy = getHeight() / 2 - p.y;
-
-            p.x += vx * (Math.random() - 0.5) * 0.01;
-            p.y += vy * (Math.random() - 0.5) * 0.01;
-
-            g.setFill(p.color);
-            g.setGlobalAlpha(Math.max(1 - time / 3, 0));
-            g.fillOval(p.x, p.y, 0.5, 0.5);
-        }
-    }
-
     @Override
     protected void onPostUpdate(double tpf) {
-        if (requestNewGame) {
-            requestNewGame = false;
-            time = 0;
-            particles.clear();
-            startNewGame();
+        if (getTick() == 3000) {
+            showGameOver();
         }
 
-        if (reset) {
-            getGameWorld().reset();
-            reset = false;
+        if (requestNewGame) {
+            requestNewGame = false;
+            startNewGame();
         }
     }
 
@@ -190,7 +126,7 @@ public class FlappyBirdApp extends GameApplication {
                 .with(playerControl, new WallBuildingControl())
                 .buildAndAttach(getGameWorld());
 
-        getGameScene().getViewport().setBounds(0, 0, Integer.MAX_VALUE, (int) getHeight());
+        getGameScene().getViewport().setBounds(0, 0, Integer.MAX_VALUE, getHeight());
         getGameScene().getViewport().bindToEntity(player, getWidth() / 3, getHeight() / 2);
     }
 
@@ -222,6 +158,10 @@ public class FlappyBirdApp extends GameApplication {
                 bgm.dispose();
             }
         });
+    }
+
+    private void showGameOver() {
+        getDisplay().showMessageBox("Demo Over. Thanks for playing!", this::exit);
     }
 
     public static void main(String[] args) {
