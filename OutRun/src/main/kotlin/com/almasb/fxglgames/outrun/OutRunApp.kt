@@ -91,14 +91,14 @@ class OutRunApp : GameApplication() {
 
         gameWorld.setLevel(level)
 
-        val player = gameWorld.spawn("player", width / 2 - 20, level.height.toDouble())
+        val player = gameWorld.spawn("player", width / 2 - 20.0, level.height.toDouble())
         playerControl = player.getControlUnsafe(PlayerControl::class.java)
 
         val bg = gameWorld.spawn("background") as GameEntity
         bg.positionComponent.yProperty().bind(gameScene.viewport.yProperty())
 
         gameScene.viewport.setBounds(0, 0, 600, level.height)
-        gameScene.viewport.bindToEntity(player, width / 2, height - 80)
+        gameScene.viewport.bindToEntity(player, width / 2.0, height - 80.0)
     }
 
     override fun initPhysics() {
@@ -112,8 +112,8 @@ class OutRunApp : GameApplication() {
 
         physicsWorld.addCollisionHandler(object : CollisionHandler(EntityType.PLAYER, EntityType.FINISH) {
             override fun onCollisionBegin(player: Entity, finish: Entity) {
-                display.showConfirmationBox("Your Time: ${now / 1000000000.0} s\n" +
-                        "Press YES to close the game", { yes -> exit() })
+                display.showMessageBox("Demo Over. Your Time: ${now / 1000000000.0} s\n" +
+                        "Thanks for playing!", this@OutRunApp::exit)
             }
         })
     }
@@ -122,8 +122,7 @@ class OutRunApp : GameApplication() {
 
     override fun initUI() {
         val label = uiFactory.newText("", 72.0)
-        label.translateX = width / 2
-        label.translateY = height / 2
+        uiFactory.centerTextBind(label)
 
         val count = SimpleIntegerProperty(3)
 
@@ -139,7 +138,7 @@ class OutRunApp : GameApplication() {
             animation.play()
         }, Duration.seconds(1.0))
 
-        count.addListener({ o, old, newValue ->
+        count.addListener({ _, _, newValue ->
             if (newValue.toInt() == 0) {
                 timerAction.expire()
                 gameScene.removeUINode(label)
@@ -153,7 +152,7 @@ class OutRunApp : GameApplication() {
         boostBar.setHeight(15.0)
         boostBar.setFill(Color.GREEN.brighter())
         boostBar.setTraceFill(Color.GREEN.brighter())
-        boostBar.translateX = width - 200
+        boostBar.translateX = width - 200.0
         boostBar.translateY = 25.0
         boostBar.isLabelVisible = false
         boostBar.setMaxValue(100.0)
@@ -170,7 +169,7 @@ class OutRunApp : GameApplication() {
         gameScene.addUINode(ui)
     }
 
-    var firstTime = true
+    private var firstTime = true
 
     override fun onUpdate(tpf: Double) {
         if (firstTime) {
