@@ -45,6 +45,7 @@ import com.almasb.mario.type.PickupType;
 import com.almasb.mario.type.PlatformType;
 import com.almasb.mario.type.SubTypeComponent;
 import org.jbox2d.dynamics.BodyType;
+import org.jbox2d.dynamics.FixtureDef;
 
 import static com.almasb.mario.MarioApp.BLOCK_SIZE;
 
@@ -225,6 +226,13 @@ public class MarioFactory implements TextEntityFactory {
     @SpawnSymbol('s')
     public GameEntity makePlayer(SpawnData data) {
         PhysicsComponent physics = new PhysicsComponent();
+
+        // TODO: something wrong with physics body config
+        // it's possible to get stuck in platforms causing endless loop?
+        FixtureDef fd = new FixtureDef();
+        fd.setDensity(0.3f);
+
+        physics.setFixtureDef(fd);
         physics.setBodyType(BodyType.DYNAMIC);
 
         GameEntity p = Entities.builder()

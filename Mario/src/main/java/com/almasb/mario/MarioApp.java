@@ -26,6 +26,8 @@
 
 package com.almasb.mario;
 
+import com.almasb.fxgl.annotation.Handles;
+import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.effect.ParticleControl;
 import com.almasb.fxgl.effect.ParticleEmitter;
@@ -48,6 +50,7 @@ import com.almasb.mario.event.CheckpointEvent;
 import com.almasb.mario.event.DeathEvent;
 import com.almasb.mario.event.Events;
 import com.almasb.mario.event.PickupEvent;
+import javafx.event.Event;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -82,6 +85,7 @@ public class MarioApp extends GameApplication {
         settings.setMenuEnabled(false);
         settings.setProfilingEnabled(false);
         settings.setCloseConfirmation(false);
+        settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
     @Override
@@ -172,9 +176,7 @@ public class MarioApp extends GameApplication {
 
     @Override
     protected void initPhysics() {
-        getPhysicsWorld().addCollisionHandler(new PlayerPickupHandler());
-        getPhysicsWorld().addCollisionHandler(new PlayerCheckpointHandler());
-        getPhysicsWorld().addCollisionHandler(new PlayerFinishHandler());
+
 
 //        getPhysicsWorld().addCollisionHandler(new PlayerEnemyHandler());
 //        getPhysicsWorld().addCollisionHandler(new ProjectileEnemyHandler());
@@ -219,13 +221,11 @@ public class MarioApp extends GameApplication {
         });
 
         getEventBus().addEventHandler(Events.GAME_OVER, event -> {
-            gameState.gameLose();
-            pause();
+            getDisplay().showMessageBox("Demo Over. Thanks for playing!", this::exit);
         });
 
         getEventBus().addEventHandler(Events.REACH_FINISH, event -> {
-            gameState.gameWin();
-            pause();
+            getDisplay().showMessageBox("Demo Over. Thanks for playing!", this::exit);
         });
 
 //
