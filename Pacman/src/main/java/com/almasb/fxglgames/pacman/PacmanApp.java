@@ -59,7 +59,8 @@ public class PacmanApp extends GameApplication {
 
     private static final int UI_SIZE = 200;
 
-    public static final int TIME_PER_LEVEL = 180;
+    // seconds
+    public static final int TIME_PER_LEVEL = 100;
 
     private GameEntity player;
     private PlayerControl playerControl;
@@ -142,8 +143,6 @@ public class PacmanApp extends GameApplication {
         vars.put("time", TIME_PER_LEVEL);
     }
 
-    private TimerAction timerAction;
-
     @Override
     protected void initGame() {
         TextLevelParser parser = new TextLevelParser(getGameWorld().getEntityFactory());
@@ -172,7 +171,7 @@ public class PacmanApp extends GameApplication {
         // find out number of coins
         getGameState().setValue("coins", getGameWorld().getEntitiesByType(PacmanType.COIN).size());
 
-        timerAction = getMasterTimer().runAtInterval(
+        getMasterTimer().runAtInterval(
                 () -> getGameState().increment("time", -1),
                 Duration.seconds(1)
         );
@@ -199,7 +198,7 @@ public class PacmanApp extends GameApplication {
 
         getGameScene().addUI(ui);
 
-        PauseWindow pauseWindow = new PauseWindow(400, (int)(getHeight() * 2/3), this::pause, this::resume);
+        PauseWindow pauseWindow = new PauseWindow(400, getHeight() * 2/3, this::pause, this::resume);
         pauseWindow.setTranslateX(getWidth() / 2 - 400 / 2);
         pauseWindow.setTranslateY(getHeight() - 30);
 
@@ -235,9 +234,7 @@ public class PacmanApp extends GameApplication {
     }
 
     private void gameOver() {
-        getDisplay().showConfirmationBox("Demo Over. Press Something", yes -> {
-            exit();
-        });
+        getDisplay().showMessageBox("Demo Over. Press OK to exit", this::exit);
     }
 
     public static void main(String[] args) {

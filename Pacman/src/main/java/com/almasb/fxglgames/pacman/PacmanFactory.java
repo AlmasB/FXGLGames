@@ -77,10 +77,6 @@ public class PacmanFactory implements TextEntityFactory {
                 .bbox(new HitBox("Main", BoundingShape.box(40, 40)))
                 .viewFromNodeWithBBox(view)
                 .with(new CollidableComponent(true))
-//                .with(new CollidableComponent(true), new DrawableComponent(g -> {
-//                    g.setFill(Color.YELLOW);
-//                    g.fillOval(x * PacmanApp.BLOCK_SIZE, y * PacmanApp.BLOCK_SIZE, 40, 40);
-//                }))
                 .build();
     }
 
