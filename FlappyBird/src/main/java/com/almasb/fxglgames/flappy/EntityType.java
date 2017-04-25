@@ -1,4 +1,4 @@
-package com.almasb.flappy;
+package com.almasb.fxglgames.flappy;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)

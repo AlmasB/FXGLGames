@@ -1,4 +1,4 @@
-package com.almasb.flappy;
+package com.almasb.fxglgames.flappy;
 
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
@@ -114,7 +114,7 @@ public class FlappyBirdApp extends GameApplication {
     private void initPlayer() {
         playerControl = new PlayerControl();
 
-        Texture view = getAssetLoader().loadTexture("player.png")
+        Texture view = getAssetLoader().loadTexture("bird.png")
                 .toAnimatedTexture(2, Duration.seconds(0.5));
 
         GameEntity player = Entities.builder()

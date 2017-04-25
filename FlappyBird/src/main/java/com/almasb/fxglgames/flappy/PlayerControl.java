@@ -1,4 +1,4 @@
-package com.almasb.flappy;
+package com.almasb.fxglgames.flappy;
 
 import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.ecs.AbstractControl;
