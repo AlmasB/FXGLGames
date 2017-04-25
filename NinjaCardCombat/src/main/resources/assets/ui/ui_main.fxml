@@ -6,7 +6,7 @@
 <?import javafx.scene.shape.Rectangle?>
 
 <?import javafx.scene.control.Label?>
-<?import com.almasb.ncc.CardFrame?>
+<?import com.almasb.fxglgames.ncc.CardFrame?>
 <BorderPane prefWidth="1280" prefHeight="720"
             xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1">
 

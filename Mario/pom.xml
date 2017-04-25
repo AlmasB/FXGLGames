@@ -52,7 +52,7 @@
                             <transformers>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.almasb.mario.MarioApp</mainClass>
+                                    <mainClass>com.almasb.fxglgames.mario.MarioApp</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>

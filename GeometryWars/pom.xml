@@ -52,7 +52,7 @@
                             <transformers>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.almasb.geowars.GeoWarsApp</mainClass>
+                                    <mainClass>com.almasb.fxglgames.geowars.GeoWarsApp</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
