@@ -12,6 +12,7 @@ import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.geowars.WeaponType;
 import javafx.geometry.Point2D;
+import javafx.scene.effect.Bloom;
 import javafx.scene.paint.Color;
 
 /**
@@ -27,6 +28,7 @@ public class PlayerControl extends AbstractControl {
     @Override
     public void onAdded(Entity entity) {
         player = (GameEntity) entity;
+        player.getView().setEffect(new Bloom());
     }
 
     @Override

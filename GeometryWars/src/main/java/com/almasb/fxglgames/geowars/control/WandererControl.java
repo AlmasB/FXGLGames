@@ -33,22 +33,12 @@ import com.almasb.fxgl.ecs.AbstractControl;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.GameEntity;
 import javafx.geometry.Point2D;
+import javafx.scene.effect.Bloom;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class WandererControl extends AbstractControl {
-
-    // from CRYtek
-    private static final int NOISE_TABLE_SIZE = 256;
-    private static final int NOISE_MASK = 255;
-
-    private static float[] gx = new float[NOISE_TABLE_SIZE];
-    private static float[] gy = new float[NOISE_TABLE_SIZE];
-
-    static {
-        setSeedAndReinitialize();
-    }
 
     private int screenWidth, screenHeight;
 
@@ -65,14 +55,15 @@ public class WandererControl extends AbstractControl {
     private GameEntity wanderer;
 
     public WandererControl(int moveSpeed) {
-        screenWidth = (int) FXGL.getApp().getWidth();
-        screenHeight = (int) FXGL.getApp().getHeight();
+        screenWidth = FXGL.getApp().getWidth();
+        screenHeight = FXGL.getApp().getHeight();
         this.moveSpeed = moveSpeed;
     }
 
     @Override
     public void onAdded(Entity entity) {
         wanderer = (GameEntity) entity;
+        wanderer.getView().setEffect(new Bloom(0.5));
     }
 
     @Override
@@ -88,7 +79,7 @@ public class WandererControl extends AbstractControl {
 
     private void adjustAngle(double tpf) {
         if (FXGLMath.randomBoolean(angleAdjustRate)) {
-            directionAngle += FXGLMath.radiansToDegrees * noise1D(tx);
+            directionAngle += FXGLMath.radiansToDegrees * (FXGLMath.noise1D(tx) - 0.5);
         }
     }
 
@@ -116,44 +107,5 @@ public class WandererControl extends AbstractControl {
 
     private void rotate(double tpf) {
         wanderer.rotateBy(rotationSpeed * tpf);
-    }
-
-    private static void setSeedAndReinitialize() {
-        // Generate the gradient lookup tables
-        for (int i = 0; i < NOISE_TABLE_SIZE; i++) {
-            // Ken Perlin proposes that the gradients are taken from the unit
-            // circle/sphere for 2D/3D.
-            // So lets generate a good pseudo-random vector and normalize it
-
-            Vec2 v = new Vec2();
-            // cry_frand is in the 0..1 range
-            v.x = -0.5f + FXGLMath.random();
-            v.y = -0.5f + FXGLMath.random();
-            v.normalizeLocal();
-
-            gx[i] = v.x;
-            gy[i] = v.y;
-        }
-    }
-
-    private float noise1D(float x) {
-        // Compute what gradients to use
-        int qx0 = (int)Math.floor(x);
-        int qx1 = qx0 + 1;
-        float tx0 = x - (float)qx0;
-        float tx1 = tx0 - 1;
-
-        // Make sure we don't come outside the lookup table
-        qx0 = qx0 & NOISE_MASK;
-        qx1 = qx1 & NOISE_MASK;
-
-        // Compute the dotproduct between the vectors and the gradients
-        float v0 = gx[qx0] * tx0;
-        float v1 = gx[qx1] * tx1;
-
-        // Modulate with the weight function
-        float wx = (3 - 2 * tx0) * tx0 * tx0;
-
-        return v0 - wx * (v0 - v1);
     }
 }

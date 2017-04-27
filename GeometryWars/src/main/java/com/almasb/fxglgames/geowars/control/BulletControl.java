@@ -32,11 +32,13 @@ import com.almasb.fxgl.ecs.AbstractControl;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
+import com.almasb.fxgl.entity.component.ViewComponent;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.entity.control.ProjectileControl;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxglgames.geowars.grid.Grid;
 import javafx.geometry.Point2D;
+import javafx.scene.effect.Bloom;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
@@ -53,6 +55,7 @@ public class BulletControl extends AbstractControl {
     }
 
     private BoundingBoxComponent bbox;
+    private ViewComponent view;
 
     private Point2D velocity;
     private Grid grid;
@@ -64,7 +67,8 @@ public class BulletControl extends AbstractControl {
     @Override
     public void onAdded(Entity entity) {
         velocity = entity.getControlUnsafe(ProjectileControl.class).getVelocity();
-        bbox = entity.getComponentUnsafe(BoundingBoxComponent.class);
+
+        view.getView().setEffect(new Bloom());
     }
 
     @Override

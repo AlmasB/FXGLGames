@@ -47,6 +47,7 @@ import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.effect.Bloom;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
@@ -80,11 +81,11 @@ public class GeoWarsApp extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("FXGL Geometry Wars");
-        settings.setVersion("0.7");
+        settings.setVersion("0.7.1");
         settings.setFullScreen(false);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
-        settings.setProfilingEnabled(true);
+        settings.setProfilingEnabled(false);
         settings.setCloseConfirmation(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
@@ -290,9 +291,7 @@ public class GeoWarsApp extends GameApplication {
     @Override
     protected void onPostUpdate(double tpf) {
         if (getGameState().getInt("time") == 0) {
-            getDisplay().showConfirmationBox("Demo Over. Press anything to exit. Your score: " + getGameState().getInt("score"), yes -> {
-                exit();
-            });
+            getDisplay().showMessageBox("Demo Over. Your score: " + getGameState().getInt("score"), this::exit);
         }
     }
 

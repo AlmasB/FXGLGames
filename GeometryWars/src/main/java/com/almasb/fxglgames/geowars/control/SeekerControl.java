@@ -32,6 +32,7 @@ import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.time.LocalTimer;
 import javafx.geometry.Point2D;
+import javafx.scene.effect.Bloom;
 import javafx.util.Duration;
 
 /**
@@ -67,6 +68,7 @@ public class SeekerControl extends AbstractControl {
     @Override
     public void onAdded(Entity entity) {
         seeker = (GameEntity) entity;
+        seeker.getView().setEffect(new Bloom(0.5));
         adjustVelocity(0.016);
     }
 
