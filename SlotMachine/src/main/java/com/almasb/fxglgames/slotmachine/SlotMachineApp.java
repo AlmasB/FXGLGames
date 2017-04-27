@@ -21,6 +21,7 @@ public class SlotMachineApp extends GameApplication {
     private static final int START_MONEY = 500;
 
     private SlotMachineFactory entityFactory;
+
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Slot Machine");

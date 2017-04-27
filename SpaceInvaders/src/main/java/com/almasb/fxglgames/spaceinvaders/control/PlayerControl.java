@@ -35,7 +35,6 @@ import com.almasb.fxgl.entity.component.BoundingBoxComponent;
 import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxgl.entity.component.ViewComponent;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
-import com.almasb.fxgl.service.MasterTimer;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxglgames.spaceinvaders.Config;
 import com.almasb.fxglgames.spaceinvaders.component.InvincibleComponent;
@@ -54,29 +53,18 @@ public class PlayerControl extends AbstractControl {
     private BoundingBoxComponent bbox;
     private InvincibleComponent invicibility;
 
-    private MasterTimer timer;
-
     private double dx = 0;
     private double attackSpeed = Config.PLAYER_ATTACK_SPEED;
 
     private boolean canShoot = true;
-    private long lastTimeShot = 0;
-
-    @Override
-    public void onAdded(Entity entity) {
-        position = entity.getComponentUnsafe(PositionComponent.class);
-        bbox = entity.getComponentUnsafe(BoundingBoxComponent.class);
-        invicibility = entity.getComponentUnsafe(InvincibleComponent.class);
-
-        timer = FXGL.getMasterTimer();
-    }
+    private double lastTimeShot = 0;
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
         dx = Config.PLAYER_MOVE_SPEED * tpf;
 
         if (!canShoot) {
-            if ((timer.getNow() - lastTimeShot) / 1000000000.0 >= 1.0 / attackSpeed) {
+            if ((FXGL.getMasterTimer().getNow() - lastTimeShot) >= 1.0 / attackSpeed) {
                 canShoot = true;
             }
         }
@@ -101,7 +89,7 @@ public class PlayerControl extends AbstractControl {
             return;
 
         canShoot = false;
-        lastTimeShot = timer.getNow();
+        lastTimeShot = FXGL.getMasterTimer().getNow();
 
         GameWorld world = (GameWorld) getEntity().getWorld();
         world.spawn("Laser", new SpawnData(0, 0).put("owner", getEntity()));

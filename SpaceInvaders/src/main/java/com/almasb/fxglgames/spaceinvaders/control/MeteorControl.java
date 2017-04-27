@@ -45,9 +45,6 @@ public class MeteorControl extends AbstractControl {
 
     @Override
     public void onAdded(Entity entity) {
-        rotation = entity.getComponentUnsafe(RotationComponent.class);
-        position = entity.getComponentUnsafe(PositionComponent.class);
-
         double w = FXGL.getSettings().getWidth();
         double h = FXGL.getSettings().getHeight();
 

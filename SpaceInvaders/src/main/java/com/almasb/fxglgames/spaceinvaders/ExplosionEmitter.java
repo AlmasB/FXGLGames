@@ -13,7 +13,7 @@ import javafx.util.Duration;
 public class ExplosionEmitter extends ParticleEmitter {
 
     public ExplosionEmitter() {
-        setColorFunction(() -> Color.color(0.85, 0.85, 0.75, 0.75));
+        setColor(Color.color(0.85, 0.85, 0.75, 0.75));
         setVelocityFunction((i, x, y) -> Vec2.fromAngle(i*10).mulLocal(FXGLMath.random(4f, 5f)).toPoint2D());
         setExpireFunction((i, x, y) -> Duration.seconds(0.6));
         setSpawnPointFunction((i, x, y) -> new Point2D(x, y));

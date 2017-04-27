@@ -49,12 +49,6 @@ public class BulletControl extends AbstractControl {
     }
 
     @Override
-    public void onAdded(Entity entity) {
-        owner = entity.getComponentUnsafe(OwnerComponent.class);
-        position = entity.getComponentUnsafe(PositionComponent.class);
-    }
-
-    @Override
     public void onUpdate(Entity entity, double tpf) {
         position.translateY(owner.getValue() == (SpaceInvadersType.PLAYER) ? -tpf * speed : tpf * speed);
     }
