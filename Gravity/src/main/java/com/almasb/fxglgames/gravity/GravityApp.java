@@ -1,34 +1,126 @@
+/*
+ * The MIT License (MIT)
+ *
+ * FXGL - JavaFX Game Library
+ *
+ * Copyright (c) 2015-2017 AlmasB (almaslvl@gmail.com)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.almasb.fxglgames.gravity;
 
-import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.parser.LevelParser;
-import com.almasb.fxgl.parser.text.TextLevelParser;
+import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.input.UserAction;
+import com.almasb.fxgl.parser.tiled.TiledMap;
+import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.settings.GameSettings;
+import com.almasb.fxglgames.gravity.scifi.PlayerControl;
+import com.almasb.fxglgames.gravity.scifi.ScifiType;
+import com.almasb.fxglgames.gravity.scifi.UsableControl;
+import javafx.geometry.Point2D;
+import javafx.scene.input.KeyCode;
 
 /**
- * @author Almas Baimagambetov (almaslvl@gmail.com)
+ *
+ *
+ * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class GravityApp extends GameApplication {
 
     @Override
     protected void initSettings(GameSettings settings) {
-        settings.setWidth(1280);
-        settings.setHeight(720);
-        settings.setTitle("Gravity");
+        settings.setWidth(640);
+        settings.setHeight(640);
+        settings.setTitle("GravityApp");
         settings.setVersion("0.1");
-        settings.setFullScreen(false);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
         settings.setProfilingEnabled(false);
         settings.setCloseConfirmation(false);
-        settings.setApplicationMode(ApplicationMode.DEVELOPER);
+    }
+
+    private GameEntity player;
+    private PlayerControl playerControl;
+
+    //                getGameWorld().getCollidingEntities(player)
+//                        .stream()
+//                        .filter(e -> e.hasControl(UsableControl.class))
+//                        .map(e -> e.getControlUnsafe(UsableControl.class))
+//                        .forEach(UsableControl::use);
+
+
+    @Override
+    protected void initInput() {
+        getInput().addAction(new UserAction("Pull") {
+            @Override
+            protected void onActionBegin() {
+
+                GameEntity key = (GameEntity) getGameWorld().getEntitiesByType(ScifiType.KEY).get(0);
+
+                PhysicsComponent physics = key.getComponentUnsafe(PhysicsComponent.class);
+                physics.applyForceToCenter(player.getCenter().subtract(key.getCenter()).normalize().multiply(150));
+            }
+        }, KeyCode.Q);
+
+        getInput().addAction(new UserAction("Push") {
+            @Override
+            protected void onActionBegin() {
+
+                GameEntity key = (GameEntity) getGameWorld().getEntitiesByType(ScifiType.KEY).get(0);
+
+                PhysicsComponent physics = key.getComponentUnsafe(PhysicsComponent.class);
+                physics.applyForceToCenter(player.getCenter().subtract(key.getCenter()).normalize().multiply(-150));
+            }
+        }, KeyCode.E);
+
+        getInput().addAction(new UserAction("Left") {
+            @Override
+            protected void onAction() {
+                playerControl.left();
+            }
+        }, KeyCode.A);
+
+        getInput().addAction(new UserAction("Right") {
+            @Override
+            protected void onAction() {
+                playerControl.right();
+            }
+        }, KeyCode.D);
     }
 
     @Override
     protected void initGame() {
-        LevelParser levelParser = new TextLevelParser(getGameWorld().getEntityFactory());
-        getGameWorld().setLevel(levelParser.parse("levels/level0.txt"));
+        TiledMap map = getAssetLoader().loadJSON("test_level.json", TiledMap.class);
+
+        getGameWorld().setLevelFromMap(map);
+
+        getGameWorld().spawn("button", 30, 340);
+
+        player = (GameEntity) getGameWorld().spawn("player", 100, 100);
+        playerControl = player.getControlUnsafe(PlayerControl.class);
+
+        getGameWorld().spawn("key", 500, 10);
+
+        getGameWorld().addEntity(Entities.makeScreenBounds(40));
     }
 
     public static void main(String[] args) {
