@@ -74,10 +74,10 @@ public class GravityApp extends GameApplication {
             @Override
             protected void onActionBegin() {
 
-                GameEntity key = (GameEntity) getGameWorld().getEntitiesByType(ScifiType.KEY).get(0);
+                GameEntity key = (GameEntity) getGameWorld().getEntitiesByType(ScifiType.ENEMY).get(0);
 
                 PhysicsComponent physics = key.getComponentUnsafe(PhysicsComponent.class);
-                physics.applyForceToCenter(player.getCenter().subtract(key.getCenter()).normalize().multiply(150));
+                physics.applyForceToCenter(player.getCenter().subtract(key.getCenter()).normalize().multiply(550));
             }
         }, KeyCode.Q);
 
@@ -85,10 +85,10 @@ public class GravityApp extends GameApplication {
             @Override
             protected void onActionBegin() {
 
-                GameEntity key = (GameEntity) getGameWorld().getEntitiesByType(ScifiType.KEY).get(0);
+                GameEntity key = (GameEntity) getGameWorld().getEntitiesByType(ScifiType.ENEMY).get(0);
 
                 PhysicsComponent physics = key.getComponentUnsafe(PhysicsComponent.class);
-                physics.applyForceToCenter(player.getCenter().subtract(key.getCenter()).normalize().multiply(-150));
+                physics.applyForceToCenter(player.getCenter().subtract(key.getCenter()).normalize().multiply(-550));
             }
         }, KeyCode.E);
 
@@ -119,6 +119,8 @@ public class GravityApp extends GameApplication {
         playerControl = player.getControlUnsafe(PlayerControl.class);
 
         getGameWorld().spawn("key", 500, 10);
+
+        getGameWorld().spawn("enemy", 150, 100);
 
         getGameWorld().addEntity(Entities.makeScreenBounds(40));
     }

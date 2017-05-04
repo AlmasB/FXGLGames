@@ -30,5 +30,5 @@ package com.almasb.fxglgames.gravity.scifi;
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public enum ScifiType {
-    PLAYER, PLATFORM, BUTTON, KEY
+    PLAYER, PLATFORM, BUTTON, KEY, ENEMY
 }

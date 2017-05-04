@@ -62,6 +62,24 @@ public class GravityFactory implements EntityFactory {
                 .build();
     }
 
+    @Spawns("enemy")
+    public Entity newEnemy(SpawnData data) {
+        PhysicsComponent physics = new PhysicsComponent();
+        physics.setBodyType(BodyType.DYNAMIC);
+
+        FixtureDef fd = new FixtureDef();
+        fd.setDensity(0.03f);
+        physics.setFixtureDef(fd);
+
+        return Entities.builder()
+                .at(data.getX(), data.getY())
+                .type(ScifiType.ENEMY)
+                .bbox(new HitBox("main", BoundingShape.box(40, 40)))
+                .viewFromNode(new Rectangle(40, 40, Color.RED))
+                .with(physics)
+                .build();
+    }
+
     @Spawns("block")
     public Entity newBlock(SpawnData data) {
         return Entities.builder()
