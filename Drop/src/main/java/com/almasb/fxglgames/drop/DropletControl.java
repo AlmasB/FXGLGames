@@ -42,11 +42,6 @@ public class DropletControl extends AbstractControl {
     private PositionComponent position;
 
     @Override
-    public void onAdded(Entity entity) {
-        position = entity.getComponentUnsafe(PositionComponent.class);
-    }
-
-    @Override
     public void onUpdate(Entity entity, double tpf) {
         double speed = tpf * 200;
 
