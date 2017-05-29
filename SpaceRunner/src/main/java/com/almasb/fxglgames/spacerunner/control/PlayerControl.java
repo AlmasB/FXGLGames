@@ -46,11 +46,6 @@ public class PlayerControl extends AbstractControl {
     private double speed;
 
     @Override
-    public void onAdded(Entity entity) {
-        position = Entities.getPosition(entity);
-    }
-
-    @Override
     public void onUpdate(Entity entity, double tpf) {
         speed = tpf * 300;
 
@@ -58,20 +53,10 @@ public class PlayerControl extends AbstractControl {
     }
 
     public void up() {
-//        if (position.getY() - speed <= 0) {
-//            position.setY(0);
-//            return;
-//        }
-
         position.translateY(-speed);
     }
 
     public void down() {
-//        if (position.getY() + speed <= FXGL.getSettings().getHeight()) {
-//            position.setY(FXGL.getSettings().getHeight());
-//            return;
-//        }
-
         position.translateY(speed);
     }
 

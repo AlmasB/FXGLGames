@@ -27,6 +27,7 @@
 package com.almasb.fxglgames.spacerunner.control;
 
 import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.ecs.AbstractControl;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
@@ -52,22 +53,20 @@ public class EnemyControl extends AbstractControl {
 
     @Override
     public void onAdded(Entity entity) {
-        audioPlayer = FXGL.getService(ServiceType.AUDIO_PLAYER);
+        audioPlayer = FXGL.getAudioPlayer();
 
-        attackTimer = FXGL.getService(ServiceType.LOCAL_TIMER);
+        attackTimer = FXGL.newLocalTimer();
         attackTimer.capture();
-
-        position = Entities.getPosition(entity);
     }
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
 
         if (attackTimer.elapsed(nextAttack)) {
-            if (Math.random() < 0.8) {
+            if (FXGLMath.randomBoolean(0.8f)) {
                 shoot();
             }
-            nextAttack = Duration.seconds(5 * Math.random());
+            nextAttack = Duration.seconds(5 * FXGLMath.random());
             attackTimer.capture();
         }
 
