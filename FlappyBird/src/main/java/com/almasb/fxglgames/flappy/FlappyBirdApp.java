@@ -11,7 +11,6 @@ import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
-import com.almasb.fxgl.service.listener.FXGLListener;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.texture.Texture;
 import javafx.scene.input.KeyCode;
@@ -55,6 +54,7 @@ public class FlappyBirdApp extends GameApplication {
     @Override
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("stageColor", Color.BLACK);
+        vars.put("score", 0);
     }
 
     @Override
@@ -83,14 +83,19 @@ public class FlappyBirdApp extends GameApplication {
         uiScore.setTranslateX(getWidth() - 200);
         uiScore.setTranslateY(50);
         uiScore.fillProperty().bind(getGameState().objectProperty("stageColor"));
-        uiScore.textProperty().bind(getMasterTimer().tickProperty().asString());
+        uiScore.textProperty().bind(getGameState().intProperty("score").asString());
 
         getGameScene().addUINode(uiScore);
     }
 
     @Override
+    protected void onUpdate(double tpf) {
+        getGameState().increment("score", +1);
+    }
+
+    @Override
     protected void onPostUpdate(double tpf) {
-        if (getTick() == 3000) {
+        if (getGameState().getInt("score") == 3000) {
             showGameOver();
         }
 
@@ -142,21 +147,9 @@ public class FlappyBirdApp extends GameApplication {
 
         getAudioPlayer().playMusic(bgm);
 
-        addFXGLListener(new FXGLListener() {
-            @Override
-            public void onPause() {}
-
-            @Override
-            public void onResume() {}
-
-            @Override
-            public void onReset() {}
-
-            @Override
-            public void onExit() {
-                getAudioPlayer().stopMusic(bgm);
-                bgm.dispose();
-            }
+        addExitListener(() -> {
+            getAudioPlayer().stopMusic(bgm);
+            bgm.dispose();
         });
     }
 
