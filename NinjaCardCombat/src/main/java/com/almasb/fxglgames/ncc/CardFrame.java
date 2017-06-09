@@ -1,6 +1,8 @@
 package com.almasb.fxglgames.ncc;
 
 import com.almasb.fxgl.entity.EntityView;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.When;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
 import javafx.scene.input.MouseEvent;
@@ -15,11 +17,14 @@ public class CardFrame extends StackPane {
 
     private Rectangle border;
 
-    public CardFrame() {
-        border = new Rectangle(80, 80);
-        border.setFill(Color.AQUA);
+    public CardFrame(Card card) {
+        border = new Rectangle(120, 180);
         border.setStroke(Color.BLUE);
         border.setStrokeWidth(2);
+
+        border.fillProperty().bind(
+                Bindings.when(card.aliveProperty()).then(Color.AQUA).otherwise(Color.RED)
+        );
 
         getChildren().addAll(border);
     }

@@ -109,8 +109,8 @@ public class GameController implements UIController {
 
     private EntityView getView(Entity e) {
         Text text = new Text();
-        text.textProperty().bind(e.getComponent(AttackComponent.class).get().valueProperty().asString("Attack: [%d]\n")
-                .concat(e.getComponent(DefenseComponent.class).get().valueProperty().asString("Defense: [%d]")));
+//        text.textProperty().bind(e.getComponent(AttackComponent.class).get().valueProperty().asString("Attack: [%d]\n")
+//                .concat(e.getComponent(DefenseComponent.class).get().valueProperty().asString("Defense: [%d]")));
 
         StackPane pane = new StackPane();
         Rectangle border = new Rectangle(80, 80);
