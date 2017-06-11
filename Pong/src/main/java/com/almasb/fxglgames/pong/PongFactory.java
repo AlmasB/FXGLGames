@@ -32,11 +32,11 @@ import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
+import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
+import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.FixtureDef;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -54,7 +54,7 @@ public class PongFactory {
                 .at(x, y)
                 .type(EntityType.BALL)
                 .bbox(new HitBox("BODY", BoundingShape.circle(5)))
-                .viewFromNode(new Circle(5, Color.LIGHTGRAY))
+                //.viewFromNode(new Circle(5, Color.LIGHTGRAY))
                 .build();
 
         if (mode == GameMode.SP || mode == GameMode.MP_HOST) {

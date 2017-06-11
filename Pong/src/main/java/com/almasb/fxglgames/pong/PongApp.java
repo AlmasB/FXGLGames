@@ -31,22 +31,25 @@ import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.effect.ParticleControl;
+import com.almasb.fxgl.effect.ParticleEmitter;
+import com.almasb.fxgl.effect.ParticleEmitters;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.entity.component.TypeComponent;
 import com.almasb.fxgl.input.ActionType;
+import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.InputMapping;
 import com.almasb.fxgl.net.Server;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
-import com.almasb.fxgl.service.Input;
-import com.almasb.fxgl.service.listener.FXGLListener;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.settings.MenuItem;
 import com.almasb.fxgl.ui.UI;
 import javafx.application.Platform;
 import javafx.geometry.Point2D;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -70,7 +73,9 @@ public class PongApp extends GameApplication {
         settings.setTitle("Pong");
         settings.setVersion("0.3dev");
         settings.setIntroEnabled(false);
-        settings.setMenuEnabled(true);
+        settings.setMenuEnabled(false);
+        settings.setCloseConfirmation(false);
+        settings.setProfilingEnabled(false);
         settings.setEnabledMenuItems(EnumSet.of(MenuItem.ONLINE));
     }
 
@@ -101,20 +106,8 @@ public class PongApp extends GameApplication {
             });
         });
 
-        addFXGLListener(new FXGLListener() {
-            @Override
-            public void onPause() {}
-
-            @Override
-            public void onResume() {}
-
-            @Override
-            public void onReset() {}
-
-            @Override
-            public void onExit() {
-                getNet().getConnection().ifPresent(conn -> conn.close());
-            }
+        addExitListener(() -> {
+            getNet().getConnection().ifPresent(conn -> conn.close());
         });
     }
 
@@ -216,6 +209,16 @@ public class PongApp extends GameApplication {
 
     private void initBall() {
         ball = factory.newBall(getWidth() / 2 - 5, getHeight() / 2 - 5);
+
+        ParticleEmitter emitter = ParticleEmitters.newFireEmitter();
+        emitter.setStartColor(Color.LIGHTYELLOW);
+        emitter.setEndColor(Color.RED);
+        emitter.setBlendMode(BlendMode.SRC_OVER);
+        emitter.setSize(5, 10);
+        emitter.setEmissionRate(1);
+
+        ball.addControl(new ParticleControl(emitter));
+
         getGameWorld().addEntity(ball);
     }
 
