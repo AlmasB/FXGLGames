@@ -26,14 +26,14 @@
 
 package com.almasb.fxglgames.mario.control;
 
-import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.ecs.component.Required;
 import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxgl.physics.PhysicsComponent;
 
 @Required(PhysicsComponent.class)
-public class PhysicsLiftControl extends AbstractControl {
+public class PhysicsLiftControl extends Control {
 
     private double spawnY;
     private boolean movingUp = true;
@@ -47,8 +47,8 @@ public class PhysicsLiftControl extends AbstractControl {
 
     @Override
     public void onAdded(Entity entity) {
-        position = entity.getComponentUnsafe(PositionComponent.class);
-        physics = entity.getComponentUnsafe(PhysicsComponent.class);
+        position = entity.getComponent(PositionComponent.class);
+        physics = entity.getComponent(PhysicsComponent.class);
     }
 
     @Override

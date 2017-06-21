@@ -26,12 +26,12 @@
 
 package com.almasb.fxglgames.mario.control;
 
-//import com.almasb.fxgl.entity.AbstractControl;
+//import com.almasb.fxgl.entity.Control;
 //import com.almasb.fxgl.entity.Entity;
 //
 //import javafx.geometry.Point2D;
 //
-//public class SeekingControl extends AbstractControl {
+//public class SeekingControl extends Control {
 //
 //    private Entity target;
 //

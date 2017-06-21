@@ -27,7 +27,7 @@
 package com.almasb.fxglgames.mario.control;
 
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
@@ -41,7 +41,7 @@ import javafx.geometry.Rectangle2D;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class PlayerControl extends AbstractControl {
+public class PlayerControl extends Control {
 
     private static final int MAX_SPEED = 4 * 60;
     private static final int JUMP_SPEED = 5 * 60;
@@ -58,8 +58,8 @@ public class PlayerControl extends AbstractControl {
 
     @Override
     public void onAdded(Entity entity) {
-        bbox = entity.getComponentUnsafe(BoundingBoxComponent.class);
-        physics = entity.getComponentUnsafe(PhysicsComponent.class);
+        bbox = entity.getComponent(BoundingBoxComponent.class);
+        physics = entity.getComponent(PhysicsComponent.class);
         view = Entities.getView(entity);
     }
 

@@ -34,6 +34,7 @@ import com.almasb.fxgl.effect.ParticleEmitters;
 import com.almasb.fxgl.effect.Vignette;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.ScrollingBackgroundView;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
@@ -46,6 +47,7 @@ import com.almasb.fxglgames.mario.control.PlayerControl;
 import com.almasb.fxglgames.mario.event.CheckpointEvent;
 import com.almasb.fxglgames.mario.event.DeathEvent;
 import com.almasb.fxglgames.mario.event.Events;
+import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -59,7 +61,7 @@ public class MarioApp extends GameApplication {
     public static final int BLOCK_SIZE = 32;
 
     private GameEntity player;
-    private PlayerControl playerControl;
+    private SControl playerControl;
 
     public GameEntity getPlayer() {
         return player;
@@ -95,75 +97,20 @@ public class MarioApp extends GameApplication {
 
         TextLevelParser levelParser = new TextLevelParser(getGameWorld().getEntityFactory());
 
-//        levelParser.addEntityProducer('c', MarioFactory::makeCheckpoint);
-//        levelParser.addEntityProducer('f', MarioFactory::makeFinish);
-//
-//        levelParser.addEntityProducer('g', MarioFactory::makePickupCoin);
-//
-//        levelParser.addEntityProducer('b', MarioFactory::makePlatformBegin);
-//        levelParser.addEntityProducer('e', MarioFactory::makePlatformEnd);
-//        levelParser.addEntityProducer('p', MarioFactory::makePlatform);
-//        levelParser.addEntityProducer('i', MarioFactory::makePlatformInvisible);
-//        levelParser.addEntityProducer('0', MarioFactory::makeBlock);
-//        levelParser.addEntityProducer('1', MarioFactory::makePlatformLift);
-//        levelParser.addEntityProducer('2', MarioFactory::makePlatformCarry);
-//
-//
-//        levelParser.addEntityProducer('s', MarioFactory::makePlayer);
-
         Level level = levelParser.parse("levels/0.txt");
 
-        player = (GameEntity) level.getEntities().stream().filter(e -> e.hasControl(PlayerControl.class)).findAny().get();
-        playerControl = player.getControlUnsafe(PlayerControl.class);
+        player = (GameEntity) level.getEntities().stream().filter(e -> e.hasControl(SControl.class)).findAny().get();
+        //playerControl = player.getControl(PlayerControl.class);
+        playerControl = player.getControl(SControl.class);
 
         gameState.updateCheckpoint(player.getPositionComponent().getValue());
 
         getGameWorld().setLevel(level);
 
+        getGameScene().addGameView(new ScrollingBackgroundView(getAssetLoader().loadTexture("bg_wrap.png", 1280, 720),
+                Orientation.HORIZONTAL));
+
         initEventHandlers();
-
-//
-//        grid = new Entity[level.getWidth()][level.getHeight()];
-//        physics.setGrid(grid);
-//
-//        //getSceneManager().addEntities(Entity.noType().setGraphics(new Rectangle(1280, 720)));
-//
-//        for (Entity e : level.getEntities()) {
-//            if (e.isType(Type.PLATFORM)) {
-//                int x = (int)e.getTranslateX() / BLOCK_SIZE;
-//                int y = (int)e.getTranslateY() / BLOCK_SIZE;
-//                grid[x][y] = e;
-//            }
-//
-//            if (e.isType(Type.ENEMY)) {
-//                e.addFXGLEventHandler(Event.ENEMY_ATTACK, event -> {
-//                    getSceneManager().addEntities(event.getSource());
-//                });
-//                e.addFXGLEventHandler(Event.HIT_BY_GHOST_BOMB, hitByGhostBomb);
-//            }
-//
-//            getSceneManager().addEntities(e);
-//        }
-//
-////        ParticleEntity e = new ParticleEntity(Type.PROJECTILE);
-////        e.setPosition(180, 600);
-////        //e.addControl(new CircularMovementControl(10, 50));
-////        e.setGraphics(new Circle(1));
-////
-////        SmokeEmitter emitter = new SmokeEmitter();
-////        //emitter.setInitialVelocityFunction(() -> new Point2D(Math.random() *-2, 0));
-////        //emitter.setGravity(Math.random() * -1, -0);
-////        e.setEmitter(emitter);
-////
-////        e.translateXProperty().bind(player.translateXProperty().add(5));
-////        e.translateYProperty().bind(player.translateYProperty());
-////
-////        sceneManager.addEntities(e);
-//
-//        initEventHandlers();
-//        sceneManager.bindViewportOriginX(player, (int)getWidth() / 2);
-//        sceneManager.setUIMouseTransparent(true);
-
 
         getGameScene().getViewport().bindToEntity(player, getWidth() / 2, getHeight() / 2);
         getGameScene().getViewport().setBounds(0, 0, level.getWidth(), level.getHeight());
@@ -185,13 +132,13 @@ public class MarioApp extends GameApplication {
         });
 
         getEventBus().addEventHandler(CheckpointEvent.ANY, event -> {
-            event.getCheckpoint().getComponentUnsafe(CollidableComponent.class).setValue(false);
+            event.getCheckpoint().getComponent(CollidableComponent.class).setValue(false);
 
-            Point2D position = event.getCheckpoint().getComponentUnsafe(PositionComponent.class).getValue();
+            Point2D position = event.getCheckpoint().getComponent(PositionComponent.class).getValue();
             gameState.updateCheckpoint(position);
 
             ParticleEmitter emitter = ParticleEmitters.newImplosionEmitter();
-            emitter.setColorFunction(() -> Color.GOLD);
+            emitter.setColor(Color.GOLD);
 
             Entities.builder()
                     .at(position)
@@ -202,11 +149,11 @@ public class MarioApp extends GameApplication {
 
         getEventBus().addEventHandler(DeathEvent.ANY, event -> {
             gameState.loseLife();
-            player.getControlUnsafe(com.almasb.fxgl.physics.PhysicsControl.class)
+            player.getControl(com.almasb.fxgl.physics.PhysicsControl.class)
                     .reposition(gameState.getCheckpoint());
 
             ParticleEmitter emitter = ParticleEmitters.newExplosionEmitter();
-            emitter.setColorFunction(() -> Color.GOLD);
+            emitter.setColor(Color.GOLD);
 
             Entities.builder()
                     .at(gameState.getCheckpoint())
@@ -222,22 +169,12 @@ public class MarioApp extends GameApplication {
         getEventBus().addEventHandler(Events.REACH_FINISH, event -> {
             getDisplay().showMessageBox("Demo Over. Thanks for playing!", this::exit);
         });
-
-//
-//        player.addFXGLEventHandler(Event.PICKUP_GHOST_BOMB, event -> {
-//            Entity bomb = event.getSource();
-//            sceneManager.removeEntity(bomb);
-//            gameState.addGhostBomb();
-//        });
-//
     }
 
     @Override
     protected void initUI() {
         Vignette vignette = new Vignette(1280, 720, 600);
-        vignette.setIntensity(0.15);
-        //vignette.setRadius(200);
-        //vignette.setColor(Color.RED);
+        vignette.setIntensity(0.25);
 
         getGameScene().addUINodes(ui, vignette);
     }

@@ -44,7 +44,7 @@ public class PlayerPickupHandler extends CollisionHandler {
 
     @Override
     public void onCollisionBegin(Entity a, Entity pickup) {
-        PickupType type = (PickupType) pickup.getComponentUnsafe(SubTypeComponent.class).getValue();
+        PickupType type = (PickupType) pickup.getComponent(SubTypeComponent.class).getValue();
 
         switch (type) {
             case COIN:

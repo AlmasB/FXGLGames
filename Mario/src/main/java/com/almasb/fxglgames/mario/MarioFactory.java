@@ -36,6 +36,9 @@ import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
+import com.almasb.fxgl.physics.box2d.dynamics.BodyDef;
+import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
+import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import com.almasb.fxglgames.mario.control.PhysicsCarryControl;
 import com.almasb.fxglgames.mario.control.PhysicsLiftControl;
 import com.almasb.fxglgames.mario.control.PlayerControl;
@@ -43,8 +46,6 @@ import com.almasb.fxglgames.mario.type.EntityType;
 import com.almasb.fxglgames.mario.type.PickupType;
 import com.almasb.fxglgames.mario.type.PlatformType;
 import com.almasb.fxglgames.mario.type.SubTypeComponent;
-import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.FixtureDef;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -230,18 +231,24 @@ public class MarioFactory implements TextEntityFactory {
         fd.setDensity(0.3f);
 
         physics.setFixtureDef(fd);
+
+        BodyDef bd = new BodyDef();
+        bd.setFixedRotation(true);
+
+        physics.setBodyDef(bd);
         physics.setBodyType(BodyType.DYNAMIC);
 
         GameEntity p = Entities.builder()
-                .from(data)
+                .at(data.getX(), data.getY() - 96)
                 .type(EntityType.PLAYER)
-                .viewFromTexture("player.png")
+                //.viewFromTexture("player.png")
                 .with(new CollidableComponent(true))
                 .with(physics)
-                .with(new PlayerControl())
+                .with(new SControl())
+                //.with(new PlayerControl())
                 .build();
 
-        p.getBoundingBoxComponent().addHitBox(new HitBox("BODY", BoundingShape.circle(15)));
+        p.getBoundingBoxComponent().addHitBox(new HitBox("BODY", BoundingShape.box(77, 96)));
 
         return p;
     }

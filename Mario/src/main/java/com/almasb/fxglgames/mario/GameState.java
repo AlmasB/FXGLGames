@@ -74,12 +74,12 @@ public class GameState {
     }
 
     public void addScoreFromCoin(Entity coin) {
-        PositionComponent position = coin.getComponentUnsafe(PositionComponent.class);
+        PositionComponent position = coin.getComponent(PositionComponent.class);
 
         Point2D point = position.getValue();
         Viewport viewport = app.getGameScene().getViewport();
 
-        ui.playScoreAnimation(100, app.getGameScene().gameToScreen(point), () -> score.set(score.get() + 100));
+        //ui.playScoreAnimation(100, app.getGameScene().gameToScreen(point), () -> score.set(score.get() + 100));
     }
 
     public void addScoreFromEnemyKill(Entity enemy) {

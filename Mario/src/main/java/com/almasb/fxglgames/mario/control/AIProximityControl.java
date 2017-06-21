@@ -26,13 +26,13 @@
 
 package com.almasb.fxglgames.mario.control;
 
-import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.time.LocalTimer;
 import javafx.util.Duration;
 
-public class AIProximityControl extends AbstractControl {
+public class AIProximityControl extends Control {
 
     private Entity target;
     private boolean targetClose = false;

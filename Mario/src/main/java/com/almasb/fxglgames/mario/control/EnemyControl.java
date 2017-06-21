@@ -26,10 +26,10 @@
 
 package com.almasb.fxglgames.mario.control;
 
-import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxgl.ecs.Entity;
 
-public abstract class EnemyControl extends AbstractControl {
+public abstract class EnemyControl extends Control {
 
     public abstract Entity makeAttack();
 }

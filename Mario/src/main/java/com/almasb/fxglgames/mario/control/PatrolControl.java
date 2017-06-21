@@ -27,10 +27,10 @@
 package com.almasb.fxglgames.mario.control;
 
 //import com.almasb.fxgl.GameApplication;
-//import com.almasb.fxgl.entity.AbstractControl;
+//import com.almasb.fxgl.entity.Control;
 //import com.almasb.fxgl.entity.Entity;
 //
-//public class PatrolControl extends AbstractControl {
+//public class PatrolControl extends Control {
 //
 //    private double spawnX;
 //    private boolean movingLeft = false;
