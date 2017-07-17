@@ -27,24 +27,18 @@
 package com.almasb.fxglgames.pacman;
 
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.time.UpdateEvent;
-import com.almasb.fxgl.time.UpdateEventListener;
+import com.almasb.fxgl.app.listener.StateListener;
 import com.almasb.fxgl.ui.ProgressBar;
 import com.almasb.fxgl.ui.UIController;
 import javafx.fxml.FXML;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.TextAlignment;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class PacmanUIController implements UIController, UpdateEventListener {
+public class PacmanUIController implements UIController, StateListener {
 
     @FXML
     private Pane root;
@@ -67,7 +61,6 @@ public class PacmanUIController implements UIController, UpdateEventListener {
 
     @Override
     public void init() {
-
         timeBar = new ProgressBar(false);
         timeBar.setHeight(50);
         timeBar.setTranslateX(0);
@@ -87,6 +80,7 @@ public class PacmanUIController implements UIController, UpdateEventListener {
     }
 
     @Override
-    public void onUpdateEvent(UpdateEvent event) {
+    public void onUpdate(double tpf) {
+
     }
 }

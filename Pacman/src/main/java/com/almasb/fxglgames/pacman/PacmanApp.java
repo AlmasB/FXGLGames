@@ -35,7 +35,6 @@ import com.almasb.fxgl.gameplay.Level;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.parser.text.TextLevelParser;
 import com.almasb.fxgl.settings.GameSettings;
-import com.almasb.fxgl.time.TimerAction;
 import com.almasb.fxgl.ui.UI;
 import com.almasb.fxglgames.pacman.control.PlayerControl;
 import javafx.scene.input.KeyCode;
@@ -62,15 +61,12 @@ public class PacmanApp extends GameApplication {
     // seconds
     public static final int TIME_PER_LEVEL = 100;
 
-    private GameEntity player;
-    private PlayerControl playerControl;
-
     public GameEntity getPlayer() {
-        return player;
+        return (GameEntity) getGameWorld().getSingleton(PacmanType.PLAYER);
     }
 
     public PlayerControl getPlayerControl() {
-        return playerControl;
+        return getPlayer().getControl(PlayerControl.class);
     }
 
     private AStarGrid grid;
@@ -98,28 +94,28 @@ public class PacmanApp extends GameApplication {
         getInput().addAction(new UserAction("Up") {
             @Override
             protected void onAction() {
-                playerControl.up();
+                getPlayerControl().up();
             }
         }, KeyCode.W);
 
         getInput().addAction(new UserAction("Down") {
             @Override
             protected void onAction() {
-                playerControl.down();
+                getPlayerControl().down();
             }
         }, KeyCode.S);
 
         getInput().addAction(new UserAction("Left") {
             @Override
             protected void onAction() {
-                playerControl.left();
+                getPlayerControl().left();
             }
         }, KeyCode.A);
 
         getInput().addAction(new UserAction("Right") {
             @Override
             protected void onAction() {
-                playerControl.right();
+                getPlayerControl().right();
             }
         }, KeyCode.D);
 
@@ -129,7 +125,7 @@ public class PacmanApp extends GameApplication {
 
                 if (getGameState().getInt("teleport") > 0) {
                     getGameState().increment("teleport", -1);
-                    playerControl.teleport();
+                    getPlayerControl().teleport();
                 }
             }
         }, KeyCode.F);
@@ -147,14 +143,8 @@ public class PacmanApp extends GameApplication {
     protected void initGame() {
         TextLevelParser parser = new TextLevelParser(getGameWorld().getEntityFactory());
 
-        // parse level from text and set to game world
         Level level = parser.parse("pacman_level0.txt");
         getGameWorld().setLevel(level);
-        level.getEntities().clear();
-
-        // get references to player and his control
-        player = (GameEntity) getGameWorld().getEntitiesByType(PacmanType.PLAYER).get(0);
-        playerControl = player.getControlUnsafe(PlayerControl.class);
 
         // init the A* underlying grid and mark nodes where blocks are as not walkable
         grid = new AStarGrid(MAP_SIZE, MAP_SIZE);
@@ -188,7 +178,7 @@ public class PacmanApp extends GameApplication {
     @Override
     protected void initUI() {
         uiController = new PacmanUIController();
-        getMasterTimer().addUpdateListener(uiController);
+        getStateMachine().getPlayState().addStateListener(uiController);
 
         UI ui = getAssetLoader().loadUI("pacman_ui.fxml", uiController);
         ui.getRoot().setTranslateX(MAP_SIZE * BLOCK_SIZE);
@@ -197,19 +187,13 @@ public class PacmanApp extends GameApplication {
         uiController.getLabelTeleport().textProperty().bind(getGameState().intProperty("teleport").asString("Teleports:\n[%d]"));
 
         getGameScene().addUI(ui);
-
-        PauseWindow pauseWindow = new PauseWindow(400, getHeight() * 2/3, this::pause, this::resume);
-        pauseWindow.setTranslateX(getWidth() / 2 - 400 / 2);
-        pauseWindow.setTranslateY(getHeight() - 30);
-
-        getGameScene().addUINode(pauseWindow);
     }
 
     @Override
     protected void onPostUpdate(double tpf) {
         if (requestNewGame) {
             requestNewGame = false;
-            getMasterTimer().removeUpdateListener(uiController);
+            getStateMachine().getPlayState().removeStateListener(uiController);
             startNewGame();
         }
     }
