@@ -49,7 +49,6 @@ import javafx.animation.PathTransition;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -67,11 +66,11 @@ import java.util.Map;
 public class BreakoutApp extends GameApplication {
 
     private BatControl getBatControl() {
-        return getGameWorld().getEntitiesByType(BreakoutType.BAT).get(0).getControlUnsafe(BatControl.class);
+        return getGameWorld().getSingleton(BreakoutType.BAT).getControl(BatControl.class);
     }
 
     private BallControl getBallControl() {
-        return getGameWorld().getEntitiesByType(BreakoutType.BALL).get(0).getControlUnsafe(BallControl.class);
+        return getGameWorld().getSingleton(BreakoutType.BALL).getControl(BallControl.class);
     }
 
     @Override
@@ -111,36 +110,46 @@ public class BreakoutApp extends GameApplication {
 
     @Override
     protected void initGame() {
+        initBGM();
+        initLevel();
+        initBubbles();
+    }
+
+    private void initBGM() {
         Music music = getAssetLoader().loadMusic("BGM01.wav");
         music.setCycleCount(Integer.MAX_VALUE);
 
         getAudioPlayer().playMusic(music);
+    }
 
+    private void initLevel() {
         TextLevelParser parser = new TextLevelParser(new BreakoutFactory());
         Level level = parser.parse("levels/level1.txt");
         getGameWorld().setLevel(level);
 
         getGameWorld().addEntity(Entities.makeScreenBounds(40));
 
-        Rectangle bg0 = new Rectangle(getWidth(), getHeight());
-        LinearGradient gradient = new LinearGradient(getWidth() / 2, 0, getWidth() / 2, getHeight(),
-                false, CycleMethod.NO_CYCLE, new Stop(0.2, Color.AQUA), new Stop(0.8, Color.BLACK));
-
-        bg0.setFill(gradient);
+        Rectangle bg0 = new Rectangle(getWidth(), getHeight(),
+                new LinearGradient(getWidth() / 2, 0, getWidth() / 2, getHeight(),
+                        false, CycleMethod.NO_CYCLE,
+                        new Stop(0.2, Color.AQUA), new Stop(0.8, Color.BLACK)));
 
         Rectangle bg1 = new Rectangle(getWidth(), getHeight(), Color.color(0, 0, 0, 0.2));
         bg1.setBlendMode(BlendMode.DARKEN);
 
-        Pane bg = new Pane();
-        bg.getChildren().addAll(bg0, bg1);
+        EntityView bg = new EntityView(RenderLayer.BACKGROUND);
+        bg.addNode(bg0);
+        bg.addNode(bg1);
 
         Entities.builder()
-                .viewFromNode(new EntityView(bg, RenderLayer.BACKGROUND))
+                .viewFromNode(bg)
                 .buildAndAttach(getGameWorld());
+    }
 
+    private void initBubbles() {
         ParticleEmitter emitter = new ParticleEmitter();
         emitter.setSourceImage(getAssetLoader().loadTexture("bubble.png").getImage());
-        emitter.setBlendFunction((i, x, y) -> BlendMode.SRC_OVER);
+        emitter.setBlendMode(BlendMode.SRC_OVER);
         emitter.setEmissionRate(0.25);
         emitter.setExpireFunction((i, x, y) -> Duration.seconds(3));
         emitter.setVelocityFunction((i, x, y) -> new Point2D(0, -FXGLMath.random(2f, 4f)));
@@ -161,7 +170,7 @@ public class BreakoutApp extends GameApplication {
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(BreakoutType.BALL, BreakoutType.BRICK) {
             @Override
             protected void onCollisionBegin(Entity ball, Entity brick) {
-                brick.getControlUnsafe(BrickControl.class).onHit();
+                brick.getControl(BrickControl.class).onHit();
             }
         });
     }
@@ -169,6 +178,7 @@ public class BreakoutApp extends GameApplication {
     @Override
     protected void initUI() {
         Text text = getUIFactory().newText("Level 1", Color.WHITE, 48);
+        getGameScene().addUINode(text);
 
         QuadCurve curve = new QuadCurve(-100, 0, getWidth() / 2, getHeight(), getWidth() + 100, 0);
 
@@ -177,9 +187,6 @@ public class BreakoutApp extends GameApplication {
             getGameScene().removeUINode(text);
             getBallControl().release();
         });
-
-        getGameScene().addUINode(text);
-
         transition.play();
     }
 

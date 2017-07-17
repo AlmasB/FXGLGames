@@ -39,13 +39,13 @@ import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
+import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
+import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import com.almasb.fxglgames.breakout.control.BallControl;
 import com.almasb.fxglgames.breakout.control.BatControl;
 import com.almasb.fxglgames.breakout.control.BrickControl;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.FixtureDef;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -82,11 +82,7 @@ public class BreakoutFactory implements TextEntityFactory {
     public Entity newBall(SpawnData data) {
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.DYNAMIC);
-
-        FixtureDef fd = new FixtureDef();
-        fd.setRestitution(1f);
-        fd.setDensity(0.03f);
-        physics.setFixtureDef(fd);
+        physics.setFixtureDef(new FixtureDef().restitution(1f).density(0.03f));
 
         ParticleEmitter emitter = ParticleEmitters.newFireEmitter();
         emitter.setNumParticles(5);

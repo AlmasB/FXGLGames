@@ -28,16 +28,15 @@ package com.almasb.fxglgames.breakout.control;
 
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.physics.PhysicsComponent;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class BatControl extends AbstractControl {
+public class BatControl extends Control {
 
     private static final float BOUNCE_FACTOR = 1.5f;
     private static final float SPEED_DECAY = 0.66f;
@@ -51,7 +50,6 @@ public class BatControl extends AbstractControl {
     @Override
     public void onAdded(Entity entity) {
         bat = (GameEntity) entity;
-        physics = Entities.getPhysics(entity);
     }
 
     @Override
