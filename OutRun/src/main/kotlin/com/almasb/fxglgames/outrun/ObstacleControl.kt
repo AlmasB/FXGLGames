@@ -26,7 +26,7 @@
 
 package com.almasb.fxglgames.outrun
 
-import com.almasb.fxgl.ecs.AbstractControl
+import com.almasb.fxgl.ecs.Control
 import com.almasb.fxgl.ecs.Entity
 import com.almasb.fxgl.entity.component.CollidableComponent
 import com.almasb.fxgl.entity.component.ViewComponent
@@ -38,7 +38,7 @@ import com.almasb.fxgl.entity.component.ViewComponent
  */
 class ObstacleControl(
         private val textureUp: String,
-        private val textureDown: String) : AbstractControl() {
+        private val textureDown: String) : Control() {
 
     override fun onUpdate(entity: Entity, tpf: Double) {
 
@@ -46,6 +46,6 @@ class ObstacleControl(
 
     fun hit() {
         entity.removeComponent(CollidableComponent::class.java)
-        entity.getComponentUnsafe(ViewComponent::class.java).setTexture(textureDown)
+        entity.getComponent(ViewComponent::class.java).setTexture(textureDown)
     }
 }

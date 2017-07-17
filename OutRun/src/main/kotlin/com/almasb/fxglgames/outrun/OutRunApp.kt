@@ -28,6 +28,8 @@ package com.almasb.fxglgames.outrun
 
 import com.almasb.fxgl.app.ApplicationMode
 import com.almasb.fxgl.app.GameApplication
+import com.almasb.fxgl.app.getd
+import com.almasb.fxgl.app.set
 import com.almasb.fxgl.ecs.Entity
 import com.almasb.fxgl.entity.GameEntity
 import com.almasb.fxgl.input.UserAction
@@ -85,6 +87,10 @@ class OutRunApp : GameApplication() {
         }, KeyCode.D)
     }
 
+    override fun initGameVars(vars: MutableMap<String, Any>) {
+        vars.put("time", 0.0)
+    }
+
     override fun initGame() {
         val parser = TextLevelParser(gameWorld.getEntityFactory())
         val level = parser.parse("level0.txt")
@@ -92,7 +98,7 @@ class OutRunApp : GameApplication() {
         gameWorld.setLevel(level)
 
         val player = gameWorld.spawn("player", width / 2 - 20.0, level.height.toDouble())
-        playerControl = player.getControlUnsafe(PlayerControl::class.java)
+        playerControl = player.getControl(PlayerControl::class.java)
 
         val bg = gameWorld.spawn("background") as GameEntity
         bg.positionComponent.yProperty().bind(gameScene.viewport.yProperty())
@@ -106,13 +112,13 @@ class OutRunApp : GameApplication() {
             override fun onCollisionBegin(player: Entity, wall: Entity) {
                 // reset player to last checkpoint
                 playerControl.reset()
-                wall.getControlUnsafe(ObstacleControl::class.java).hit()
+                wall.getControl(ObstacleControl::class.java).hit()
             }
         })
 
         physicsWorld.addCollisionHandler(object : CollisionHandler(EntityType.PLAYER, EntityType.FINISH) {
             override fun onCollisionBegin(player: Entity, finish: Entity) {
-                display.showMessageBox("Demo Over. Your Time: ${now / 1000000000.0} s\n" +
+                display.showMessageBox("Demo Over. Your Time: %.2f s\n".format(getd("time")) +
                         "Thanks for playing!", this@OutRunApp::exit)
             }
         })
@@ -130,7 +136,7 @@ class OutRunApp : GameApplication() {
 
         gameScene.addUINode(label)
 
-        val timerAction = masterTimer.runAtInterval( {
+        val timerAction = masterTimer.runAtInterval(Runnable {
             count.set(count.get() - 1)
             val animation = FadeTransition(Duration.seconds(0.33), label)
             animation.fromValue = 0.0
@@ -181,6 +187,8 @@ class OutRunApp : GameApplication() {
         } else {
             ui.text = "Speed: %.2f".format(playerControl.getSpeed())
         }
+
+        set("time", getd("time") + tpf)
     }
 }
 

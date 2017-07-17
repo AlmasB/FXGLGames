@@ -26,7 +26,7 @@
 
 package com.almasb.fxglgames.outrun
 
-import com.almasb.fxgl.ecs.AbstractControl
+import com.almasb.fxgl.ecs.Control
 import com.almasb.fxgl.ecs.Entity
 import com.almasb.fxgl.entity.component.BoundingBoxComponent
 import com.almasb.fxgl.entity.component.PositionComponent
@@ -40,7 +40,7 @@ import javafx.util.Duration
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-class PlayerControl : AbstractControl() {
+class PlayerControl : Control() {
 
     private lateinit var position: PositionComponent
     private lateinit var bbox: BoundingBoxComponent
@@ -49,11 +49,6 @@ class PlayerControl : AbstractControl() {
     private var dy = 0.0
 
     val boost = SimpleDoubleProperty(100.0)
-
-    override fun onAdded(entity: Entity) {
-        position = entity.getComponentUnsafe(PositionComponent::class.java)
-        bbox = entity.getComponentUnsafe(BoundingBoxComponent::class.java)
-    }
 
     override fun onUpdate(entity: Entity, tpf: Double) {
         speed = tpf * 200
@@ -101,7 +96,7 @@ class PlayerControl : AbstractControl() {
 
     fun reset() {
         dy = 0.0
-        val view = getEntity().getComponentUnsafe(ViewComponent::class.java).view
+        val view = getEntity().getComponent(ViewComponent::class.java).view
 
         val fade = FadeTransition(Duration.seconds(1.0), view)
         with(fade) {
