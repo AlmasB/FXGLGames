@@ -28,6 +28,7 @@ package com.almasb.fxglgames.drop;
 
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
@@ -89,7 +90,7 @@ public class DropApp extends GameApplication {
         bucketControl = bucket.getControl(BucketControl.class);
 
         getMasterTimer().runAtInterval(() -> {
-            getGameWorld().spawn("Droplet", Math.random() * (getWidth() - 64), 0);
+            getGameWorld().spawn("Droplet", FXGLMath.random(getWidth() - 64), 0);
         }, Duration.seconds(1));
     }
 
