@@ -37,9 +37,9 @@ import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.gameplay.Achievement;
 import com.almasb.fxgl.gameplay.AchievementManager;
+import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.InputMapping;
 import com.almasb.fxgl.io.FS;
-import com.almasb.fxgl.service.Input;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.ui.UI;
 import com.almasb.fxglgames.spaceinvaders.control.PlayerControl;
@@ -81,7 +81,7 @@ public class SpaceInvadersApp extends GameApplication {
 
     @Override
     protected void initAchievements() {
-        AchievementManager am = getAchievementManager();
+        AchievementManager am = getGameplay().getAchievementManager();
 
         am.registerAchievement(new Achievement("Hitman", "Destroy " + ACHIEVEMENT_ENEMIES_KILLED + " enemies"));
         am.registerAchievement(new Achievement("Master Scorer", "Score " + ACHIEVEMENT_MASTER_SCORER + " points"));
@@ -154,9 +154,9 @@ public class SpaceInvadersApp extends GameApplication {
         highScoreName = data.getName();
         highScore = data.getHighScore();
 
-        getAchievementManager().getAchievementByName("Hitman")
+        getGameplay().getAchievementManager().getAchievementByName("Hitman")
                 .bind(getGameState().intProperty("enemiesKilled").greaterThanOrEqualTo(ACHIEVEMENT_ENEMIES_KILLED));
-        getAchievementManager().getAchievementByName("Master Scorer")
+        getGameplay().getAchievementManager().getAchievementByName("Master Scorer")
                 .bind(getGameState().intProperty("score").greaterThanOrEqualTo(ACHIEVEMENT_MASTER_SCORER));
 
         spawnBackground();
@@ -176,7 +176,7 @@ public class SpaceInvadersApp extends GameApplication {
 
     private void spawnPlayer() {
         player = (GameEntity) getGameWorld().spawn("Player", getWidth() / 2 - 20, getHeight() - 40);
-        playerControl = player.getControlUnsafe(PlayerControl.class);
+        playerControl = player.getControl(PlayerControl.class);
     }
 
     private void spawnWall(double x, double y) {
@@ -271,18 +271,16 @@ public class SpaceInvadersApp extends GameApplication {
     private void playTutorial() {
         getInput().setRegisterInput(false);
 
-        // TODO: ideally we must obtain dynamic key codes because the keys
-        // may have been reassigned
-        TutorialStep step1 = new TutorialStep("Press A to move left", Asset.DIALOG_MOVE_LEFT, () -> {
+        TutorialStep step1 = new TutorialStep("Press " + getInput().getTriggerByActionName("Move Left") + " to move left", Asset.DIALOG_MOVE_LEFT, () -> {
             getInput().mockKeyPress(KeyCode.A);
         });
 
-        TutorialStep step2 = new TutorialStep("Press D to move right", Asset.DIALOG_MOVE_RIGHT, () -> {
+        TutorialStep step2 = new TutorialStep("Press " + getInput().getTriggerByActionName("Move Right") + " to move right", Asset.DIALOG_MOVE_RIGHT, () -> {
             getInput().mockKeyRelease(KeyCode.A);
             getInput().mockKeyPress(KeyCode.D);
         });
 
-        TutorialStep step3 = new TutorialStep("Press F to shoot", Asset.DIALOG_SHOOT, () -> {
+        TutorialStep step3 = new TutorialStep("Press " + getInput().getTriggerByActionName("Shoot") + " to shoot", Asset.DIALOG_SHOOT, () -> {
             getInput().mockKeyRelease(KeyCode.D);
 
             getInput().mockButtonPress(MouseButton.PRIMARY, 0, 0);

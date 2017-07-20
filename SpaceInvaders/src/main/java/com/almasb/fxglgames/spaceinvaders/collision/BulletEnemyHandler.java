@@ -29,9 +29,9 @@ package com.almasb.fxglgames.spaceinvaders.collision;
 import com.almasb.fxgl.annotation.AddCollisionHandler;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.ecs.GameWorld;
 import com.almasb.fxgl.effect.ParticleControl;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.GameWorld;
 import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxgl.entity.component.ViewComponent;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
@@ -57,19 +57,19 @@ public class BulletEnemyHandler extends CollisionHandler {
 
     @Override
     protected void onCollisionBegin(Entity bullet, Entity enemy) {
-        Object owner = bullet.getComponentUnsafe(OwnerComponent.class).getValue();
+        Object owner = bullet.getComponent(OwnerComponent.class).getValue();
 
         // some enemy shot the bullet, skip collision handling
         if (owner == SpaceInvadersType.ENEMY) {
             return;
         }
 
-        GameWorld world = (GameWorld) bullet.getWorld();
+        GameWorld world = bullet.getWorld();
 
-        Point2D hitPosition = bullet.getComponentUnsafe(PositionComponent.class).getValue();
+        Point2D hitPosition = bullet.getComponent(PositionComponent.class).getValue();
         bullet.removeFromWorld();
 
-        HPComponent hp = enemy.getComponentUnsafe(HPComponent.class);
+        HPComponent hp = enemy.getComponent(HPComponent.class);
         hp.setValue(hp.getValue() - 1);
 
         if (hp.getValue() <= 0) {
@@ -92,13 +92,13 @@ public class BulletEnemyHandler extends CollisionHandler {
             world.spawn("LaserHit", hitPosition);
 
             // make enemy look red
-            enemy.getComponentUnsafe(ViewComponent.class).getView().setBlendMode(BlendMode.RED);
+            enemy.getComponent(ViewComponent.class).getView().setBlendMode(BlendMode.RED);
 
             // return enemy look to normal
             FXGL.getMasterTimer()
                     .runOnceAfter(() -> {
                         if (enemy.isActive())
-                            enemy.getComponentUnsafe(ViewComponent.class).getView().setBlendMode(null);
+                            enemy.getComponent(ViewComponent.class).getView().setBlendMode(null);
                     }, Duration.seconds(0.33));
         }
     }

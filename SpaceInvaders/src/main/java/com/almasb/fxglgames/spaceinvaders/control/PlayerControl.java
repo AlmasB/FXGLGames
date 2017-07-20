@@ -27,8 +27,9 @@
 package com.almasb.fxglgames.spaceinvaders.control;
 
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.ecs.GameWorld;
 import com.almasb.fxgl.ecs.component.Required;
 import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
@@ -47,7 +48,7 @@ import javafx.util.Duration;
 @Required(PositionComponent.class)
 @Required(BoundingBoxComponent.class)
 @Required(InvincibleComponent.class)
-public class PlayerControl extends AbstractControl {
+public class PlayerControl extends Control {
 
     private PositionComponent position;
     private BoundingBoxComponent bbox;
@@ -91,7 +92,7 @@ public class PlayerControl extends AbstractControl {
         canShoot = false;
         lastTimeShot = FXGL.getMasterTimer().getNow();
 
-        GameWorld world = (GameWorld) getEntity().getWorld();
+        GameWorld world = getEntity().getWorld();
         world.spawn("Laser", new SpawnData(0, 0).put("owner", getEntity()));
 
         FXGL.getAudioPlayer()
@@ -142,7 +143,7 @@ public class PlayerControl extends AbstractControl {
                 .buildAndAttach(FXGL.getApp().getGameWorld());
     }
 
-    private static class OpacityControl extends AbstractControl {
+    private static class OpacityControl extends Control {
 
         private ViewComponent view;
         private double millis = 330;

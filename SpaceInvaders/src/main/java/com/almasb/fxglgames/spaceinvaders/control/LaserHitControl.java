@@ -26,7 +26,7 @@
 
 package com.almasb.fxglgames.spaceinvaders.control;
 
-import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.component.ViewComponent;
@@ -34,13 +34,13 @@ import com.almasb.fxgl.entity.component.ViewComponent;
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class LaserHitControl extends AbstractControl {
+public class LaserHitControl extends Control {
 
     private EntityView view;
 
     @Override
     public void onAdded(Entity entity) {
-        view = entity.getComponentUnsafe(ViewComponent.class).getView();
+        view = entity.getComponent(ViewComponent.class).getView();
     }
 
     @Override
