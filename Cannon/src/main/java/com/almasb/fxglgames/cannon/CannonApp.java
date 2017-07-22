@@ -26,6 +26,7 @@
 
 package com.almasb.fxglgames.cannon;
 
+import com.almasb.fxgl.animation.Animation;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
@@ -35,9 +36,12 @@ import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxgl.settings.GameSettings;
+import javafx.animation.Interpolator;
+import javafx.geometry.Point2D;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 import java.util.Map;
 
@@ -108,6 +112,20 @@ public class CannonApp extends GameApplication {
             protected void onCollisionBegin(Entity bullet, Entity basket) {
                 bullet.removeFromWorld();
                 getGameState().increment("score", +1000);
+
+                GameEntity[] entities = getGameWorld().getEntitiesByType(CannonType.BASKET).toArray(new GameEntity[0]);
+
+                Animation<?> animation = Entities.animationBuilder()
+                        .duration(Duration.seconds(0.05))
+                        .interpolator(Interpolator.EASE_OUT)
+                        .scale(entities)
+                        .from(new Point2D(1, 1))
+                        .to(new Point2D(1.2, 1))
+                        .build();
+
+                animation.setAutoReverse(true);
+                animation.setCycleCount(2);
+                animation.startInPlayState();
             }
         });
     }
