@@ -31,10 +31,10 @@ import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
-import com.almasb.fxgl.service.Input;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.ui.WheelMenu;
 import com.almasb.fxglgames.geowars.component.GraphicsComponent;
@@ -159,7 +159,7 @@ public class GeoWarsApp extends GameApplication {
 
         initBackground();
         player = (GameEntity) getGameWorld().spawn("Player");
-        playerControl = player.getControlUnsafe(PlayerControl.class);
+        playerControl = player.getControl(PlayerControl.class);
 
         getMasterTimer().runAtInterval(() -> getGameWorld().spawn("Wanderer"), Duration.seconds(1));
         getMasterTimer().runAtInterval(() -> getGameWorld().spawn("Seeker"), Duration.seconds(2));
@@ -178,7 +178,7 @@ public class GeoWarsApp extends GameApplication {
             protected void onCollisionBegin(Entity bullet, Entity enemy) {
                 bullet.removeFromWorld();
 
-                HPComponent hp = enemy.getComponentUnsafe(HPComponent.class);
+                HPComponent hp = enemy.getComponent(HPComponent.class);
                 hp.setValue(hp.getValue() - 1);
 
                 if (hp.getValue() == 0) {
@@ -282,7 +282,7 @@ public class GeoWarsApp extends GameApplication {
 
     @Override
     protected void onUpdate(double tpf) {
-        player.getComponentUnsafe(OldPositionComponent.class)
+        player.getComponent(OldPositionComponent.class)
                 .setValue(Entities.getPosition(player).getValue());
 
         grid.update();
