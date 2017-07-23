@@ -1,6 +1,6 @@
 package com.almasb.fxglgames.flappy;
 
-import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Entities;
@@ -11,16 +11,11 @@ import javafx.scene.shape.Rectangle;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class WallBuildingControl extends AbstractControl {
+public class WallBuildingControl extends Control {
 
     private PositionComponent position;
 
     private double lastWall = 1000;
-
-    @Override
-    public void onAdded(Entity entity) {
-        position = Entities.getPosition(entity);
-    }
 
     @Override
     public void onUpdate(Entity entity, double tpf) {

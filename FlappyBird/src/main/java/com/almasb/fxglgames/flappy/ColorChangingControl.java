@@ -1,6 +1,6 @@
 package com.almasb.fxglgames.flappy;
 
-import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Entities;
@@ -12,7 +12,7 @@ import javafx.util.Duration;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class ColorChangingControl extends AbstractControl {
+public class ColorChangingControl extends Control {
 
     private Rectangle view;
     private LocalTimer timer;
