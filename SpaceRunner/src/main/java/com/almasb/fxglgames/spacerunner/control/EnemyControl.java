@@ -28,7 +28,7 @@ package com.almasb.fxglgames.spacerunner.control;
 
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.component.PositionComponent;
@@ -42,7 +42,7 @@ import javafx.util.Duration;
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class EnemyControl extends AbstractControl {
+public class EnemyControl extends Control {
 
     private LocalTimer attackTimer;
     private Duration nextAttack = Duration.seconds(2);

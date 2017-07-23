@@ -85,9 +85,9 @@ public class SpaceRunnerApp extends GameApplication {
 
         Entity player = getGameWorld().spawn("Player", 50, getHeight() / 2);
 
-        playerControl = player.getControlUnsafe(PlayerControl.class);
+        playerControl = player.getControl(PlayerControl.class);
 
-        getGameScene().getViewport().setBounds(0, 0, Integer.MAX_VALUE, (int) getHeight());
+        getGameScene().getViewport().setBounds(0, 0, Integer.MAX_VALUE, getHeight());
         getGameScene().getViewport().bindToEntity(player, 50, getHeight() / 2);
 
         getGameWorld().spawn("Enemy1", 500, 300);
