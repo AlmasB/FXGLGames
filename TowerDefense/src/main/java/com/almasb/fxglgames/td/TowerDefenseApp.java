@@ -123,7 +123,7 @@ public class TowerDefenseApp extends GameApplication {
         for (int i = 0; i < 4; i++) {
             int index = i + 1;
 
-            Color color = Color.color(FXGLMath.random(), FXGLMath.random(), FXGLMath.random());
+            Color color = FXGLMath.randomColor();
             TowerIcon icon = new TowerIcon(color);
             icon.setTranslateX(10 + i * 100);
             icon.setTranslateY(500);
