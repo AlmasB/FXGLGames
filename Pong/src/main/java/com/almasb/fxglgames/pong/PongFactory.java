@@ -81,6 +81,7 @@ public class PongFactory {
                 .at(x, y)
                 .type(isPlayer ? EntityType.PLAYER_BAT : EntityType.ENEMY_BAT)
                 .viewFromNodeWithBBox(new Rectangle(20, 60, Color.LIGHTGRAY))
+                .with(new CollidableComponent(true))
                 .build();
 
         if (mode == GameMode.SP || mode == GameMode.MP_HOST) {

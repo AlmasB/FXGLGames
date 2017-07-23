@@ -42,7 +42,7 @@ public class EnemyBatControl extends BatControl {
 
         if (ball == null) {
             for (Entity e : entity.getWorld().getEntitiesByComponent(TypeComponent.class)) {
-                if (e.getComponentUnsafe(TypeComponent.class).isType(EntityType.BALL)) {
+                if (e.getComponent(TypeComponent.class).isType(EntityType.BALL)) {
                     ball = e;
                     break;
                 }
@@ -53,8 +53,8 @@ public class EnemyBatControl extends BatControl {
     }
 
     private void moveAI() {
-        BoundingBoxComponent ballBox = ball.getComponentUnsafe(BoundingBoxComponent.class);
-        BoundingBoxComponent batBox = getEntity().getComponentUnsafe(BoundingBoxComponent.class);
+        BoundingBoxComponent ballBox = ball.getComponent(BoundingBoxComponent.class);
+        BoundingBoxComponent batBox = getEntity().getComponent(BoundingBoxComponent.class);
 
         boolean isBallToLeft = ballBox.getMaxXWorld() <= batBox.getMinXWorld();
 

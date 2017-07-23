@@ -26,9 +26,11 @@
 
 package com.almasb.fxglgames.pong;
 
+import com.almasb.fxgl.animation.Animation;
 import com.almasb.fxgl.annotation.OnUserAction;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.effect.ParticleControl;
@@ -47,12 +49,14 @@ import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.settings.MenuItem;
 import com.almasb.fxgl.ui.UI;
+import javafx.animation.Interpolator;
 import javafx.application.Platform;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
 import java.util.EnumSet;
 import java.util.Map;
@@ -96,11 +100,11 @@ public class PongApp extends GameApplication {
             Platform.runLater(() -> {
                 if (bat2 != null) {
                     if (message.up) {
-                        bat2.getControlUnsafe(BatControl.class).up();
+                        bat2.getControl(BatControl.class).up();
                     } else if (message.down) {
-                        bat2.getControlUnsafe(BatControl.class).down();
+                        bat2.getControl(BatControl.class).down();
                     } else {
-                        bat2.getControlUnsafe(BatControl.class).stop();
+                        bat2.getControl(BatControl.class).stop();
                     }
                 }
             });
@@ -170,6 +174,25 @@ public class PongApp extends GameApplication {
                 }
             }
         });
+
+        getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BALL, EntityType.PLAYER_BAT) {
+            @Override
+            protected void onCollisionBegin(Entity a, Entity b) {
+                GameEntity bat = (GameEntity) b;
+
+                Animation<?> animation = Entities.animationBuilder()
+                        .duration(Duration.seconds(0.05))
+                        .interpolator(Interpolator.EASE_OUT)
+                        .rotate(bat)
+                        .rotateFrom(0)
+                        .rotateTo(FXGLMath.random(-25, 25))
+                        .build();
+
+                animation.setAutoReverse(true);
+                animation.setCycleCount(2);
+                animation.startInPlayState();
+            }
+        });
     }
 
     @Override
@@ -228,7 +251,7 @@ public class PongApp extends GameApplication {
         bat1 = factory.newBat(getWidth() / 4, getHeight() / 2 - 30, true);
         getGameWorld().addEntity(bat1);
 
-        playerBat = bat1.getControlUnsafe(BatControl.class);
+        playerBat = bat1.getControl(BatControl.class);
     }
 
     private void initEnemyBat() {

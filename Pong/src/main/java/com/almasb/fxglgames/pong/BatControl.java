@@ -26,7 +26,7 @@
 
 package com.almasb.fxglgames.pong;
 
-import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
 import com.almasb.fxgl.entity.component.PositionComponent;
@@ -35,7 +35,7 @@ import com.almasb.fxgl.physics.PhysicsComponent;
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class BatControl extends AbstractControl {
+public class BatControl extends Control {
 
     protected PositionComponent position;
     protected PhysicsComponent bat;
@@ -43,9 +43,9 @@ public class BatControl extends AbstractControl {
 
     @Override
     public void onAdded(Entity entity) {
-        bat = entity.getComponentUnsafe(PhysicsComponent.class);
-        position = entity.getComponentUnsafe(PositionComponent.class);
-        bbox = entity.getComponentUnsafe(BoundingBoxComponent.class);
+        bat = entity.getComponent(PhysicsComponent.class);
+        position = entity.getComponent(PositionComponent.class);
+        bbox = entity.getComponent(BoundingBoxComponent.class);
     }
 
     @Override
