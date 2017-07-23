@@ -111,7 +111,7 @@ public class BombermanApp extends GameApplication {
         getGameWorld().spawn("BG");
 
         player = (GameEntity) getGameWorld().spawn("Player");
-        playerControl = player.getControlUnsafe(PlayerControl.class);
+        playerControl = player.getControl(PlayerControl.class);
     }
 
     @Override

@@ -1,9 +1,9 @@
 package com.almasb.fxglgames.bomberman.control;
 
+import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxglgames.bomberman.BombermanApp;
 import com.almasb.fxglgames.bomberman.BombermanType;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.ecs.AbstractControl;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.SpawnData;
@@ -15,21 +15,14 @@ import javafx.util.Duration;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class PlayerControl extends AbstractControl {
+public class PlayerControl extends Control {
 
     private PositionComponent position;
     private int maxBombs = 1;
     private int bombsPlaced = 0;
 
     @Override
-    public void onAdded(Entity entity) {
-        position = Entities.getPosition(entity);
-    }
-
-    @Override
-    public void onUpdate(Entity entity, double tpf) {
-
-    }
+    public void onUpdate(Entity entity, double tpf) { }
 
     public void increaseMaxBombs() {
         maxBombs++;
@@ -50,7 +43,7 @@ public class PlayerControl extends AbstractControl {
                 .spawn("Bomb", new SpawnData(x * 40, y * 40).put("radius", BombermanApp.TILE_SIZE / 2));
 
         FXGL.getMasterTimer().runOnceAfter(() -> {
-            bomb.getControlUnsafe(BombControl.class).explode();
+            bomb.getControl(BombControl.class).explode();
             bombsPlaced--;
         }, Duration.seconds(2));
     }
@@ -91,7 +84,7 @@ public class PlayerControl extends AbstractControl {
                 .getEntitiesAt(newPosition)
                 .stream()
                 .filter(e -> e.hasComponent(TypeComponent.class))
-                .map(e -> e.getComponentUnsafe(TypeComponent.class))
+                .map(e -> e.getComponent(TypeComponent.class))
                 .filter(type -> type.isType(BombermanType.BRICK)
                         || type.isType(BombermanType.WALL)
                         || type.isType(BombermanType.BOMB))
