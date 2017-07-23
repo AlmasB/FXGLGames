@@ -1,11 +1,11 @@
 package com.almasb.fxglgames.td.tower;
 
-import com.almasb.fxgl.ecs.AbstractComponent;
+import com.almasb.fxgl.ecs.Component;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class TowerDataComponent extends AbstractComponent {
+public class TowerDataComponent extends Component {
 
     private int hp;
     private int damage;
