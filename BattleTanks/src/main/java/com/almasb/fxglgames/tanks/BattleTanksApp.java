@@ -30,12 +30,12 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.gameplay.Level;
+import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.parser.text.TextLevelParser;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
-import com.almasb.fxgl.service.Input;
 import com.almasb.fxgl.settings.GameSettings;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
@@ -47,7 +47,7 @@ public class BattleTanksApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("BattleTanks");
-        settings.setVersion("0.2dev");
+        settings.setVersion("0.2");
         settings.setWidth(840);
         settings.setHeight(840);
         settings.setMenuEnabled(false);

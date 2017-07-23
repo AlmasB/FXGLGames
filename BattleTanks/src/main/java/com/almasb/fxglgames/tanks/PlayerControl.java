@@ -27,7 +27,7 @@
 package com.almasb.fxglgames.tanks;
 
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.ecs.component.Required;
 import com.almasb.fxgl.entity.Entities;
@@ -43,9 +43,7 @@ import javafx.geometry.Rectangle2D;
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-@Required(PositionComponent.class)
-@Required(RotationComponent.class)
-public class PlayerControl extends AbstractControl {
+public class PlayerControl extends Control {
 
     private PositionComponent position;
     private RotationComponent rotation;
@@ -56,11 +54,6 @@ public class PlayerControl extends AbstractControl {
 
     @Override
     public void onAdded(Entity entity) {
-        position = Entities.getPosition(entity);
-        rotation = Entities.getRotation(entity);
-        view = Entities.getView(entity);
-        bbox = Entities.getBBox(entity);
-
         texture = FXGL.getAssetLoader().loadTexture("player.png");
         view.setView(texture);
     }
