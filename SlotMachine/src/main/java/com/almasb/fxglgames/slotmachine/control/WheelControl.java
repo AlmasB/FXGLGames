@@ -1,7 +1,7 @@
 package com.almasb.fxglgames.slotmachine.control;
 
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.component.PositionComponent;
@@ -12,7 +12,7 @@ import java.util.Random;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class WheelControl extends AbstractControl {
+public class WheelControl extends Control {
 
     // [0..9]
     private int value = 0;

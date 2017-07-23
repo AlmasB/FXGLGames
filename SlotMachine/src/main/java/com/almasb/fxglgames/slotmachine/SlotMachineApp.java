@@ -82,7 +82,7 @@ public class SlotMachineApp extends GameApplication {
         return getGameWorld()
                 .getEntitiesByType(SlotMachineType.WHEEL)
                 .stream()
-                .map(e -> e.getControlUnsafe(WheelControl.class))
+                .map(e -> e.getControl(WheelControl.class))
                 .collect(Collectors.toList());
     }
 

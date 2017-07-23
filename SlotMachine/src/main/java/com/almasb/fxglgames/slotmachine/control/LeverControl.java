@@ -1,7 +1,7 @@
 package com.almasb.fxglgames.slotmachine.control;
 
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.component.ViewComponent;
@@ -10,7 +10,7 @@ import com.almasb.fxglgames.slotmachine.SlotMachineApp;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class LeverControl extends AbstractControl {
+public class LeverControl extends Control {
 
     private ViewComponent view;
     private String currentTexture = "lever0.png";
