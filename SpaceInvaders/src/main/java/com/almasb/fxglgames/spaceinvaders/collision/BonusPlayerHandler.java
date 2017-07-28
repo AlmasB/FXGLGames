@@ -26,14 +26,20 @@
 
 package com.almasb.fxglgames.spaceinvaders.collision;
 
+import com.almasb.fxgl.animation.Animation;
 import com.almasb.fxgl.annotation.AddCollisionHandler;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.spaceinvaders.BonusType;
 import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
 import com.almasb.fxglgames.spaceinvaders.component.SubTypeComponent;
 import com.almasb.fxglgames.spaceinvaders.event.BonusPickupEvent;
+import javafx.geometry.Point2D;
+import javafx.util.Duration;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -48,8 +54,18 @@ public class BonusPlayerHandler extends CollisionHandler {
     @Override
     protected void onCollisionBegin(Entity bonus, Entity player) {
         BonusType type = (BonusType) bonus.getComponent(SubTypeComponent.class).getValue();
-        bonus.removeFromWorld();
-
         FXGL.getEventBus().fireEvent(new BonusPickupEvent(BonusPickupEvent.ANY, type));
+
+        bonus.getComponent(CollidableComponent.class).setValue(false);
+        bonus.removeAllControls();
+
+        Animation<?> animation = Entities.animationBuilder()
+                .duration(Duration.seconds(1))
+                .scale((GameEntity) bonus)
+                .to(new Point2D(0, 0))
+                .build();
+
+        animation.setOnFinished(bonus::removeFromWorld);
+        animation.startInPlayState();
     }
 }
