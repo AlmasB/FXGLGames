@@ -169,6 +169,8 @@ public class SpaceInvadersApp extends GameApplication {
     private void spawnBackground() {
         getGameWorld().spawn("Background");
 
+        getGameWorld().spawn("Stars");
+
         getMasterTimer().runAtInterval(() -> {
             getGameWorld().spawn("Meteor");
         }, Duration.seconds(3));

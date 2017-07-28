@@ -49,10 +49,12 @@ import com.almasb.fxglgames.spaceinvaders.component.SubTypeComponent;
 import com.almasb.fxglgames.spaceinvaders.control.*;
 import com.google.inject.Singleton;
 import javafx.geometry.Point2D;
+import javafx.scene.Group;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -76,6 +78,22 @@ public final class SpaceInvadersFactory implements EntityFactory {
         return Entities.builder()
                 .viewFromNode(assetLoader.loadTexture("background/background.png", Config.WIDTH, Config.HEIGHT))
                 .renderLayer(RenderLayer.BACKGROUND)
+                .build();
+    }
+
+    @Spawns("Stars")
+    public Entity newStars(SpawnData data) {
+        Group group = new Group();
+
+        for (int i = 0; i < 70; i++) {
+            group.getChildren().addAll(new Rectangle());
+        }
+
+        EntityView view = new EntityView(group, RenderLayer.BACKGROUND);
+
+        return Entities.builder()
+                .viewFromNode(view)
+                .with(new StarsControl())
                 .build();
     }
 
