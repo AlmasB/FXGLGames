@@ -29,9 +29,7 @@ package com.almasb.fxglgames.spaceinvaders;
 import com.almasb.fxgl.annotation.Handles;
 import com.almasb.fxgl.annotation.OnUserAction;
 import com.almasb.fxgl.app.ApplicationMode;
-import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.core.logging.Logger;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.SpawnData;
@@ -56,6 +54,7 @@ import javafx.util.Duration;
 import java.util.Map;
 import java.util.stream.IntStream;
 
+import static com.almasb.fxgl.app.DSLKt.*;
 import static com.almasb.fxglgames.spaceinvaders.Config.*;
 
 /**
@@ -65,12 +64,10 @@ import static com.almasb.fxglgames.spaceinvaders.Config.*;
  */
 public class SpaceInvadersApp extends GameApplication {
 
-    private Logger log;
-
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Space Invaders");
-        settings.setVersion("0.8.1");
+        settings.setVersion("0.8.2");
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
         settings.setIntroEnabled(false);
@@ -137,8 +134,6 @@ public class SpaceInvadersApp extends GameApplication {
 
     @Override
     protected void initGame() {
-        log = FXGL.getLogger("SpaceInvaders");
-
         // we have to use file system directly, since we are running without menus
         FS.<SaveData>readDataTask(SAVE_DATA_NAME)
                 .onSuccess(data -> savedData = data)
@@ -154,10 +149,18 @@ public class SpaceInvadersApp extends GameApplication {
         highScoreName = data.getName();
         highScore = data.getHighScore();
 
-        getGameplay().getAchievementManager().getAchievementByName("Hitman")
-                .bind(getGameState().intProperty("enemiesKilled").greaterThanOrEqualTo(ACHIEVEMENT_ENEMIES_KILLED));
-        getGameplay().getAchievementManager().getAchievementByName("Master Scorer")
-                .bind(getGameState().intProperty("score").greaterThanOrEqualTo(ACHIEVEMENT_MASTER_SCORER));
+        getGameplay().getAchievementManager()
+                .getAchievementByName("Hitman")
+                .bind(
+                        getip("enemiesKilled").greaterThanOrEqualTo(ACHIEVEMENT_ENEMIES_KILLED)
+                );
+
+
+        getGameplay().getAchievementManager()
+                .getAchievementByName("Master Scorer")
+                .bind(
+                        getip("score").greaterThanOrEqualTo(ACHIEVEMENT_MASTER_SCORER)
+                );
 
         spawnBackground();
         spawnPlayer();
@@ -167,22 +170,20 @@ public class SpaceInvadersApp extends GameApplication {
     }
 
     private void spawnBackground() {
-        getGameWorld().spawn("Background");
+        spawn("Background");
 
-        getGameWorld().spawn("Stars");
+        spawn("Stars");
 
-        getMasterTimer().runAtInterval(() -> {
-            getGameWorld().spawn("Meteor");
-        }, Duration.seconds(3));
+        getMasterTimer().runAtInterval(() -> spawn("Meteor"), Duration.seconds(3));
     }
 
     private void spawnPlayer() {
-        player = (GameEntity) getGameWorld().spawn("Player", getWidth() / 2 - 20, getHeight() - 40);
+        player = (GameEntity) spawn("Player", getWidth() / 2 - 20, getHeight() - 40);
         playerControl = player.getControl(PlayerControl.class);
     }
 
     private void spawnWall(double x, double y) {
-        getGameWorld().spawn("Wall", x, y);
+        spawn("Wall", x, y);
     }
 
     private void spawnBonus(double x, double y, BonusType type) {
@@ -190,11 +191,9 @@ public class SpaceInvadersApp extends GameApplication {
     }
 
     private void initLevel() {
-        log.debug("initLevel()");
-
         for (int y = 0; y < ENEMY_ROWS; y++) {
             for (int x = 0; x < ENEMIES_PER_ROW; x++) {
-                getGameWorld().spawn("Enemy", x*60, 150 + 50 * getGameState().getInt("level") + y*60);
+                spawn("Enemy", x*60, 150 + 50 * geti("level") + y*60);
             }
         }
 
@@ -208,8 +207,6 @@ public class SpaceInvadersApp extends GameApplication {
     }
 
     private void cleanupLevel() {
-        log.debug("cleanupLevel()");
-
         getGameWorld().getEntitiesByType(
                 SpaceInvadersType.BONUS,
                 SpaceInvadersType.WALL,
@@ -218,25 +215,23 @@ public class SpaceInvadersApp extends GameApplication {
     }
 
     private void nextLevel() {
-        log.debug("nextLevel()");
-
         getInput().setProcessInput(false);
 
         cleanupLevel();
 
-        getGameState().setValue("enemiesKilled", 0);
-        getGameState().increment("level", +1);
+        set("enemiesKilled", 0);
+        inc("level", +1);
 
-        if (getGameState().getInt("level") == 3) {
+        if (geti("level") == 3) {
             showGameOver();
             return;
         }
 
-        getGameWorld().spawn("LevelInfo");
+        spawn("LevelInfo");
 
         getMasterTimer().runOnceAfter(this::initLevel, Duration.seconds(LEVEL_START_DELAY));
 
-        getAudioPlayer().playSound(Asset.SOUND_NEW_LEVEL);
+        play(Asset.SOUND_NEW_LEVEL);
     }
 
     @Override
@@ -245,10 +240,10 @@ public class SpaceInvadersApp extends GameApplication {
 
         UI ui = getAssetLoader().loadUI(Asset.FXML_MAIN_UI, uiController);
 
-        uiController.getLabelScore().textProperty().bind(getGameState().intProperty("score").asString("Score: %d"));
+        uiController.getLabelScore().textProperty().bind(getip("score").asString("Score: %d"));
         uiController.getLabelHighScore().setText("HiScore: " + highScore + " " + highScoreName + "");
 
-        IntStream.range(0, getGameState().getInt("lives"))
+        IntStream.range(0, geti("lives"))
                 .forEach(i -> uiController.addLife());
 
         getGameScene().addUI(ui);
@@ -298,7 +293,8 @@ public class SpaceInvadersApp extends GameApplication {
         getGameScene().addUINode(tutorialText);
 
         Tutorial tutorial = new Tutorial(tutorialText, () -> {
-            player.getPositionComponent().setValue(getWidth() / 2 - 20, getHeight() - 40);
+            player.setX(getWidth() / 2 - 20);
+            player.setY(getHeight() - 40);
 
             getGameScene().removeUINode(tutorialText);
             nextLevel();
@@ -311,18 +307,18 @@ public class SpaceInvadersApp extends GameApplication {
 
     @Handles(eventType = "PLAYER_GOT_HIT")
     public void onPlayerGotHit(GameEvent event) {
-        getGameState().increment("lives", -1);
+        //getGameScene().getViewport().shake(12);
+
+        inc("lives", -1);
         uiController.loseLife();
 
         playerControl.enableInvincibility();
 
-        getMasterTimer().runOnceAfter(() -> {
-            playerControl.disableInvincibility();
-        }, Duration.seconds(INVINCIBILITY_TIME));
+        getMasterTimer().runOnceAfter(playerControl::disableInvincibility, Duration.seconds(INVINCIBILITY_TIME));
 
-        getAudioPlayer().playSound(Asset.SOUND_LOSE_LIFE);
+        play(Asset.SOUND_LOSE_LIFE);
 
-        if (getGameState().getInt("lives") == 0)
+        if (geti("lives") == 0)
             showGameOver();
     }
 
@@ -332,10 +328,10 @@ public class SpaceInvadersApp extends GameApplication {
 
     @Handles(eventType = "ENEMY_KILLED")
     public void onEnemyKilled(GameEvent event) {
-        getGameState().increment("enemiesKilled", +1);
-        getGameState().increment("score", scoreForKill());
+        inc("enemiesKilled", +1);
+        inc("score", scoreForKill());
 
-        if (getGameState().getInt("enemiesKilled") == ENEMIES_PER_LEVEL)
+        if (geti("enemiesKilled") == ENEMIES_PER_LEVEL)
             nextLevel();
 
         if (Math.random() < BONUS_SPAWN_CHANCE) {
@@ -348,15 +344,15 @@ public class SpaceInvadersApp extends GameApplication {
 
     @Handles(eventType = "ENEMY_REACHED_END")
     public void onEnemyReachedEnd(GameEvent event) {
-        getGameState().increment("enemiesKilled", +1);
+        inc("enemiesKilled", +1);
 
-        getGameState().increment("lives", -1);
+        inc("lives", -1);
         uiController.loseLife();
 
-        if (getGameState().getInt("lives") == 0)
+        if (geti("lives") == 0)
             showGameOver();
 
-        if (getGameState().getInt("enemiesKilled") == ENEMIES_PER_LEVEL)
+        if (geti("enemiesKilled") == ENEMIES_PER_LEVEL)
             nextLevel();
     }
 

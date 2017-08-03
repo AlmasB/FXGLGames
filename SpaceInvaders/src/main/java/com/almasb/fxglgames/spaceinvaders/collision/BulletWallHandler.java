@@ -26,12 +26,19 @@
 
 package com.almasb.fxglgames.spaceinvaders.collision;
 
+import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.annotation.AddCollisionHandler;
+import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
 import com.almasb.fxglgames.spaceinvaders.component.HPComponent;
 import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;
+import javafx.geometry.Point2D;
+import javafx.util.Duration;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -52,8 +59,28 @@ public class BulletWallHandler extends CollisionHandler {
 
             HPComponent hp = wall.getComponent(HPComponent.class);
             hp.setValue(hp.getValue() - 1);
-            if (hp.getValue() == 0)
-                wall.removeFromWorld();
+
+            if (hp.getValue() == 0) {
+                wall.getComponent(CollidableComponent.class).setValue(false);
+
+                Entities.animationBuilder()
+                        .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
+                        .duration(Duration.seconds(0.8))
+                        .onFinished(wall::removeFromWorld)
+                        .translate((GameEntity) wall)
+                        .from(((GameEntity) wall).getPosition())
+                        .to(new Point2D(((GameEntity) wall).getX(), FXGL.getAppHeight() + 10))
+                        .buildAndPlay();
+            } else {
+                Entities.animationBuilder()
+                        .autoReverse(true)
+                        .repeat(2)
+                        .interpolator(Interpolators.CIRCULAR.EASE_IN())
+                        .duration(Duration.seconds(0.33))
+                        .scale((GameEntity) wall)
+                        .to(new Point2D(1.2, 1.2))
+                        .buildAndPlay();
+            }
         }
     }
 }

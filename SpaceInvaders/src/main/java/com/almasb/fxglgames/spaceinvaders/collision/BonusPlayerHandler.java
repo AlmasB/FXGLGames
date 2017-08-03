@@ -27,6 +27,7 @@
 package com.almasb.fxglgames.spaceinvaders.collision;
 
 import com.almasb.fxgl.animation.Animation;
+import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.annotation.AddCollisionHandler;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.ecs.Entity;
@@ -60,7 +61,8 @@ public class BonusPlayerHandler extends CollisionHandler {
         bonus.removeAllControls();
 
         Animation<?> animation = Entities.animationBuilder()
-                .duration(Duration.seconds(1))
+                .duration(Duration.seconds(0.66))
+                .interpolator(Interpolators.ELASTIC.EASE_IN())
                 .scale((GameEntity) bonus)
                 .to(new Point2D(0, 0))
                 .build();

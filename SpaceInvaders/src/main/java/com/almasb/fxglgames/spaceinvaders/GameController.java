@@ -98,8 +98,10 @@ public class GameController implements UIController {
     public void loseLife() {
         Texture t = lives.get(lives.size() - 1);
 
+        lives.remove(t);
+
         Animation animation = getAnimationLoseLife(t);
-        animation.setOnFinished(e -> lives.remove(t));
+        animation.setOnFinished(e -> gameScene.removeUINode(t));
         animation.play();
 
         Viewport viewport = gameScene.getViewport();
