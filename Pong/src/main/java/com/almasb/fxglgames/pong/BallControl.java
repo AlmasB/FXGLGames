@@ -26,9 +26,13 @@
 
 package com.almasb.fxglgames.pong;
 
+import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.component.BoundingBoxComponent;
 import com.almasb.fxgl.physics.PhysicsComponent;
+import com.almasb.fxgl.physics.PhysicsControl;
+import javafx.geometry.Point2D;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -40,6 +44,7 @@ public class BallControl extends Control {
     @Override
     public void onUpdate(Entity entity, double tpf) {
         limitVelocity();
+        checkOffscreen();
     }
 
     private void limitVelocity() {
@@ -51,6 +56,22 @@ public class BallControl extends Control {
         if (Math.abs(ball.getLinearVelocity().getY()) > 5 * 60 * 2) {
             ball.setLinearVelocity(ball.getLinearVelocity().getX(),
                     Math.signum(ball.getLinearVelocity().getY()) * 5 * 60);
+        }
+    }
+
+    // this is a hack:
+    // we use a physics engine, so it is possible to push the ball against a wall
+    // so that it gets moved outside of the screen
+    private void checkOffscreen() {
+        if (getEntity().getComponent(BoundingBoxComponent.class).isOutside(FXGL.getApp()
+                .getGameScene()
+                .getViewport()
+                .getVisibleArea())) {
+
+            getEntity().getControl(PhysicsControl.class).reposition(new Point2D(
+                    FXGL.getAppWidth() / 2,
+                    FXGL.getAppHeight() / 2
+            ));
         }
     }
 }

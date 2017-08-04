@@ -27,6 +27,7 @@
 package com.almasb.fxglgames.pong;
 
 import com.almasb.fxgl.animation.Animation;
+import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.annotation.OnUserAction;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
@@ -75,9 +76,9 @@ public class PongApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Pong");
-        settings.setVersion("0.3dev");
+        settings.setVersion("0.3.1");
         settings.setIntroEnabled(false);
-        settings.setMenuEnabled(false);
+        settings.setMenuEnabled(false); // enable menu for multiplayer
         settings.setCloseConfirmation(false);
         settings.setProfilingEnabled(false);
         settings.setEnabledMenuItems(EnumSet.of(MenuItem.ONLINE));
@@ -172,6 +173,8 @@ public class PongApp extends GameApplication {
                 } else if (boxB.getName().equals("RIGHT")) {
                     getGameState().increment("player1score", +1);
                 }
+
+                getGameScene().getViewport().shake(5);
             }
         });
 
@@ -180,17 +183,7 @@ public class PongApp extends GameApplication {
             protected void onCollisionBegin(Entity a, Entity b) {
                 GameEntity bat = (GameEntity) b;
 
-                Animation<?> animation = Entities.animationBuilder()
-                        .duration(Duration.seconds(0.05))
-                        .interpolator(Interpolator.EASE_OUT)
-                        .rotate(bat)
-                        .rotateFrom(0)
-                        .rotateTo(FXGLMath.random(-25, 25))
-                        .build();
-
-                animation.setAutoReverse(true);
-                animation.setCycleCount(2);
-                animation.startInPlayState();
+                playHitAnimation(bat);
             }
         });
     }
@@ -302,6 +295,17 @@ public class PongApp extends GameApplication {
         } else {
             playerBat.stop();
         }
+    }
+
+    private void playHitAnimation(GameEntity bat) {
+        Entities.animationBuilder()
+                .autoReverse(true)
+                .duration(Duration.seconds(0.5))
+                .interpolator(Interpolators.BOUNCE.EASE_OUT())
+                .rotate(bat)
+                .rotateFrom(FXGLMath.random(-25, 25))
+                .rotateTo(0)
+                .buildAndPlay();
     }
 
     private void showGameOver(String winner) {
