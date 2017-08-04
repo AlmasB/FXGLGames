@@ -37,11 +37,7 @@ public class CannonFactory implements EntityFactory {
     @Spawns("bullet")
     public Entity newBullet(SpawnData data) {
         PhysicsComponent physics = new PhysicsComponent();
-
-        FixtureDef fd = new FixtureDef();
-        fd.setDensity(0.05f);
-
-        physics.setFixtureDef(fd);
+        physics.setFixtureDef(new FixtureDef().density(0.05f));
         physics.setBodyType(BodyType.DYNAMIC);
 
         physics.setOnPhysicsInitialized(() -> {

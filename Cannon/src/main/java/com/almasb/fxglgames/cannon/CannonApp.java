@@ -26,7 +26,7 @@
 
 package com.almasb.fxglgames.cannon;
 
-import com.almasb.fxgl.animation.Animation;
+import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
@@ -36,7 +36,6 @@ import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxgl.settings.GameSettings;
-import javafx.animation.Interpolator;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
@@ -46,6 +45,12 @@ import javafx.util.Duration;
 import java.util.Map;
 
 /**
+ * A basic FXGL game demo.
+ *
+ * Game:
+ * The player shoots from a "cannon" and tries to
+ * get the projectile in-between the barriers.
+ *
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class CannonApp extends GameApplication {
@@ -54,10 +59,12 @@ public class CannonApp extends GameApplication {
 
     @Override
     protected void initSettings(GameSettings settings) {
+        settings.setWidth(800);
+        settings.setHeight(600);
+        settings.setTitle("Cannon");
+        settings.setVersion("0.2.1");
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
-        settings.setTitle("Cannon");
-        settings.setVersion("0.2dev");
         settings.setProfilingEnabled(false);
         settings.setCloseConfirmation(false);
     }
@@ -115,17 +122,13 @@ public class CannonApp extends GameApplication {
 
                 GameEntity[] entities = getGameWorld().getEntitiesByType(CannonType.BASKET).toArray(new GameEntity[0]);
 
-                Animation<?> animation = Entities.animationBuilder()
-                        .duration(Duration.seconds(0.05))
-                        .interpolator(Interpolator.EASE_OUT)
+                Entities.animationBuilder()
+                        .duration(Duration.seconds(0.2))
+                        .interpolator(Interpolators.EXPONENTIAL.EASE_IN())
                         .scale(entities)
-                        .from(new Point2D(1, 1))
-                        .to(new Point2D(1.2, 1))
-                        .build();
-
-                animation.setAutoReverse(true);
-                animation.setCycleCount(2);
-                animation.startInPlayState();
+                        .from(new Point2D(1.2, 1))
+                        .to(new Point2D(1, 1))
+                        .buildAndPlay();
             }
         });
     }
