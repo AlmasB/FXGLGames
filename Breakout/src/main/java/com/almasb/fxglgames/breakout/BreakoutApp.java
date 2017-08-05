@@ -28,9 +28,9 @@ package com.almasb.fxglgames.breakout;
 
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.audio.Music;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.ecs.component.IrremovableComponent;
 import com.almasb.fxgl.effect.ParticleControl;
 import com.almasb.fxgl.effect.ParticleEmitter;
 import com.almasb.fxgl.entity.Entities;
@@ -116,19 +116,18 @@ public class BreakoutApp extends GameApplication {
     }
 
     private void initBGM() {
-        Music music = getAssetLoader().loadMusic("BGM01.wav");
-        music.setCycleCount(Integer.MAX_VALUE);
-
-        getAudioPlayer().playMusic(music);
+        getAudioPlayer().loopBGM("BGM01.wav");
     }
 
     private void initLevel() {
+        initBackground();
+
         TextLevelParser parser = new TextLevelParser(new BreakoutFactory());
         Level level = parser.parse("levels/level1.txt");
         getGameWorld().setLevel(level);
+    }
 
-        getGameWorld().addEntity(Entities.makeScreenBounds(40));
-
+    private void initBackground() {
         Rectangle bg0 = new Rectangle(getWidth(), getHeight(),
                 new LinearGradient(getWidth() / 2, 0, getWidth() / 2, getHeight(),
                         false, CycleMethod.NO_CYCLE,
@@ -141,9 +140,17 @@ public class BreakoutApp extends GameApplication {
         bg.addNode(bg0);
         bg.addNode(bg1);
 
+        // we add IrremovableComponent because regardless of the level
+        // the background and screen bounds stay in the game world
         Entities.builder()
                 .viewFromNode(bg)
+                .with(new IrremovableComponent())
                 .buildAndAttach(getGameWorld());
+
+        Entity screenBounds = Entities.makeScreenBounds(40);
+        screenBounds.addComponent(new IrremovableComponent());
+
+        getGameWorld().addEntity(screenBounds);
     }
 
     private void initBubbles() {
