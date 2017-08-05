@@ -85,7 +85,7 @@ public class NCCApp extends GameApplication {
 
     private EntityView getView(Entity e) {
         Text text = getUIFactory().newText("", Color.BLACK, 18.0);
-        text.textProperty().bind(e.getComponentUnsafe(CardComponent.class).getValue().toStringProperty());
+        text.textProperty().bind(e.getComponent(CardComponent.class).getValue().toStringProperty());
 
         EntityView view = new EntityView();
         view.addNode(text);
@@ -96,16 +96,16 @@ public class NCCApp extends GameApplication {
     private void nextTurn() {
         for (int i = 0; i < 5; i++) {
             Entity cardEntity = playerCards.get(i);
-            Card card = cardEntity.getComponentUnsafe(CardComponent.class).getValue();
+            Card card = cardEntity.getComponent(CardComponent.class).getValue();
 
             if (card.isAlive()) {
                 Entity cardEntity2 = enemyCards.get(i);
-                Card card2 = cardEntity2.getComponentUnsafe(CardComponent.class).getValue();
+                Card card2 = cardEntity2.getComponent(CardComponent.class).getValue();
 
                 if (card2.isAlive()) {
                     attack(cardEntity, cardEntity2);
                 } else {
-                    enemyCards.stream().filter(e -> e.getComponentUnsafe(CardComponent.class).getValue().isAlive()).findAny().ifPresent(c -> {
+                    enemyCards.stream().filter(e -> e.getComponent(CardComponent.class).getValue().isAlive()).findAny().ifPresent(c -> {
                         attack(cardEntity, c);
                     });
                 }
@@ -116,16 +116,16 @@ public class NCCApp extends GameApplication {
 
         for (int i = 0; i < 5; i++) {
             Entity cardEntity = enemyCards.get(i);
-            Card card = cardEntity.getComponentUnsafe(CardComponent.class).getValue();
+            Card card = cardEntity.getComponent(CardComponent.class).getValue();
 
             if (card.isAlive()) {
                 Entity cardEntity2 = playerCards.get(i);
-                Card card2 = cardEntity2.getComponentUnsafe(CardComponent.class).getValue();
+                Card card2 = cardEntity2.getComponent(CardComponent.class).getValue();
 
                 if (card2.isAlive()) {
                     attack(cardEntity, cardEntity2);
                 } else {
-                    playerCards.stream().filter(e -> e.getComponentUnsafe(CardComponent.class).getValue().isAlive()).findAny().ifPresent(c -> {
+                    playerCards.stream().filter(e -> e.getComponent(CardComponent.class).getValue().isAlive()).findAny().ifPresent(c -> {
                         attack(cardEntity, c);
                     });
                 }
@@ -140,16 +140,16 @@ public class NCCApp extends GameApplication {
     }
 
     private void attack(Entity e1, Entity e2) {
-        int atk = e1.getComponentUnsafe(CardComponent.class).getValue().getAtk();
-        int def = e2.getComponentUnsafe(CardComponent.class).getValue().getDef();
+        int atk = e1.getComponent(CardComponent.class).getValue().getAtk();
+        int def = e2.getComponent(CardComponent.class).getValue().getDef();
 
-        int hp = e2.getComponentUnsafe(CardComponent.class).getValue().getHp() - (atk - def);
-        e2.getComponentUnsafe(CardComponent.class).getValue().setHp(hp);
+        int hp = e2.getComponent(CardComponent.class).getValue().getHp() - (atk - def);
+        e2.getComponent(CardComponent.class).getValue().setHp(hp);
     }
 
     private boolean isAlive(List<Entity> cards) {
         return cards.stream()
-                .map(e -> e.getComponentUnsafe(CardComponent.class).getValue())
+                .map(e -> e.getComponent(CardComponent.class).getValue())
                 .anyMatch(Card::isAlive);
     }
 

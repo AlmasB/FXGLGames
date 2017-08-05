@@ -2,8 +2,8 @@ package com.almasb.fxglgames.ncc;
 
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.ecs.EntityWorldListener;
+import com.almasb.fxgl.ecs.GameWorld;
 import com.almasb.fxgl.entity.EntityView;
-import com.almasb.fxgl.entity.GameWorld;
 import com.almasb.fxgl.ui.UIController;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
@@ -97,11 +97,6 @@ public class GameController implements UIController {
 
             @Override
             public void onWorldUpdate(double tpf) {
-
-            }
-
-            @Override
-            public void onWorldReset() {
 
             }
         });

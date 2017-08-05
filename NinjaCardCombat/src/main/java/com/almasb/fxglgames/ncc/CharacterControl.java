@@ -1,6 +1,6 @@
 package com.almasb.fxglgames.ncc;
 
-import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxgl.ecs.Entity;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -10,7 +10,7 @@ import javafx.collections.ObservableList;
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class CharacterControl extends AbstractControl {
+public class CharacterControl extends Control {
 
     private IntegerProperty hp = new SimpleIntegerProperty(100);
 
