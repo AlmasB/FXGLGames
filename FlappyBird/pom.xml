@@ -6,7 +6,7 @@
 
     <groupId>com.almasb</groupId>
     <artifactId>FlappyBird</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -16,7 +16,7 @@
         <maven.compiler.version>3.3</maven.compiler.version>
         <maven.shade.version>2.4.2</maven.shade.version>
 
-        <fxgl.version>0.3.5</fxgl.version>
+        <fxgl.version>0.3.6</fxgl.version>
     </properties>
 
     <dependencies>
