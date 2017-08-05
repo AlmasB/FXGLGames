@@ -13,9 +13,12 @@ import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.entity.control.KeepOnScreenControl;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.entity.control.ProjectileControl;
-import com.almasb.fxglgames.geowars.control.*;
 import com.almasb.fxglgames.geowars.component.HPComponent;
 import com.almasb.fxglgames.geowars.component.OldPositionComponent;
+import com.almasb.fxglgames.geowars.control.BulletControl;
+import com.almasb.fxglgames.geowars.control.PlayerControl;
+import com.almasb.fxglgames.geowars.control.SeekerControl;
+import com.almasb.fxglgames.geowars.control.WandererControl;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 

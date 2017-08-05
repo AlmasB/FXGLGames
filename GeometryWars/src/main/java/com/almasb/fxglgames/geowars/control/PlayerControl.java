@@ -3,6 +3,7 @@ package com.almasb.fxglgames.geowars.control;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.math.Vec2;
+import com.almasb.fxgl.core.pool.Pools;
 import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
@@ -10,10 +11,13 @@ import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.time.LocalTimer;
+import com.almasb.fxglgames.geowars.GeoWarsType;
 import com.almasb.fxglgames.geowars.WeaponType;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.Bloom;
 import javafx.scene.paint.Color;
+
+import static com.almasb.fxgl.app.DSLKt.geto;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -36,7 +40,7 @@ public class PlayerControl extends Control {
     }
 
     public void shoot(Point2D shootPoint) {
-        WeaponType type = FXGL.getApp().getGameState().getObject("weaponType");
+        WeaponType type = geto("weaponType");
 
         if (weaponTimer.elapsed(type.delay)) {
             Point2D position = player.getCenter().subtract(14, 4.5);
@@ -84,6 +88,22 @@ public class PlayerControl extends Control {
                 new SpawnData(position.getX(), position.getY())
                         .put("direction", direction)
         );
+    }
+
+    public void releaseShockwave() {
+        FXGL.getApp()
+                .getGameWorld()
+                .getEntitiesByType(GeoWarsType.SEEKER, GeoWarsType.WANDERER)
+                .stream()
+                .map(e -> (GameEntity) e)
+                .forEach(e -> {
+                    Point2D vector = e.getCenter()
+                            .subtract(player.getCenter())
+                            .normalize()
+                            .multiply(100);
+
+                    e.translate(vector);
+                });
     }
 
     public void left() {
@@ -149,16 +169,16 @@ public class PlayerControl extends Control {
                 .with(new ExhaustParticleControl(velSide2, 800, sideColor))
                 .buildAndAttach(FXGL.getApp().getGameWorld());
 
-//        Pools.free(direction);
-//        Pools.free(position);
-//        Pools.free(baseVel);
-//        Pools.free(perpVel);
-//        Pools.free(pos);
-//        Pools.free(randVec);
-//        Pools.free(velMid);
-//        Pools.free(randVec1);
-//        Pools.free(randVec2);
-//        Pools.free(velSide1);
-//        Pools.free(velSide2);
+        Pools.free(direction);
+        Pools.free(position);
+        Pools.free(baseVel);
+        Pools.free(perpVel);
+        Pools.free(pos);
+        Pools.free(randVec);
+        Pools.free(velMid);
+        Pools.free(randVec1);
+        Pools.free(randVec2);
+        Pools.free(velSide1);
+        Pools.free(velSide2);
     }
 }

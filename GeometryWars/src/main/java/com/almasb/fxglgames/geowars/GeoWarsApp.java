@@ -25,6 +25,8 @@
  */
 package com.almasb.fxglgames.geowars;
 
+import com.almasb.fxgl.animation.Animation;
+import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.ecs.Entity;
@@ -39,15 +41,14 @@ import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.ui.WheelMenu;
 import com.almasb.fxglgames.geowars.component.GraphicsComponent;
 import com.almasb.fxglgames.geowars.component.HPComponent;
-import com.almasb.fxglgames.geowars.control.GraphicsUpdateControl;
-import com.almasb.fxglgames.geowars.grid.Grid;
 import com.almasb.fxglgames.geowars.component.OldPositionComponent;
+import com.almasb.fxglgames.geowars.control.GraphicsUpdateControl;
 import com.almasb.fxglgames.geowars.control.PlayerControl;
+import com.almasb.fxglgames.geowars.grid.Grid;
 import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.effect.Bloom;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
@@ -57,6 +58,8 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.util.Map;
+
+import static com.almasb.fxgl.app.DSLKt.*;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -81,7 +84,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("FXGL Geometry Wars");
-        settings.setVersion("0.7.1");
+        settings.setVersion("0.7.2");
         settings.setFullScreen(false);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
@@ -128,6 +131,13 @@ public class GeoWarsApp extends GameApplication {
             }
         }, KeyCode.S);
 
+        input.addAction(new UserAction("Shockwave") {
+            @Override
+            protected void onActionBegin() {
+                playerControl.releaseShockwave();
+            }
+        }, KeyCode.F);
+
         input.addAction(new UserAction("Shoot") {
             @Override
             protected void onAction() {
@@ -158,15 +168,15 @@ public class GeoWarsApp extends GameApplication {
         getAudioPlayer().setGlobalMusicVolume(0.1);
 
         initBackground();
-        player = (GameEntity) getGameWorld().spawn("Player");
+        player = (GameEntity) spawn("Player");
         playerControl = player.getControl(PlayerControl.class);
 
-        getMasterTimer().runAtInterval(() -> getGameWorld().spawn("Wanderer"), Duration.seconds(1));
-        getMasterTimer().runAtInterval(() -> getGameWorld().spawn("Seeker"), Duration.seconds(2));
-        getMasterTimer().runAtInterval(() -> getGameWorld().spawn("Crystal", getRandomPoint()), Duration.seconds(4));
-        getMasterTimer().runAtInterval(() -> getGameState().increment("time", -1), Duration.seconds(1));
+        getMasterTimer().runAtInterval(() -> spawn("Wanderer"), Duration.seconds(1));
+        getMasterTimer().runAtInterval(() -> spawn("Seeker"), Duration.seconds(2));
+        getMasterTimer().runAtInterval(() -> spawn("Crystal", getRandomPoint()), Duration.seconds(4));
+        getMasterTimer().runAtInterval(() -> inc("time", -1), Duration.seconds(1));
 
-        getAudioPlayer().playMusic("bgm.mp3");
+        loopBGM("bgm.mp3");
     }
 
     @Override
@@ -182,9 +192,9 @@ public class GeoWarsApp extends GameApplication {
                 hp.setValue(hp.getValue() - 1);
 
                 if (hp.getValue() == 0) {
-                    getGameWorld().spawn("Explosion", Entities.getBBox(enemy).getCenterWorld());
+                    spawn("Explosion", Entities.getBBox(enemy).getCenterWorld());
+                    addScoreKill(Entities.getBBox(enemy).getCenterWorld());
                     enemy.removeFromWorld();
-                    addScoreKill();
                 }
             }
         };
@@ -203,22 +213,6 @@ public class GeoWarsApp extends GameApplication {
 
         physics.addCollisionHandler(playerEnemy);
         physics.addCollisionHandler(playerEnemy.copyFor(GeoWarsType.PLAYER, GeoWarsType.SEEKER));
-
-        // TODO: add shockwave skill
-//        CollisionHandler shockEnemy = new CollisionHandler(GeoWarsType.SHOCKWAVE, GeoWarsType.SEEKER) {
-//            @Override
-//            protected void onCollisionBegin(Entity a, Entity b) {
-//                PositionComponent pos = Entities.getPosition(b);
-//
-//                pos.translate(pos.getValue()
-//                        .subtract(Entities.getPosition(player).getValue())
-//                        .normalize()
-//                        .multiply(100));
-//            }
-//        };
-//
-//        physics.addCollisionHandler(shockEnemy);
-//        physics.addCollisionHandler(shockEnemy.copyFor(GeoWarsType.SHOCKWAVE, GeoWarsType.WANDERER));
     }
 
     private WheelMenu weaponMenu;
@@ -228,7 +222,7 @@ public class GeoWarsApp extends GameApplication {
         Text scoreText = getUIFactory().newText("", Color.WHITE, 18);
         scoreText.setTranslateX(1100);
         scoreText.setTranslateY(70);
-        scoreText.textProperty().bind(getGameState().intProperty("score").asString());
+        scoreText.textProperty().bind(getip("score").asString());
 
         Text timerText = getUIFactory().newText("", Color.WHITE, 18);
         timerText.layoutBoundsProperty().addListener((o, old, bounds) -> {
@@ -237,7 +231,7 @@ public class GeoWarsApp extends GameApplication {
 
         timerText.setTranslateX(getWidth() / 2);
         timerText.setTranslateY(60);
-        timerText.textProperty().bind(getGameState().intProperty("time").asString());
+        timerText.textProperty().bind(getip("time").asString());
 
         Circle timerCircle = new Circle(40, 40, 40, null);
         timerCircle.setStrokeWidth(2);
@@ -256,8 +250,8 @@ public class GeoWarsApp extends GameApplication {
 
         weaponMenu.setSelectionHandler(typeName -> {
             WeaponType type = WeaponType.valueOf(typeName);
-            getGameState().setValue("weaponType", type);
-            getAudioPlayer().playSound(typeName.toLowerCase() + ".wav");
+            set("weaponType", type);
+            play(typeName.toLowerCase() + ".wav");
         });
 
         getGameScene().addUINodes(scoreText, timerText, timerCircle, weaponMenu);
@@ -290,13 +284,13 @@ public class GeoWarsApp extends GameApplication {
 
     @Override
     protected void onPostUpdate(double tpf) {
-        if (getGameState().getInt("time") == 0) {
+        if (geti("time") == 0) {
             getDisplay().showMessageBox("Demo Over. Your score: " + getGameState().getInt("score"), this::exit);
         }
     }
 
     private void initBackground() {
-        EntityView backgroundView = new EntityView(getAssetLoader().loadTexture("background.png", getWidth(), getHeight()));
+        EntityView backgroundView = new EntityView(texture("background.png", getWidth(), getHeight()));
         getGameScene().addGameView(backgroundView);
 
         Canvas canvas = new Canvas(getWidth(), getHeight());
@@ -324,36 +318,35 @@ public class GeoWarsApp extends GameApplication {
         return new Point2D(Math.random() * getWidth(), Math.random() * getHeight());
     }
 
-    private void addScoreKill() {
-        getGameState().increment("kills", 1);
-        if (getGameState().getInt("kills") == 15) {
-            getGameState().setValue("kills", 0);
-            getGameState().increment("multiplier", +1);
+    private void addScoreKill(Point2D enemyPosition) {
+        inc("kills", +1);
+
+        if (geti("kills") == 15) {
+            set("kills", 0);
+            inc("multiplier", +1);
         }
 
-        final int multiplier = getGameState().getInt("multiplier");
+        final int multiplier = geti("multiplier");
 
-        Text bonusText = getUIFactory().newText("+100" + (multiplier == 1 ? "" : "x" + multiplier), Color.WHITE, 18);
-        bonusText.setTranslateX(1100);
-        bonusText.setTranslateY(0);
+        Text bonusText = getUIFactory().newText("+100" + (multiplier == 1 ? "" : "x" + multiplier), Color.color(1, 1, 1, 0.8), 20);
 
         getGameScene().addUINode(bonusText);
 
-        TranslateTransition tt = new TranslateTransition(Duration.seconds(0.5), bonusText);
-        tt.setToY(70);
-        tt.setOnFinished(e -> {
-            getGameState().increment("score", +100*multiplier);
+        Animation<?> animation = getUIFactory().translate(bonusText, enemyPosition, new Point2D(1100, 70), Duration.seconds(1));
+        animation.getAnimatedValue().setInterpolator(Interpolators.EXPONENTIAL.EASE_IN());
+        animation.setOnFinished(() -> {
+            inc("score", +100*multiplier);
             getGameScene().removeUINode(bonusText);
         });
-        tt.play();
+        animation.startInPlayState();
     }
 
     private void deductScoreDeath() {
-        getGameState().increment("score", -1000);
-        getGameState().setValue("kills", 0);
-        getGameState().setValue("multiplier", 1);
+        inc("score", -1000);
+        set("kills", 0);
+        set("multiplier", 1);
 
-        Text bonusText = getUIFactory().newText("-1000", Color.WHITE, 18);
+        Text bonusText = getUIFactory().newText("-1000", Color.WHITE, 20);
         bonusText.setTranslateX(1100);
         bonusText.setTranslateY(70);
 
