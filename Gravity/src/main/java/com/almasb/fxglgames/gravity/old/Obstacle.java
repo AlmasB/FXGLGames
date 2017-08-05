@@ -1,6 +1,6 @@
 package com.almasb.fxglgames.gravity.old;
 
-import org.jbox2d.dynamics.BodyType;
+import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 
 public class Obstacle extends GameObject {
 

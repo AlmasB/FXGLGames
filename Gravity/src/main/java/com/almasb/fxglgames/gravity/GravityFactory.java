@@ -34,6 +34,8 @@ import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
+import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
+import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxglgames.gravity.scifi.PlayerControl;
 import com.almasb.fxglgames.gravity.scifi.ScifiType;
@@ -43,8 +45,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.FixtureDef;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -66,10 +66,7 @@ public class GravityFactory implements EntityFactory {
     public Entity newEnemy(SpawnData data) {
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.DYNAMIC);
-
-        FixtureDef fd = new FixtureDef();
-        fd.setDensity(0.03f);
-        physics.setFixtureDef(fd);
+        physics.setFixtureDef(new FixtureDef().density(0.03f));
 
         return Entities.builder()
                 .at(data.getX(), data.getY())

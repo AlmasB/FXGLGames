@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
 
-import org.jbox2d.dynamics.BodyType;
+import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 
 public class Player extends GameObject {
 

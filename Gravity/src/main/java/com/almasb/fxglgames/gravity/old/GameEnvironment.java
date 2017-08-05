@@ -17,12 +17,12 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.scene.transform.Scale;
 
-import org.jbox2d.callbacks.ContactImpulse;
-import org.jbox2d.callbacks.ContactListener;
-import org.jbox2d.collision.Manifold;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.World;
-import org.jbox2d.dynamics.contacts.Contact;
+import com.almasb.fxgl.physics.box2d.callbacks.ContactImpulse;
+import com.almasb.fxgl.physics.box2d.callbacks.ContactListener;
+import com.almasb.fxgl.physics.box2d.collision.Manifold;
+import com.almasb.fxgl.physics.box2d.dynamics.Body;
+import com.almasb.fxgl.physics.box2d.dynamics.World;
+import com.almasb.fxgl.physics.box2d.dynamics.contacts.Contact;
 
 public abstract class GameEnvironment extends Application {
     /**

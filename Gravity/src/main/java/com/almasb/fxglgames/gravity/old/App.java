@@ -11,7 +11,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
-import org.jbox2d.dynamics.World;
+import com.almasb.fxgl.physics.box2d.dynamics.World;
 
 public class App extends GameEnvironment {
     /**

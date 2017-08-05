@@ -3,7 +3,7 @@ package com.almasb.fxglgames.gravity.old;
 import com.almasb.fxgl.core.math.Vec2;
 import javafx.scene.image.ImageView;
 
-import org.jbox2d.dynamics.BodyType;
+import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 
 public class Stone extends GameObject {
 

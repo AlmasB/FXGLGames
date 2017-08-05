@@ -35,7 +35,6 @@ import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxglgames.gravity.scifi.PlayerControl;
 import com.almasb.fxglgames.gravity.scifi.ScifiType;
-import com.almasb.fxglgames.gravity.scifi.UsableControl;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 
@@ -76,7 +75,7 @@ public class GravityApp extends GameApplication {
 
                 GameEntity key = (GameEntity) getGameWorld().getEntitiesByType(ScifiType.ENEMY).get(0);
 
-                PhysicsComponent physics = key.getComponentUnsafe(PhysicsComponent.class);
+                PhysicsComponent physics = key.getComponent(PhysicsComponent.class);
                 physics.applyForceToCenter(player.getCenter().subtract(key.getCenter()).normalize().multiply(550));
             }
         }, KeyCode.Q);
@@ -87,7 +86,7 @@ public class GravityApp extends GameApplication {
 
                 GameEntity key = (GameEntity) getGameWorld().getEntitiesByType(ScifiType.ENEMY).get(0);
 
-                PhysicsComponent physics = key.getComponentUnsafe(PhysicsComponent.class);
+                PhysicsComponent physics = key.getComponent(PhysicsComponent.class);
                 physics.applyForceToCenter(player.getCenter().subtract(key.getCenter()).normalize().multiply(-550));
             }
         }, KeyCode.E);
@@ -116,7 +115,7 @@ public class GravityApp extends GameApplication {
         getGameWorld().spawn("button", 30, 340);
 
         player = (GameEntity) getGameWorld().spawn("player", 100, 100);
-        playerControl = player.getControlUnsafe(PlayerControl.class);
+        playerControl = player.getControl(PlayerControl.class);
 
         getGameWorld().spawn("key", 500, 10);
 

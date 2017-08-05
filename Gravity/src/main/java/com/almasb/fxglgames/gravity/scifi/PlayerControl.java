@@ -26,10 +26,10 @@
 
 package com.almasb.fxglgames.gravity.scifi;
 
-import com.almasb.fxgl.ecs.AbstractControl;
+import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.ecs.GameWorld;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.GameWorld;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxgl.entity.component.ViewComponent;
@@ -40,7 +40,7 @@ import javafx.geometry.Point2D;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class PlayerControl extends AbstractControl {
+public class PlayerControl extends Control {
 
     private PositionComponent position;
     private ViewComponent view;
@@ -126,7 +126,7 @@ public class PlayerControl extends AbstractControl {
                 .normalize()
                 .multiply(500);
 
-        ((GameWorld) getEntity().getWorld()).spawn("Arrow",
+        getEntity().getWorld().spawn("Arrow",
                 new SpawnData(x, y)
                         .put("velocity", velocity)
                         .put("shooter", getEntity()));
