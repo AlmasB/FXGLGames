@@ -26,12 +26,13 @@
 
 package com.almasb.fxglgames.outrun
 
+import com.almasb.fxgl.animation.Interpolators
+import com.almasb.fxgl.app.FXGL
 import com.almasb.fxgl.ecs.Control
 import com.almasb.fxgl.ecs.Entity
 import com.almasb.fxgl.entity.component.BoundingBoxComponent
 import com.almasb.fxgl.entity.component.PositionComponent
 import com.almasb.fxgl.entity.component.ViewComponent
-import javafx.animation.FadeTransition
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.util.Duration
 
@@ -98,14 +99,8 @@ class PlayerControl : Control() {
         dy = 0.0
         val view = getEntity().getComponent(ViewComponent::class.java).view
 
-        val fade = FadeTransition(Duration.seconds(1.0), view)
-        with(fade) {
-            fromValue = 1.0
-            toValue = 0.0
-            cycleCount = 2
-            isAutoReverse = true
-        }
-
-        fade.play()
+        val anim = FXGL.getUIFactory().fadeOutIn(view, Duration.seconds(1.5))
+        anim.animatedValue.interpolator = Interpolators.BOUNCE.EASE_IN()
+        anim.startInPlayState()
     }
 }

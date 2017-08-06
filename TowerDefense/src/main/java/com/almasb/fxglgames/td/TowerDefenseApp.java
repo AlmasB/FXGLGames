@@ -58,7 +58,7 @@ public class TowerDefenseApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Tower Defense");
-        settings.setVersion("0.2dev");
+        settings.setVersion("0.2");
         settings.setWidth(800);
         settings.setHeight(600);
         settings.setIntroEnabled(false);

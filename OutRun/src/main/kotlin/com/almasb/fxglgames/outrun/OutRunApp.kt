@@ -26,6 +26,7 @@
 
 package com.almasb.fxglgames.outrun
 
+import com.almasb.fxgl.animation.Interpolators
 import com.almasb.fxgl.app.ApplicationMode
 import com.almasb.fxgl.app.GameApplication
 import com.almasb.fxgl.app.getd
@@ -37,7 +38,6 @@ import com.almasb.fxgl.parser.text.TextLevelParser
 import com.almasb.fxgl.physics.CollisionHandler
 import com.almasb.fxgl.settings.GameSettings
 import com.almasb.fxgl.ui.ProgressBar
-import javafx.animation.FadeTransition
 import javafx.application.Application
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.scene.input.KeyCode
@@ -57,7 +57,7 @@ class OutRunApp : GameApplication() {
             width = 600
             height = 800;
             title = "OutRun"
-            version = "0.2"
+            version = "0.3"
             isProfilingEnabled = false
             isIntroEnabled = false
             isMenuEnabled = false
@@ -136,12 +136,13 @@ class OutRunApp : GameApplication() {
 
         gameScene.addUINode(label)
 
+        val anim = uiFactory.fadeIn(label, Duration.seconds(1.0))
+        anim.cycleCount = 3
+        anim.animatedValue.interpolator = Interpolators.CIRCULAR.EASE_IN()
+        anim.startInPlayState()
+
         val timerAction = masterTimer.runAtInterval(Runnable {
             count.set(count.get() - 1)
-            val animation = FadeTransition(Duration.seconds(0.33), label)
-            animation.fromValue = 0.0
-            animation.toValue = 1.0
-            animation.play()
         }, Duration.seconds(1.0))
 
         count.addListener({ _, _, newValue ->

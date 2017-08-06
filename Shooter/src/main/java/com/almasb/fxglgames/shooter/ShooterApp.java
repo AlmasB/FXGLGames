@@ -23,7 +23,7 @@ public class ShooterApp extends GameApplication {
         settings.setWidth(800);
         settings.setHeight(600);
         settings.setTitle("Shooter App");
-        settings.setVersion("0.1");
+        settings.setVersion("1.0");
         settings.setProfilingEnabled(false);
         settings.setCloseConfirmation(false);
         settings.setIntroEnabled(false);
@@ -56,8 +56,8 @@ public class ShooterApp extends GameApplication {
 
             if (numEnemies < 5) {
                 getGameWorld().spawn("Enemy",
-                        FXGLMath.random(0, (int) getWidth() - 40),
-                        FXGLMath.random(0, (int) getHeight() / 2 - 40)
+                        FXGLMath.random(0, getWidth() - 40),
+                        FXGLMath.random(0, getHeight() / 2 - 40)
                 );
 
                 getGameState().increment("enemies", +1);
