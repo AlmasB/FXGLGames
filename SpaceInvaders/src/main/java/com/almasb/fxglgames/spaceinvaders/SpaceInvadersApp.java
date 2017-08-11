@@ -26,11 +26,14 @@
 
 package com.almasb.fxglgames.spaceinvaders;
 
+import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.annotation.Handles;
 import com.almasb.fxgl.annotation.OnUserAction;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.gameplay.Achievement;
@@ -40,17 +43,20 @@ import com.almasb.fxgl.input.InputMapping;
 import com.almasb.fxgl.io.FS;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.ui.UI;
+import com.almasb.fxglgames.spaceinvaders.control.EnemyControl;
 import com.almasb.fxglgames.spaceinvaders.control.PlayerControl;
 import com.almasb.fxglgames.spaceinvaders.event.BonusPickupEvent;
 import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
 import com.almasb.fxglgames.spaceinvaders.tutorial.Tutorial;
 import com.almasb.fxglgames.spaceinvaders.tutorial.TutorialStep;
+import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
@@ -67,7 +73,7 @@ public class SpaceInvadersApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Space Invaders");
-        settings.setVersion("0.8.2");
+        settings.setVersion("0.8.3");
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
         settings.setIntroEnabled(false);
@@ -120,6 +126,8 @@ public class SpaceInvadersApp extends GameApplication {
     protected void preInit() {
         getAudioPlayer().setGlobalSoundVolume(0.2);
         getAudioPlayer().setGlobalMusicVolume(0.2);
+
+        loopBGM("bgm.mp3");
     }
 
     private SaveData savedData = null;
@@ -193,7 +201,15 @@ public class SpaceInvadersApp extends GameApplication {
     private void initLevel() {
         for (int y = 0; y < ENEMY_ROWS; y++) {
             for (int x = 0; x < ENEMIES_PER_ROW; x++) {
-                spawn("Enemy", x*60, 150 + 50 * geti("level") + y*60);
+                GameEntity enemy = (GameEntity) spawn("Enemy", x*60, 150 + 50 * geti("level") + y*60);
+
+                Entities.animationBuilder()
+                        .interpolator(Interpolators.ELASTIC.EASE_OUT())
+                        .duration(Duration.seconds(FXGLMath.random() * 2))
+                        .scale(enemy)
+                        .from(new Point2D(0, 0))
+                        .to(new Point2D(1, 1))
+                        .buildAndPlay();
             }
         }
 
@@ -366,7 +382,17 @@ public class SpaceInvadersApp extends GameApplication {
                 getGameState().increment("lives", +1);
                 uiController.addLife();
                 break;
+            case BOMB:
+                killRandomEnemy();
+                break;
         }
+    }
+
+    private void killRandomEnemy() {
+        List<Entity> list = getGameWorld().getEntitiesByType(SpaceInvadersType.ENEMY);
+        list.get(FXGLMath.random(0, list.size() - 1))
+                .getControl(EnemyControl.class)
+                .die();
     }
 
     private void showGameOver() {

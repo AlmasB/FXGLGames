@@ -40,6 +40,7 @@ import com.almasb.fxglgames.spaceinvaders.ExplosionEmitter;
 import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
 import com.almasb.fxglgames.spaceinvaders.component.HPComponent;
 import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;
+import com.almasb.fxglgames.spaceinvaders.control.EnemyControl;
 import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;
@@ -73,21 +74,7 @@ public class BulletEnemyHandler extends CollisionHandler {
         hp.setValue(hp.getValue() - 1);
 
         if (hp.getValue() <= 0) {
-
-            FXGL.getMasterTimer().runOnceAfter(() -> {
-                Entity entity = new Entity();
-                entity.addComponent(new PositionComponent(Entities.getBBox(enemy).getCenterWorld()));
-                entity.addControl(new ParticleControl(new ExplosionEmitter()));
-                entity.addControl(new ExpireCleanControl(Duration.seconds(1)));
-                world.addEntity(entity);
-
-                world.spawn("Explosion", Entities.getBBox(enemy).getCenterWorld());
-
-                enemy.removeFromWorld();
-            }, Duration.seconds(0.1));
-
-            FXGL.getAudioPlayer().playSound("explosion.wav");
-            FXGL.getEventBus().fireEvent(new GameEvent(GameEvent.ENEMY_KILLED));
+            enemy.getControl(EnemyControl.class).die();
         } else {
             world.spawn("LaserHit", hitPosition);
 

@@ -31,10 +31,15 @@ import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.ecs.GameWorld;
+import com.almasb.fxgl.effect.ParticleControl;
+import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
 import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.time.LocalTimer;
+import com.almasb.fxglgames.spaceinvaders.ExplosionEmitter;
 import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
 import javafx.util.Duration;
 
@@ -53,8 +58,12 @@ public class EnemyControl extends Control {
     private PositionComponent position;
     private BoundingBoxComponent bbox;
 
+    private GameEntity enemy;
+
     @Override
     public void onAdded(Entity entity) {
+        enemy = (GameEntity) entity;
+
         attackTimer = FXGL.newLocalTimer();
         attackTimer.capture();
 
@@ -93,5 +102,22 @@ public class EnemyControl extends Control {
         world.spawn("Bullet", new SpawnData(0, 0).put("owner", getEntity()));
 
         FXGL.getAudioPlayer().playSound("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
+    }
+
+    public void die() {
+        FXGL.getMasterTimer().runOnceAfter(() -> {
+            Entity entity = new Entity();
+            entity.addComponent(new PositionComponent(enemy.getCenter()));
+            entity.addControl(new ParticleControl(new ExplosionEmitter()));
+            entity.addControl(new ExpireCleanControl(Duration.seconds(1)));
+
+            enemy.getWorld().addEntity(entity);
+            enemy.getWorld().spawn("Explosion", enemy.getCenter());
+
+            enemy.removeFromWorld();
+        }, Duration.seconds(0.1));
+
+        FXGL.getAudioPlayer().playSound("explosion.wav");
+        FXGL.getEventBus().fireEvent(new GameEvent(GameEvent.ENEMY_KILLED));
     }
 }
