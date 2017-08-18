@@ -205,6 +205,8 @@ public class GeoWarsApp extends GameApplication {
         CollisionHandler playerEnemy = new CollisionHandler(GeoWarsType.PLAYER, GeoWarsType.WANDERER) {
             @Override
             protected void onCollisionBegin(Entity a, Entity b) {
+                getGameScene().getViewport().shake(8);
+
                 Entities.getPosition(a).setValue(getRandomPoint());
                 b.removeFromWorld();
                 deductScoreDeath();
