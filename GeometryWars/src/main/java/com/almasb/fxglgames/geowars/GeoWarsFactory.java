@@ -28,14 +28,10 @@ import javafx.util.Duration;
 @SetEntityFactory
 public class GeoWarsFactory implements EntityFactory {
 
-    private GeoWarsConfig config;
+    private final GeoWarsConfig config;
 
     public GeoWarsFactory() {
-        try {
-            config = FXGL.getAssetLoader().loadKV("config.kv").to(GeoWarsConfig.class);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Failed to parse KV file: " + e);
-        }
+        config = FXGL.getAssetLoader().loadKV("config.kv").to(GeoWarsConfig.class);
     }
 
     private static final int SPAWN_DISTANCE = 50;

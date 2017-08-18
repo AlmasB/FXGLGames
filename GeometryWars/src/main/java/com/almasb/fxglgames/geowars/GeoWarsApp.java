@@ -158,21 +158,21 @@ public class GeoWarsApp extends GameApplication {
         vars.put("score", 0);
         vars.put("multiplier", 1);
         vars.put("kills", 0);
-        vars.put("time", 180);
+        vars.put("time", 90);
         vars.put("weaponType", WeaponType.NORMAL);
     }
 
     @Override
     protected void initGame() {
         getAudioPlayer().setGlobalSoundVolume(0.2);
-        getAudioPlayer().setGlobalMusicVolume(0.1);
+        getAudioPlayer().setGlobalMusicVolume(0.2);
 
         initBackground();
         player = (GameEntity) spawn("Player");
         playerControl = player.getControl(PlayerControl.class);
 
-        getMasterTimer().runAtInterval(() -> spawn("Wanderer"), Duration.seconds(1));
-        getMasterTimer().runAtInterval(() -> spawn("Seeker"), Duration.seconds(2));
+        getMasterTimer().runAtInterval(() -> spawn("Wanderer"), Duration.seconds(2));
+        getMasterTimer().runAtInterval(() -> spawn("Seeker"), Duration.seconds(3));
         getMasterTimer().runAtInterval(() -> spawn("Crystal", getRandomPoint()), Duration.seconds(4));
         getMasterTimer().runAtInterval(() -> inc("time", -1), Duration.seconds(1));
 
