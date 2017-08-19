@@ -84,7 +84,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("FXGL Geometry Wars");
-        settings.setVersion("0.7.2");
+        settings.setVersion("0.7.3");
         settings.setFullScreen(false);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
@@ -171,9 +171,8 @@ public class GeoWarsApp extends GameApplication {
         player = (GameEntity) spawn("Player");
         playerControl = player.getControl(PlayerControl.class);
 
-        getMasterTimer().runAtInterval(() -> spawn("Wanderer"), Duration.seconds(2));
-        getMasterTimer().runAtInterval(() -> spawn("Seeker"), Duration.seconds(3));
-        getMasterTimer().runAtInterval(() -> spawn("Crystal", getRandomPoint()), Duration.seconds(4));
+        getMasterTimer().runAtInterval(() -> spawn("Wanderer"), Duration.seconds(1));
+        getMasterTimer().runAtInterval(() -> spawn("Seeker"), Duration.seconds(2));
         getMasterTimer().runAtInterval(() -> inc("time", -1), Duration.seconds(1));
 
         loopBGM("bgm.mp3");
@@ -193,6 +192,8 @@ public class GeoWarsApp extends GameApplication {
 
                 if (hp.getValue() == 0) {
                     spawn("Explosion", Entities.getBBox(enemy).getCenterWorld());
+                    spawn("Crystal", Entities.getBBox(enemy).getCenterWorld());
+
                     addScoreKill(Entities.getBBox(enemy).getCenterWorld());
                     enemy.removeFromWorld();
                 }

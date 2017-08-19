@@ -32,9 +32,9 @@ public class PlayerCrystalHandler extends CollisionHandler {
         Entities.animationBuilder()
                 .duration(Duration.seconds(0.75))
                 .onFinished(crystal::removeFromWorld)
-                .interpolator(Interpolators.BACK.EASE_IN_OUT())
+                .interpolator(Interpolators.BACK.EASE_IN())
                 .scale((GameEntity) crystal)
-                .from(new Point2D(1.4, 1.4))
+                .from(new Point2D(0.75, 0.75))
                 .to(new Point2D(0, 0))
                 .buildAndPlay();
     }

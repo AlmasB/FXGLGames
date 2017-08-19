@@ -75,7 +75,14 @@ public class PlayerControl extends Control {
                     break;
 
                 case NORMAL:
-                    default:
+                default:
+                    // spawn 2 more bullets
+                    Point2D perpendicular = new Point2D(vectorToMouse.getY(), -vectorToMouse.getX())
+                            .normalize()
+                            .multiply(15);
+
+                    spawnBullet(position.add(perpendicular), vectorToMouse);
+                    spawnBullet(position.subtract(perpendicular), vectorToMouse);
                     break;
             }
 

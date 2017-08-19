@@ -15,10 +15,7 @@ import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.entity.control.ProjectileControl;
 import com.almasb.fxglgames.geowars.component.HPComponent;
 import com.almasb.fxglgames.geowars.component.OldPositionComponent;
-import com.almasb.fxglgames.geowars.control.BulletControl;
-import com.almasb.fxglgames.geowars.control.PlayerControl;
-import com.almasb.fxglgames.geowars.control.SeekerControl;
-import com.almasb.fxglgames.geowars.control.WandererControl;
+import com.almasb.fxglgames.geowars.control.*;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
@@ -76,7 +73,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .from(data)
                 .viewFromTextureWithBBox("Bullet.png")
                 .with(new CollidableComponent(true))
-                .with(new ProjectileControl(data.get("direction"), 600),
+                .with(new ProjectileControl(data.get("direction"), 800),
                         new BulletControl(FXGL.<GeoWarsApp>getAppCast().getGrid()),
                         new OffscreenCleanControl())
                 .build();
@@ -129,12 +126,17 @@ public class GeoWarsFactory implements EntityFactory {
 
     @Spawns("Crystal")
     public GameEntity spawnCrystal(SpawnData data) {
-        return Entities.builder()
+        GameEntity crystal = Entities.builder()
                 .type(GeoWarsType.CRYSTAL)
                 .from(data)
                 .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("YellowCrystal.png").toAnimatedTexture(8, Duration.seconds(1)))
                 .with(new CollidableComponent(true))
-                .with(new ExpireCleanControl(Duration.seconds(10)))
+                .with(new CrystalControl(), new ExpireCleanControl(Duration.seconds(10)))
                 .build();
+
+        crystal.setScaleX(0.75);
+        crystal.setScaleY(0.75);
+
+        return crystal;
     }
 }
