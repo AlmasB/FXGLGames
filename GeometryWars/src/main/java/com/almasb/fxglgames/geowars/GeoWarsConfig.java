@@ -11,6 +11,8 @@ public final class GeoWarsConfig {
     private int seekerMaxMoveSpeed;
     private int wandererMaxMoveSpeed;
 
+    private int playerSpeed;
+
     private int enemyHealth;
 
     public double getRedEnemyChance() {
@@ -31,6 +33,10 @@ public final class GeoWarsConfig {
 
     public int getWandererMaxMoveSpeed() {
         return wandererMaxMoveSpeed;
+    }
+
+    public int getPlayerSpeed() {
+        return playerSpeed;
     }
 
     public int getEnemyHealth() {

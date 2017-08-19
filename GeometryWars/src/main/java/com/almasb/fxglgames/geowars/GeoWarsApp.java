@@ -275,6 +275,8 @@ public class GeoWarsApp extends GameApplication {
         ft.setToValue(1);
         ft.setOnFinished(e -> getGameScene().removeUINode(beware));
         ft.play();
+
+        getGameScene().setCursor("crosshair.png", new Point2D(32, 32));
     }
 
     @Override

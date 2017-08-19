@@ -60,7 +60,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .at(FXGL.getApp().getWidth() / 2, FXGL.getApp().getHeight() / 2)
                 .viewFromTextureWithBBox("Player.png")
                 .with(new CollidableComponent(true), oldPosition)
-                .with(new PlayerControl(), new KeepOnScreenControl(true, true))
+                .with(new PlayerControl(config.getPlayerSpeed()), new KeepOnScreenControl(true, true))
                 .build();
     }
 

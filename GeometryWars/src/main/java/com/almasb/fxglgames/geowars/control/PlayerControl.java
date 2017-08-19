@@ -24,10 +24,17 @@ import static com.almasb.fxgl.app.DSLKt.geto;
  */
 public class PlayerControl extends Control {
 
+    private int playerSpeed;
+    private double speed;
+
     private GameEntity player;
     private long spawnTime = System.currentTimeMillis();
 
     private LocalTimer weaponTimer = FXGL.newLocalTimer();
+
+    public PlayerControl(int playerSpeed) {
+        this.playerSpeed = playerSpeed;
+    }
 
     @Override
     public void onAdded(Entity entity) {
@@ -37,6 +44,7 @@ public class PlayerControl extends Control {
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
+        speed = tpf * playerSpeed;
     }
 
     public void shoot(Point2D shootPoint) {
@@ -114,22 +122,22 @@ public class PlayerControl extends Control {
     }
 
     public void left() {
-        player.translateX(-5);
+        player.translateX(-speed);
         makeExhaustFire();
     }
 
     public void right() {
-        player.translateX(5);
+        player.translateX(speed);
         makeExhaustFire();
     }
 
     public void up() {
-        player.translateY(-5);
+        player.translateY(-speed);
         makeExhaustFire();
     }
 
     public void down() {
-        player.translateY(5);
+        player.translateY(speed);
         makeExhaustFire();
     }
 
