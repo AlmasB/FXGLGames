@@ -45,7 +45,6 @@ import com.almasb.fxglgames.geowars.component.OldPositionComponent;
 import com.almasb.fxglgames.geowars.control.GraphicsUpdateControl;
 import com.almasb.fxglgames.geowars.control.PlayerControl;
 import com.almasb.fxglgames.geowars.grid.Grid;
-import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
@@ -225,12 +224,12 @@ public class GeoWarsApp extends GameApplication {
 
     @Override
     protected void initUI() {
-        Text scoreText = getUIFactory().newText("", Color.WHITE, 18);
+        Text scoreText = getUIFactory().newText("", Color.WHITE, 28);
         scoreText.setTranslateX(1100);
         scoreText.setTranslateY(70);
         scoreText.textProperty().bind(getip("score").asString());
 
-        Text timerText = getUIFactory().newText("", Color.WHITE, 18);
+        Text timerText = getUIFactory().newText("", Color.WHITE, 28);
         timerText.layoutBoundsProperty().addListener((o, old, bounds) -> {
             timerText.setTranslateX(getWidth() / 2 - bounds.getWidth() / 2);
         });
@@ -264,20 +263,13 @@ public class GeoWarsApp extends GameApplication {
 
         weaponMenu.close();
 
-        Text beware = getUIFactory().newText("Beware! Seekers get smarter every time!", Color.AQUA, 24);
-        beware.setTranslateX(getWidth() / 2 - beware.getLayoutBounds().getWidth() / 2);
-        beware.setTranslateY(getHeight() / 2);
+        Text beware = getUIFactory().newText("Beware! Seekers get smarter every time!", Color.AQUA, 38);
         beware.setOpacity(0);
 
         getGameScene().addUINode(beware);
 
-        FadeTransition ft = new FadeTransition(Duration.seconds(2), beware);
-        ft.setCycleCount(2);
-        ft.setAutoReverse(true);
-        ft.setFromValue(0);
-        ft.setToValue(1);
-        ft.setOnFinished(e -> getGameScene().removeUINode(beware));
-        ft.play();
+        getUIFactory().centerText(beware);
+        getUIFactory().fadeInOut(beware, Duration.seconds(2), () -> getGameScene().removeUINode(beware)).startInPlayState();
 
         getGameScene().setCursor("crosshair.png", new Point2D(32, 32));
     }
@@ -336,7 +328,7 @@ public class GeoWarsApp extends GameApplication {
 
         final int multiplier = geti("multiplier");
 
-        Text bonusText = getUIFactory().newText("+100" + (multiplier == 1 ? "" : "x" + multiplier), Color.color(1, 1, 1, 0.8), 20);
+        Text bonusText = getUIFactory().newText("+100" + (multiplier == 1 ? "" : "x" + multiplier), Color.color(1, 1, 1, 0.8), 24);
 
         getGameScene().addUINode(bonusText);
 
