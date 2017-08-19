@@ -173,6 +173,7 @@ public class GeoWarsApp extends GameApplication {
 
         getMasterTimer().runAtInterval(() -> spawn("Wanderer"), Duration.seconds(1));
         getMasterTimer().runAtInterval(() -> spawn("Seeker"), Duration.seconds(2));
+        getMasterTimer().runAtInterval(() -> spawn("Runner"), Duration.seconds(2));
         getMasterTimer().runAtInterval(() -> inc("time", -1), Duration.seconds(1));
 
         loopBGM("bgm.mp3");
@@ -202,6 +203,7 @@ public class GeoWarsApp extends GameApplication {
 
         physics.addCollisionHandler(bulletEnemy);
         physics.addCollisionHandler(bulletEnemy.copyFor(GeoWarsType.BULLET, GeoWarsType.SEEKER));
+        physics.addCollisionHandler(bulletEnemy.copyFor(GeoWarsType.BULLET, GeoWarsType.RUNNER));
 
         CollisionHandler playerEnemy = new CollisionHandler(GeoWarsType.PLAYER, GeoWarsType.WANDERER) {
             @Override
@@ -216,6 +218,7 @@ public class GeoWarsApp extends GameApplication {
 
         physics.addCollisionHandler(playerEnemy);
         physics.addCollisionHandler(playerEnemy.copyFor(GeoWarsType.PLAYER, GeoWarsType.SEEKER));
+        physics.addCollisionHandler(playerEnemy.copyFor(GeoWarsType.PLAYER, GeoWarsType.RUNNER));
     }
 
     private WheelMenu weaponMenu;

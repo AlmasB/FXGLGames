@@ -9,10 +9,7 @@ import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.CollidableComponent;
-import com.almasb.fxgl.entity.control.ExpireCleanControl;
-import com.almasb.fxgl.entity.control.KeepOnScreenControl;
-import com.almasb.fxgl.entity.control.OffscreenCleanControl;
-import com.almasb.fxgl.entity.control.ProjectileControl;
+import com.almasb.fxgl.entity.control.*;
 import com.almasb.fxglgames.geowars.component.HPComponent;
 import com.almasb.fxglgames.geowars.component.OldPositionComponent;
 import com.almasb.fxglgames.geowars.control.*;
@@ -110,6 +107,19 @@ public class GeoWarsFactory implements EntityFactory {
                 .with(new HPComponent(red ? config.getRedEnemyHealth() : config.getEnemyHealth()),
                         new CollidableComponent(true))
                 .with(new SeekerControl(FXGL.<GeoWarsApp>getAppCast().getPlayer(), moveSpeed))
+                .build();
+    }
+
+    @Spawns("Runner")
+    public GameEntity spawnRunner(SpawnData data) {
+        return Entities.builder()
+                .type(GeoWarsType.RUNNER)
+                .at(getRandomSpawnPoint())
+                .viewFromTextureWithBBox("Runner.png")
+                .with(new HPComponent(config.getEnemyHealth()),
+                        new CollidableComponent(true))
+                .with(new RunnerControl(config.getRunnerMoveSpeed()),
+                        new RandomMoveControl(config.getRunnerMoveSpeed(), FXGLMath.random(0, 100), FXGLMath.random(250, 500), FXGL.getApp().getAppBounds()))
                 .build();
     }
 
