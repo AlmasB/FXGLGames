@@ -14,6 +14,8 @@ import com.almasb.fxglgames.geowars.component.HPComponent;
 import com.almasb.fxglgames.geowars.component.OldPositionComponent;
 import com.almasb.fxglgames.geowars.control.*;
 import javafx.geometry.Point2D;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
 /**
@@ -120,6 +122,24 @@ public class GeoWarsFactory implements EntityFactory {
                         new CollidableComponent(true))
                 .with(new RunnerControl(config.getRunnerMoveSpeed()),
                         new RandomMoveControl(config.getRunnerMoveSpeed(), FXGLMath.random(0, 100), FXGLMath.random(250, 500), FXGL.getApp().getAppBounds()))
+                .build();
+    }
+
+    @Spawns("Bouncer")
+    public GameEntity spawnBouncer(SpawnData data) {
+        double y = FXGLMath.random(0, FXGL.getAppHeight() - 40);
+
+        Circle view = new Circle(20, Color.color(0.4, 0.7, 0.3, 0.3));
+        view.setStrokeWidth(2.5);
+        view.setStroke(Color.color(0.4, 0.7, 0.3, 0.8));
+
+        return Entities.builder()
+                .type(GeoWarsType.BOUNCER)
+                .at(0, y)
+                .viewFromNodeWithBBox(view)
+                .with(new HPComponent(config.getEnemyHealth()),
+                        new CollidableComponent(true))
+                .with(new BouncerControl(config.getBouncerMoveSpeed()))
                 .build();
     }
 

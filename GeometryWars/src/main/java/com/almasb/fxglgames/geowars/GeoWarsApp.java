@@ -83,7 +83,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("FXGL Geometry Wars");
-        settings.setVersion("0.7.3");
+        settings.setVersion("0.7.4");
         settings.setFullScreen(false);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
@@ -173,6 +173,7 @@ public class GeoWarsApp extends GameApplication {
         getMasterTimer().runAtInterval(() -> spawn("Wanderer"), Duration.seconds(1));
         getMasterTimer().runAtInterval(() -> spawn("Seeker"), Duration.seconds(2));
         getMasterTimer().runAtInterval(() -> spawn("Runner"), Duration.seconds(2));
+        getMasterTimer().runAtInterval(() -> spawn("Bouncer"), Duration.seconds(2.5));
         getMasterTimer().runAtInterval(() -> inc("time", -1), Duration.seconds(1));
 
         loopBGM("bgm.mp3");
@@ -203,6 +204,7 @@ public class GeoWarsApp extends GameApplication {
         physics.addCollisionHandler(bulletEnemy);
         physics.addCollisionHandler(bulletEnemy.copyFor(GeoWarsType.BULLET, GeoWarsType.SEEKER));
         physics.addCollisionHandler(bulletEnemy.copyFor(GeoWarsType.BULLET, GeoWarsType.RUNNER));
+        physics.addCollisionHandler(bulletEnemy.copyFor(GeoWarsType.BULLET, GeoWarsType.BOUNCER));
 
         CollisionHandler playerEnemy = new CollisionHandler(GeoWarsType.PLAYER, GeoWarsType.WANDERER) {
             @Override
@@ -218,6 +220,7 @@ public class GeoWarsApp extends GameApplication {
         physics.addCollisionHandler(playerEnemy);
         physics.addCollisionHandler(playerEnemy.copyFor(GeoWarsType.PLAYER, GeoWarsType.SEEKER));
         physics.addCollisionHandler(playerEnemy.copyFor(GeoWarsType.PLAYER, GeoWarsType.RUNNER));
+        physics.addCollisionHandler(playerEnemy.copyFor(GeoWarsType.PLAYER, GeoWarsType.BOUNCER));
     }
 
     private WheelMenu weaponMenu;

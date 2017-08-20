@@ -11,6 +11,7 @@ public final class GeoWarsConfig {
     private int seekerMaxMoveSpeed;
     private int wandererMaxMoveSpeed;
     private int runnerMoveSpeed;
+    private int bouncerMoveSpeed;
 
     private int playerSpeed;
 
@@ -38,6 +39,10 @@ public final class GeoWarsConfig {
 
     public int getRunnerMoveSpeed() {
         return runnerMoveSpeed;
+    }
+
+    public int getBouncerMoveSpeed() {
+        return bouncerMoveSpeed;
     }
 
     public int getPlayerSpeed() {
