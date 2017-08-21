@@ -154,6 +154,19 @@ public class GeoWarsFactory implements EntityFactory {
                 .build();
     }
 
+    @Spawns("Shockwave")
+    public GameEntity spawnShockwave(SpawnData data) {
+        Circle circle = new Circle(10, null);
+        circle.setStroke(Color.DARKGOLDENROD);
+        circle.setStrokeWidth(2);
+
+        return Entities.builder()
+                .from(data)
+                .viewFromNode(circle)
+                .with(new ShockwaveControl())
+                .build();
+    }
+
     @Spawns("Crystal")
     public GameEntity spawnCrystal(SpawnData data) {
         GameEntity crystal = Entities.builder()

@@ -27,6 +27,7 @@ package com.almasb.fxglgames.geowars;
 
 import com.almasb.fxgl.animation.Animation;
 import com.almasb.fxgl.animation.Interpolators;
+import com.almasb.fxgl.annotation.Handles;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.ecs.Entity;
@@ -44,6 +45,7 @@ import com.almasb.fxglgames.geowars.component.HPComponent;
 import com.almasb.fxglgames.geowars.component.OldPositionComponent;
 import com.almasb.fxglgames.geowars.control.GraphicsUpdateControl;
 import com.almasb.fxglgames.geowars.control.PlayerControl;
+import com.almasb.fxglgames.geowars.event.DeathEvent;
 import com.almasb.fxglgames.geowars.grid.Grid;
 import javafx.animation.TranslateTransition;
 import javafx.geometry.Point2D;
@@ -135,7 +137,7 @@ public class GeoWarsApp extends GameApplication {
             protected void onActionBegin() {
                 playerControl.releaseShockwave();
             }
-        }, KeyCode.F);
+        }, KeyCode.E);
 
         input.addAction(new UserAction("Shoot") {
             @Override
@@ -192,10 +194,7 @@ public class GeoWarsApp extends GameApplication {
                 hp.setValue(hp.getValue() - 1);
 
                 if (hp.getValue() == 0) {
-                    spawn("Explosion", Entities.getBBox(enemy).getCenterWorld());
-                    spawn("Crystal", Entities.getBBox(enemy).getCenterWorld());
-
-                    addScoreKill(Entities.getBBox(enemy).getCenterWorld());
+                    getEventBus().fireEvent(new DeathEvent((GameEntity) enemy));
                     enemy.removeFromWorld();
                 }
             }
@@ -361,6 +360,18 @@ public class GeoWarsApp extends GameApplication {
             getGameScene().removeUINode(bonusText);
         });
         tt.play();
+    }
+
+    @Handles(eventType = "ANY")
+    public void onDeath(DeathEvent event) {
+        GameEntity entity = event.getEntity();
+
+        if (event.isEnemy()) {
+            spawn("Explosion", entity.getCenter());
+            spawn("Crystal", entity.getCenter());
+
+            addScoreKill(entity.getCenter());
+        }
     }
 
     public static void main(String[] args) {

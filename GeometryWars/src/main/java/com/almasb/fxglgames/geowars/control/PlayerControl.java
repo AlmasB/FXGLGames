@@ -106,19 +106,7 @@ public class PlayerControl extends Control {
     }
 
     public void releaseShockwave() {
-        FXGL.getApp()
-                .getGameWorld()
-                .getEntitiesByType(GeoWarsType.SEEKER, GeoWarsType.WANDERER)
-                .stream()
-                .map(e -> (GameEntity) e)
-                .forEach(e -> {
-                    Point2D vector = e.getCenter()
-                            .subtract(player.getCenter())
-                            .normalize()
-                            .multiply(100);
-
-                    e.translate(vector);
-                });
+        FXGL.getApp().getGameWorld().spawn("Shockwave", player.getCenter());
     }
 
     public void left() {
