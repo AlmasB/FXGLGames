@@ -85,7 +85,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("FXGL Geometry Wars");
-        settings.setVersion("0.7.4");
+        settings.setVersion("0.7.5");
         settings.setFullScreen(false);
         settings.setIntroEnabled(false);
         settings.setMenuEnabled(false);
@@ -176,6 +176,7 @@ public class GeoWarsApp extends GameApplication {
         getMasterTimer().runAtInterval(() -> spawn("Seeker"), Duration.seconds(2));
         getMasterTimer().runAtInterval(() -> spawn("Runner"), Duration.seconds(2));
         getMasterTimer().runAtInterval(() -> spawn("Bouncer"), Duration.seconds(2.5));
+        getMasterTimer().runAtInterval(() -> spawn("Portal", getRandomPoint()), Duration.seconds(5));
         getMasterTimer().runAtInterval(() -> inc("time", -1), Duration.seconds(1));
 
         loopBGM("bgm.mp3");

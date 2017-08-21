@@ -10,6 +10,7 @@ import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.entity.control.*;
+import com.almasb.fxglgames.geowars.component.BulletComponent;
 import com.almasb.fxglgames.geowars.component.HPComponent;
 import com.almasb.fxglgames.geowars.component.OldPositionComponent;
 import com.almasb.fxglgames.geowars.control.*;
@@ -71,7 +72,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .type(GeoWarsType.BULLET)
                 .from(data)
                 .viewFromTextureWithBBox("Bullet.png")
-                .with(new CollidableComponent(true))
+                .with(new BulletComponent(), new CollidableComponent(true))
                 .with(new ProjectileControl(data.get("direction"), 800),
                         new BulletControl(FXGL.<GeoWarsApp>getAppCast().getGrid()),
                         new OffscreenCleanControl())
@@ -164,6 +165,17 @@ public class GeoWarsFactory implements EntityFactory {
                 .from(data)
                 .viewFromNode(circle)
                 .with(new ShockwaveControl())
+                .build();
+    }
+
+    @Spawns("Portal")
+    public GameEntity spawnPortal(SpawnData data) {
+        return Entities.builder()
+                .type(GeoWarsType.PORTAL)
+                .from(data)
+                .viewFromTextureWithBBox("Portal.png")
+                .with(new CollidableComponent(true))
+                .with(new ExpireCleanControl(Duration.seconds(10)))
                 .build();
     }
 
