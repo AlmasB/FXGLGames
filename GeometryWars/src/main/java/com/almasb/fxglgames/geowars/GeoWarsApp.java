@@ -232,6 +232,11 @@ public class GeoWarsApp extends GameApplication {
         scoreText.setTranslateY(70);
         scoreText.textProperty().bind(getip("score").asString());
 
+        Text multText = getUIFactory().newText("", Color.WHITE, 28);
+        multText.setTranslateX(60);
+        multText.setTranslateY(70);
+        multText.textProperty().bind(getip("multiplier").asString("x %d"));
+
         Text timerText = getUIFactory().newText("", Color.WHITE, 28);
         timerText.layoutBoundsProperty().addListener((o, old, bounds) -> {
             timerText.setTranslateX(getWidth() / 2 - bounds.getWidth() / 2);
@@ -262,7 +267,7 @@ public class GeoWarsApp extends GameApplication {
             play(typeName.toLowerCase() + ".wav");
         });
 
-        getGameScene().addUINodes(scoreText, timerText, timerCircle, weaponMenu);
+        getGameScene().addUINodes(multText, scoreText, timerText, timerCircle, weaponMenu);
 
         weaponMenu.close();
 
@@ -293,7 +298,7 @@ public class GeoWarsApp extends GameApplication {
     }
 
     private void initBackground() {
-        EntityView backgroundView = new EntityView(texture("background.png", getWidth(), getHeight()));
+        EntityView backgroundView = new EntityView(new Rectangle(getWidth(), getHeight()));
         getGameScene().addGameView(backgroundView);
 
         Canvas canvas = new Canvas(getWidth(), getHeight());

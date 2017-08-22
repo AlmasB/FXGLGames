@@ -189,8 +189,8 @@ public class GeoWarsFactory implements EntityFactory {
                 .with(new CrystalControl(), new ExpireCleanControl(Duration.seconds(10)))
                 .build();
 
-        crystal.setScaleX(0.75);
-        crystal.setScaleY(0.75);
+        crystal.setScaleX(0.65);
+        crystal.setScaleY(0.65);
 
         return crystal;
     }

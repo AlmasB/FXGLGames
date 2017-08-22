@@ -24,7 +24,9 @@ public class PlayerCrystalHandler extends CollisionHandler {
     }
 
     @Override
-    protected void onCollisionBegin(Entity player, Entity crystal) {
+    protected void onCollisionBegin(Entity player, Entity c) {
+        GameEntity crystal = (GameEntity) c;
+
         crystal.getComponent(CollidableComponent.class).setValue(false);
 
         inc("multiplier", +1);
@@ -33,8 +35,8 @@ public class PlayerCrystalHandler extends CollisionHandler {
                 .duration(Duration.seconds(0.75))
                 .onFinished(crystal::removeFromWorld)
                 .interpolator(Interpolators.BACK.EASE_IN())
-                .scale((GameEntity) crystal)
-                .from(new Point2D(0.75, 0.75))
+                .scale(crystal)
+                .from(new Point2D(crystal.getView().getScaleX(), crystal.getView().getScaleY()))
                 .to(new Point2D(0, 0))
                 .buildAndPlay();
     }
