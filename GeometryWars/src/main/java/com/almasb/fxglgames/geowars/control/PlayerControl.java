@@ -11,18 +11,25 @@ import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.time.LocalTimer;
-import com.almasb.fxglgames.geowars.GeoWarsType;
 import com.almasb.fxglgames.geowars.WeaponType;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.Bloom;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.almasb.fxgl.app.DSLKt.geto;
+import static com.almasb.fxgl.app.DSLKt.spawn;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class PlayerControl extends Control {
+
+    private static final Duration WEAPON_DELAY = Duration.seconds(0.17);
 
     private int playerSpeed;
     private double speed;
@@ -48,50 +55,59 @@ public class PlayerControl extends Control {
     }
 
     public void shoot(Point2D shootPoint) {
-        WeaponType type = geto("weaponType");
-
-        if (weaponTimer.elapsed(type.delay)) {
+        if (weaponTimer.elapsed(WEAPON_DELAY)) {
             Point2D position = player.getCenter().subtract(14, 4.5);
             Point2D vectorToMouse = shootPoint.subtract(position);
 
-            GameEntity bullet = spawnBullet(position, vectorToMouse);
+            WeaponType type = geto("weaponType");
+
+            List<GameEntity> bullets = new ArrayList<>();
 
             switch (type) {
+                case MIRROR:
+
                 case RICOCHET:
+
+                case TRIPLE:
+
+                    // spawn extra bullet
+                    bullets.add(spawnBullet(position.subtract(
+                            new Point2D(vectorToMouse.getY(), -vectorToMouse.getX()).normalize().multiply(15)
+                    ), vectorToMouse));
+
+                case DOUBLE:
+
+                    // spawn extra bullet
+                    bullets.add(spawnBullet(position.add(
+                            new Point2D(vectorToMouse.getY(), -vectorToMouse.getX()).normalize().multiply(15)
+                    ), vectorToMouse));
+
+                case SINGLE:
+                default:
+                    bullets.add(spawnBullet(position, vectorToMouse));
+                    break;
+            }
+
+            if (type == WeaponType.MIRROR) {
+
+                bullets.addAll(
+                        bullets.stream()
+                                .map(b -> spawnBullet(position, vectorToMouse.multiply(-1)))
+                                .collect(Collectors.toList())
+                );
+
+                // TODO: duplicate code
+                bullets.forEach(bullet -> {
                     bullet.removeControl(OffscreenCleanControl.class);
                     bullet.addControl(new RicochetControl());
-                    break;
+                });
+            }
 
-                case BEAM:
-                    Point2D toMouse = vectorToMouse.normalize().multiply(10);
-                    Point2D pos = position;
-
-                    for (int i = 0; i < 7; i++) {
-                        spawnBullet(pos.add(toMouse), toMouse);
-                        pos = pos.add(toMouse);
-                    }
-                    break;
-
-                case WAVE:
-                    double baseAngle = new Vec2(vectorToMouse.getX(), vectorToMouse.getY()).angle() + 45;
-                    for (int i = 0; i < 7; i++) {
-                        Vec2 vec = Vec2.fromAngle(baseAngle);
-                        spawnBullet(position, new Point2D(vec.x, vec.y));
-
-                        baseAngle += 45;
-                    }
-                    break;
-
-                case NORMAL:
-                default:
-                    // spawn 2 more bullets
-                    Point2D perpendicular = new Point2D(vectorToMouse.getY(), -vectorToMouse.getX())
-                            .normalize()
-                            .multiply(15);
-
-                    spawnBullet(position.add(perpendicular), vectorToMouse);
-                    spawnBullet(position.subtract(perpendicular), vectorToMouse);
-                    break;
+            if (type == WeaponType.RICOCHET) {
+                bullets.forEach(bullet -> {
+                    bullet.removeControl(OffscreenCleanControl.class);
+                    bullet.addControl(new RicochetControl());
+                });
             }
 
             weaponTimer.capture();
@@ -106,7 +122,7 @@ public class PlayerControl extends Control {
     }
 
     public void releaseShockwave() {
-        FXGL.getApp().getGameWorld().spawn("Shockwave", player.getCenter());
+        spawn("Shockwave", player.getCenter());
     }
 
     public void left() {
@@ -172,6 +188,7 @@ public class PlayerControl extends Control {
                 .with(new ExhaustParticleControl(velSide2, 800, sideColor))
                 .buildAndAttach(FXGL.getApp().getGameWorld());
 
+        // TODO: this is useless because vectors above created with "new"
         Pools.free(direction);
         Pools.free(position);
         Pools.free(baseVel);

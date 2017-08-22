@@ -159,8 +159,8 @@ public class GeoWarsApp extends GameApplication {
         vars.put("score", 0);
         vars.put("multiplier", 1);
         vars.put("kills", 0);
-        vars.put("time", 90);
-        vars.put("weaponType", WeaponType.NORMAL);
+        vars.put("time", 120);
+        vars.put("weaponType", WeaponType.SINGLE);
     }
 
     @Override
@@ -172,10 +172,19 @@ public class GeoWarsApp extends GameApplication {
         player = (GameEntity) spawn("Player");
         playerControl = player.getControl(PlayerControl.class);
 
-        getMasterTimer().runAtInterval(() -> spawn("Wanderer"), Duration.seconds(1));
-        getMasterTimer().runAtInterval(() -> spawn("Seeker"), Duration.seconds(2));
-        getMasterTimer().runAtInterval(() -> spawn("Runner"), Duration.seconds(2));
-        getMasterTimer().runAtInterval(() -> spawn("Bouncer"), Duration.seconds(2.5));
+        getGameState().<Integer>addListener("multiplier", (prev, now) -> {
+            WeaponType current = geto("weaponType");
+            WeaponType newType = WeaponType.fromMultiplier(geti("multiplier"));
+
+            if (newType.isBetterThan(current)) {
+                set("weaponType", newType);
+            }
+        });
+
+        getMasterTimer().runAtInterval(() -> spawn("Wanderer"), Duration.seconds(1.5));
+        getMasterTimer().runAtInterval(() -> spawn("Seeker"), Duration.seconds(3));
+        getMasterTimer().runAtInterval(() -> spawn("Runner"), Duration.seconds(5));
+        getMasterTimer().runAtInterval(() -> spawn("Bouncer"), Duration.seconds(5));
         getMasterTimer().runAtInterval(() -> spawn("Portal", getRandomPoint()), Duration.seconds(5));
         getMasterTimer().runAtInterval(() -> inc("time", -1), Duration.seconds(1));
 

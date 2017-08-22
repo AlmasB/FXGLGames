@@ -1,19 +1,25 @@
 package com.almasb.fxglgames.geowars;
 
-import javafx.util.Duration;
-
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public enum WeaponType {
-    NORMAL(Duration.seconds(0.1)),
-    RICOCHET(Duration.seconds(0.17 * 3)),
-    BEAM(Duration.seconds(0.17 * 7)),
-    WAVE(Duration.seconds(0.17 * 10));
+    SINGLE,
+    DOUBLE,
+    TRIPLE,
+    RICOCHET,
+    MIRROR;
 
-    public final Duration delay;
+    public boolean isBetterThan(WeaponType other) {
+        return this.ordinal() > other.ordinal();
+    }
 
-    WeaponType(Duration delay) {
-        this.delay = delay;
+    public static WeaponType fromMultiplier(int multiplier) {
+        if (multiplier > 200) return MIRROR;
+        if (multiplier > 100) return RICOCHET;
+        if (multiplier > 50) return TRIPLE;
+        if (multiplier > 25) return DOUBLE;
+
+        return SINGLE;
     }
 }
