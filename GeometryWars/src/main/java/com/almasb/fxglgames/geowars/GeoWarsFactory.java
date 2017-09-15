@@ -4,6 +4,11 @@ import com.almasb.fxgl.annotation.SetEntityFactory;
 import com.almasb.fxgl.annotation.Spawns;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.core.math.Vec2;
+import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.effect.ParticleControl;
+import com.almasb.fxgl.effect.ParticleEmitter;
+import com.almasb.fxgl.effect.ParticleEmitters;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.GameEntity;
@@ -15,6 +20,7 @@ import com.almasb.fxglgames.geowars.component.HPComponent;
 import com.almasb.fxglgames.geowars.component.OldPositionComponent;
 import com.almasb.fxglgames.geowars.control.*;
 import javafx.geometry.Point2D;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
@@ -147,6 +153,25 @@ public class GeoWarsFactory implements EntityFactory {
     @Spawns("Explosion")
     public GameEntity spawnExplosion(SpawnData data) {
         FXGL.getAudioPlayer().playSound("explosion-0" + (int) (Math.random() * 8 + 1) + ".wav");
+
+        // explosion particle effect
+        ParticleEmitter emitter = ParticleEmitters.newExplosionEmitter(100);
+        emitter.setSize(10, 12);
+        emitter.setNumParticles(24);
+        emitter.setExpireFunction((i, x, y) -> Duration.seconds(2));
+        emitter.setVelocityFunction((i, x, y) -> Vec2.fromAngle(360 / 24 *i).toPoint2D().multiply(FXGLMath.random(45, 50)));
+        emitter.setBlendMode(BlendMode.SRC_OVER);
+        emitter.setStartColor(Color.YELLOW);
+        emitter.setEndColor(Color.RED);
+
+        com.almasb.fxgl.effect.ParticleControl control = new ParticleControl(emitter);
+
+        Entity explosion = Entities.builder()
+                .at(data.getX() - 5, data.getY() - 10)
+                .with(control)
+                .buildAndAttach();
+
+        control.setOnFinished(explosion::removeFromWorld);
 
         return Entities.builder()
                 .at(data.getX() - 40, data.getY() - 40)

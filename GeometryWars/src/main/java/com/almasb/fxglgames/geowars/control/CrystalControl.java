@@ -32,7 +32,7 @@ public class CrystalControl extends Control {
     }
 
     private void followPlayer(double tpf) {
-        GameEntity player = (GameEntity) getEntity().getWorld().getSingleton(GeoWarsType.PLAYER);
+        GameEntity player = (GameEntity) getEntity().getWorld().getSingleton(GeoWarsType.PLAYER).get();
         if (crystal.distance(player) < 100) {
             crystal.translateTowards(player.getCenter(), 100 * tpf);
         }
