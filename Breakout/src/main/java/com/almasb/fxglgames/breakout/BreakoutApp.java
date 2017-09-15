@@ -26,6 +26,7 @@
 
 package com.almasb.fxglgames.breakout;
 
+import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.core.math.FXGLMath;
@@ -66,11 +67,11 @@ import java.util.Map;
 public class BreakoutApp extends GameApplication {
 
     private BatControl getBatControl() {
-        return getGameWorld().getSingleton(BreakoutType.BAT).getControl(BatControl.class);
+        return getGameWorld().getSingleton(BreakoutType.BAT).get().getControl(BatControl.class);
     }
 
     private BallControl getBallControl() {
-        return getGameWorld().getSingleton(BreakoutType.BALL).getControl(BallControl.class);
+        return getGameWorld().getSingleton(BreakoutType.BALL).get().getControl(BallControl.class);
     }
 
     @Override
@@ -159,9 +160,10 @@ public class BreakoutApp extends GameApplication {
         emitter.setBlendMode(BlendMode.SRC_OVER);
         emitter.setEmissionRate(0.25);
         emitter.setExpireFunction((i, x, y) -> Duration.seconds(3));
-        emitter.setVelocityFunction((i, x, y) -> new Point2D(0, -FXGLMath.random(2f, 4f)));
-        emitter.setSpawnPointFunction((i, x, y) -> new Point2D(FXGLMath.random(0, (float)getWidth()), y + FXGLMath.random(50)));
+        emitter.setVelocityFunction((i, x, y) -> new Point2D(0, -FXGLMath.random(2f, 4f) * 60));
+        emitter.setSpawnPointFunction((i, x, y) -> new Point2D(FXGLMath.random(0, (float)getWidth()), y - 20 + FXGLMath.random(50)));
         emitter.setScaleFunction((i, x, y) -> new Point2D(FXGLMath.random(-0.05f, 0), FXGLMath.random(-0.05f, 0)));
+        emitter.setInterpolator(Interpolators.EXPONENTIAL.EASE_IN());
 
         Entity bubbles = new Entity();
         bubbles.addComponent(new PositionComponent(0, getHeight()));
