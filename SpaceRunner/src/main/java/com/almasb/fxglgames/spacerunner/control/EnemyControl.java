@@ -27,13 +27,11 @@
 package com.almasb.fxglgames.spacerunner.control;
 
 import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.audio.AudioPlayer;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.fxgl.service.AudioPlayer;
-import com.almasb.fxgl.service.ServiceType;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.spacerunner.SpaceRunnerFactory;
 import com.almasb.fxglgames.spacerunner.SpaceRunnerType;

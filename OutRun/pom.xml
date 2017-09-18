@@ -16,8 +16,8 @@
         <maven.compiler.version>3.3</maven.compiler.version>
         <maven.shade.version>2.4.2</maven.shade.version>
 
-        <fxgl.version>0.3.7</fxgl.version>
-        <kotlin.version>1.1.4</kotlin.version>
+        <fxgl.version>0.3.8</fxgl.version>
+        <kotlin.version>1.1.4-3</kotlin.version>
     </properties>
 
     <dependencies>

@@ -26,7 +26,7 @@
 
 package com.almasb.fxglgames.pacman.ai;
 
-import com.almasb.fxgl.ai.Action;
+import com.almasb.fxgl.ai.SingleAction;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
@@ -43,15 +43,15 @@ import java.util.Random;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class RandomMoveAction extends Action {
+public class RandomMoveAction extends SingleAction {
 
     public RandomMoveAction() {
         super("RandomMove");
     }
 
     @Override
-    public void action() {
-        speed = 0.016 * 60;
+    public void onUpdate(double tpf) {
+        speed = tpf * 60;
 
         switch (moveDir) {
             case UP:

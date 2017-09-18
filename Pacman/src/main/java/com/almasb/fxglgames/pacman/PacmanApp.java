@@ -62,7 +62,7 @@ public class PacmanApp extends GameApplication {
     public static final int TIME_PER_LEVEL = 100;
 
     public GameEntity getPlayer() {
-        return (GameEntity) getGameWorld().getSingleton(PacmanType.PLAYER);
+        return (GameEntity) getGameWorld().getSingleton(PacmanType.PLAYER).get();
     }
 
     public PlayerControl getPlayerControl() {

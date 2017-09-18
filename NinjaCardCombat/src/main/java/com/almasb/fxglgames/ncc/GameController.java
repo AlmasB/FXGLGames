@@ -94,11 +94,6 @@ public class GameController implements UIController {
             public void onEntityRemoved(Entity entity) {
 
             }
-
-            @Override
-            public void onWorldUpdate(double tpf) {
-
-            }
         });
     }
 
