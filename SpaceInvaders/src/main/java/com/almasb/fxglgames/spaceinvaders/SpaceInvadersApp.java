@@ -26,14 +26,12 @@
 
 package com.almasb.fxglgames.spaceinvaders;
 
-import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.annotation.Handles;
 import com.almasb.fxgl.annotation.OnUserAction;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.gameplay.Achievement;
@@ -47,15 +45,19 @@ import com.almasb.fxglgames.spaceinvaders.control.EnemyControl;
 import com.almasb.fxglgames.spaceinvaders.control.PlayerControl;
 import com.almasb.fxglgames.spaceinvaders.event.BonusPickupEvent;
 import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
+import com.almasb.fxglgames.spaceinvaders.level.Level2;
+import com.almasb.fxglgames.spaceinvaders.level.Level3;
+import com.almasb.fxglgames.spaceinvaders.level.Level1;
+import com.almasb.fxglgames.spaceinvaders.level.SpaceLevel;
 import com.almasb.fxglgames.spaceinvaders.tutorial.Tutorial;
 import com.almasb.fxglgames.spaceinvaders.tutorial.TutorialStep;
-import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -73,7 +75,7 @@ public class SpaceInvadersApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Space Invaders");
-        settings.setVersion("0.8.3");
+        settings.setVersion("0.8.5");
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
         settings.setIntroEnabled(false);
@@ -124,8 +126,8 @@ public class SpaceInvadersApp extends GameApplication {
 
     @Override
     protected void preInit() {
-        getAudioPlayer().setGlobalSoundVolume(0.2);
-        getAudioPlayer().setGlobalMusicVolume(0.2);
+        getAudioPlayer().setGlobalSoundVolume(0.0);
+        getAudioPlayer().setGlobalMusicVolume(0.0);
 
         loopBGM("bgm.mp3");
     }
@@ -139,6 +141,8 @@ public class SpaceInvadersApp extends GameApplication {
         vars.put("lives", START_LIVES);
         vars.put("enemiesKilled", 0);
     }
+
+    private List<SpaceLevel> levels = new ArrayList<>();
 
     @Override
     protected void initGame() {
@@ -156,6 +160,10 @@ public class SpaceInvadersApp extends GameApplication {
     private void initGame(SaveData data) {
         highScoreName = data.getName();
         highScore = data.getHighScore();
+
+        levels.add(new Level1());
+        levels.add(new Level2());
+        levels.add(new Level3());
 
         getGameplay().getAchievementManager()
                 .getAchievementByName("Hitman")
@@ -199,19 +207,7 @@ public class SpaceInvadersApp extends GameApplication {
     }
 
     private void initLevel() {
-        for (int y = 0; y < ENEMY_ROWS; y++) {
-            for (int x = 0; x < ENEMIES_PER_ROW; x++) {
-                GameEntity enemy = (GameEntity) spawn("Enemy", x*60, 150 + 50 * geti("level") + y*60);
-
-                Entities.animationBuilder()
-                        .interpolator(Interpolators.ELASTIC.EASE_OUT())
-                        .duration(Duration.seconds(FXGLMath.random() * 2))
-                        .scale(enemy)
-                        .from(new Point2D(0, 0))
-                        .to(new Point2D(1, 1))
-                        .buildAndPlay();
-            }
-        }
+        getCurrentLevel().init();
 
         spawnWall(40, getHeight() - 100);
         spawnWall(120, getHeight() - 100);
@@ -228,17 +224,20 @@ public class SpaceInvadersApp extends GameApplication {
                 SpaceInvadersType.WALL,
                 SpaceInvadersType.BULLET)
                 .forEach(Entity::removeFromWorld);
+
+        getCurrentLevel().destroy();
     }
 
     private void nextLevel() {
         getInput().setProcessInput(false);
 
-        cleanupLevel();
+        if (geti("level") > 0)
+            cleanupLevel();
 
         set("enemiesKilled", 0);
         inc("level", +1);
 
-        if (geti("level") == 3) {
+        if (geti("level") == 4) {
             showGameOver();
             return;
         }
@@ -248,6 +247,12 @@ public class SpaceInvadersApp extends GameApplication {
         getMasterTimer().runOnceAfter(this::initLevel, Duration.seconds(LEVEL_START_DELAY));
 
         play(Asset.SOUND_NEW_LEVEL);
+    }
+
+    private SpaceLevel getCurrentLevel() {
+        // levels are counted 1, 2, 3 ...
+        // list indices are   0, 1, 2 ...
+        return levels.get(geti("level") - 1);
     }
 
     @Override
