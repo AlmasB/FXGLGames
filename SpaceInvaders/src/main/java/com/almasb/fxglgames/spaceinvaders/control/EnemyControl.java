@@ -48,8 +48,9 @@ import javafx.util.Duration;
  */
 public class EnemyControl extends Control {
 
-    private LocalTimer attackTimer;
-    private Duration nextAttack = Duration.seconds(2);
+    // TODO: fix visibility hack
+    protected LocalTimer attackTimer;
+    protected Duration nextAttack = Duration.seconds(2);
 
     private GameEntity enemy;
 
@@ -72,7 +73,7 @@ public class EnemyControl extends Control {
         }
     }
 
-    private void shoot() {
+    protected void shoot() {
         GameWorld world = getEntity().getWorld();
         world.spawn("Bullet", new SpawnData(0, 0).put("owner", getEntity()));
 
@@ -80,18 +81,15 @@ public class EnemyControl extends Control {
     }
 
     public void die() {
-        FXGL.getMasterTimer().runOnceAfter(() -> {
-            Entity entity = new Entity();
-            entity.addComponent(new PositionComponent(enemy.getCenter()));
-            entity.addControl(new ParticleControl(new ExplosionEmitter()));
-            entity.addControl(new ExpireCleanControl(Duration.seconds(1)));
+        Entity entity = new Entity();
+        entity.addComponent(new PositionComponent(enemy.getCenter()));
+        entity.addControl(new ParticleControl(new ExplosionEmitter()));
+        entity.addControl(new ExpireCleanControl(Duration.seconds(1)));
 
-            enemy.getWorld().addEntity(entity);
-            enemy.getWorld().spawn("Explosion", enemy.getCenter());
+        enemy.getWorld().addEntity(entity);
+        enemy.getWorld().spawn("Explosion", enemy.getCenter());
 
-            enemy.removeFromWorld();
-        }, Duration.seconds(0.1));
-
+        enemy.removeFromWorld();
         FXGL.getAudioPlayer().playSound("explosion.wav");
         FXGL.getEventBus().fireEvent(new GameEvent(GameEvent.ENEMY_KILLED));
     }

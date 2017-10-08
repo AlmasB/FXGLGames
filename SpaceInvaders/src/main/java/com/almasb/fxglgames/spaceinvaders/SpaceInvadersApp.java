@@ -29,6 +29,7 @@ package com.almasb.fxglgames.spaceinvaders;
 import com.almasb.fxgl.annotation.Handles;
 import com.almasb.fxgl.annotation.OnUserAction;
 import com.almasb.fxgl.app.ApplicationMode;
+import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.ecs.Entity;
@@ -38,6 +39,7 @@ import com.almasb.fxgl.gameplay.Achievement;
 import com.almasb.fxgl.gameplay.AchievementManager;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.InputMapping;
+import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.io.FS;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.ui.UI;
@@ -45,10 +47,7 @@ import com.almasb.fxglgames.spaceinvaders.control.EnemyControl;
 import com.almasb.fxglgames.spaceinvaders.control.PlayerControl;
 import com.almasb.fxglgames.spaceinvaders.event.BonusPickupEvent;
 import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
-import com.almasb.fxglgames.spaceinvaders.level.Level2;
-import com.almasb.fxglgames.spaceinvaders.level.Level3;
-import com.almasb.fxglgames.spaceinvaders.level.Level1;
-import com.almasb.fxglgames.spaceinvaders.level.SpaceLevel;
+import com.almasb.fxglgames.spaceinvaders.level.*;
 import com.almasb.fxglgames.spaceinvaders.tutorial.Tutorial;
 import com.almasb.fxglgames.spaceinvaders.tutorial.TutorialStep;
 import javafx.scene.input.KeyCode;
@@ -75,7 +74,7 @@ public class SpaceInvadersApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Space Invaders");
-        settings.setVersion("0.8.5");
+        settings.setVersion("0.9.0");
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
         settings.setIntroEnabled(false);
@@ -99,6 +98,16 @@ public class SpaceInvadersApp extends GameApplication {
         input.addInputMapping(new InputMapping("Move Left", KeyCode.A));
         input.addInputMapping(new InputMapping("Move Right", KeyCode.D));
         input.addInputMapping(new InputMapping("Shoot", MouseButton.PRIMARY));
+
+        // developer cheats
+        if (getSettings().getApplicationMode() != ApplicationMode.RELEASE) {
+            input.addAction(new UserAction("Next Level") {
+                @Override
+                protected void onActionBegin() {
+                    nextLevel();
+                }
+            }, KeyCode.L);
+        }
     }
 
     @OnUserAction(name = "Move Left")
@@ -126,8 +135,8 @@ public class SpaceInvadersApp extends GameApplication {
 
     @Override
     protected void preInit() {
-        getAudioPlayer().setGlobalSoundVolume(0.0);
-        getAudioPlayer().setGlobalMusicVolume(0.0);
+        getAudioPlayer().setGlobalSoundVolume(0.2);
+        getAudioPlayer().setGlobalMusicVolume(0.2);
 
         loopBGM("bgm.mp3");
     }
@@ -164,6 +173,7 @@ public class SpaceInvadersApp extends GameApplication {
         levels.add(new Level1());
         levels.add(new Level2());
         levels.add(new Level3());
+        levels.add(new BossLevel());
 
         getGameplay().getAchievementManager()
                 .getAchievementByName("Hitman")
@@ -202,13 +212,21 @@ public class SpaceInvadersApp extends GameApplication {
         spawn("Wall", x, y);
     }
 
-    private void spawnBonus(double x, double y, BonusType type) {
+    private void spawnRandomBonus() {
+        spawnBonus(FXGLMath.random(BonusType.values()).get());
+    }
+
+    private void spawnBonus(BonusType type) {
+        double x = FXGLMath.random(getWidth() - 50);
+        double y = FXGLMath.random(getHeight() / 3);
+
         getGameWorld().spawn("Bonus", new SpawnData(x, y).put("type", type));
     }
 
     private void initLevel() {
         getCurrentLevel().init();
 
+        // TODO: move wall init to level so we can have walls in different places
         spawnWall(40, getHeight() - 100);
         spawnWall(120, getHeight() - 100);
 
@@ -220,6 +238,7 @@ public class SpaceInvadersApp extends GameApplication {
 
     private void cleanupLevel() {
         getGameWorld().getEntitiesByType(
+                SpaceInvadersType.ENEMY,
                 SpaceInvadersType.BONUS,
                 SpaceInvadersType.WALL,
                 SpaceInvadersType.BULLET)
@@ -237,7 +256,7 @@ public class SpaceInvadersApp extends GameApplication {
         set("enemiesKilled", 0);
         inc("level", +1);
 
-        if (geti("level") == 4) {
+        if (geti("level") > levels.size()) {
             showGameOver();
             return;
         }
@@ -352,15 +371,12 @@ public class SpaceInvadersApp extends GameApplication {
         inc("enemiesKilled", +1);
         inc("score", scoreForKill());
 
-        if (geti("enemiesKilled") == ENEMIES_PER_LEVEL)
-            nextLevel();
-
-        if (Math.random() < BONUS_SPAWN_CHANCE) {
-            int bonusSize = BonusType.values().length;
-
-            spawnBonus(Math.random() * (getWidth() - 50), Math.random() * getHeight() / 3,
-                    BonusType.values()[(int)(Math.random()*bonusSize)]);
+        if (FXGLMath.randomBoolean(BONUS_SPAWN_CHANCE)) {
+            spawnRandomBonus();
         }
+
+        if (getCurrentLevel().isFinished())
+            nextLevel();
     }
 
     @Handles(eventType = "ENEMY_REACHED_END")

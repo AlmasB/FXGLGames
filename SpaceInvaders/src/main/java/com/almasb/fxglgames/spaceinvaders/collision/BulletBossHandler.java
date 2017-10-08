@@ -26,61 +26,63 @@
 
 package com.almasb.fxglgames.spaceinvaders.collision;
 
-import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.annotation.AddCollisionHandler;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.GameEntity;
-import com.almasb.fxgl.entity.component.CollidableComponent;
+import com.almasb.fxgl.ecs.GameWorld;
+import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.entity.component.ViewComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
 import com.almasb.fxglgames.spaceinvaders.component.HPComponent;
 import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;
+import com.almasb.fxglgames.spaceinvaders.control.BossControl;
+import com.almasb.fxglgames.spaceinvaders.control.EnemyControl;
 import javafx.geometry.Point2D;
+import javafx.scene.effect.BlendMode;
 import javafx.util.Duration;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 @AddCollisionHandler
-public class BulletWallHandler extends CollisionHandler {
+public class BulletBossHandler extends CollisionHandler {
 
-    public BulletWallHandler() {
-        super(SpaceInvadersType.BULLET, SpaceInvadersType.WALL);
+    public BulletBossHandler() {
+        super(SpaceInvadersType.BULLET, SpaceInvadersType.BOSS);
     }
 
     @Override
-    protected void onCollisionBegin(Entity bullet, Entity wall) {
+    protected void onCollisionBegin(Entity bullet, Entity enemy) {
         Object owner = bullet.getComponent(OwnerComponent.class).getValue();
 
-        if (owner == SpaceInvadersType.ENEMY || owner == SpaceInvadersType.BOSS) {
-            bullet.removeFromWorld();
+        // some enemy shot the bullet, skip collision handling
+        if (owner == SpaceInvadersType.BOSS) {
+            return;
+        }
 
-            HPComponent hp = wall.getComponent(HPComponent.class);
-            hp.setValue(hp.getValue() - 1);
+        GameWorld world = bullet.getWorld();
 
-            if (hp.getValue() == 0) {
-                wall.getComponent(CollidableComponent.class).setValue(false);
+        Point2D hitPosition = bullet.getComponent(PositionComponent.class).getValue();
+        bullet.removeFromWorld();
 
-                Entities.animationBuilder()
-                        .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
-                        .duration(Duration.seconds(0.8))
-                        .onFinished(wall::removeFromWorld)
-                        .translate((GameEntity) wall)
-                        .from(((GameEntity) wall).getPosition())
-                        .to(new Point2D(((GameEntity) wall).getX(), FXGL.getAppHeight() + 10))
-                        .buildAndPlay();
-            } else {
-                Entities.animationBuilder()
-                        .autoReverse(true)
-                        .repeat(2)
-                        .interpolator(Interpolators.CIRCULAR.EASE_IN())
-                        .duration(Duration.seconds(0.33))
-                        .scale((GameEntity) wall)
-                        .to(new Point2D(1.2, 1.2))
-                        .buildAndPlay();
-            }
+        HPComponent hp = enemy.getComponent(HPComponent.class);
+        hp.setValue(hp.getValue() - 1);
+
+        if (hp.getValue() <= 0) {
+            enemy.getControl(BossControl.class).die();
+        } else {
+            world.spawn("LaserHit", hitPosition);
+
+            // make enemy look red
+            enemy.getComponent(ViewComponent.class).getView().setBlendMode(BlendMode.RED);
+
+            // return enemy look to normal
+            FXGL.getMasterTimer()
+                    .runOnceAfter(() -> {
+                        if (enemy.isActive())
+                            enemy.getComponent(ViewComponent.class).getView().setBlendMode(null);
+                    }, Duration.seconds(0.33));
         }
     }
 }

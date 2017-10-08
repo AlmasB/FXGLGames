@@ -180,6 +180,17 @@ public final class SpaceInvadersFactory implements EntityFactory {
                 .build();
     }
 
+    @Spawns("Boss")
+    public Entity newBoss(SpawnData data) {
+        return Entities.builder()
+                .from(data)
+                .type(SpaceInvadersType.BOSS)
+                .viewFromTextureWithBBox("boss.png")
+                .with(new CollidableComponent(true), new HPComponent(10))
+                .with(new BossControl())
+                .build();
+    }
+
     @Spawns("Bullet")
     public Entity newBullet(SpawnData data) {
         GameEntity owner = data.get("owner");
