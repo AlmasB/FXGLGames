@@ -232,13 +232,12 @@ public final class SpaceInvadersFactory implements EntityFactory {
         bullet.addComponent(new CollidableComponent(true));
         bullet.addComponent(new OwnerComponent(Entities.getType(owner).getValue()));
         bullet.addControl(new OffscreenCleanControl());
-        bullet.addControl(new BulletControl(500));
+        bullet.addControl(new BulletControl(850));
 
         DropShadow shadow = new DropShadow(22, Color.DARKBLUE);
         shadow.setInput(new Glow(0.8));
 
         EntityView view = new EntityView();
-        view.addNode(texture("laser1.png"));
 
         Texture t = texture("laser2.png");
         t.relocate(-2, -20);
@@ -285,18 +284,13 @@ public final class SpaceInvadersFactory implements EntityFactory {
 
     @Spawns("Explosion")
     public Entity newExplosion(SpawnData data) {
-        GameEntity explosion = Entities.builder()
+        return Entities.builder()
                 .at(data.getX() - 40, data.getY() - 40)
-                // texture is 256x256, we want smaller, 80x80
-                // it has 48 frames, hence 80 * 48
-                .viewFromNode(texture("explosion.png", 80 * 48, 80).toAnimatedTexture(48, Duration.seconds(2)))
-                .with(new ExpireCleanControl(Duration.seconds(1.8)))
+                // we want a smaller texture, 80x80
+                // it has 16 frames, hence 80 * 16
+                .viewFromNode(texture("explosion.png", 80 * 16, 80).toAnimatedTexture(16, Duration.seconds(0.5)))
+                .with(new ExpireCleanControl(Duration.seconds(0.5)))
                 .build();
-
-        // slightly better looking effect
-        explosion.getView().setBlendMode(BlendMode.ADD);
-
-        return explosion;
     }
 
     @Spawns("LevelInfo")

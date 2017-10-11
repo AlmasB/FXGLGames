@@ -57,6 +57,7 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -74,7 +75,7 @@ public class SpaceInvadersApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Space Invaders");
-        settings.setVersion("0.9.0");
+        settings.setVersion("0.9.1");
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
         settings.setIntroEnabled(false);
@@ -133,6 +134,8 @@ public class SpaceInvadersApp extends GameApplication {
 
     private GameController uiController;
 
+    private List<SpaceLevel> levels;
+
     @Override
     protected void preInit() {
         getAudioPlayer().setGlobalSoundVolume(0.2);
@@ -151,8 +154,6 @@ public class SpaceInvadersApp extends GameApplication {
         vars.put("enemiesKilled", 0);
     }
 
-    private List<SpaceLevel> levels = new ArrayList<>();
-
     @Override
     protected void initGame() {
         // we have to use file system directly, since we are running without menus
@@ -170,10 +171,12 @@ public class SpaceInvadersApp extends GameApplication {
         highScoreName = data.getName();
         highScore = data.getHighScore();
 
-        levels.add(new Level1());
-        levels.add(new Level2());
-        levels.add(new Level3());
-        levels.add(new BossLevel());
+        levels = Arrays.asList(
+                new Level1(),
+                new Level2(),
+                new Level3(),
+                new BossLevel()
+        );
 
         getGameplay().getAchievementManager()
                 .getAchievementByName("Hitman")

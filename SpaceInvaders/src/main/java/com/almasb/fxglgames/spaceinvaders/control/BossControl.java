@@ -64,6 +64,6 @@ public class BossControl extends EnemyControl {
         FXGL.getMasterTimer().runOnceAfter(() -> {
             enemy.removeFromWorld();
             FXGL.getEventBus().fireEvent(new GameEvent(GameEvent.ENEMY_KILLED));
-        }, Duration.seconds(2.5));
+        }, Duration.seconds(1.8));
     }
 }
