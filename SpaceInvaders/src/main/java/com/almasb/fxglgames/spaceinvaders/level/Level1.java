@@ -3,10 +3,13 @@ package com.almasb.fxglgames.spaceinvaders.level;
 import com.almasb.fxgl.animation.Animation;
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.ecs.Control;
+import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxglgames.spaceinvaders.Config;
-import javafx.scene.shape.QuadCurve;
+import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
@@ -14,6 +17,7 @@ import java.util.List;
 
 import static com.almasb.fxglgames.spaceinvaders.Config.ENEMIES_PER_ROW;
 import static com.almasb.fxglgames.spaceinvaders.Config.ENEMY_ROWS;
+import static java.lang.Math.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -32,24 +36,26 @@ public class Level1 extends SpaceLevel {
                 final int finalY = y;
 
                 FXGL.getMasterTimer().runOnceAfter(() -> {
-                    GameEntity enemy = spawnEnemy(50, 50 + finalY*50);
 
-                    QuadCurve path = new QuadCurve(50, 50 + finalY*50, 250, 200 + finalY * 20, Config.WIDTH - 50 - 40, 50 + finalY*50);
+                    GameEntity enemy = spawnEnemy(50, 50);
 
-                    Animation<?> anim = Entities.animationBuilder()
-                            .autoReverse(true)
-                            .interpolator(Interpolators.BACK.EASE_IN_OUT())
-                            .duration(Duration.seconds(3))
-                            .repeat(Integer.MAX_VALUE)
-                            .translate(enemy)
-                            .alongPath(path)
-                            .buildAndPlay();
+                    enemy.addControl(new ButterflyControl());
 
-                    animations.add(anim);
+//                    Animation<?> anim = Entities.animationBuilder()
+//                            .autoReverse(true)
+//                            .interpolator(Interpolators.CIRCULAR.EASE_IN_OUT())
+//                            .duration(Duration.seconds(3))
+//                            .repeat(Integer.MAX_VALUE)
+//                            .translate(enemy)
+//                            .from(enemy.getPosition())
+//                            .to(new Point2D(toRight ? Config.WIDTH - 50 - 40 : 50, FXGLMath.random(50, Config.HEIGHT / 2)))
+//                            .buildAndPlay();
+//
+//                    animations.add(anim);
 
                 }, Duration.seconds(t));
 
-                t += 0.3;
+                t += 0.1;
             }
         }
     }
@@ -57,5 +63,24 @@ public class Level1 extends SpaceLevel {
     @Override
     public void destroy() {
         animations.forEach(Animation::stop);
+    }
+
+    private class ButterflyControl extends Control {
+
+        private double t = 0;
+
+        @Override
+        public void onUpdate(Entity entity, double tpf) {
+            Entities.getPosition(entity).setValue(curveFunction().add(FXGL.getAppWidth() / 2, FXGL.getAppHeight() / 2 - 100));
+
+            t += tpf;
+        }
+
+        private Point2D curveFunction() {
+            double x = sin(t) * (pow(E, cos(t)) - 2 * cos(4*t) - pow(sin(t/12), 5));
+            double y = cos(t) * (pow(E, cos(t)) - 2 * cos(4*t) - pow(sin(t/12), 5));
+
+            return new Point2D(x, -y).multiply(85);
+        }
     }
 }

@@ -40,7 +40,7 @@ public final class Config {
     /**
      * Seconds to show level info.
      */
-    public static final double LEVEL_START_DELAY = 2.4;
+    public static final double LEVEL_START_DELAY = 1.5;
 
     public static final int SCORE_ENEMY_KILL = 250;
     public static final int SCORE_DIFFICULTY_MODIFIER = 1;
@@ -56,10 +56,12 @@ public final class Config {
 
     public static final double PLAYER_MOVE_SPEED = 300;
 
+    public static final int STARS_MOVE_SPEED = 125;
+
     /**
      * Attack speed, bullet per second.
      */
-    public static final double PLAYER_ATTACK_SPEED = 2.0;
+    public static final double PLAYER_ATTACK_SPEED = 3.0;
     public static final double PLAYER_BONUS_ATTACK_SPEED = 0.25;
 
     public static final double INVINCIBILITY_TIME = 1.0;

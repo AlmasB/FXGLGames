@@ -29,7 +29,6 @@ package com.almasb.fxglgames.spaceinvaders;
 import com.almasb.fxgl.annotation.Handles;
 import com.almasb.fxgl.annotation.OnUserAction;
 import com.almasb.fxgl.app.ApplicationMode;
-import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.ecs.Entity;
@@ -56,7 +55,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +73,7 @@ public class SpaceInvadersApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Space Invaders");
-        settings.setVersion("0.9.1");
+        settings.setVersion("0.9.5");
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
         settings.setIntroEnabled(false);
@@ -175,6 +173,10 @@ public class SpaceInvadersApp extends GameApplication {
                 new Level1(),
                 new Level2(),
                 new Level3(),
+                new Level4(),
+                new Level5(),
+                new Level6(),
+                new Level7(),
                 new BossLevel()
         );
 
@@ -233,8 +235,8 @@ public class SpaceInvadersApp extends GameApplication {
         spawnWall(40, getHeight() - 100);
         spawnWall(120, getHeight() - 100);
 
-        spawnWall(getWidth() - 160, getHeight() - 100);
-        spawnWall(getWidth() - 80, getHeight() - 100);
+        spawnWall(getWidth() - 160 - 40, getHeight() - 100);
+        spawnWall(getWidth() - 80 - 40, getHeight() - 100);
 
         getInput().setProcessInput(true);
     }

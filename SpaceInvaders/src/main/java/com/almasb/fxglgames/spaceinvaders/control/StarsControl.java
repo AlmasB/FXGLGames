@@ -5,6 +5,7 @@ import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.component.ViewComponent;
+import com.almasb.fxglgames.spaceinvaders.Config;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -38,7 +39,7 @@ public class StarsControl extends Control {
     public void onUpdate(Entity entity, double tpf) {
         for (int i = 0; i < stars.size(); i++) {
             Rectangle star = stars.get(i);
-            star.setTranslateY(star.getTranslateY() + tpf * 100);
+            star.setTranslateY(star.getTranslateY() + tpf * Config.STARS_MOVE_SPEED);
 
             if (star.getTranslateY() > FXGL.getAppHeight())
                 respawn(star);

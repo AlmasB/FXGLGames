@@ -24,41 +24,67 @@
  * SOFTWARE.
  */
 
-package com.almasb.fxglgames.spaceinvaders.collision;
+package com.almasb.fxglgames.spaceinvaders.control;
 
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.annotation.AddCollisionHandler;
 import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.component.CollidableComponent;
-import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
 import com.almasb.fxglgames.spaceinvaders.component.HPComponent;
-import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;
-import com.almasb.fxglgames.spaceinvaders.control.WallControl;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
 /**
- * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
+ * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-@AddCollisionHandler
-public class BulletWallHandler extends CollisionHandler {
+public class WallControl extends Control {
 
-    public BulletWallHandler() {
-        super(SpaceInvadersType.BULLET, SpaceInvadersType.WALL);
+    private final int originalLives;
+    private int lives;
+
+    public WallControl(int lives) {
+        this.lives = lives;
+        originalLives = lives;
+    }
+
+    private GameEntity wall;
+
+    @Override
+    public void onAdded(Entity entity) {
+        wall = (GameEntity) entity;
     }
 
     @Override
-    protected void onCollisionBegin(Entity bullet, Entity wall) {
-        Object owner = bullet.getComponent(OwnerComponent.class).getValue();
+    public void onUpdate(Entity entity, double tpf) {}
 
-        if (owner == SpaceInvadersType.ENEMY || owner == SpaceInvadersType.BOSS) {
-            bullet.removeFromWorld();
+    public void onHit() {
+        lives--;
 
-            wall.getControl(WallControl.class).onHit();
+        Entities.animationBuilder()
+                .autoReverse(true)
+                .repeat(2)
+                .interpolator(Interpolators.CIRCULAR.EASE_IN())
+                .duration(Duration.seconds(0.33))
+                .scale((GameEntity) wall)
+                .to(new Point2D(1.2, 1.2))
+                .buildAndPlay();
+
+        if (lives == 0) {
+            wall.getComponent(CollidableComponent.class).setValue(false);
+
+            Entities.animationBuilder()
+                    .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
+                    .duration(Duration.seconds(0.8))
+                    .onFinished(wall::removeFromWorld)
+                    .translate((GameEntity) wall)
+                    .from(((GameEntity) wall).getPosition())
+                    .to(new Point2D(((GameEntity) wall).getX(), FXGL.getAppHeight() + 10))
+                    .buildAndPlay();
+        } else if (lives == originalLives / 2) {
+            wall.setView(FXGL.getAssetLoader().loadTexture("wall2.png", 232 / 3, 104 / 3));
         }
     }
 }

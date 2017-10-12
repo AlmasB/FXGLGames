@@ -264,8 +264,9 @@ public final class SpaceInvadersFactory implements EntityFactory {
         return Entities.builder()
                 .from(data)
                 .type(SpaceInvadersType.WALL)
-                .viewFromTextureWithBBox("wall.png")
-                .with(new CollidableComponent(true), new HPComponent(7))
+                .viewFromNodeWithBBox(texture("wall.png", 232 / 3, 104 / 3))
+                .with(new CollidableComponent(true))
+                .with(new WallControl(7))
                 .build();
     }
 
