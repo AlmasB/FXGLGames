@@ -49,6 +49,7 @@ import com.google.inject.Singleton;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.effect.BlendMode;
+import javafx.scene.effect.Bloom;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
 import javafx.scene.paint.Color;
@@ -234,16 +235,13 @@ public final class SpaceInvadersFactory implements EntityFactory {
         bullet.addControl(new OffscreenCleanControl());
         bullet.addControl(new BulletControl(850));
 
-        DropShadow shadow = new DropShadow(22, Color.DARKBLUE);
-        shadow.setInput(new Glow(0.8));
-
         EntityView view = new EntityView();
 
         Texture t = texture("laser2.png");
         t.relocate(-2, -20);
 
         view.addNode(t);
-        view.setEffect(shadow);
+        view.setEffect(new Bloom(0.5));
 
         bullet.getViewComponent().setView(view);
 

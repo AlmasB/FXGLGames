@@ -33,9 +33,11 @@ import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.component.CollidableComponent;
-import com.almasb.fxglgames.spaceinvaders.component.HPComponent;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
+
+import static com.almasb.fxgl.app.DSLKt.play;
+import static com.almasb.fxgl.app.DSLKt.texture;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -80,11 +82,12 @@ public class WallControl extends Control {
                     .duration(Duration.seconds(0.8))
                     .onFinished(wall::removeFromWorld)
                     .translate((GameEntity) wall)
-                    .from(((GameEntity) wall).getPosition())
-                    .to(new Point2D(((GameEntity) wall).getX(), FXGL.getAppHeight() + 10))
+                    .from(wall.getPosition())
+                    .to(new Point2D(wall.getX(), FXGL.getAppHeight() + 10))
                     .buildAndPlay();
         } else if (lives == originalLives / 2) {
-            wall.setView(FXGL.getAssetLoader().loadTexture("wall2.png", 232 / 3, 104 / 3));
+            wall.setView(texture("wall2.png", 232 / 3, 104 / 3));
+            play("brick_hit.wav");
         }
     }
 }
