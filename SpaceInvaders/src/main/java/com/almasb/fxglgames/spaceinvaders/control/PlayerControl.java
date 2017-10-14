@@ -26,15 +26,13 @@
 
 package com.almasb.fxglgames.spaceinvaders.control;
 
+import com.almasb.fxgl.app.DSLKt;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.ecs.Control;
 import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.ecs.GameWorld;
 import com.almasb.fxgl.ecs.component.Required;
-import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.EntityView;
-import com.almasb.fxgl.entity.RenderLayer;
-import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
 import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxgl.entity.component.ViewComponent;
@@ -44,6 +42,9 @@ import com.almasb.fxglgames.spaceinvaders.Config;
 import com.almasb.fxglgames.spaceinvaders.component.InvincibleComponent;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
+
+import static com.almasb.fxgl.app.DSLKt.getd;
+import static com.almasb.fxgl.app.DSLKt.getdp;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -100,6 +101,23 @@ public class PlayerControl extends Control {
 
         FXGL.getAudioPlayer()
                 .playSound("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
+    }
+
+    public void shootLaser() {
+        if (getd("laserMeter") == Config.LASER_METER_MAX) {
+            laserBeamActive = true;
+
+            GameEntity beam = (GameEntity) getEntity().getWorld().spawn("LaserBeam");
+            beam.getPositionComponent().xProperty().bind(position.xProperty().add(21));
+            beam.setY(-10);
+            beam.setOnNotActive(() -> laserBeamActive = false);
+        }
+    }
+
+    private boolean laserBeamActive = false;
+
+    public boolean isLaserBeamActive() {
+        return laserBeamActive;
     }
 
     public void enableInvincibility() {

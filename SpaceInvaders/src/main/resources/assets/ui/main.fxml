@@ -30,6 +30,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import java.lang.Double?>
+<?import com.almasb.fxgl.ui.ProgressBar?>
 <Pane prefWidth="650" prefHeight="800" xmlns="http://javafx.com/javafx/8.0.60"
       xmlns:fx="http://javafx.com/fxml/1">
 
@@ -38,6 +39,11 @@
         <Label fx:id="labelScore" textFill="aquamarine" />
         <Label fx:id="labelHighScore" textFill="aquamarine" />
     </HBox>
+
+    <ProgressBar fx:id="laserMeter" translateX="25" translateY="35" />
+
+    <Label fx:id="labelLaserReady" translateX="25" translateY="45"
+           text="Press RMB!" textFill="aliceblue" />
 
     <fx:define>
         <!-- position of lives -->

@@ -36,6 +36,7 @@ import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.gameplay.Achievement;
 import com.almasb.fxgl.gameplay.AchievementManager;
+import com.almasb.fxgl.input.ActionType;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.InputMapping;
 import com.almasb.fxgl.input.UserAction;
@@ -73,7 +74,7 @@ public class SpaceInvadersApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Space Invaders");
-        settings.setVersion("0.9.5");
+        settings.setVersion("0.9.7");
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
         settings.setIntroEnabled(false);
@@ -97,6 +98,7 @@ public class SpaceInvadersApp extends GameApplication {
         input.addInputMapping(new InputMapping("Move Left", KeyCode.A));
         input.addInputMapping(new InputMapping("Move Right", KeyCode.D));
         input.addInputMapping(new InputMapping("Shoot", MouseButton.PRIMARY));
+        input.addInputMapping(new InputMapping("Laser Beam", MouseButton.SECONDARY));
 
         // developer cheats
         if (getSettings().getApplicationMode() != ApplicationMode.RELEASE) {
@@ -122,6 +124,11 @@ public class SpaceInvadersApp extends GameApplication {
     @OnUserAction(name = "Shoot")
     public void shoot() {
         playerControl.shoot();
+    }
+
+    @OnUserAction(name = "Laser Beam", type = ActionType.ON_ACTION_BEGIN)
+    public void laserBeam() {
+        playerControl.shootLaser();
     }
 
     private GameEntity player;
@@ -150,6 +157,7 @@ public class SpaceInvadersApp extends GameApplication {
         vars.put("level", 0);
         vars.put("lives", START_LIVES);
         vars.put("enemiesKilled", 0);
+        vars.put("laserMeter", 0.0);
     }
 
     @Override
@@ -246,7 +254,8 @@ public class SpaceInvadersApp extends GameApplication {
                 SpaceInvadersType.ENEMY,
                 SpaceInvadersType.BONUS,
                 SpaceInvadersType.WALL,
-                SpaceInvadersType.BULLET)
+                SpaceInvadersType.BULLET,
+                SpaceInvadersType.LASER_BEAM)
                 .forEach(Entity::removeFromWorld);
 
         getCurrentLevel().destroy();
@@ -287,6 +296,7 @@ public class SpaceInvadersApp extends GameApplication {
 
         uiController.getLabelScore().textProperty().bind(getip("score").asString("Score: %d"));
         uiController.getLabelHighScore().setText("HiScore: " + highScore + " " + highScoreName + "");
+        uiController.getLaserMeter().currentValueProperty().bind(getdp("laserMeter"));
 
         IntStream.range(0, geti("lives"))
                 .forEach(i -> uiController.addLife());
@@ -299,12 +309,13 @@ public class SpaceInvadersApp extends GameApplication {
     @Override
     protected void onUpdate(double tpf) {
         if (runningFirstTime) {
-            getDisplay().showConfirmationBox("Play Tutorial?", yes -> {
-                if (yes)
-                    playTutorial();
-                else
-                    nextLevel();
-            });
+            nextLevel();
+//            getDisplay().showConfirmationBox("Play Tutorial?", yes -> {
+//                if (yes)
+//                    playTutorial();
+//                else
+//                    nextLevel();
+//            });
 
             runningFirstTime = false;
         }
@@ -375,6 +386,13 @@ public class SpaceInvadersApp extends GameApplication {
     public void onEnemyKilled(GameEvent event) {
         inc("enemiesKilled", +1);
         inc("score", scoreForKill());
+
+        if (!playerControl.isLaserBeamActive() && getd("laserMeter") < LASER_METER_MAX) {
+            inc("laserMeter", +LASER_METER_RECHARGE);
+            if (getd("laserMeter") > LASER_METER_MAX) {
+                set("laserMeter", LASER_METER_MAX);
+            }
+        }
 
         if (FXGLMath.randomBoolean(BONUS_SPAWN_CHANCE)) {
             spawnRandomBonus();

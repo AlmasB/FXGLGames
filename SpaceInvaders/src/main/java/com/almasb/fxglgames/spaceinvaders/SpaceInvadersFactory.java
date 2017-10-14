@@ -257,6 +257,23 @@ public final class SpaceInvadersFactory implements EntityFactory {
                 .build();
     }
 
+    @Spawns("LaserBeam")
+    public Entity newLaserBeam(SpawnData data) {
+        Rectangle view = new Rectangle(10, Config.HEIGHT - 25, Color.color(1.0, 1.0, 1.0, 0.86));
+        view.setArcWidth(15);
+        view.setArcHeight(15);
+        view.setStroke(Color.BLUE);
+        view.setStrokeWidth(1);
+
+        return Entities.builder()
+                .from(data)
+                .type(SpaceInvadersType.LASER_BEAM)
+                .viewFromNodeWithBBox(view)
+                .with(new CollidableComponent(true))
+                .with(new LaserBeamControl())
+                .build();
+    }
+
     @Spawns("Wall")
     public Entity newWall(SpawnData data) {
         return Entities.builder()

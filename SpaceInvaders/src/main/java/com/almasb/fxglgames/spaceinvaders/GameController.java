@@ -30,6 +30,7 @@ import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.scene.GameScene;
 import com.almasb.fxgl.scene.Viewport;
 import com.almasb.fxgl.texture.Texture;
+import com.almasb.fxgl.ui.ProgressBar;
 import com.almasb.fxgl.ui.UIController;
 import javafx.animation.Animation;
 import javafx.animation.ScaleTransition;
@@ -57,6 +58,12 @@ public class GameController implements UIController {
     private Label labelHighScore;
 
     @FXML
+    private ProgressBar laserMeter;
+
+    @FXML
+    private Label labelLaserReady;
+
+    @FXML
     private double livesX;
 
     @FXML
@@ -74,6 +81,18 @@ public class GameController implements UIController {
     public void init() {
         labelScore.setFont(FXGL.getUIFactory().newFont(18));
         labelHighScore.setFont(FXGL.getUIFactory().newFont(18));
+
+        laserMeter.setLabelVisible(false);
+        laserMeter.setMinValue(0);
+        laserMeter.setMaxValue(Config.LASER_METER_MAX);
+        laserMeter.setCurrentValue(0);
+        laserMeter.setBackgroundFill(Color.WHITE);
+        laserMeter.setFill(Color.BLUE);
+        laserMeter.setWidth(110);
+        laserMeter.setHeight(10);
+
+        labelLaserReady.setFont(FXGL.getUIFactory().newFont(14));
+        labelLaserReady.visibleProperty().bind(laserMeter.currentValueProperty().isEqualTo(Config.LASER_METER_MAX, 0.0));
     }
 
     public Label getLabelScore() {
@@ -82,6 +101,10 @@ public class GameController implements UIController {
 
     public Label getLabelHighScore() {
         return labelHighScore;
+    }
+
+    public ProgressBar getLaserMeter() {
+        return laserMeter;
     }
 
     public void addLife() {

@@ -64,6 +64,18 @@ public final class Config {
     public static final double PLAYER_ATTACK_SPEED = 3.0;
     public static final double PLAYER_BONUS_ATTACK_SPEED = 0.25;
 
+    public static final double LASER_METER_MAX = 10.0;
+
+    /**
+     * Recharge per killed enemy;
+     */
+    public static final double LASER_METER_RECHARGE = 1.0;
+
+    /**
+     * Deplete per second (when activated).
+     */
+    public static final double LASER_METER_DEPLETE = 5.0;
+
     public static final double INVINCIBILITY_TIME = 1.0;
 
     public static final int ACHIEVEMENT_ENEMIES_KILLED = 40;
