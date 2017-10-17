@@ -107,19 +107,19 @@ public class MarioApp extends GameApplication {
         getGameScene().getViewport().bindToEntity(player, 500, 0);
 
         // assets from https://raventale.itch.io/parallax-background
-        getGameScene().addGameView(new ParallaxBackgroundView(Arrays.asList(
-                new ParallaxTexture(getAssetLoader().loadTexture("bg_10.png", 1280, 768), 1.0),
-                new ParallaxTexture(getAssetLoader().loadTexture("bg_9.png", 1280, 768), 0.05),
-                new ParallaxTexture(getAssetLoader().loadTexture("bg_8.png", 1280, 768), 0.1),
-                new ParallaxTexture(getAssetLoader().loadTexture("bg_7.png", 1280, 768), 0.3),
-                new ParallaxTexture(getAssetLoader().loadTexture("bg_6.png", 1280, 768), 0.45),
-                //new ParallaxTexture(getAssetLoader().loadTexture("bg_5.png", 1280, 768), 0.45),
-                //new ParallaxTexture(getAssetLoader().loadTexture("bg_4.png", 1280, 768), 0.6),
-                new ParallaxTexture(getAssetLoader().loadTexture("bg_3.png", 1280, 768), 0.5),
-                new ParallaxTexture(getAssetLoader().loadTexture("bg_2.png", 1280, 768), 0.7),
-                new ParallaxTexture(getAssetLoader().loadTexture("bg_1.png", 1280, 768), 0.8),
-                new ParallaxTexture(getAssetLoader().loadTexture("bg_0.png", 1280, 768), 0.9)
-        ), Orientation.HORIZONTAL, BG));
+//        getGameScene().addGameView(new ParallaxBackgroundView(Arrays.asList(
+//                new ParallaxTexture(getAssetLoader().loadTexture("bg_10.png", 1280, 768), 1.0),
+//                new ParallaxTexture(getAssetLoader().loadTexture("bg_9.png", 1280, 768), 0.05),
+//                new ParallaxTexture(getAssetLoader().loadTexture("bg_8.png", 1280, 768), 0.1),
+//                new ParallaxTexture(getAssetLoader().loadTexture("bg_7.png", 1280, 768), 0.3),
+//                new ParallaxTexture(getAssetLoader().loadTexture("bg_6.png", 1280, 768), 0.45),
+//                //new ParallaxTexture(getAssetLoader().loadTexture("bg_5.png", 1280, 768), 0.45),
+//                //new ParallaxTexture(getAssetLoader().loadTexture("bg_4.png", 1280, 768), 0.6),
+//                new ParallaxTexture(getAssetLoader().loadTexture("bg_3.png", 1280, 768), 0.5),
+//                new ParallaxTexture(getAssetLoader().loadTexture("bg_2.png", 1280, 768), 0.7),
+//                new ParallaxTexture(getAssetLoader().loadTexture("bg_1.png", 1280, 768), 0.8),
+//                new ParallaxTexture(getAssetLoader().loadTexture("bg_0.png", 1280, 768), 0.9)
+//        ), Orientation.HORIZONTAL, BG));
 
         level++;
         if (level == 4)
@@ -140,11 +140,21 @@ public class MarioApp extends GameApplication {
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(MarioType.PLAYER, MarioType.PORTAL) {
             @Override
             protected void onCollisionBegin(Entity a, Entity b) {
-                nextLevel();
+                nextLevel = true;
             }
         });
 
         getPhysicsWorld().addCollisionHandler(new CollectibleHandler(MarioType.PLAYER, MarioType.COIN, "drop.wav"));
+    }
+
+    private boolean nextLevel = false;
+
+    @Override
+    protected void onPostUpdate(double tpf) {
+        if (nextLevel) {
+            nextLevel = false;
+            nextLevel();
+        }
     }
 
     public static void main(String[] args) {

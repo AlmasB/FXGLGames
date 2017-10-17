@@ -151,7 +151,7 @@ public class MarioApp extends GameApplication {
             player.getControl(com.almasb.fxgl.physics.PhysicsControl.class)
                     .reposition(gameState.getCheckpoint());
 
-            ParticleEmitter emitter = ParticleEmitters.newExplosionEmitter();
+            ParticleEmitter emitter = ParticleEmitters.newExplosionEmitter(15);
             emitter.setColor(Color.GOLD);
 
             Entities.builder()

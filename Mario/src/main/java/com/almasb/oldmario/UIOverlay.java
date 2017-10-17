@@ -27,7 +27,7 @@
 package com.almasb.oldmario;
 
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.service.AssetLoader;
+import com.almasb.fxgl.asset.AssetLoader;
 import com.almasb.fxgl.texture.Texture;
 import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;

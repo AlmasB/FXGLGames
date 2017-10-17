@@ -45,7 +45,7 @@ import com.almasb.fxglgames.spaceinvaders.component.InvincibleComponent;
 import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;
 import com.almasb.fxglgames.spaceinvaders.component.SubTypeComponent;
 import com.almasb.fxglgames.spaceinvaders.control.*;
-import com.google.inject.Singleton;
+
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.effect.BlendMode;
@@ -67,7 +67,6 @@ import static com.almasb.fxglgames.spaceinvaders.Config.LEVEL_START_DELAY;
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 @SetEntityFactory
-@Singleton
 public final class SpaceInvadersFactory implements EntityFactory {
 
     private static final Random random = FXGLMath.getRandom();

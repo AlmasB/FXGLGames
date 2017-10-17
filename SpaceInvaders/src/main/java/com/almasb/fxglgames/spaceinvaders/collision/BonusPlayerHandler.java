@@ -57,7 +57,7 @@ public class BonusPlayerHandler extends CollisionHandler {
         FXGL.getEventBus().fireEvent(new BonusPickupEvent(BonusPickupEvent.ANY, type));
 
         bonus.getComponent(CollidableComponent.class).setValue(false);
-        bonus.removeAllControls();
+        bonus.setControlsEnabled(false);
 
         Entities.animationBuilder()
                 .duration(Duration.seconds(0.66))
