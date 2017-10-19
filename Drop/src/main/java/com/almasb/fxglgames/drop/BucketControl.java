@@ -26,20 +26,18 @@
 
 package com.almasb.fxglgames.drop;
 
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.ecs.component.Required;
-import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.Entity;
 
 /**
  * Controls the player bucket.
  *
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-@Required(PositionComponent.class)
 public class BucketControl extends Control {
 
-    private PositionComponent position;
+    // this is auto injected based on control name, i.e. BucketControl
+    private Entity bucket;
 
     private double speed;
 
@@ -49,10 +47,10 @@ public class BucketControl extends Control {
     }
 
     public void left() {
-        position.translateX(-speed);
+        bucket.translateX(-speed);
     }
 
     public void right() {
-        position.translateX(speed);
+        bucket.translateX(speed);
     }
 }

@@ -29,11 +29,9 @@ package com.almasb.fxglgames.drop;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
-import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxgl.settings.GameSettings;
 import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
@@ -92,20 +90,6 @@ public class DropApp extends GameApplication {
         getMasterTimer().runAtInterval(() -> {
             getGameWorld().spawn("Droplet", FXGLMath.random(getWidth() - 64), 0);
         }, Duration.seconds(1));
-    }
-
-    @Override
-    protected void initPhysics() {
-        PhysicsWorld physicsWorld = getPhysicsWorld();
-
-        physicsWorld.addCollisionHandler(new CollisionHandler(DropType.DROPLET, DropType.BUCKET) {
-            @Override
-            protected void onCollisionBegin(Entity droplet, Entity bucket) {
-                droplet.removeFromWorld();
-
-                getAudioPlayer().playSound("drop.wav");
-            }
-        });
     }
 
     public static void main(String[] args) {
