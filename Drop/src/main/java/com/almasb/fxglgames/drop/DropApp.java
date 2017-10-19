@@ -90,6 +90,8 @@ public class DropApp extends GameApplication {
         getMasterTimer().runAtInterval(() -> {
             getGameWorld().spawn("Droplet", FXGLMath.random(getWidth() - 64), 0);
         }, Duration.seconds(1));
+
+        getAudioPlayer().loopBGM("bgm.mp3");
     }
 
     public static void main(String[] args) {
