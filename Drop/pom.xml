@@ -18,6 +18,13 @@
 
         <fxgl.version>0.4.0-SNAPSHOT</fxgl.version>
     </properties>
+    
+    <repositories>
+        <repository>
+            <id>oss.sonatype.org-snapshot</id>
+            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
