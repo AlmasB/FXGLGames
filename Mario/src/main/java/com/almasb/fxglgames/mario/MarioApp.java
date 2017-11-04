@@ -8,19 +8,16 @@ package com.almasb.fxglgames.mario;
 
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.entity.ParallaxBackgroundView;
-import com.almasb.fxgl.entity.ParallaxTexture;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.RenderLayer;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.handler.CollectibleHandler;
 import com.almasb.fxgl.settings.GameSettings;
-import javafx.geometry.Orientation;
 import javafx.scene.input.KeyCode;
+import javafx.scene.paint.Color;
 
-import java.util.Arrays;
 
 /**
  *
@@ -39,6 +36,7 @@ public class MarioApp extends GameApplication {
         settings.setMenuEnabled(false);
         settings.setProfilingEnabled(false);
         settings.setCloseConfirmation(false);
+        settings.setSingleStep(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
@@ -76,6 +74,18 @@ public class MarioApp extends GameApplication {
                 playerControl.jump();
             }
         }, KeyCode.W);
+
+        getInput().addAction(new UserAction("Enter") {
+            @Override
+            protected void onActionBegin() {
+                stepLoop();
+            }
+        }, KeyCode.L);
+    }
+
+    @Override
+    protected void preInit() {
+        getGameScene().setBackgroundColor(Color.rgb(92, 148, 252));
     }
 
     @Override
@@ -98,13 +108,18 @@ public class MarioApp extends GameApplication {
     };
 
     private void nextLevel() {
-        getGameWorld().setLevelFromMap("mario" + level + ".json");
+        getGameWorld().setLevelFromMap("mario" + 0 + ".json");
+
+        getGameWorld().spawn("player", 10, 24 * 70 - 768);
 
         Entity player = getGameWorld().getEntitiesByType(MarioType.PLAYER).get(0);
         playerControl = player.getControl(PlayerControl.class);
-
-        getGameScene().getViewport().setBounds(0, 0, 3000, 768);
+//
+        getGameScene().getViewport().setBounds(0, 0, 64*70, 24 * 70 + 170);
         getGameScene().getViewport().bindToEntity(player, 500, 0);
+
+        //getGameScene().getViewport().setY(24 * 70 - 768);
+
 
         // assets from https://raventale.itch.io/parallax-background
 //        getGameScene().addGameView(new ParallaxBackgroundView(Arrays.asList(
