@@ -26,28 +26,42 @@
 
 package com.almasb.fxglgames.drop;
 
-import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.input.Input;
+import com.almasb.fxgl.entity.component.CollidableComponent;
+import com.almasb.fxgl.entity.control.KeepOnScreenControl;
+import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.input.UserAction;
+import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.settings.GameSettings;
 import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
 
 /**
- * This is an FXGL version of the libGDX simple game tutorial which can be found
+ * This is an FXGL version of the libGDX simple game tutorial, which can be found
  * here - https://github.com/libgdx/libgdx/wiki/A-simple-game
  *
  * The player can move the bucket left and right to catch water droplets.
  * There are no win/lose conditions.
  *
+ * Note: for simplicity's sake all of the code is kept in this file.
+ * In addition, most of typical FXGL API is not used to avoid overwhelming
+ * FXGL beginners with a lot of new concepts to learn.
+ *
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class DropApp extends GameApplication {
 
-    private BucketControl bucketControl;
+    /**
+     * Types of entities in this game.
+     */
+    public enum DropType {
+        DROPLET, BUCKET
+    }
+
+    private Entity bucket;
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -55,43 +69,75 @@ public class DropApp extends GameApplication {
         settings.setVersion("1.0");
         settings.setWidth(480);
         settings.setHeight(800);
-        settings.setIntroEnabled(false);
-        settings.setMenuEnabled(false);
-        settings.setProfilingEnabled(false);
-        settings.setCloseConfirmation(false);
-        settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
     @Override
     protected void initInput() {
-        Input input = getInput();
-
-        input.addAction(new UserAction("Move Left") {
+        UserAction moveLeft = new UserAction("Move Left") {
             @Override
             protected void onAction() {
-                bucketControl.left();
+                bucket.translateX(-200 * tpf());
             }
-        }, KeyCode.A);
+        };
 
-        input.addAction(new UserAction("Move Right") {
+        UserAction moveRight = new UserAction("Move Right") {
             @Override
             protected void onAction() {
-                bucketControl.right();
+                bucket.translateX(200 * tpf());
             }
-        }, KeyCode.D);
+        };
+
+        // bind actions to keys
+        getInput().addAction(moveLeft, KeyCode.A);
+        getInput().addAction(moveRight, KeyCode.D);
     }
 
     @Override
     protected void initGame() {
-        Entity bucket = getGameWorld().spawn("Bucket", getWidth() / 2, getHeight() - 200);
-
-        bucketControl = bucket.getControl(BucketControl.class);
+        bucket = spawnBucket();
 
         getMasterTimer().runAtInterval(() -> {
-            getGameWorld().spawn("Droplet", FXGLMath.random(getWidth() - 64), 0);
+            spawnDroplet();
         }, Duration.seconds(1));
 
         getAudioPlayer().loopBGM("bgm.mp3");
+    }
+
+    @Override
+    protected void initPhysics() {
+        getPhysicsWorld().addCollisionHandler(new CollisionHandler(DropType.BUCKET, DropType.DROPLET) {
+            @Override
+            protected void onCollisionBegin(Entity bucket, Entity droplet) {
+                droplet.removeFromWorld();
+
+                getAudioPlayer().playSound("drop.wav");
+            }
+        });
+    }
+
+    @Override
+    protected void onUpdate(double tpf) {
+        getGameWorld().getEntitiesByType(DropType.DROPLET).forEach(droplet -> droplet.translateY(150 * tpf));
+    }
+
+    private Entity spawnBucket() {
+        return Entities.builder()
+                .at(getWidth() / 2, getHeight() - 200)
+                .type(DropType.BUCKET)
+                .viewFromTextureWithBBox("bucket.png")
+                .with(new CollidableComponent(true))
+                .with(new KeepOnScreenControl(true, false))
+                .buildAndAttach(getGameWorld());
+    }
+
+    private Entity spawnDroplet() {
+        return Entities.builder()
+                .at(FXGLMath.random(getWidth() - 64), 0)
+                .type(DropType.DROPLET)
+                .viewFromTextureWithBBox("droplet.png")
+                .with(new CollidableComponent(true))
+                .with(new OffscreenCleanControl())
+                .buildAndAttach(getGameWorld());
     }
 
     public static void main(String[] args) {
