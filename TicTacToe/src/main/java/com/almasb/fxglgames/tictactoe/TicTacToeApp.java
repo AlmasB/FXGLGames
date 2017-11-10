@@ -1,7 +1,6 @@
 package com.almasb.fxglgames.tictactoe;
 
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.app.ApplicationMode;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxglgames.tictactoe.control.enemy.MinimaxControl;
@@ -31,18 +30,7 @@ public class TicTacToeApp extends GameApplication {
         settings.setVersion("0.3");
         settings.setWidth(600);
         settings.setHeight(600);
-        settings.setIntroEnabled(false);
-        settings.setMenuEnabled(false);
-        settings.setProfilingEnabled(false);
-        settings.setCloseConfirmation(false);
-        settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
-
-    @Override
-    protected void initInput() {}
-
-    @Override
-    protected void initAssets() {}
 
     @Override
     protected void preInit() {

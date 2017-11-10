@@ -1,6 +1,6 @@
 package com.almasb.fxglgames.tictactoe;
 
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxglgames.tictactoe.control.TileControl;
 
 /**
@@ -8,7 +8,7 @@ import com.almasb.fxglgames.tictactoe.control.TileControl;
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class TileEntity extends GameEntity {
+public class TileEntity extends Entity {
 
     public TileEntity(double x, double y) {
         setX(x);
