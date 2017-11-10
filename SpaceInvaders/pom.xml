@@ -6,7 +6,7 @@
 
     <groupId>com.almasb</groupId>
     <artifactId>SpaceInvaders</artifactId>
-    <version>0.9.7</version>
+    <version>1.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -16,8 +16,15 @@
         <maven.compiler.version>3.3</maven.compiler.version>
         <maven.shade.version>2.4.2</maven.shade.version>
 
-        <fxgl.version>0.3.9</fxgl.version>
+        <fxgl.version>0.4.0-SNAPSHOT</fxgl.version>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>oss.sonatype.org-snapshot</id>
+            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>

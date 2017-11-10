@@ -3,7 +3,7 @@ package com.almasb.fxglgames.spaceinvaders.level;
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Entity;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
@@ -17,17 +17,17 @@ import static com.almasb.fxgl.app.DSLKt.spawn;
  */
 public abstract class SpaceLevel {
 
-    private List<GameEntity> enemies = new ArrayList<>();
+    private List<Entity> enemies = new ArrayList<>();
 
     public abstract void init();
     public abstract void destroy();
 
     public boolean isFinished() {
-        return enemies.stream().noneMatch(GameEntity::isActive);
+        return enemies.stream().noneMatch(Entity::isActive);
     }
 
-    protected GameEntity spawnEnemy(double x, double y) {
-        GameEntity enemy = (GameEntity) spawn("Enemy", x, y);
+    protected Entity spawnEnemy(double x, double y) {
+        Entity enemy = (Entity) spawn("Enemy", x, y);
 
         enemies.add(enemy);
 
@@ -42,8 +42,8 @@ public abstract class SpaceLevel {
         return enemy;
     }
 
-    protected GameEntity spawnBoss(double x, double y) {
-        GameEntity enemy = (GameEntity) spawn("Boss", x, y);
+    protected Entity spawnBoss(double x, double y) {
+        Entity enemy = (Entity) spawn("Boss", x, y);
 
         enemies.add(enemy);
 

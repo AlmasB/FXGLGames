@@ -26,10 +26,9 @@
 
 package com.almasb.fxglgames.spaceinvaders.control;
 
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.ecs.component.Required;
-import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.Required;
 import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
 import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;
 
@@ -39,7 +38,6 @@ import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;
 @Required(OwnerComponent.class)
 public class BulletControl extends Control {
 
-    private PositionComponent position;
     private OwnerComponent owner;
 
     private double speed;
@@ -50,6 +48,6 @@ public class BulletControl extends Control {
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
-        position.translateY(owner.getValue() == (SpaceInvadersType.PLAYER) ? -tpf * speed : tpf * speed);
+        entity.translateY(owner.getValue() == (SpaceInvadersType.PLAYER) ? -tpf * speed : tpf * speed);
     }
 }

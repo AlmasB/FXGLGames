@@ -31,27 +31,23 @@ import com.almasb.fxgl.annotation.SetEntityFactory;
 import com.almasb.fxgl.annotation.Spawns;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.component.CollidableComponent;
+import com.almasb.fxgl.entity.component.HealthComponent;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.entity.control.ProjectileControl;
+import com.almasb.fxgl.entity.view.EntityView;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.texture.Texture;
-import com.almasb.fxglgames.spaceinvaders.component.HPComponent;
 import com.almasb.fxglgames.spaceinvaders.component.InvincibleComponent;
 import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;
 import com.almasb.fxglgames.spaceinvaders.component.SubTypeComponent;
 import com.almasb.fxglgames.spaceinvaders.control.*;
-
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.Bloom;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Glow;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -136,7 +132,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
             x = random.nextInt((int) w);
         }
 
-        GameEntity meteor = Entities.builder()
+        Entity meteor = Entities.builder()
                 .at(x, y)
                 .viewFromTexture("background/meteor" + FXGLMath.random(1, 4) + ".png")
                 .renderLayer(METEORS)
@@ -153,7 +149,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
     }
 
     @Spawns("Player")
-    public GameEntity newPlayer(SpawnData data) {
+    public Entity newPlayer(SpawnData data) {
         Texture texture = texture("player2.png");
         texture.setPreserveRatio(true);
         texture.setFitHeight(40);
@@ -175,7 +171,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
                 .viewFromNodeWithBBox(
                         texture("enemy" + ((int)(Math.random() * 3) + 1) + ".png").toAnimatedTexture(2, Duration.seconds(2))
                 )
-                .with(new CollidableComponent(true), new HPComponent(2))
+                .with(new CollidableComponent(true), new HealthComponent(2))
                 .with(new EnemyControl())
                 .build();
     }
@@ -186,16 +182,16 @@ public final class SpaceInvadersFactory implements EntityFactory {
                 .from(data)
                 .type(SpaceInvadersType.BOSS)
                 .viewFromTextureWithBBox("boss.png")
-                .with(new CollidableComponent(true), new HPComponent(10))
+                .with(new CollidableComponent(true), new HealthComponent(50))
                 .with(new BossControl())
                 .build();
     }
 
     @Spawns("Bullet")
     public Entity newBullet(SpawnData data) {
-        GameEntity owner = data.get("owner");
+        Entity owner = data.get("owner");
 
-        GameEntity bullet = new GameEntity();
+        Entity bullet = new Entity();
         bullet.getTypeComponent().setValue(SpaceInvadersType.BULLET);
 
         Point2D center = Entities.getBBox(owner)
@@ -217,9 +213,9 @@ public final class SpaceInvadersFactory implements EntityFactory {
 
     @Spawns("Laser")
     public Entity newLaser(SpawnData data) {
-        GameEntity owner = data.get("owner");
+        Entity owner = data.get("owner");
 
-        GameEntity bullet = new GameEntity();
+        Entity bullet = new Entity();
         bullet.getTypeComponent().setValue(SpaceInvadersType.BULLET);
 
         Point2D center = Entities.getBBox(owner)
@@ -312,7 +308,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
     public Entity newLevelInfo(SpawnData data) {
         Text levelText = FXGL.getUIFactory().newText("Level " + geti("level"), Color.AQUAMARINE, 44);
 
-        GameEntity levelInfo = Entities.builder()
+        Entity levelInfo = Entities.builder()
                 .viewFromNode(levelText)
                 .with(new ExpireCleanControl(Duration.seconds(LEVEL_START_DELAY)))
                 .build();

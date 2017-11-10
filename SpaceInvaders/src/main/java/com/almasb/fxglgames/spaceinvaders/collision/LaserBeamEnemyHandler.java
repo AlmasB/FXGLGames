@@ -27,19 +27,10 @@
 package com.almasb.fxglgames.spaceinvaders.collision;
 
 import com.almasb.fxgl.annotation.AddCollisionHandler;
-import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.ecs.GameWorld;
-import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.fxgl.entity.component.ViewComponent;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
-import com.almasb.fxglgames.spaceinvaders.component.HPComponent;
-import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;
 import com.almasb.fxglgames.spaceinvaders.control.EnemyControl;
-import javafx.geometry.Point2D;
-import javafx.scene.effect.BlendMode;
-import javafx.util.Duration;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)

@@ -30,6 +30,7 @@ import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.scene.GameScene;
 import com.almasb.fxgl.scene.Viewport;
 import com.almasb.fxgl.texture.Texture;
+import com.almasb.fxgl.ui.FXGLTextFlow;
 import com.almasb.fxgl.ui.ProgressBar;
 import com.almasb.fxgl.ui.UIController;
 import javafx.animation.Animation;
@@ -39,8 +40,11 @@ import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
@@ -61,7 +65,7 @@ public class GameController implements UIController {
     private ProgressBar laserMeter;
 
     @FXML
-    private Label labelLaserReady;
+    private Pane paneLaserReady;
 
     @FXML
     private double livesX;
@@ -91,8 +95,13 @@ public class GameController implements UIController {
         laserMeter.setWidth(110);
         laserMeter.setHeight(10);
 
-        labelLaserReady.setFont(FXGL.getUIFactory().newFont(14));
-        labelLaserReady.visibleProperty().bind(laserMeter.currentValueProperty().isEqualTo(Config.LASER_METER_MAX, 0.0));
+        FXGLTextFlow flow = new FXGLTextFlow();
+        // TODO: bind dynamically to trigger
+        flow.append("Press ", Color.WHITE).append(MouseButton.SECONDARY, Color.BLUE);
+
+        paneLaserReady.getChildren().add(flow);
+
+        paneLaserReady.visibleProperty().bind(laserMeter.currentValueProperty().isEqualTo(Config.LASER_METER_MAX, 0.0));
     }
 
     public Label getLabelScore() {

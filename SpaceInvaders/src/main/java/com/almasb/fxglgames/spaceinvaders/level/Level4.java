@@ -1,14 +1,12 @@
 package com.almasb.fxglgames.spaceinvaders.level;
 
 import com.almasb.fxgl.animation.Animation;
-import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.animation.SequentialAnimation;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxglgames.spaceinvaders.Config;
 import javafx.geometry.Point2D;
-import javafx.scene.shape.QuadCurve;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
@@ -32,7 +30,7 @@ public class Level4 extends SpaceLevel {
             for (int x = 0; x < ENEMIES_PER_ROW; x++) {
 
                 FXGL.getMasterTimer().runOnceAfter(() -> {
-                    GameEntity enemy = spawnEnemy(50, 50);
+                    Entity enemy = spawnEnemy(50, 50);
 
                     Animation<?> anim1 = Entities.animationBuilder()
                             .duration(Duration.seconds(2.5))

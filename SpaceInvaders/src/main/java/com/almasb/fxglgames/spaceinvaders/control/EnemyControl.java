@@ -28,20 +28,21 @@ package com.almasb.fxglgames.spaceinvaders.control;
 
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.ecs.GameWorld;
 import com.almasb.fxgl.effect.ParticleControl;
-import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.GameWorld;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.entity.component.BoundingBoxComponent;
 import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.spaceinvaders.ExplosionEmitter;
 import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
 import javafx.util.Duration;
+
+import static com.almasb.fxgl.app.DSLKt.fire;
+import static com.almasb.fxgl.app.DSLKt.play;
+import static com.almasb.fxgl.app.DSLKt.spawn;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -52,12 +53,10 @@ public class EnemyControl extends Control {
     protected LocalTimer attackTimer;
     protected Duration nextAttack = Duration.seconds(2);
 
-    private GameEntity enemy;
+    private Entity enemy;
 
     @Override
     public void onAdded(Entity entity) {
-        enemy = (GameEntity) entity;
-
         attackTimer = FXGL.newLocalTimer();
         attackTimer.capture();
     }
@@ -74,15 +73,14 @@ public class EnemyControl extends Control {
     }
 
     protected void shoot() {
-        GameWorld world = getEntity().getWorld();
-        world.spawn("Bullet", new SpawnData(0, 0).put("owner", getEntity()));
+        spawn("Bullet", new SpawnData(0, 0).put("owner", getEntity()));
 
-        FXGL.getAudioPlayer().playSound("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
+        play("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
     }
 
     public void die() {
         Entity entity = new Entity();
-        entity.addComponent(new PositionComponent(enemy.getCenter()));
+        entity.setPosition(enemy.getCenter());
         entity.addControl(new ParticleControl(new ExplosionEmitter()));
         entity.addControl(new ExpireCleanControl(Duration.seconds(1)));
 
@@ -90,7 +88,9 @@ public class EnemyControl extends Control {
         enemy.getWorld().spawn("Explosion", enemy.getCenter());
 
         enemy.removeFromWorld();
-        FXGL.getAudioPlayer().playSound("explosion.wav");
-        FXGL.getEventBus().fireEvent(new GameEvent(GameEvent.ENEMY_KILLED));
+
+        play("explosion.wav");
+
+        fire(new GameEvent(GameEvent.ENEMY_KILLED));
     }
 }

@@ -28,10 +28,9 @@ package com.almasb.fxglgames.spaceinvaders.control;
 
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Control;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
@@ -52,12 +51,7 @@ public class WallControl extends Control {
         originalLives = lives;
     }
 
-    private GameEntity wall;
-
-    @Override
-    public void onAdded(Entity entity) {
-        wall = (GameEntity) entity;
-    }
+    private Entity wall;
 
     @Override
     public void onUpdate(Entity entity, double tpf) {}
@@ -70,7 +64,7 @@ public class WallControl extends Control {
                 .repeat(2)
                 .interpolator(Interpolators.CIRCULAR.EASE_IN())
                 .duration(Duration.seconds(0.33))
-                .scale((GameEntity) wall)
+                .scale(wall)
                 .to(new Point2D(1.2, 1.2))
                 .buildAndPlay();
 
@@ -81,7 +75,7 @@ public class WallControl extends Control {
                     .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
                     .duration(Duration.seconds(0.8))
                     .onFinished(wall::removeFromWorld)
-                    .translate((GameEntity) wall)
+                    .translate(wall)
                     .from(wall.getPosition())
                     .to(new Point2D(wall.getX(), FXGL.getAppHeight() + 10))
                     .buildAndPlay();

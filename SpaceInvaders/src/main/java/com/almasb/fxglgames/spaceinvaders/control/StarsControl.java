@@ -2,8 +2,8 @@ package com.almasb.fxglgames.spaceinvaders.control;
 
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.ViewComponent;
 import com.almasb.fxglgames.spaceinvaders.Config;
 import javafx.scene.Group;
@@ -19,26 +19,26 @@ import java.util.stream.Collectors;
 public class StarsControl extends Control {
 
     private ViewComponent view;
-    private List<Rectangle> stars;
+    private List<Rectangle> starParticles;
 
     @Override
     public void onAdded(Entity entity) {
-        stars = ((Group) view.getView().getNodes().get(0))
+        starParticles = ((Group) view.getView().getNodes().get(0))
                 .getChildren()
                 .stream()
                 .map(n -> (Rectangle) n)
                 .collect(Collectors.toList());
 
-        stars.forEach(this::respawn);
+        starParticles.forEach(this::respawn);
 
         // we only do this once when the stars are added
-        stars.forEach(star -> star.setTranslateY(FXGLMath.random(10, FXGL.getAppHeight())));
+        starParticles.forEach(star -> star.setTranslateY(FXGLMath.random(10, FXGL.getAppHeight())));
     }
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
-        for (int i = 0; i < stars.size(); i++) {
-            Rectangle star = stars.get(i);
+        for (int i = 0; i < starParticles.size(); i++) {
+            Rectangle star = starParticles.get(i);
             star.setTranslateY(star.getTranslateY() + tpf * Config.STARS_MOVE_SPEED);
 
             if (star.getTranslateY() > FXGL.getAppHeight())

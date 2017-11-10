@@ -1,13 +1,10 @@
 package com.almasb.fxglgames.spaceinvaders.control;
 
-import com.almasb.fxgl.app.DSLKt;
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxglgames.spaceinvaders.Config;
 
-import static com.almasb.fxgl.app.DSLKt.getd;
-import static com.almasb.fxgl.app.DSLKt.inc;
-import static com.almasb.fxgl.app.DSLKt.set;
+import static com.almasb.fxgl.app.DSLKt.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)

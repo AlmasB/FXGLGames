@@ -42,8 +42,7 @@
 
     <ProgressBar fx:id="laserMeter" translateX="25" translateY="35" />
 
-    <Label fx:id="labelLaserReady" translateX="25" translateY="45"
-           text="Press RMB!" textFill="aliceblue" />
+    <Pane fx:id="paneLaserReady" translateX="25" translateY="45" />
 
     <fx:define>
         <!-- position of lives -->

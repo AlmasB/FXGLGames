@@ -27,10 +27,9 @@
 package com.almasb.fxglgames.spaceinvaders.control;
 
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.fxgl.entity.component.RotationComponent;
+import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.Entity;
 import javafx.geometry.Point2D;
 
 /**
@@ -38,24 +37,22 @@ import javafx.geometry.Point2D;
  */
 public class MeteorControl extends Control {
 
-    private RotationComponent rotation;
-    private PositionComponent position;
-
     private Point2D velocity;
 
     @Override
     public void onAdded(Entity entity) {
-        double w = FXGL.getSettings().getWidth();
-        double h = FXGL.getSettings().getHeight();
+        double w = FXGL.getAppWidth();
+        double h = FXGL.getAppHeight();
 
-        velocity = new Point2D(position.getX() < w / 2 ? 1 : -1, position.getY() < h / 2 ? 1 : -1)
-            .normalize().multiply(Math.random() * 5 + 50);
+        velocity = new Point2D(entity.getX() < w / 2 ? 1 : -1, entity.getY() < h / 2 ? 1 : -1)
+                .normalize()
+                .multiply(FXGLMath.random(40, 50));
     }
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
-        rotation.rotateBy(tpf * 10);
+        entity.rotateBy(tpf * 10);
 
-        position.translate(velocity.multiply(tpf));
+        entity.translate(velocity.multiply(tpf));
     }
 }

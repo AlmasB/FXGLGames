@@ -31,17 +31,15 @@ import com.almasb.fxgl.annotation.OnUserAction;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.gameplay.Achievement;
-import com.almasb.fxgl.gameplay.AchievementManager;
 import com.almasb.fxgl.input.ActionType;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.InputMapping;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.io.FS;
 import com.almasb.fxgl.settings.GameSettings;
+import com.almasb.fxgl.settings.MenuItem;
 import com.almasb.fxgl.ui.UI;
 import com.almasb.fxglgames.spaceinvaders.control.EnemyControl;
 import com.almasb.fxglgames.spaceinvaders.control.PlayerControl;
@@ -57,6 +55,7 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -74,21 +73,13 @@ public class SpaceInvadersApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Space Invaders");
-        settings.setVersion("0.9.7");
+        settings.setVersion("1.0");
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
-        settings.setIntroEnabled(false);
-        settings.setMenuEnabled(false);
-        settings.setProfilingEnabled(false);
-        settings.setApplicationMode(ApplicationMode.DEVELOPER);
-    }
-
-    @Override
-    protected void initAchievements() {
-        AchievementManager am = getGameplay().getAchievementManager();
-
-        am.registerAchievement(new Achievement("Hitman", "Destroy " + ACHIEVEMENT_ENEMIES_KILLED + " enemies"));
-        am.registerAchievement(new Achievement("Master Scorer", "Score " + ACHIEVEMENT_MASTER_SCORER + " points"));
+        settings.setIntroEnabled(true);
+        settings.setMenuEnabled(true);
+        settings.setEnabledMenuItems(EnumSet.of(MenuItem.EXTRA));
+        settings.setApplicationMode(ApplicationMode.RELEASE);
     }
 
     @Override
@@ -131,7 +122,7 @@ public class SpaceInvadersApp extends GameApplication {
         playerControl.shootLaser();
     }
 
-    private GameEntity player;
+    private Entity player;
     private PlayerControl playerControl;
 
     private int highScore;
@@ -188,19 +179,6 @@ public class SpaceInvadersApp extends GameApplication {
                 new BossLevel()
         );
 
-        getGameplay().getAchievementManager()
-                .getAchievementByName("Hitman")
-                .bind(
-                        getip("enemiesKilled").greaterThanOrEqualTo(ACHIEVEMENT_ENEMIES_KILLED)
-                );
-
-
-        getGameplay().getAchievementManager()
-                .getAchievementByName("Master Scorer")
-                .bind(
-                        getip("score").greaterThanOrEqualTo(ACHIEVEMENT_MASTER_SCORER)
-                );
-
         spawnBackground();
         spawnPlayer();
 
@@ -212,12 +190,12 @@ public class SpaceInvadersApp extends GameApplication {
         spawn("Background");
 
         spawn("Stars");
-
+        
         getMasterTimer().runAtInterval(() -> spawn("Meteor"), Duration.seconds(3));
     }
 
     private void spawnPlayer() {
-        player = (GameEntity) spawn("Player", getWidth() / 2 - 20, getHeight() - 40);
+        player = spawn("Player", getWidth() / 2 - 20, getHeight() - 40);
         playerControl = player.getControl(PlayerControl.class);
     }
 

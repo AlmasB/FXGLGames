@@ -1,14 +1,10 @@
 package com.almasb.fxglgames.spaceinvaders.level;
 
 import com.almasb.fxgl.animation.Animation;
-import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Control;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.GameEntity;
-import com.almasb.fxglgames.spaceinvaders.Config;
+import com.almasb.fxgl.entity.Entity;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
@@ -37,7 +33,7 @@ public class Level1 extends SpaceLevel {
 
                 FXGL.getMasterTimer().runOnceAfter(() -> {
 
-                    GameEntity enemy = spawnEnemy(50, 50);
+                    Entity enemy = spawnEnemy(50, 50);
 
                     enemy.addControl(new ButterflyControl());
 

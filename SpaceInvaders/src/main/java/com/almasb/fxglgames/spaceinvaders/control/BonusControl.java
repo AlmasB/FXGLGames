@@ -26,9 +26,8 @@
 
 package com.almasb.fxglgames.spaceinvaders.control;
 
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxglgames.spaceinvaders.Config;
 
 /**
@@ -37,6 +36,6 @@ import com.almasb.fxglgames.spaceinvaders.Config;
 public class BonusControl extends Control {
     @Override
     public void onUpdate(Entity entity, double tpf) {
-        getEntity().getComponent(PositionComponent.class).translateY(tpf * Config.BONUS_MOVE_SPEED);
+        entity.translateY(tpf * Config.BONUS_MOVE_SPEED);
     }
 }

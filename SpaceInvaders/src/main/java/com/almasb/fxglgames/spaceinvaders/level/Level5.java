@@ -2,11 +2,10 @@ package com.almasb.fxglgames.spaceinvaders.level;
 
 import com.almasb.fxgl.animation.Animation;
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.animation.SequentialAnimation;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxglgames.spaceinvaders.Config;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
@@ -36,7 +35,7 @@ public class Level5 extends SpaceLevel {
                 FXGL.getMasterTimer().runOnceAfter(() -> {
                     boolean toRight = FXGLMath.randomBoolean();
 
-                    GameEntity enemy = spawnEnemy(toRight ? 50 : Config.WIDTH - 50 - 40, 50 + finalY*75);
+                    Entity enemy = spawnEnemy(toRight ? 50 : Config.WIDTH - 50 - 40, 50 + finalY*75);
 
                     Animation<?> anim = Entities.animationBuilder()
                             .autoReverse(true)

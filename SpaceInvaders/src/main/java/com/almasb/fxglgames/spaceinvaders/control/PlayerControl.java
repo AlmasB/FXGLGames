@@ -26,25 +26,20 @@
 
 package com.almasb.fxglgames.spaceinvaders.control;
 
-import com.almasb.fxgl.app.DSLKt;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.ecs.GameWorld;
-import com.almasb.fxgl.ecs.component.Required;
 import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
 import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.fxgl.entity.component.ViewComponent;
+import com.almasb.fxgl.entity.component.Required;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
+import com.almasb.fxgl.entity.view.EntityView;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxglgames.spaceinvaders.Config;
 import com.almasb.fxglgames.spaceinvaders.component.InvincibleComponent;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 
-import static com.almasb.fxgl.app.DSLKt.getd;
-import static com.almasb.fxgl.app.DSLKt.getdp;
+import static com.almasb.fxgl.app.DSLKt.*;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -96,18 +91,16 @@ public class PlayerControl extends Control {
         canShoot = false;
         lastTimeShot = FXGL.getMasterTimer().getNow();
 
-        GameWorld world = getEntity().getWorld();
-        world.spawn("Laser", new SpawnData(0, 0).put("owner", getEntity()));
+        spawn("Laser", new SpawnData(0, 0).put("owner", getEntity()));
 
-        FXGL.getAudioPlayer()
-                .playSound("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
+        play("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
     }
 
     public void shootLaser() {
         if (getd("laserMeter") == Config.LASER_METER_MAX) {
             laserBeamActive = true;
 
-            GameEntity beam = (GameEntity) getEntity().getWorld().spawn("LaserBeam");
+            Entity beam = spawn("LaserBeam");
             beam.getPositionComponent().xProperty().bind(position.xProperty().add(21));
             beam.setY(-10);
             beam.setOnNotActive(() -> laserBeamActive = false);
@@ -140,9 +133,7 @@ public class PlayerControl extends Control {
 
     private void spawnParticles() {
         if (particle == null) {
-            particle = FXGL.getAssetLoader()
-                    .loadTexture("player2.png", 40, 30)
-                    .getImage();
+            particle = texture("player2.png", 40, 30).getImage();
         }
 
         Texture t = new Texture(particle);
@@ -160,29 +151,29 @@ public class PlayerControl extends Control {
                         return 5000;
                     }
                 }))
-                .with(new ExpireCleanControl(Duration.seconds(0.33)), new OpacityControl())
-                .buildAndAttach(FXGL.getApp().getGameWorld());
+                .with(new ExpireCleanControl(Duration.seconds(0.33)).animateOpacity())
+                .buildAndAttach();
     }
 
-    private static class OpacityControl extends Control {
-
-        private ViewComponent view;
-        private double millis = 330;
-        private double current = 330;
-
-        @Override
-        public void onAdded(Entity entity) {
-            view = Entities.getView(entity);
-        }
-
-        @Override
-        public void onUpdate(Entity entity, double tpf) {
-            current -= 600 * tpf;
-
-            if (current < 0)
-                current = 0;
-
-            view.getView().setOpacity(current / millis);
-        }
-    }
+//    private static class OpacityControl extends Control {
+//
+//        private ViewComponent view;
+//        private double millis = 330;
+//        private double current = 330;
+//
+//        @Override
+//        public void onAdded(Entity entity) {
+//            view = Entities.getView(entity);
+//        }
+//
+//        @Override
+//        public void onUpdate(Entity entity, double tpf) {
+//            current -= 600 * tpf;
+//
+//            if (current < 0)
+//                current = 0;
+//
+//            view.getView().setOpacity(current / millis);
+//        }
+//    }
 }

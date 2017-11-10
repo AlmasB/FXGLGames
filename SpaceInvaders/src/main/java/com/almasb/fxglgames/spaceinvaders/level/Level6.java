@@ -1,22 +1,17 @@
 package com.almasb.fxglgames.spaceinvaders.level;
 
 import com.almasb.fxgl.animation.Animation;
-import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.control.CircularMovementControl;
-import com.almasb.fxgl.entity.control.RandomMoveControl;
 import com.almasb.fxglgames.spaceinvaders.Config;
 import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.almasb.fxgl.app.DSLKt.geti;
 import static com.almasb.fxglgames.spaceinvaders.Config.ENEMIES_PER_ROW;
 import static com.almasb.fxglgames.spaceinvaders.Config.ENEMY_ROWS;
 
@@ -36,7 +31,7 @@ public class Level6 extends SpaceLevel {
 
                 final int finalY = y;
                 FXGL.getMasterTimer().runOnceAfter(() -> {
-                    GameEntity enemy;
+                    Entity enemy;
 
                     if (finalY == 0) {
                         enemy = spawnEnemy(Config.WIDTH / 2, 50);
