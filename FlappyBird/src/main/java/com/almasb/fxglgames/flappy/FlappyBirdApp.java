@@ -1,11 +1,9 @@
 package com.almasb.fxglgames.flappy;
 
-import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.audio.Music;
-import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.BoundingShape;
@@ -34,11 +32,6 @@ public class FlappyBirdApp extends GameApplication {
         settings.setHeight(720);
         settings.setTitle("Flappy Bird Clone");
         settings.setVersion("0.2");
-        settings.setProfilingEnabled(false);
-        settings.setIntroEnabled(false);
-        settings.setMenuEnabled(false);
-        settings.setFullScreen(false);
-        settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
     @Override
@@ -106,11 +99,11 @@ public class FlappyBirdApp extends GameApplication {
     }
 
     private void initBackground() {
-        GameEntity bg = Entities.builder()
+        Entity bg = Entities.builder()
                 .type(EntityType.BACKGROUND)
                 .viewFromNode(new Rectangle(getWidth(), getHeight(), Color.WHITE))
                 .with(new ColorChangingControl())
-                .buildAndAttach(getGameWorld());
+                .buildAndAttach();
 
         bg.getPositionComponent().xProperty().bind(getGameScene().getViewport().xProperty());
         bg.getPositionComponent().yProperty().bind(getGameScene().getViewport().yProperty());
@@ -122,14 +115,14 @@ public class FlappyBirdApp extends GameApplication {
         Texture view = getAssetLoader().loadTexture("bird.png")
                 .toAnimatedTexture(2, Duration.seconds(0.5));
 
-        GameEntity player = Entities.builder()
+        Entity player = Entities.builder()
                 .at(100, 100)
                 .type(EntityType.PLAYER)
                 .bbox(new HitBox("BODY", BoundingShape.box(70, 60)))
                 .viewFromNode(view)
                 .with(new CollidableComponent(true))
                 .with(playerControl, new WallBuildingControl())
-                .buildAndAttach(getGameWorld());
+                .buildAndAttach();
 
         getGameScene().getViewport().setBounds(0, 0, Integer.MAX_VALUE, getHeight());
         getGameScene().getViewport().bindToEntity(player, getWidth() / 3, getHeight() / 2);

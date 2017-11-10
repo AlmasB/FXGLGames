@@ -1,11 +1,9 @@
 package com.almasb.fxglgames.flappy;
 
 import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.component.PositionComponent;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -13,8 +11,6 @@ import com.almasb.fxgl.entity.component.PositionComponent;
 public class PlayerControl extends Control {
 
     private Vec2 acceleration = new Vec2(6, 0);
-
-    private PositionComponent position;
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
@@ -27,7 +23,7 @@ public class PlayerControl extends Control {
         if (acceleration.y > 5)
             acceleration.y = 5;
 
-        position.translate(acceleration.x, acceleration.y);
+        entity.translate(acceleration.x, acceleration.y);
     }
 
     public void jump() {

@@ -1,9 +1,8 @@
 package com.almasb.fxglgames.flappy;
 
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.time.LocalTimer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -21,7 +20,7 @@ public class ColorChangingControl extends Control {
     @Override
     public void onAdded(Entity entity) {
         // hacky, assumes that first node is Rectangle
-        view = (Rectangle) Entities.getView(entity).getView().getNodes().get(0);
+        view = (Rectangle) entity.getView().getNodes().get(0);
         timer = FXGL.newLocalTimer();
     }
 
