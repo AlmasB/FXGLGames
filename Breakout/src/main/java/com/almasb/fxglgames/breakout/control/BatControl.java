@@ -28,9 +28,8 @@ package com.almasb.fxglgames.breakout.control;
 
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.physics.PhysicsComponent;
 
 /**
@@ -41,16 +40,11 @@ public class BatControl extends Control {
     private static final float BOUNCE_FACTOR = 1.5f;
     private static final float SPEED_DECAY = 0.66f;
 
-    private GameEntity bat;
+    private Entity bat;
     private PhysicsComponent physics;
     private float speed = 0;
 
     private Vec2 velocity = new Vec2();
-
-    @Override
-    public void onAdded(Entity entity) {
-        bat = (GameEntity) entity;
-    }
 
     @Override
     public void onUpdate(Entity entity, double tpf) {

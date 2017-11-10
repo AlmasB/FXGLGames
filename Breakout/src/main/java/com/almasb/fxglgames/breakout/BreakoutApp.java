@@ -30,12 +30,12 @@ import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.ecs.component.IrremovableComponent;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.IrremovableComponent;
 import com.almasb.fxgl.effect.ParticleControl;
 import com.almasb.fxgl.effect.ParticleEmitter;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.EntityView;
+import com.almasb.fxgl.entity.view.EntityView;
 import com.almasb.fxgl.entity.RenderLayer;
 import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxgl.gameplay.Level;
@@ -80,11 +80,6 @@ public class BreakoutApp extends GameApplication {
         settings.setVersion("0.2");
         settings.setWidth(600);
         settings.setHeight(800);
-        settings.setIntroEnabled(false);
-        settings.setMenuEnabled(false);
-        settings.setProfilingEnabled(false);
-        settings.setCloseConfirmation(false);
-        settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
     @Override
@@ -166,7 +161,7 @@ public class BreakoutApp extends GameApplication {
         emitter.setInterpolator(Interpolators.EXPONENTIAL.EASE_IN());
 
         Entity bubbles = new Entity();
-        bubbles.addComponent(new PositionComponent(0, getHeight()));
+        bubbles.translateY(getHeight());
         bubbles.addControl(new ParticleControl(emitter));
 
         getGameWorld().addEntity(bubbles);

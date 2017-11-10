@@ -27,9 +27,8 @@
 package com.almasb.fxglgames.breakout.control;
 
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.Entity;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -38,12 +37,7 @@ public class BrickControl extends Control {
 
     private int lives = 2;
 
-    private GameEntity brick;
-
-    @Override
-    public void onAdded(Entity entity) {
-        brick = (GameEntity) entity;
-    }
+    private Entity brick;
 
     @Override
     public void onUpdate(Entity entity, double tpf) {}

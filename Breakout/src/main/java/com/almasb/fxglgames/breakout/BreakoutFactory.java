@@ -28,7 +28,7 @@ package com.almasb.fxglgames.breakout;
 
 import com.almasb.fxgl.annotation.SpawnSymbol;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.effect.ParticleControl;
 import com.almasb.fxgl.effect.ParticleEmitter;
 import com.almasb.fxgl.effect.ParticleEmitters;
