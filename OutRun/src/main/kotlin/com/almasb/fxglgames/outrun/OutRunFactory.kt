@@ -31,6 +31,7 @@ import com.almasb.fxgl.annotation.SpawnSymbol
 import com.almasb.fxgl.annotation.Spawns
 import com.almasb.fxgl.entity.*
 import com.almasb.fxgl.entity.component.CollidableComponent
+import com.almasb.fxgl.entity.view.EntityView
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
 import java.util.*
@@ -56,7 +57,7 @@ class OutRunFactory : TextEntityFactory {
     }
 
     @Spawns("background")
-    fun newBackground(data: SpawnData): GameEntity {
+    fun newBackground(data: SpawnData): Entity {
         val view = EntityView()
         view.addNode(Rectangle(600.0, 800.0, Color.color(0.0, 0.5, 0.0)))
 
@@ -64,17 +65,16 @@ class OutRunFactory : TextEntityFactory {
         road.translateX = 80.0
         view.addNode(road)
 
-        view.renderLayer = RenderLayer.BACKGROUND
-
         return Entities.builder()
                 .type(EntityType.BACKGROUND)
                 .from(data)
                 .viewFromNode(view)
+                .renderLayer(RenderLayer.BACKGROUND)
                 .build()
     }
 
     @Spawns("player")
-    fun newPlayer(data: SpawnData): GameEntity {
+    fun newPlayer(data: SpawnData): Entity {
         return Entities.builder()
                 .type(EntityType.PLAYER)
                 .from(data)
@@ -85,7 +85,7 @@ class OutRunFactory : TextEntityFactory {
     }
 
     @SpawnSymbol('1')
-    fun newObstacle(data: SpawnData): GameEntity {
+    fun newObstacle(data: SpawnData): Entity {
         val textures = arrayOf(
                 "cone_up.png".to("cone_down.png"),
                 "barrel_blue_up.png".to("barrel_blue_down.png")
@@ -103,7 +103,7 @@ class OutRunFactory : TextEntityFactory {
     }
 
     @SpawnSymbol('F')
-    fun newFinishLine(data: SpawnData): GameEntity {
+    fun newFinishLine(data: SpawnData): Entity {
         return Entities.builder()
                 .type(EntityType.FINISH)
                 .from(data)

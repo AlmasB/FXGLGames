@@ -28,11 +28,9 @@ package com.almasb.fxglgames.outrun
 
 import com.almasb.fxgl.animation.Interpolators
 import com.almasb.fxgl.app.FXGL
-import com.almasb.fxgl.ecs.Control
-import com.almasb.fxgl.ecs.Entity
-import com.almasb.fxgl.entity.component.BoundingBoxComponent
-import com.almasb.fxgl.entity.component.PositionComponent
-import com.almasb.fxgl.entity.component.ViewComponent
+import com.almasb.fxgl.core.math.FXGLMath
+import com.almasb.fxgl.entity.Control
+import com.almasb.fxgl.entity.Entity
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.util.Duration
 
@@ -42,9 +40,6 @@ import javafx.util.Duration
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 class PlayerControl : Control() {
-
-    private lateinit var position: PositionComponent
-    private lateinit var bbox: BoundingBoxComponent
 
     private var speed = 0.0
     private var dy = 0.0
@@ -56,35 +51,35 @@ class PlayerControl : Control() {
 
         dy += tpf / 4;
 
-        if (position.x < 80 || bbox.maxXWorld > 600 - 80) {
+        if (entity.x < 80 || entity.rightX > 600 - 80) {
             if (dy > 0.017) {
                 dy -= tpf
             }
         }
 
-        position.y -= dy
+        entity.y -= dy
 
-        boost.set(Math.min(boost.get() + tpf * 5, 100.0))
+        boost.set(FXGLMath.min(boost.get() + tpf * 5, 100.0))
     }
 
     fun getSpeed() = dy
 
     fun up() {
-        position.translateY(-speed)
+        entity.translateY(-speed)
     }
 
     fun down() {
-        position.translateY(speed)
+        entity.translateY(speed)
     }
 
     fun left() {
-        if (position.x >= speed)
-            position.translateX(-speed)
+        if (entity.x >= speed)
+            entity.translateX(-speed)
     }
 
     fun right() {
-        if (bbox.maxXWorld + speed <= 600)
-            position.translateX(speed)
+        if (entity.rightX + speed <= 600)
+            entity.translateX(speed)
     }
 
     fun boost() {
@@ -92,14 +87,13 @@ class PlayerControl : Control() {
             return
 
         boost.set(Math.max(boost.get() - speed / 2, 0.0))
-        position.y -= speed
+        entity.y -= speed
     }
 
     fun reset() {
         dy = 0.0
-        val view = getEntity().getComponent(ViewComponent::class.java).view
 
-        val anim = FXGL.getUIFactory().fadeOutIn(view, Duration.seconds(1.5))
+        val anim = FXGL.getUIFactory().fadeOutIn(entity.view, Duration.seconds(1.5))
         anim.animatedValue.interpolator = Interpolators.BOUNCE.EASE_IN()
         anim.startInPlayState()
     }

@@ -27,20 +27,21 @@
 package com.almasb.fxglgames.outrun
 
 import com.almasb.fxgl.animation.Interpolators
-import com.almasb.fxgl.app.ApplicationMode
 import com.almasb.fxgl.app.GameApplication
 import com.almasb.fxgl.app.getd
 import com.almasb.fxgl.app.set
-import com.almasb.fxgl.ecs.Entity
-import com.almasb.fxgl.entity.GameEntity
+import com.almasb.fxgl.entity.Entity
 import com.almasb.fxgl.input.UserAction
 import com.almasb.fxgl.parser.text.TextLevelParser
 import com.almasb.fxgl.physics.CollisionHandler
 import com.almasb.fxgl.settings.GameSettings
+import com.almasb.fxgl.ui.FXGLTextFlow
 import com.almasb.fxgl.ui.ProgressBar
 import javafx.application.Application
 import javafx.beans.property.SimpleIntegerProperty
+import javafx.geometry.Pos
 import javafx.scene.input.KeyCode
+import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.scene.text.Text
 import javafx.util.Duration
@@ -58,10 +59,6 @@ class OutRunApp : GameApplication() {
             height = 800;
             title = "OutRun"
             version = "0.3"
-            isProfilingEnabled = false
-            isIntroEnabled = false
-            isMenuEnabled = false
-            applicationMode = ApplicationMode.DEVELOPER
         }
     }
 
@@ -100,7 +97,7 @@ class OutRunApp : GameApplication() {
         val player = gameWorld.spawn("player", width / 2 - 20.0, level.height.toDouble())
         playerControl = player.getControl(PlayerControl::class.java)
 
-        val bg = gameWorld.spawn("background") as GameEntity
+        val bg = gameWorld.spawn("background")
         bg.positionComponent.yProperty().bind(gameScene.viewport.yProperty())
 
         gameScene.viewport.setBounds(0, 0, 600, level.height)
@@ -180,10 +177,18 @@ class OutRunApp : GameApplication() {
 
     override fun onUpdate(tpf: Double) {
         if (firstTime) {
-            display.showMessageBox("OutRun Demo\n" +
-                    "W - Boost\n" +
-                    "A - Move Left\n" +
-                    "D - Move Right")
+            val flow = FXGLTextFlow()
+            flow.append("OutRun Demo\n", Color.WHITE)
+                    .append(KeyCode.W, Color.GREEN).append(" - Boost\n", Color.WHITE)
+                    .append(KeyCode.A, Color.GREEN).append(" - Move Left\n", Color.WHITE)
+                    .append(KeyCode.D, Color.GREEN).append(" - Move Right", Color.WHITE)
+
+            val vbox = VBox(flow)
+            vbox.translateX = 200.0
+            vbox.alignment = Pos.CENTER
+
+            display.showBox("", vbox, uiFactory.newButton("OK"))
+
             firstTime = false
         } else {
             ui.text = "Speed: %.2f".format(playerControl.getSpeed())
