@@ -27,7 +27,7 @@
 package com.almasb.fxglgames.pong;
 
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
@@ -49,8 +49,8 @@ public class PongFactory {
         this.mode = mode;
     }
 
-    public GameEntity newBall(double x, double y) {
-        GameEntity ball = Entities.builder()
+    public Entity newBall(double x, double y) {
+        Entity ball = Entities.builder()
                 .at(x, y)
                 .type(EntityType.BALL)
                 .bbox(new HitBox("BODY", BoundingShape.circle(5)))
@@ -76,8 +76,8 @@ public class PongFactory {
         return ball;
     }
 
-    public GameEntity newBat(double x, double y, boolean isPlayer) {
-        GameEntity bat = Entities.builder()
+    public Entity newBat(double x, double y, boolean isPlayer) {
+        Entity bat = Entities.builder()
                 .at(x, y)
                 .type(isPlayer ? EntityType.PLAYER_BAT : EntityType.ENEMY_BAT)
                 .viewFromNodeWithBBox(new Rectangle(20, 60, Color.LIGHTGRAY))

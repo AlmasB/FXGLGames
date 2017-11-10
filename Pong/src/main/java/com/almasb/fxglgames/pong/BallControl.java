@@ -27,8 +27,8 @@
 package com.almasb.fxglgames.pong;
 
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.PhysicsControl;
@@ -39,7 +39,7 @@ import javafx.geometry.Point2D;
  */
 public class BallControl extends Control {
 
-    private PhysicsComponent ball;
+    private PhysicsComponent physics;
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
@@ -48,14 +48,14 @@ public class BallControl extends Control {
     }
 
     private void limitVelocity() {
-        if (Math.abs(ball.getLinearVelocity().getX()) < 5 * 60) {
-            ball.setLinearVelocity(Math.signum(ball.getLinearVelocity().getX()) * 5 * 60,
-                    ball.getLinearVelocity().getY());
+        if (Math.abs(physics.getLinearVelocity().getX()) < 5 * 60) {
+            physics.setLinearVelocity(Math.signum(physics.getLinearVelocity().getX()) * 5 * 60,
+                    physics.getLinearVelocity().getY());
         }
 
-        if (Math.abs(ball.getLinearVelocity().getY()) > 5 * 60 * 2) {
-            ball.setLinearVelocity(ball.getLinearVelocity().getX(),
-                    Math.signum(ball.getLinearVelocity().getY()) * 5 * 60);
+        if (Math.abs(physics.getLinearVelocity().getY()) > 5 * 60 * 2) {
+            physics.setLinearVelocity(physics.getLinearVelocity().getX(),
+                    Math.signum(physics.getLinearVelocity().getY()) * 5 * 60);
         }
     }
 

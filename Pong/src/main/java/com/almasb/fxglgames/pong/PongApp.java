@@ -26,19 +26,17 @@
 
 package com.almasb.fxglgames.pong;
 
-import com.almasb.fxgl.animation.Animation;
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.annotation.OnUserAction;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.effect.ParticleControl;
 import com.almasb.fxgl.effect.ParticleEmitter;
 import com.almasb.fxgl.effect.ParticleEmitters;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.entity.component.TypeComponent;
 import com.almasb.fxgl.input.ActionType;
@@ -50,7 +48,6 @@ import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.settings.MenuItem;
 import com.almasb.fxgl.ui.UI;
-import javafx.animation.Interpolator;
 import javafx.application.Platform;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;
@@ -69,18 +66,14 @@ public class PongApp extends GameApplication {
 
     private PongFactory factory;
 
-    private GameEntity ball;
-    private GameEntity bat1;
-    private GameEntity bat2;
+    private Entity ball;
+    private Entity bat1;
+    private Entity bat2;
 
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Pong");
         settings.setVersion("0.3.1");
-        settings.setIntroEnabled(false);
-        settings.setMenuEnabled(false); // enable menu for multiplayer
-        settings.setCloseConfirmation(false);
-        settings.setProfilingEnabled(false);
         settings.setEnabledMenuItems(EnumSet.of(MenuItem.ONLINE));
     }
 
@@ -180,9 +173,7 @@ public class PongApp extends GameApplication {
 
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BALL, EntityType.PLAYER_BAT) {
             @Override
-            protected void onCollisionBegin(Entity a, Entity b) {
-                GameEntity bat = (GameEntity) b;
-
+            protected void onCollisionBegin(Entity a, Entity bat) {
                 playHitAnimation(bat);
             }
         });
@@ -209,15 +200,12 @@ public class PongApp extends GameApplication {
     }
 
     private void initBackground() {
-        GameEntity bg = new GameEntity();
-        bg.getViewComponent().setView(new Rectangle(getWidth(), getHeight(), Color.rgb(0, 0, 5)));
-
-        getGameWorld().addEntity(bg);
+        getGameScene().setBackgroundColor(Color.rgb(0, 0, 5));
     }
 
     private void initScreenBounds() {
         Entity walls = Entities.makeScreenBounds(150);
-        walls.addComponent(new TypeComponent(EntityType.WALL));
+        walls.setType(EntityType.WALL);
         walls.addComponent(new CollidableComponent(true));
 
         getGameWorld().addEntity(walls);
@@ -297,7 +285,7 @@ public class PongApp extends GameApplication {
         }
     }
 
-    private void playHitAnimation(GameEntity bat) {
+    private void playHitAnimation(Entity bat) {
         Entities.animationBuilder()
                 .autoReverse(true)
                 .duration(Duration.seconds(0.5))

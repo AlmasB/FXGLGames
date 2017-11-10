@@ -26,8 +26,8 @@
 
 package com.almasb.fxglgames.pong;
 
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
 import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxgl.physics.PhysicsComponent;
@@ -38,34 +38,27 @@ import com.almasb.fxgl.physics.PhysicsComponent;
 public class BatControl extends Control {
 
     protected PositionComponent position;
-    protected PhysicsComponent bat;
+    protected PhysicsComponent physics;
     protected BoundingBoxComponent bbox;
-
-    @Override
-    public void onAdded(Entity entity) {
-        bat = entity.getComponent(PhysicsComponent.class);
-        position = entity.getComponent(PositionComponent.class);
-        bbox = entity.getComponent(BoundingBoxComponent.class);
-    }
 
     @Override
     public void onUpdate(Entity entity, double tpf) {}
 
     public void up() {
         if (position.getY() >= 5)
-            bat.setLinearVelocity(0, -5 * 60);
+            physics.setLinearVelocity(0, -5 * 60);
         else
             stop();
     }
 
     public void down() {
         if (bbox.getMaxYWorld() <= 600 - 5)
-            bat.setLinearVelocity(0, 5 * 60);
+            physics.setLinearVelocity(0, 5 * 60);
         else
             stop();
     }
 
     public void stop() {
-        bat.setLinearVelocity(0, 0);
+        physics.setLinearVelocity(0, 0);
     }
 }
