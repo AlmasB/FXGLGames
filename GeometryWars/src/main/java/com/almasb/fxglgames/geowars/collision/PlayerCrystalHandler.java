@@ -2,9 +2,8 @@ package com.almasb.fxglgames.geowars.collision;
 
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.annotation.AddCollisionHandler;
-import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.geowars.GeoWarsType;
@@ -24,8 +23,7 @@ public class PlayerCrystalHandler extends CollisionHandler {
     }
 
     @Override
-    protected void onCollisionBegin(Entity player, Entity c) {
-        GameEntity crystal = (GameEntity) c;
+    protected void onCollisionBegin(Entity player, Entity crystal) {
 
         crystal.getComponent(CollidableComponent.class).setValue(false);
 

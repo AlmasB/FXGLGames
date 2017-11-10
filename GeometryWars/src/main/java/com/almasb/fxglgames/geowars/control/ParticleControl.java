@@ -1,7 +1,7 @@
 package com.almasb.fxglgames.geowars.control;
 
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.control.ProjectileControl;
 
 /**

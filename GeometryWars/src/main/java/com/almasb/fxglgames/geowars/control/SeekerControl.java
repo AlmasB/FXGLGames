@@ -27,9 +27,8 @@
 package com.almasb.fxglgames.geowars.control;
 
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.time.LocalTimer;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.Bloom;
@@ -45,15 +44,15 @@ public class SeekerControl extends Control {
 
     // TODO: use Vec2 to avoid GC
     private Point2D velocity = Point2D.ZERO;
-    private GameEntity player;
-    private GameEntity seeker;
+    private Entity player;
+    private Entity seeker;
 
     private LocalTimer adjustDirectionTimer = FXGL.newLocalTimer();
     private Duration adjustDelay = Duration.seconds(seekerAdjustDelay);
 
     private int moveSpeed;
 
-    public SeekerControl(GameEntity player, int moveSpeed) {
+    public SeekerControl(Entity player, int moveSpeed) {
         this.player = player;
         this.moveSpeed = moveSpeed;
 
@@ -67,7 +66,6 @@ public class SeekerControl extends Control {
 
     @Override
     public void onAdded(Entity entity) {
-        seeker = (GameEntity) entity;
         seeker.getView().setEffect(new Bloom(0.5));
         adjustVelocity(0.016);
     }

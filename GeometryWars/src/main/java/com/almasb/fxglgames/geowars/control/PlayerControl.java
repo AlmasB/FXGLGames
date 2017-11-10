@@ -4,10 +4,9 @@ import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.core.pool.Pools;
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Control;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.time.LocalTimer;
@@ -34,7 +33,7 @@ public class PlayerControl extends Control {
     private int playerSpeed;
     private double speed;
 
-    private GameEntity player;
+    private Entity player;
     private long spawnTime = System.currentTimeMillis();
 
     private LocalTimer weaponTimer = FXGL.newLocalTimer();
@@ -45,7 +44,6 @@ public class PlayerControl extends Control {
 
     @Override
     public void onAdded(Entity entity) {
-        player = (GameEntity) entity;
         player.getView().setEffect(new Bloom());
     }
 
@@ -61,7 +59,7 @@ public class PlayerControl extends Control {
 
             WeaponType type = geto("weaponType");
 
-            List<GameEntity> bullets = new ArrayList<>();
+            List<Entity> bullets = new ArrayList<>();
 
             switch (type) {
                 case MIRROR:
@@ -114,8 +112,8 @@ public class PlayerControl extends Control {
         }
     }
 
-    private GameEntity spawnBullet(Point2D position, Point2D direction) {
-        return (GameEntity) FXGL.getApp().getGameWorld().spawn("Bullet",
+    private Entity spawnBullet(Point2D position, Point2D direction) {
+        return FXGL.getApp().getGameWorld().spawn("Bullet",
                 new SpawnData(position.getX(), position.getY())
                         .put("direction", direction)
         );

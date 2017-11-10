@@ -5,13 +5,12 @@ import com.almasb.fxgl.annotation.Spawns;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.effect.ParticleControl;
 import com.almasb.fxgl.effect.ParticleEmitter;
 import com.almasb.fxgl.effect.ParticleEmitters;
 import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
-import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.entity.control.*;
@@ -24,6 +23,9 @@ import javafx.scene.effect.BlendMode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
+
+import static com.almasb.fxgl.app.DSLKt.play;
+import static com.almasb.fxgl.app.DSLKt.texture;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -54,16 +56,16 @@ public class GeoWarsFactory implements EntityFactory {
     }
 
     @Spawns("Player")
-    public GameEntity spawnPlayer(SpawnData data) {
+    public Entity spawnPlayer(SpawnData data) {
         // TODO: move this to proper PlayerControl
         OldPositionComponent oldPosition = new OldPositionComponent();
         oldPosition.valueProperty().addListener((obs, old, newPos) -> {
-            Entities.getRotation(oldPosition.getEntity()).rotateToVector(newPos.subtract(old));
+            oldPosition.getEntity().rotateToVector(newPos.subtract(old));
         });
 
         return Entities.builder()
                 .type(GeoWarsType.PLAYER)
-                .at(FXGL.getApp().getWidth() / 2, FXGL.getApp().getHeight() / 2)
+                .at(FXGL.getAppWidth() / 2, FXGL.getAppHeight() / 2)
                 .viewFromTextureWithBBox("Player.png")
                 .with(new CollidableComponent(true), oldPosition)
                 .with(new PlayerControl(config.getPlayerSpeed()), new KeepOnScreenControl(true, true))
@@ -71,8 +73,8 @@ public class GeoWarsFactory implements EntityFactory {
     }
 
     @Spawns("Bullet")
-    public GameEntity spawnBullet(SpawnData data) {
-        FXGL.getAudioPlayer().playSound("shoot" + (int) (Math.random() * 8 + 1) + ".wav");
+    public Entity spawnBullet(SpawnData data) {
+        play("shoot" + (int) (Math.random() * 8 + 1) + ".wav");
 
         return Entities.builder()
                 .type(GeoWarsType.BULLET)
@@ -86,7 +88,7 @@ public class GeoWarsFactory implements EntityFactory {
     }
 
     @Spawns("Wanderer")
-    public GameEntity spawnWanderer(SpawnData data) {
+    public Entity spawnWanderer(SpawnData data) {
         boolean red = FXGLMath.randomBoolean((float)config.getRedEnemyChance());
 
         int moveSpeed = red ? config.getRedEnemyMoveSpeed()
@@ -103,7 +105,7 @@ public class GeoWarsFactory implements EntityFactory {
     }
 
     @Spawns("Seeker")
-    public GameEntity spawnSeeker(SpawnData data) {
+    public Entity spawnSeeker(SpawnData data) {
         boolean red = FXGLMath.randomBoolean((float)config.getRedEnemyChance());
 
         int moveSpeed = red ? config.getRedEnemyMoveSpeed()
@@ -120,7 +122,7 @@ public class GeoWarsFactory implements EntityFactory {
     }
 
     @Spawns("Runner")
-    public GameEntity spawnRunner(SpawnData data) {
+    public Entity spawnRunner(SpawnData data) {
         return Entities.builder()
                 .type(GeoWarsType.RUNNER)
                 .at(getRandomSpawnPoint())
@@ -133,7 +135,7 @@ public class GeoWarsFactory implements EntityFactory {
     }
 
     @Spawns("Bouncer")
-    public GameEntity spawnBouncer(SpawnData data) {
+    public Entity spawnBouncer(SpawnData data) {
         double y = FXGLMath.random(0, FXGL.getAppHeight() - 40);
 
         Circle view = new Circle(20, Color.color(0.4, 0.7, 0.3, 0.3));
@@ -151,8 +153,8 @@ public class GeoWarsFactory implements EntityFactory {
     }
 
     @Spawns("Explosion")
-    public GameEntity spawnExplosion(SpawnData data) {
-        FXGL.getAudioPlayer().playSound("explosion-0" + (int) (Math.random() * 8 + 1) + ".wav");
+    public Entity spawnExplosion(SpawnData data) {
+        play("explosion-0" + (int) (Math.random() * 8 + 1) + ".wav");
 
         // explosion particle effect
         ParticleEmitter emitter = ParticleEmitters.newExplosionEmitter(100);
@@ -175,13 +177,13 @@ public class GeoWarsFactory implements EntityFactory {
 
         return Entities.builder()
                 .at(data.getX() - 40, data.getY() - 40)
-                .viewFromNode(FXGL.getAssetLoader().loadTexture("explosion.png", 80 * 48, 80).toAnimatedTexture(48, Duration.seconds(2)))
+                .viewFromNode(texture("explosion.png", 80 * 48, 80).toAnimatedTexture(48, Duration.seconds(2)))
                 .with(new ExpireCleanControl(Duration.seconds(1.8)))
                 .build();
     }
 
     @Spawns("Shockwave")
-    public GameEntity spawnShockwave(SpawnData data) {
+    public Entity spawnShockwave(SpawnData data) {
         Circle circle = new Circle(10, null);
         circle.setStroke(Color.DARKGOLDENROD);
         circle.setStrokeWidth(2);
@@ -194,7 +196,7 @@ public class GeoWarsFactory implements EntityFactory {
     }
 
     @Spawns("Portal")
-    public GameEntity spawnPortal(SpawnData data) {
+    public Entity spawnPortal(SpawnData data) {
         return Entities.builder()
                 .type(GeoWarsType.PORTAL)
                 .from(data)
@@ -205,11 +207,11 @@ public class GeoWarsFactory implements EntityFactory {
     }
 
     @Spawns("Crystal")
-    public GameEntity spawnCrystal(SpawnData data) {
-        GameEntity crystal = Entities.builder()
+    public Entity spawnCrystal(SpawnData data) {
+        Entity crystal = Entities.builder()
                 .type(GeoWarsType.CRYSTAL)
                 .from(data)
-                .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("YellowCrystal.png").toAnimatedTexture(8, Duration.seconds(1)))
+                .viewFromNodeWithBBox(texture("YellowCrystal.png").toAnimatedTexture(8, Duration.seconds(1)))
                 .with(new CollidableComponent(true))
                 .with(new CrystalControl(), new ExpireCleanControl(Duration.seconds(10)))
                 .build();

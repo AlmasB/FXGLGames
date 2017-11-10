@@ -29,10 +29,9 @@ package com.almasb.fxglgames.geowars.control;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.ecs.EntityGroup;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.EntityGroup;
 import com.almasb.fxgl.entity.control.RandomMoveControl;
 import com.almasb.fxglgames.geowars.GeoWarsType;
 import javafx.geometry.Point2D;
@@ -55,9 +54,9 @@ public class RunnerControl extends Control {
 
     private float tx = FXGLMath.random(1000, 10000);
 
-    private GameEntity runner;
+    private Entity runner;
 
-    private EntityGroup<GameEntity> bullets;
+    private EntityGroup<Entity> bullets;
 
     public RunnerControl(int moveSpeed) {
         screenWidth = FXGL.getApp().getWidth();
@@ -67,7 +66,6 @@ public class RunnerControl extends Control {
 
     @Override
     public void onAdded(Entity entity) {
-        runner = (GameEntity) entity;
         runner.getView().setEffect(new Bloom(0.5));
 
         bullets = FXGL.getApp().getGameWorld().getGroup(GeoWarsType.BULLET);

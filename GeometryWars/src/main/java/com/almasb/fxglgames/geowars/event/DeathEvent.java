@@ -1,6 +1,6 @@
 package com.almasb.fxglgames.geowars.event;
 
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxglgames.geowars.GeoWarsType;
 import javafx.event.Event;
 import javafx.event.EventType;
@@ -12,14 +12,14 @@ public class DeathEvent extends Event {
 
     public static final EventType<DeathEvent> ANY = new EventType<>(EventType.ROOT, "DEATH_EVENT");
 
-    private GameEntity entity;
+    private Entity entity;
 
-    public DeathEvent(GameEntity entity) {
+    public DeathEvent(Entity entity) {
         super(ANY);
         this.entity = entity;
     }
 
-    public GameEntity getEntity() {
+    public Entity getEntity() {
         return entity;
     }
 

@@ -28,12 +28,10 @@ package com.almasb.fxglgames.geowars;
 import com.almasb.fxgl.animation.Animation;
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.annotation.Handles;
-import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.EntityView;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.view.EntityView;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
@@ -67,12 +65,12 @@ import static com.almasb.fxgl.app.DSLKt.*;
  */
 public class GeoWarsApp extends GameApplication {
 
-    private GameEntity player;
+    private Entity player;
     private PlayerControl playerControl;
 
     private Grid grid;
 
-    public GameEntity getPlayer() {
+    public Entity getPlayer() {
         return player;
     }
 
@@ -86,12 +84,6 @@ public class GeoWarsApp extends GameApplication {
         settings.setHeight(720);
         settings.setTitle("FXGL Geometry Wars");
         settings.setVersion("0.7.5");
-        settings.setFullScreen(false);
-        settings.setIntroEnabled(false);
-        settings.setMenuEnabled(false);
-        settings.setProfilingEnabled(false);
-        settings.setCloseConfirmation(false);
-        settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
     @Override
@@ -169,7 +161,7 @@ public class GeoWarsApp extends GameApplication {
         getAudioPlayer().setGlobalMusicVolume(0.2);
 
         initBackground();
-        player = (GameEntity) spawn("Player");
+        player = spawn("Player");
         playerControl = player.getControl(PlayerControl.class);
 
         getGameState().<Integer>addListener("multiplier", (prev, now) -> {
@@ -204,7 +196,7 @@ public class GeoWarsApp extends GameApplication {
                 hp.setValue(hp.getValue() - 1);
 
                 if (hp.getValue() == 0) {
-                    getEventBus().fireEvent(new DeathEvent((GameEntity) enemy));
+                    getEventBus().fireEvent(new DeathEvent(enemy));
                     enemy.removeFromWorld();
                 }
             }
@@ -293,8 +285,7 @@ public class GeoWarsApp extends GameApplication {
 
     @Override
     protected void onUpdate(double tpf) {
-        player.getComponent(OldPositionComponent.class)
-                .setValue(Entities.getPosition(player).getValue());
+        player.getComponent(OldPositionComponent.class).setValue(player.getPosition());
 
         grid.update();
     }
@@ -379,7 +370,7 @@ public class GeoWarsApp extends GameApplication {
 
     @Handles(eventType = "ANY")
     public void onDeath(DeathEvent event) {
-        GameEntity entity = event.getEntity();
+        Entity entity = event.getEntity();
 
         if (event.isEnemy()) {
             spawn("Explosion", entity.getCenter());

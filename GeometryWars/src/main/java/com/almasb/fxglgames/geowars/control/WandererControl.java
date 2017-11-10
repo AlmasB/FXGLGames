@@ -29,9 +29,8 @@ package com.almasb.fxglgames.geowars.control;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.Entity;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.Bloom;
 
@@ -52,7 +51,7 @@ public class WandererControl extends Control {
 
     private float tx = FXGLMath.random(1000, 10000);
 
-    private GameEntity wanderer;
+    private Entity wanderer;
 
     public WandererControl(int moveSpeed) {
         screenWidth = FXGL.getApp().getWidth();
@@ -62,7 +61,6 @@ public class WandererControl extends Control {
 
     @Override
     public void onAdded(Entity entity) {
-        wanderer = (GameEntity) entity;
         wanderer.getView().setEffect(new Bloom(0.5));
     }
 

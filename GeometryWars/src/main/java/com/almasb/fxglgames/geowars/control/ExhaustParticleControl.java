@@ -29,14 +29,14 @@ package com.almasb.fxglgames.geowars.control;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.collection.ObjectMap;
 import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.core.pool.Pools;
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.texture.Texture;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
+import static com.almasb.fxgl.app.DSLKt.free;
+import static com.almasb.fxgl.app.DSLKt.obtain;
 import static java.lang.Math.min;
 
 /**
@@ -57,7 +57,7 @@ public class ExhaustParticleControl extends Control {
     private Color color;
 
     public ExhaustParticleControl(Vec2 velocity, float lifespan, Color color) {
-        this.velocity = Pools.obtain(Vec2.class);
+        this.velocity = obtain(Vec2.class);
         this.velocity.set(velocity);
 
         this.lifespan = lifespan;
@@ -74,19 +74,17 @@ public class ExhaustParticleControl extends Control {
     }
 
     @Override
-    public void onAdded(Entity e) {
-        GameEntity entity = (GameEntity) e;
+    public void onAdded(Entity entity) {
         entity.setView(new Texture(coloredImages.get(color)));
     }
 
     @Override
     public void onRemoved(Entity entity) {
-        Pools.free(velocity);
+        free(velocity);
     }
 
     @Override
-    public void onUpdate(Entity e, double tpf) {
-        GameEntity entity = (GameEntity) e;
+    public void onUpdate(Entity entity, double tpf) {
 
         // movement
         entity.translateX(velocity.x * 3 * tpf);
@@ -117,17 +115,4 @@ public class ExhaustParticleControl extends Control {
             entity.removeFromWorld();
         }
     }
-
-//
-//    public void applyGravity(Vector3f gravity, float distance) {
-//        Vector3f additionalVelocity = gravity
-//                .mult(1000f / (distance * distance + 10000f));
-//        velocity.addLocal(additionalVelocity);
-//
-//        if (distance < 400) {
-//            additionalVelocity = new Vector3f(gravity.y, -gravity.x, 0)
-//                    .mult(3f / (distance + 100));
-//            velocity.addLocal(additionalVelocity);
-//        }
-//    }
 }

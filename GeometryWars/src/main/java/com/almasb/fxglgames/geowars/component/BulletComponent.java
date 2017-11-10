@@ -1,20 +1,20 @@
 package com.almasb.fxglgames.geowars.component;
 
-import com.almasb.fxgl.ecs.Component;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Component;
+import com.almasb.fxgl.entity.Entity;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class BulletComponent extends Component {
 
-    private GameEntity lastPortal = null;
+    private Entity lastPortal = null;
 
-    public GameEntity getLastPortal() {
+    public Entity getLastPortal() {
         return lastPortal;
     }
 
-    public void setLastPortal(GameEntity lastPortal) {
+    public void setLastPortal(Entity lastPortal) {
         this.lastPortal = lastPortal;
     }
 }

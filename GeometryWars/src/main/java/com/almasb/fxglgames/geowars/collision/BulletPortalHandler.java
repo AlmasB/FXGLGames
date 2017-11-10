@@ -2,8 +2,7 @@ package com.almasb.fxglgames.geowars.collision;
 
 import com.almasb.fxgl.annotation.AddCollisionHandler;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.control.ProjectileControl;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.geowars.GeoWarsType;
@@ -20,8 +19,7 @@ public class BulletPortalHandler extends CollisionHandler {
     }
 
     @Override
-    protected void onCollisionBegin(Entity b, Entity portal) {
-        GameEntity bullet = (GameEntity) b;
+    protected void onCollisionBegin(Entity bullet, Entity portal) {
         BulletComponent component = bullet.getComponent(BulletComponent.class);
 
         if (component.getLastPortal() != portal) {
@@ -30,7 +28,6 @@ public class BulletPortalHandler extends CollisionHandler {
                     .stream()
                     .filter(e -> e != portal)
                     .findAny()
-                    .map(e -> (GameEntity) e)
                     .ifPresent(anotherPortal -> {
                         component.setLastPortal(anotherPortal);
                         bullet.setPosition(anotherPortal.getCenter());
