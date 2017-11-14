@@ -26,13 +26,15 @@
 
 package com.almasb.fxglgames.pacman.control;
 
+import com.almasb.fxgl.ai.GoalAction;
 import com.almasb.fxgl.ai.pathfinding.AStarGrid;
 import com.almasb.fxgl.ai.pathfinding.AStarNode;
 import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.entity.Control;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxglgames.pacman.PacmanApp;
-import com.almasb.fxglgames.pacman.PacmanType;
+import javafx.geometry.Point2D;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,46 +42,43 @@ import java.util.List;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class AStarEnemyControl extends EnemyControl {
-
-    private AStarGrid grid;
-    private Entity player;
+public class AStarMoveControl extends Control {
 
     private List<AStarNode> path = new ArrayList<>();
 
-    private double speed;
+    private PositionComponent position;
+
+    public boolean isDone() {
+        return path.isEmpty();
+    }
+
+    public void moveTo(Point2D point) {
+
+        position = getEntity().getPositionComponent();
+
+        if (position.getValue().equals(point))
+            return;
+
+        AStarGrid grid = ((PacmanApp) FXGL.getApp()).getGrid();
+
+        int startX = (int)(position.getX() / PacmanApp.BLOCK_SIZE);
+        int startY = (int)(position.getY() / PacmanApp.BLOCK_SIZE);
+
+        int targetX = (int)((point.getX() + 20) / PacmanApp.BLOCK_SIZE);
+        int targetY = (int)((point.getY() + 20) / PacmanApp.BLOCK_SIZE);
+
+        path = grid.getPath(startX, startY, targetX, targetY);
+
+        // we use A*, so no need for that
+        getEntity().getControlOptional(MoveControl.class).ifPresent(c -> c.pause());
+    }
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
-        //super.onUpdate(entity, tpf);
-
-        speed = tpf * 60 * 5;
-
-        if (path.isEmpty()) {
-            if (grid == null) {
-                grid = ((PacmanApp) FXGL.getApp()).getGrid();
-                player = (Entity) FXGL.getApp().getGameWorld().getEntitiesByType(PacmanType.PLAYER).get(0);
-            }
-
-            int startX = (int)(position.getX() / PacmanApp.BLOCK_SIZE);
-            int startY = (int)(position.getY() / PacmanApp.BLOCK_SIZE);
-
-            int targetX = (int)((player.getPositionComponent().getX() + 20) / PacmanApp.BLOCK_SIZE);
-            int targetY = (int)((player.getPositionComponent().getY() + 20) / PacmanApp.BLOCK_SIZE);
-
-
-
-            path = grid.getPath(
-                    startX,
-                    startY,
-                    targetX,
-                    targetY);
-
-            //System.out.println(startX + " " + startY + " " + targetX + " "  +targetY + " " + path.isEmpty());
-        }
-
         if (path.isEmpty())
             return;
+
+        double speed = tpf * 60 * 5;
 
         AStarNode next = path.get(0);
 
@@ -103,6 +102,8 @@ public class AStarEnemyControl extends EnemyControl {
             path.remove(0);
         }
 
-        //System.out.println(nextX + " " + nextY + " " + position.getValue());
+        if (path.isEmpty()) {
+            getEntity().getControlOptional(MoveControl.class).ifPresent(c -> c.resume());
+        }
     }
 }

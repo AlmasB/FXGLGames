@@ -32,7 +32,7 @@ package com.almasb.fxglgames.pacman.control;
 public enum MoveDirection {
     UP, RIGHT, DOWN, LEFT;
 
-    MoveDirection next() {
+    public MoveDirection next() {
         int index = ordinal() + 1;
 
         if (index == values().length) {
@@ -42,7 +42,7 @@ public enum MoveDirection {
         return values()[index];
     }
 
-    MoveDirection prev() {
+    public MoveDirection prev() {
         int index = ordinal() - 1;
 
         if (index == -1) {

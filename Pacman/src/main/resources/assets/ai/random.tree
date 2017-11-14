@@ -1,0 +1,17 @@
+#
+# Pacman enemy 2
+#
+
+# Alias definitions
+
+# Conditions
+
+# Actions
+import inverseMove : "com.almasb.fxglgames.pacman.ai.InversePlayerMoveAction"
+import randomMove : "com.almasb.fxglgames.pacman.ai.RandomMoveAction"
+
+# Tree definition (note that root is optional)
+root
+    randomSelector
+        inverseMove times:"uniform,1,2"
+        randomMove

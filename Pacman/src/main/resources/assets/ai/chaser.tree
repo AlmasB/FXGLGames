@@ -8,7 +8,7 @@
 import nearPlayer? : "com.almasb.fxglgames.pacman.ai.PlayerCloseCondition"
 
 # Actions
-import move : "com.almasb.fxglgames.pacman.ai.MoveAction"
+import astarMove : "com.almasb.fxglgames.pacman.ai.AStarMoveAction"
 import randomMove : "com.almasb.fxglgames.pacman.ai.RandomMoveAction"
 
 # Tree definition (note that root is optional)
@@ -17,5 +17,5 @@ root
         sequence
             invert
                 nearPlayer?
-            move
+            astarMove
         randomMove

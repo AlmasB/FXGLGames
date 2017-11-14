@@ -27,24 +27,25 @@
 package com.almasb.fxglgames.pacman;
 
 import com.almasb.fxgl.ai.AIControl;
-import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.Control;
 import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.entity.view.EntityView;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.texture.Texture;
-import com.almasb.fxglgames.pacman.control.*;
+import com.almasb.fxglgames.pacman.control.AStarMoveControl;
+import com.almasb.fxglgames.pacman.control.MoveControl;
+import com.almasb.fxglgames.pacman.control.PaletteChangingControl;
+import com.almasb.fxglgames.pacman.control.PlayerControl;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.IntStream;
+import java.util.function.Supplier;
+
+import static com.almasb.fxgl.app.DSLKt.texture;
 
 /**
  * Factory for creating in-game entities.
@@ -65,7 +66,7 @@ public class PacmanFactory implements TextEntityFactory {
 
     @SpawnSymbol('0')
     public Entity newCoin(SpawnData data) {
-        EntityView view = new EntityView(FXGL.getAssetLoader().loadTexture("coin.png"));
+        EntityView view = new EntityView(texture("coin.png"));
         view.setTranslateX(2.5);
         view.setRenderLayer(RenderLayer.BACKGROUND);
 
@@ -80,9 +81,7 @@ public class PacmanFactory implements TextEntityFactory {
 
     @SpawnSymbol('P')
     public Entity newPlayer(SpawnData data) {
-        Texture view = FXGL.getAssetLoader()
-                .loadTexture("player.png")
-                .toAnimatedTexture(2, Duration.seconds(0.33));
+        Texture view = texture("player.png").toAnimatedTexture(2, Duration.seconds(0.33));
 
         return Entities.builder()
                 .from(data)
@@ -94,47 +93,38 @@ public class PacmanFactory implements TextEntityFactory {
                 .build();
     }
 
-    private static List<Class<? extends Control> > enemyControls = Arrays.asList(
-            DiffEnemyControl.class,
-            AStarEnemyControl.class,
-            EnemyControl.class
-    );
+    private Supplier<String> trees = new Supplier<String>() {
+        private int index = 0;
 
-    private static List<Integer> indices = new ArrayList<>();
+        private List<String> names = Arrays.asList("guard.tree", "astar.tree", "chaser.tree", "random.tree");
 
-    private static void populateIndices() {
-        IntStream.range(0, enemyControls.size())
-                .forEach(indices::add);
-
-        Collections.shuffle(indices);
-    }
-
-    private static Control getNextEnemyControl() {
-        Control control = null;
-
-        try {
-            if (indices.isEmpty()) {
-                populateIndices();
-                return new AIControl("pacman_enemy1.tree");
+        @Override
+        public String get() {
+            if (index == names.size()) {
+                index = 0;
             }
 
-            control = enemyControls.get(indices.remove(0)).newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            // won't happen
+            return names.get(index++);
         }
-
-        return control;
-    }
+    };
 
     @SpawnSymbol('E')
     public Entity newEnemy(SpawnData data) {
-        return Entities.builder()
+        String aiName = trees.get();
+
+        Entity enemy = Entities.builder()
                 .from(data)
                 .type(PacmanType.ENEMY)
                 .bbox(new HitBox("ENEMY_BODY", new Point2D(2, 2), BoundingShape.box(36, 36)))
                 .with(new CollidableComponent(true))
-                .with(getNextEnemyControl(), new PaletteChangingControl(FXGL.getAssetLoader().loadTexture("spritesheet.png")))
+                .with(new AIControl(aiName), new MoveControl(), new AStarMoveControl(), new PaletteChangingControl(texture("spritesheet.png")))
                 .build();
+
+        if (aiName.equals("guard.tree")) {
+            enemy.removeControl(MoveControl.class);
+        }
+
+        return enemy;
     }
 
     @Override

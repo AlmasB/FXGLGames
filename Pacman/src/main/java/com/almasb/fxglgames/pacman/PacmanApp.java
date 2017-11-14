@@ -29,7 +29,6 @@ import com.almasb.fxgl.ai.pathfinding.AStarGrid;
 import com.almasb.fxgl.ai.pathfinding.NodeState;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.gameplay.Level;
 import com.almasb.fxgl.input.UserAction;
@@ -41,6 +40,9 @@ import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
 
 import java.util.Map;
+
+import static com.almasb.fxgl.app.DSLKt.geti;
+import static com.almasb.fxgl.app.DSLKt.inc;
 
 /**
  * This is a basic demo of Pacman.
@@ -62,7 +64,7 @@ public class PacmanApp extends GameApplication {
     public static final int TIME_PER_LEVEL = 100;
 
     public Entity getPlayer() {
-        return (Entity) getGameWorld().getSingleton(PacmanType.PLAYER).get();
+        return getGameWorld().getSingleton(PacmanType.PLAYER).get();
     }
 
     public PlayerControl getPlayerControl() {
@@ -146,7 +148,7 @@ public class PacmanApp extends GameApplication {
         grid = new AStarGrid(MAP_SIZE, MAP_SIZE);
         getGameWorld().getEntitiesByType(PacmanType.BLOCK)
                 .stream()
-                .map(e -> Entities.getPosition(e).getValue())
+                .map(Entity::getPosition)
                 .forEach(point -> {
                     int x = (int) point.getX() / BLOCK_SIZE;
                     int y = (int) point.getY() / BLOCK_SIZE;
@@ -158,7 +160,7 @@ public class PacmanApp extends GameApplication {
         getGameState().setValue("coins", getGameWorld().getEntitiesByType(PacmanType.COIN).size());
 
         getMasterTimer().runAtInterval(
-                () -> getGameState().increment("time", -1),
+                () -> inc("time", -1),
                 Duration.seconds(1)
         );
 
@@ -195,14 +197,14 @@ public class PacmanApp extends GameApplication {
     }
 
     public void onCoinPickup() {
-        getGameState().increment("coins", -1);
-        getGameState().increment("score", +50);
+        inc("coins", -1);
+        inc("score", +50);
 
-        if (getGameState().getInt("score") % 2000 == 0) {
-            getGameState().increment("teleport", +1);
+        if (geti("score") % 2000 == 0) {
+            inc("teleport", +1);
         }
 
-        if (getGameState().getInt("coins") == 0) {
+        if (geti("coins") == 0) {
             gameOver();
         }
     }

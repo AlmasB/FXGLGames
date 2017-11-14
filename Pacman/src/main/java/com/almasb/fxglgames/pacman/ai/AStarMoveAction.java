@@ -34,6 +34,9 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxglgames.pacman.PacmanApp;
 import com.almasb.fxglgames.pacman.PacmanType;
+import com.almasb.fxglgames.pacman.control.AStarMoveControl;
+import com.almasb.fxglgames.pacman.control.MoveControl;
+import javafx.geometry.Point2D;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,68 +44,39 @@ import java.util.List;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class MoveAction extends GoalAction {
+public class AStarMoveAction extends GoalAction {
 
-    public MoveAction() {
+    public AStarMoveAction() {
         super("Move");
     }
 
     private AStarGrid grid;
     private Entity player;
 
-    private List<AStarNode> path = new ArrayList<>();
-
     private PositionComponent position;
 
-    private double speed;
+    private int targetX;
+    private int targetY;
 
     @Override
     public void start() {
         position = getEntity().getPositionComponent();
 
-        grid = ((PacmanApp) FXGL.getApp()).getGrid();
-        player = (Entity) FXGL.getApp().getGameWorld().getEntitiesByType(PacmanType.PLAYER).get(0);
+        player = ((PacmanApp) FXGL.getApp()).getPlayer();
 
-        int startX = (int)(position.getX() / PacmanApp.BLOCK_SIZE);
-        int startY = (int)(position.getY() / PacmanApp.BLOCK_SIZE);
+        targetX = (int)((player.getX() + 20) / PacmanApp.BLOCK_SIZE);
+        targetY = (int)((player.getY() + 20) / PacmanApp.BLOCK_SIZE);
 
-        int targetX = (int)((player.getPositionComponent().getX() + 20) / PacmanApp.BLOCK_SIZE);
-        int targetY = (int)((player.getPositionComponent().getY() + 20) / PacmanApp.BLOCK_SIZE);
-
-        path = grid.getPath(startX, startY,
-                targetX, targetY);
+        getEntity().getControl(AStarMoveControl.class).moveTo(new Point2D(targetX * PacmanApp.BLOCK_SIZE, targetY * PacmanApp.BLOCK_SIZE));
     }
 
     @Override
     public boolean reachedGoal() {
-        return path.isEmpty();
+        return getEntity().getControl(AStarMoveControl.class).isDone();
     }
 
     @Override
     public void onUpdate(double tpf) {
 
-        speed = tpf * 60 * 5;
-
-        AStarNode next = path.get(0);
-
-        int nextX = next.getX() * PacmanApp.BLOCK_SIZE;
-        int nextY = next.getY() * PacmanApp.BLOCK_SIZE;
-
-        double dx = nextX - position.getX();
-        double dy = nextY - position.getY();
-
-        if (Math.abs(dx) <= speed)
-            position.setX(nextX);
-        else
-            position.translateX(speed * Math.signum(dx));
-
-        if (Math.abs(dy) <= speed)
-            position.setY(nextY);
-        else
-            position.translateY(speed * Math.signum(dy));
-
-        if (position.getX() == nextX && position.getY() == nextY) {
-            path.remove(0);
-        }
     }
 }

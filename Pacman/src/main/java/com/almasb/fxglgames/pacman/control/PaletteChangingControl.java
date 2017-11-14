@@ -26,6 +26,7 @@
 
 package com.almasb.fxglgames.pacman.control;
 
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Control;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.Entities;
@@ -52,9 +53,6 @@ public class PaletteChangingControl extends Control {
 
     @Override
     public void onAdded(Entity entity) {
-        position = Entities.getPosition(entity);
-        view = Entities.getView(entity);
-
         view.setView(texture);
         view.getView().getTransforms().addAll(new Scale(0.26, 0.26, 0, 0));
     }
@@ -65,7 +63,7 @@ public class PaletteChangingControl extends Control {
     private double timeToSwitch = 0;
     private int spriteColor = 0;
 
-    private Random random = new Random();
+    private Random random = FXGLMath.getRandom();
 
     @Override
     public void onUpdate(Entity entity, double tpf) {

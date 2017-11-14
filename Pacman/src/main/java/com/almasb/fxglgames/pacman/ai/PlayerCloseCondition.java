@@ -40,7 +40,6 @@ public class PlayerCloseCondition extends Condition {
     public boolean evaluate() {
         Entity player = ((PacmanApp) FXGL.getApp()).getPlayer();
 
-        return player.getPositionComponent().distance(getEntity().getPositionComponent())
-                < PacmanApp.MAP_SIZE * PacmanApp.BLOCK_SIZE / 3;
+        return player.distance(getEntity()) < PacmanApp.MAP_SIZE * PacmanApp.BLOCK_SIZE / 3;
     }
 }
