@@ -28,7 +28,7 @@ package com.almasb.fxglgames.pacman.ai;
 
 import com.almasb.fxgl.ai.SingleAction;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
 import com.almasb.fxgl.entity.component.PositionComponent;
@@ -93,8 +93,8 @@ public class RandomMoveAction extends SingleAction {
     public void start() {
         // TODO: is there like init with object?
         if (position == null) {
-            position = Entities.getPosition(getObject());
-            bbox = Entities.getBBox(getObject());
+            position = Entities.getPosition(getEntity());
+            bbox = Entities.getBBox(getEntity());
 
             moveDir = MoveDirection.values()[new Random().nextInt(MoveDirection.values().length)];
         }
@@ -125,7 +125,7 @@ public class RandomMoveAction extends SingleAction {
     private List<Entity> blocks;
 
     private void move(Point2D vector) {
-        if (!getObject().isActive())
+        if (!getEntity().isActive())
             return;
 
         if (blocks == null) {

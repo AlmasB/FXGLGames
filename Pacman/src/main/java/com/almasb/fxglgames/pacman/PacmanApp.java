@@ -30,7 +30,7 @@ import com.almasb.fxgl.ai.pathfinding.NodeState;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.gameplay.Level;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.parser.text.TextLevelParser;
@@ -61,8 +61,8 @@ public class PacmanApp extends GameApplication {
     // seconds
     public static final int TIME_PER_LEVEL = 100;
 
-    public GameEntity getPlayer() {
-        return (GameEntity) getGameWorld().getSingleton(PacmanType.PLAYER).get();
+    public Entity getPlayer() {
+        return (Entity) getGameWorld().getSingleton(PacmanType.PLAYER).get();
     }
 
     public PlayerControl getPlayerControl() {
@@ -81,11 +81,7 @@ public class PacmanApp extends GameApplication {
         settings.setHeight(MAP_SIZE * BLOCK_SIZE);
         settings.setTitle("Reverse Pac-man");
         settings.setVersion("0.4");
-        settings.setFullScreen(false);
-        settings.setIntroEnabled(false);
-        settings.setMenuEnabled(false);
-        settings.setCloseConfirmation(false);
-        settings.setProfilingEnabled(false);
+        settings.setProfilingEnabled(true);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 

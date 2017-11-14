@@ -28,7 +28,7 @@ package com.almasb.fxglgames.pacman.ai;
 
 import com.almasb.fxgl.ai.Condition;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxglgames.pacman.PacmanApp;
 
 /**
@@ -38,9 +38,9 @@ public class PlayerCloseCondition extends Condition {
 
     @Override
     public boolean evaluate() {
-        GameEntity player = ((PacmanApp) FXGL.getApp()).getPlayer();
+        Entity player = ((PacmanApp) FXGL.getApp()).getPlayer();
 
-        return player.getPositionComponent().distance(getObject().getPositionComponent())
+        return player.getPositionComponent().distance(getEntity().getPositionComponent())
                 < PacmanApp.MAP_SIZE * PacmanApp.BLOCK_SIZE / 3;
     }
 }

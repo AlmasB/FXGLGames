@@ -26,9 +26,9 @@
 
 package com.almasb.fxglgames.pacman.collision;
 
-import com.almasb.fxgl.annotation.AddCollisionHandler;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.physics.AddCollisionHandler;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.pacman.PacmanApp;
 import com.almasb.fxglgames.pacman.PacmanType;
