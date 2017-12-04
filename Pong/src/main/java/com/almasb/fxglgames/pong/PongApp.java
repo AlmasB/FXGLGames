@@ -27,7 +27,6 @@
 package com.almasb.fxglgames.pong;
 
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.annotation.OnUserAction;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.core.math.FXGLMath;
@@ -38,10 +37,10 @@ import com.almasb.fxgl.effect.ParticleEmitters;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.CollidableComponent;
-import com.almasb.fxgl.entity.component.TypeComponent;
 import com.almasb.fxgl.input.ActionType;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.InputMapping;
+import com.almasb.fxgl.input.OnUserAction;
 import com.almasb.fxgl.net.Server;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
@@ -53,13 +52,15 @@ import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import java.util.EnumSet;
 import java.util.Map;
 
 /**
+ * A simple multiplayer pong.
+ * Sounds from https://freesound.org/people/NoiseCollector/sounds/4391/ under CC BY 3.0.
+ *
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class PongApp extends GameApplication {
@@ -73,7 +74,7 @@ public class PongApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Pong");
-        settings.setVersion("0.3.1");
+        settings.setVersion("0.3.2");
         settings.setEnabledMenuItems(EnumSet.of(MenuItem.ONLINE));
     }
 
@@ -167,16 +168,21 @@ public class PongApp extends GameApplication {
                     getGameState().increment("player1score", +1);
                 }
 
+                getAudioPlayer().playSound("hit_wall.wav");
                 getGameScene().getViewport().shake(5);
             }
         });
 
-        getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BALL, EntityType.PLAYER_BAT) {
+        CollisionHandler ballBatHandler = new CollisionHandler(EntityType.BALL, EntityType.PLAYER_BAT) {
             @Override
             protected void onCollisionBegin(Entity a, Entity bat) {
+                getAudioPlayer().playSound("hit_bat.wav");
                 playHitAnimation(bat);
             }
-        });
+        };
+
+        getPhysicsWorld().addCollisionHandler(ballBatHandler);
+        getPhysicsWorld().addCollisionHandler(ballBatHandler.copyFor(EntityType.BALL, EntityType.ENEMY_BAT));
     }
 
     @Override

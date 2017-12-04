@@ -63,7 +63,7 @@ public class BallControl extends Control {
     // we use a physics engine, so it is possible to push the ball against a wall
     // so that it gets moved outside of the screen
     private void checkOffscreen() {
-        if (getEntity().getComponent(BoundingBoxComponent.class).isOutside(FXGL.getApp()
+        if (getEntity().getBoundingBoxComponent().isOutside(FXGL.getApp()
                 .getGameScene()
                 .getViewport()
                 .getVisibleArea())) {

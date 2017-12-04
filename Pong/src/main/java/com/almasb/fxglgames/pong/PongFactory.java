@@ -53,17 +53,14 @@ public class PongFactory {
         Entity ball = Entities.builder()
                 .at(x, y)
                 .type(EntityType.BALL)
-                .bbox(new HitBox("BODY", BoundingShape.circle(5)))
-                //.viewFromNode(new Circle(5, Color.LIGHTGRAY))
+                .bbox(new HitBox(BoundingShape.circle(5)))
                 .build();
 
         if (mode == GameMode.SP || mode == GameMode.MP_HOST) {
             PhysicsComponent ballPhysics = new PhysicsComponent();
             ballPhysics.setBodyType(BodyType.DYNAMIC);
 
-            FixtureDef def = new FixtureDef();
-            def.setDensity(0.3f);
-            def.setRestitution(1.0f);
+            FixtureDef def = new FixtureDef().density(0.3f).restitution(1.0f);
 
             ballPhysics.setFixtureDef(def);
             ballPhysics.setOnPhysicsInitialized(() -> ballPhysics.setLinearVelocity(5 * 60, -5 * 60));
