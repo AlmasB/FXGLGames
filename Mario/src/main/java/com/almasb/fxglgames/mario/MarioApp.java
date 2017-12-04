@@ -6,7 +6,6 @@
 
 package com.almasb.fxglgames.mario;
 
-import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.RenderLayer;
@@ -17,7 +16,6 @@ import com.almasb.fxgl.physics.handler.CollectibleHandler;
 import com.almasb.fxgl.settings.GameSettings;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-
 
 /**
  *
@@ -32,12 +30,6 @@ public class MarioApp extends GameApplication {
         settings.setHeight(768);
         settings.setTitle("MarioApp");
         settings.setVersion("0.2");
-        settings.setIntroEnabled(false);
-        settings.setMenuEnabled(false);
-        settings.setProfilingEnabled(false);
-        settings.setCloseConfirmation(false);
-        settings.setSingleStep(false);
-        settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
     private PlayerControl playerControl;

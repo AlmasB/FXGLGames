@@ -3,10 +3,8 @@ package com.almasb.fxglgames.ncc;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.entity.EntityView;
-import com.almasb.fxgl.entity.GameEntity;
-import com.almasb.fxgl.entity.component.ViewComponent;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.view.EntityView;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.ui.UI;
@@ -68,7 +66,7 @@ public class NCCApp extends GameApplication {
     }
 
     private Entity getRandomCard(double x, double y) {
-        GameEntity entity = new GameEntity();
+        Entity entity = new Entity();
         entity.setPosition(new Point2D(x, y));
 
         Card card = new Card();

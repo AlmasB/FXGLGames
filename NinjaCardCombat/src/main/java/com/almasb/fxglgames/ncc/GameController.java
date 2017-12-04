@@ -1,9 +1,9 @@
 package com.almasb.fxglgames.ncc;
 
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.ecs.EntityWorldListener;
-import com.almasb.fxgl.ecs.GameWorld;
-import com.almasb.fxgl.entity.EntityView;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.EntityWorldListener;
+import com.almasb.fxgl.entity.GameWorld;
+import com.almasb.fxgl.entity.view.EntityView;
 import com.almasb.fxgl.ui.UIController;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;

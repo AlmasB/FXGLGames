@@ -28,7 +28,7 @@ package com.almasb.fxglgames.gravity;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.parser.tiled.TiledMap;
 import com.almasb.fxgl.physics.PhysicsComponent;
@@ -57,7 +57,7 @@ public class GravityApp extends GameApplication {
         settings.setCloseConfirmation(false);
     }
 
-    private GameEntity player;
+    private Entity player;
     private PlayerControl playerControl;
 
     //                getGameWorld().getCollidingEntities(player)
@@ -73,7 +73,7 @@ public class GravityApp extends GameApplication {
             @Override
             protected void onActionBegin() {
 
-                GameEntity key = (GameEntity) getGameWorld().getEntitiesByType(ScifiType.ENEMY).get(0);
+                Entity key = getGameWorld().getEntitiesByType(ScifiType.ENEMY).get(0);
 
                 PhysicsComponent physics = key.getComponent(PhysicsComponent.class);
                 physics.applyForceToCenter(player.getCenter().subtract(key.getCenter()).normalize().multiply(550));
@@ -84,7 +84,7 @@ public class GravityApp extends GameApplication {
             @Override
             protected void onActionBegin() {
 
-                GameEntity key = (GameEntity) getGameWorld().getEntitiesByType(ScifiType.ENEMY).get(0);
+                Entity key = getGameWorld().getEntitiesByType(ScifiType.ENEMY).get(0);
 
                 PhysicsComponent physics = key.getComponent(PhysicsComponent.class);
                 physics.applyForceToCenter(player.getCenter().subtract(key.getCenter()).normalize().multiply(-550));
@@ -114,7 +114,7 @@ public class GravityApp extends GameApplication {
 
         getGameWorld().spawn("button", 30, 340);
 
-        player = (GameEntity) getGameWorld().spawn("player", 100, 100);
+        player = getGameWorld().spawn("player", 100, 100);
         playerControl = player.getControl(PlayerControl.class);
 
         getGameWorld().spawn("key", 500, 10);

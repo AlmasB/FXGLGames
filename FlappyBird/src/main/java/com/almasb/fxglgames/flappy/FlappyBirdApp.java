@@ -105,8 +105,8 @@ public class FlappyBirdApp extends GameApplication {
                 .with(new ColorChangingControl())
                 .buildAndAttach();
 
-        bg.getPositionComponent().xProperty().bind(getGameScene().getViewport().xProperty());
-        bg.getPositionComponent().yProperty().bind(getGameScene().getViewport().yProperty());
+        bg.xProperty().bind(getGameScene().getViewport().xProperty());
+        bg.yProperty().bind(getGameScene().getViewport().yProperty());
     }
 
     private void initPlayer() {

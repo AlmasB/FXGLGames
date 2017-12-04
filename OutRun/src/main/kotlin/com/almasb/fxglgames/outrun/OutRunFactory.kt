@@ -26,9 +26,6 @@
 
 package com.almasb.fxglgames.outrun
 
-import com.almasb.fxgl.annotation.SetEntityFactory
-import com.almasb.fxgl.annotation.SpawnSymbol
-import com.almasb.fxgl.annotation.Spawns
 import com.almasb.fxgl.entity.*
 import com.almasb.fxgl.entity.component.CollidableComponent
 import com.almasb.fxgl.entity.view.EntityView

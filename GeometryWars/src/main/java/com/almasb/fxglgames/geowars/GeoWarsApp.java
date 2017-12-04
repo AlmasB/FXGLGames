@@ -27,11 +27,11 @@ package com.almasb.fxglgames.geowars;
 
 import com.almasb.fxgl.animation.Animation;
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.annotation.Handles;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.view.EntityView;
+import com.almasb.fxgl.event.Handles;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
@@ -138,12 +138,12 @@ public class GeoWarsApp extends GameApplication {
             }
         }, MouseButton.PRIMARY);
 
-        input.addAction(new UserAction("Weapon Menu") {
-            @Override
-            protected void onActionBegin() {
-                openWeaponMenu();
-            }
-        }, MouseButton.SECONDARY);
+//        input.addAction(new UserAction("Weapon Menu") {
+//            @Override
+//            protected void onActionBegin() {
+//                openWeaponMenu();
+//            }
+//        }, MouseButton.SECONDARY);
     }
 
     @Override
@@ -212,7 +212,7 @@ public class GeoWarsApp extends GameApplication {
             protected void onCollisionBegin(Entity a, Entity b) {
                 getGameScene().getViewport().shake(8);
 
-                Entities.getPosition(a).setValue(getRandomPoint());
+                a.setPosition(getRandomPoint());
                 b.removeFromWorld();
                 deductScoreDeath();
             }

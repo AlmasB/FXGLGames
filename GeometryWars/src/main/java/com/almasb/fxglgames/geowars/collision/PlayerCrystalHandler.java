@@ -1,10 +1,10 @@
 package com.almasb.fxglgames.geowars.collision;
 
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.annotation.AddCollisionHandler;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.CollidableComponent;
+import com.almasb.fxgl.physics.AddCollisionHandler;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.geowars.GeoWarsType;
 import javafx.geometry.Point2D;

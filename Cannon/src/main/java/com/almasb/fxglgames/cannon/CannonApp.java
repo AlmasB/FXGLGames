@@ -28,9 +28,8 @@ package com.almasb.fxglgames.cannon;
 
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.ecs.Entity;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
@@ -55,7 +54,7 @@ import java.util.Map;
  */
 public class CannonApp extends GameApplication {
 
-    private GameEntity cannon;
+    private Entity cannon;
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -63,10 +62,6 @@ public class CannonApp extends GameApplication {
         settings.setHeight(600);
         settings.setTitle("Cannon");
         settings.setVersion("0.2.1");
-        settings.setIntroEnabled(false);
-        settings.setMenuEnabled(false);
-        settings.setProfilingEnabled(false);
-        settings.setCloseConfirmation(false);
     }
 
     @Override
@@ -98,7 +93,7 @@ public class CannonApp extends GameApplication {
     }
 
     private void initCannon() {
-        cannon = (GameEntity) getGameWorld().spawn("cannon", 50, getHeight() - 30);
+        cannon = getGameWorld().spawn("cannon", 50, getHeight() - 30);
     }
 
     private void initBasket() {
@@ -120,12 +115,10 @@ public class CannonApp extends GameApplication {
                 bullet.removeFromWorld();
                 getGameState().increment("score", +1000);
 
-                GameEntity[] entities = getGameWorld().getEntitiesByType(CannonType.BASKET).toArray(new GameEntity[0]);
-
                 Entities.animationBuilder()
                         .duration(Duration.seconds(0.2))
                         .interpolator(Interpolators.EXPONENTIAL.EASE_IN())
-                        .scale(entities)
+                        .scale(getGameWorld().getEntitiesByType(CannonType.BASKET))
                         .from(new Point2D(1.2, 1))
                         .to(new Point2D(1, 1))
                         .buildAndPlay();

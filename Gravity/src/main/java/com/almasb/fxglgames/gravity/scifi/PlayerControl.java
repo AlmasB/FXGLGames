@@ -26,10 +26,8 @@
 
 package com.almasb.fxglgames.gravity.scifi;
 
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.ecs.GameWorld;
-import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxgl.entity.component.ViewComponent;
@@ -59,10 +57,6 @@ public class PlayerControl extends Control {
 
     @Override
     public void onAdded(Entity entity) {
-        position = Entities.getPosition(entity);
-        physics = Entities.getPhysics(entity);
-        view = Entities.getView(entity);
-
         oldX = position.getX();
         view.getView().addNode(staticTexture);
     }

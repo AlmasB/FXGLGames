@@ -1,6 +1,6 @@
 package com.almasb.fxglgames.ncc;
 
-import com.almasb.fxgl.entity.EntityView;
+import com.almasb.fxgl.entity.view.EntityView;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.When;
 import javafx.scene.effect.DropShadow;
