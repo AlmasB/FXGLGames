@@ -2,7 +2,7 @@ package com.almasb.fxglgames.shooter;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
@@ -24,10 +24,6 @@ public class ShooterApp extends GameApplication {
         settings.setHeight(600);
         settings.setTitle("Shooter App");
         settings.setVersion("1.0");
-        settings.setProfilingEnabled(false);
-        settings.setCloseConfirmation(false);
-        settings.setIntroEnabled(false);
-        settings.setMenuEnabled(false);
     }
 
     @Override

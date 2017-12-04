@@ -1,11 +1,10 @@
 package com.almasb.fxglgames.slotmachine;
 
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxglgames.slotmachine.control.LeverControl;
 import com.almasb.fxglgames.slotmachine.control.WheelControl;
 
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -13,7 +12,7 @@ import java.util.stream.IntStream;
  */
 public class SlotMachineFactory {
 
-    public GameEntity buildLever() {
+    public Entity buildLever() {
         return Entities.builder()
                 .at(1030, 340)
                 .viewFromTexture("lever0.png")
@@ -21,14 +20,14 @@ public class SlotMachineFactory {
                 .build();
     }
 
-    public GameEntity[] buildBackground() {
-        return new GameEntity[] {
+    public Entity[] buildBackground() {
+        return new Entity[] {
                 Entities.builder().viewFromTexture("bg.png").build(),
                 Entities.builder().at(910, 410).viewFromTexture("coin.gif").build()
         };
     }
 
-    public GameEntity[] buildWheels() {
+    public Entity[] buildWheels() {
         return IntStream.range(0, 5)
                 .mapToObj(i -> {
                     return Entities.builder()
@@ -37,8 +36,6 @@ public class SlotMachineFactory {
                             .viewFromTexture("elements.png")
                             .with(new WheelControl())
                             .build();
-                })
-                .collect(Collectors.toList())
-                .toArray(new GameEntity[0]);
+                }).toArray(Entity[]::new);
     }
 }

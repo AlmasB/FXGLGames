@@ -28,11 +28,6 @@ public class SlotMachineApp extends GameApplication {
         settings.setVersion("0.1");
         settings.setWidth(1280);
         settings.setHeight(720);
-        settings.setIntroEnabled(false);
-        settings.setMenuEnabled(false);
-        settings.setProfilingEnabled(false);
-        settings.setCloseConfirmation(false);
-        settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
     @Override
@@ -69,9 +64,7 @@ public class SlotMachineApp extends GameApplication {
     private List<Integer> spinValues = new ArrayList<>();
 
     public boolean isMachineSpinning() {
-        return getWheels().stream()
-                .filter(WheelControl::isSpinning)
-                .count() > 0;
+        return getWheels().stream().anyMatch(WheelControl::isSpinning);
     }
 
     public void spin() {

@@ -1,6 +1,5 @@
 package com.almasb.fxglgames.slidingpuzzle;
 
-import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.texture.Texture;
@@ -26,12 +25,6 @@ public class SlidingPuzzleApp extends GameApplication {
         settings.setHeight(600);
         settings.setTitle("SlidingPuzzleApp");
         settings.setVersion("0.1");
-        settings.setFullScreen(false);
-        settings.setIntroEnabled(false);
-        settings.setMenuEnabled(false);
-        settings.setProfilingEnabled(false);
-        settings.setCloseConfirmation(false);
-        settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
     @Override
