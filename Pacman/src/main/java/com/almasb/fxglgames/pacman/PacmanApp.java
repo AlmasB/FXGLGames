@@ -83,7 +83,7 @@ public class PacmanApp extends GameApplication {
         settings.setHeight(MAP_SIZE * BLOCK_SIZE);
         settings.setTitle("Reverse Pac-man");
         settings.setVersion("0.4");
-        settings.setProfilingEnabled(true);
+        settings.setProfilingEnabled(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 

@@ -29,6 +29,7 @@ package com.almasb.fxglgames.pacman;
 import com.almasb.fxgl.ai.AIControl;
 import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.component.CollidableComponent;
+import com.almasb.fxgl.entity.component.DrawableComponent;
 import com.almasb.fxgl.entity.view.EntityView;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;

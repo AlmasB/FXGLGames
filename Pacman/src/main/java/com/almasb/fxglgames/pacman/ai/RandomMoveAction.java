@@ -28,6 +28,7 @@ package com.almasb.fxglgames.pacman.ai;
 
 import com.almasb.fxgl.ai.GoalAction;
 import com.almasb.fxgl.ai.SingleAction;
+import com.almasb.fxgl.ai.pathfinding.NodeState;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
@@ -42,6 +43,7 @@ import com.almasb.fxglgames.pacman.control.MoveDirection;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -65,6 +67,20 @@ public class RandomMoveAction extends GoalAction {
     @Override
     public boolean reachedGoal() {
         return timer.elapsed(Duration.seconds(2));
+    }
+
+    @Override
+    public void end() {
+        FXGL.<PacmanApp>getAppCast()
+                .getGrid()
+                .getNodes()
+                .stream()
+                .filter(n -> n.getState() == NodeState.WALKABLE)
+                .sorted(Comparator.comparingDouble(n -> getEntity().getPosition().distance(n.getX() * PacmanApp.BLOCK_SIZE, n.getY() * PacmanApp.BLOCK_SIZE)))
+                .findFirst()
+                .ifPresent(n -> {
+                    getEntity().setPosition(n.getX() * PacmanApp.BLOCK_SIZE, n.getY() * PacmanApp.BLOCK_SIZE);
+                });
     }
 
     @Override
