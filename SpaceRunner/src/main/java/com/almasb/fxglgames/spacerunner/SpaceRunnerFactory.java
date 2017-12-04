@@ -26,32 +26,25 @@
 
 package com.almasb.fxglgames.spacerunner;
 
-import com.almasb.fxgl.annotation.SetEntityFactory;
-import com.almasb.fxgl.annotation.Spawns;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.ecs.component.UserDataComponent;
-import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.EntityFactory;
-import com.almasb.fxgl.entity.GameEntity;
-import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.entity.*;
+import com.almasb.fxgl.entity.component.UserDataComponent;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.entity.control.KeepOnScreenControl;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.entity.control.ProjectileControl;
 import com.almasb.fxglgames.spacerunner.control.EnemyControl;
 import com.almasb.fxglgames.spacerunner.control.PlayerControl;
-import com.google.inject.Singleton;
 import javafx.geometry.Point2D;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 @SetEntityFactory
-@Singleton
 public class SpaceRunnerFactory implements EntityFactory {
 
     @Spawns("Player")
-    public GameEntity newPlayer(SpawnData data) {
+    public Entity newPlayer(SpawnData data) {
         return Entities.builder()
                 .type(SpaceRunnerType.PLAYER)
                 .at(data.getX(), data.getY())
@@ -61,7 +54,7 @@ public class SpaceRunnerFactory implements EntityFactory {
                 .build();
     }
 
-    public GameEntity newBullet(double x, double y, SpaceRunnerType ownerType) {
+    public Entity newBullet(double x, double y, SpaceRunnerType ownerType) {
         return Entities.builder()
                 .type(SpaceRunnerType.BULLET)
                 .at(x, y - 5.5)
@@ -73,7 +66,7 @@ public class SpaceRunnerFactory implements EntityFactory {
     }
 
     @Spawns("Enemy1")
-    public GameEntity newEnemy(SpawnData data) {
+    public Entity newEnemy(SpawnData data) {
         return Entities.builder()
                 .type(SpaceRunnerType.ENEMY)
                 .at(data.getX(), data.getY())

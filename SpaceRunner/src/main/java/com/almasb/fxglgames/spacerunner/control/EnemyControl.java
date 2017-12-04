@@ -29,8 +29,8 @@ package com.almasb.fxglgames.spacerunner.control;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.audio.AudioPlayer;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.spacerunner.SpaceRunnerFactory;
@@ -72,10 +72,10 @@ public class EnemyControl extends Control {
     }
 
     private void shoot() {
-        Entity bullet = FXGL.getInstance(SpaceRunnerFactory.class)
-                .newBullet(position.getX(), position.getY() + 20, SpaceRunnerType.ENEMY);
-
-        getEntity().getWorld().addEntity(bullet);
+//        Entity bullet = FXGL.getInstance(SpaceRunnerFactory.class)
+//                .newBullet(position.getX(), position.getY() + 20, SpaceRunnerType.ENEMY);
+//
+//        getEntity().getWorld().addEntity(bullet);
 
         //audioPlayer.playSound("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
     }

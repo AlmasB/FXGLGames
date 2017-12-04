@@ -1,8 +1,8 @@
 package com.almasb.fxglgames.td.control;
 
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.ecs.Control;
-import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.control.ProjectileControl;
 import com.almasb.fxgl.time.LocalTimer;
@@ -29,7 +29,7 @@ public class TowerControl extends Control {
         if (shootTimer.elapsed(Duration.seconds(0.5))) {
             FXGL.getApp()
                     .getGameWorld()
-                    .getClosestEntity(entity, e -> Entities.getType(e).isType(TowerDefenseType.ENEMY))
+                    .getClosestEntity(entity, e -> e.isType(TowerDefenseType.ENEMY))
                     .ifPresent(nearestEnemy -> {
                         shoot(nearestEnemy);
                         shootTimer.capture();
@@ -38,11 +38,9 @@ public class TowerControl extends Control {
     }
 
     private void shoot(Entity enemy) {
-        Point2D position = Entities.getPosition(getEntity()).getValue();
+        Point2D position = getEntity().getPosition();
 
-        Point2D direction = Entities.getPosition(enemy)
-                .getValue()
-                .subtract(position);
+        Point2D direction = enemy.getPosition().subtract(position);
 
         Entity bullet = FXGL.getApp().getGameWorld().spawn("Bullet", position);
         bullet.addControl(new ProjectileControl(direction, Config.BULLET_SPEED));

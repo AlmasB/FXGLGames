@@ -1,6 +1,6 @@
 package com.almasb.fxglgames.td.tower;
 
-import com.almasb.fxgl.ecs.Component;
+import com.almasb.fxgl.entity.Component;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)

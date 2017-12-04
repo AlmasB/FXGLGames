@@ -1,9 +1,8 @@
 package com.almasb.fxglgames.td.collision;
 
-import com.almasb.fxgl.annotation.AddCollisionHandler;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.physics.AddCollisionHandler;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.td.TowerDefenseType;
 import com.almasb.fxglgames.td.event.EnemyKilledEvent;
@@ -24,7 +23,7 @@ public class BulletEnemyHandler extends CollisionHandler {
         bullet.removeFromWorld();
 
         // TODO: add HP/Damage system
-        FXGL.getEventBus().fireEvent(new EnemyKilledEvent((GameEntity) enemy));
+        FXGL.getEventBus().fireEvent(new EnemyKilledEvent(enemy));
         enemy.removeFromWorld();
     }
 }

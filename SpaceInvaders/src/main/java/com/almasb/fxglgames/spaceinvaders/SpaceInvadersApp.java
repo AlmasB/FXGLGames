@@ -26,17 +26,13 @@
 
 package com.almasb.fxglgames.spaceinvaders;
 
-import com.almasb.fxgl.annotation.Handles;
-import com.almasb.fxgl.annotation.OnUserAction;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.input.ActionType;
-import com.almasb.fxgl.input.Input;
-import com.almasb.fxgl.input.InputMapping;
-import com.almasb.fxgl.input.UserAction;
+import com.almasb.fxgl.event.Handles;
+import com.almasb.fxgl.input.*;
 import com.almasb.fxgl.io.FS;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.settings.MenuItem;

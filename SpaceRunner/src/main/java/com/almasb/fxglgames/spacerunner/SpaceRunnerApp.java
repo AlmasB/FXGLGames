@@ -27,8 +27,8 @@
 package com.almasb.fxglgames.spacerunner;
 
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.entity.ScrollingBackgroundView;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.view.ScrollingBackgroundView;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxglgames.spacerunner.control.PlayerControl;
@@ -48,10 +48,6 @@ public class SpaceRunnerApp extends GameApplication {
         settings.setVersion("0.1");
         settings.setWidth(500);
         settings.setHeight(500);
-        settings.setIntroEnabled(false);
-        settings.setMenuEnabled(false);
-        settings.setCloseConfirmation(false);
-        settings.setProfilingEnabled(false);
     }
 
     @Override

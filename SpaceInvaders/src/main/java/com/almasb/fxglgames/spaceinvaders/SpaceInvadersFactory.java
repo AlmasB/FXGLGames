@@ -27,8 +27,6 @@
 package com.almasb.fxglgames.spaceinvaders;
 
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.annotation.SetEntityFactory;
-import com.almasb.fxgl.annotation.Spawns;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.*;
@@ -194,7 +192,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
         Entity bullet = new Entity();
         bullet.getTypeComponent().setValue(SpaceInvadersType.BULLET);
 
-        Point2D center = Entities.getBBox(owner)
+        Point2D center = owner.getBoundingBoxComponent()
                 .getCenterWorld()
                 .add(-8, 20 * (owner.isType(SpaceInvadersType.PLAYER) ? -1 : 1));
 
@@ -203,7 +201,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
         bullet.addComponent(new CollidableComponent(true));
         bullet.getViewComponent().setView(new EntityView(texture("tank_bullet.png")), true);
         bullet.addControl(new ProjectileControl(new Point2D(0, owner.isType(SpaceInvadersType.PLAYER) ? -1 : 1), 10 * 60));
-        bullet.addComponent(new OwnerComponent(Entities.getType(owner).getValue()));
+        bullet.addComponent(new OwnerComponent(owner.getType()));
         bullet.addControl(new OffscreenCleanControl());
 
         bullet.setProperty("dead", false);
@@ -218,15 +216,13 @@ public final class SpaceInvadersFactory implements EntityFactory {
         Entity bullet = new Entity();
         bullet.getTypeComponent().setValue(SpaceInvadersType.BULLET);
 
-        Point2D center = Entities.getBBox(owner)
-                .getCenterWorld()
-                .add(-4.5, -20);
+        Point2D center = owner.getCenter().add(-4.5, -20);
 
         bullet.getPositionComponent().setValue(center);
 
         bullet.getBoundingBoxComponent().addHitBox(new HitBox("HIT", BoundingShape.box(9, 20)));
         bullet.addComponent(new CollidableComponent(true));
-        bullet.addComponent(new OwnerComponent(Entities.getType(owner).getValue()));
+        bullet.addComponent(new OwnerComponent(owner.getType()));
         bullet.addControl(new OffscreenCleanControl());
         bullet.addControl(new BulletControl(850));
 

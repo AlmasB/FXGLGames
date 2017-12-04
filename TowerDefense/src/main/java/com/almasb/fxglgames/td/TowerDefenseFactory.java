@@ -1,12 +1,7 @@
 package com.almasb.fxglgames.td;
 
-import com.almasb.fxgl.annotation.SetEntityFactory;
-import com.almasb.fxgl.annotation.Spawns;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.EntityFactory;
-import com.almasb.fxgl.entity.GameEntity;
-import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxglgames.td.control.EnemyControl;
@@ -22,7 +17,7 @@ import javafx.scene.shape.Rectangle;
 public class TowerDefenseFactory implements EntityFactory {
 
     @Spawns("Enemy")
-    public GameEntity spawnEnemy(SpawnData data) {
+    public Entity spawnEnemy(SpawnData data) {
         return Entities.builder()
                 .type(TowerDefenseType.ENEMY)
                 .from(data)
@@ -33,7 +28,7 @@ public class TowerDefenseFactory implements EntityFactory {
     }
 
     @Spawns("Tower")
-    public GameEntity spawnTower(SpawnData data) {
+    public Entity spawnTower(SpawnData data) {
         TowerDataComponent towerComponent;
         try {
             towerComponent = FXGL.getAssetLoader()
@@ -54,7 +49,7 @@ public class TowerDefenseFactory implements EntityFactory {
     }
 
     @Spawns("Bullet")
-    public GameEntity spawnBullet(SpawnData data) {
+    public Entity spawnBullet(SpawnData data) {
         return Entities.builder()
                 .type(TowerDefenseType.BULLET)
                 .from(data)

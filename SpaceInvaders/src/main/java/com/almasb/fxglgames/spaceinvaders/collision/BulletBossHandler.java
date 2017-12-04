@@ -26,13 +26,13 @@
 
 package com.almasb.fxglgames.spaceinvaders.collision;
 
-import com.almasb.fxgl.annotation.AddCollisionHandler;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.GameWorld;
 import com.almasb.fxgl.entity.component.HealthComponent;
 import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxgl.entity.component.ViewComponent;
+import com.almasb.fxgl.physics.AddCollisionHandler;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
 import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;

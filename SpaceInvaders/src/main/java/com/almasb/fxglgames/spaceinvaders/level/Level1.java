@@ -67,7 +67,7 @@ public class Level1 extends SpaceLevel {
 
         @Override
         public void onUpdate(Entity entity, double tpf) {
-            Entities.getPosition(entity).setValue(curveFunction().add(FXGL.getAppWidth() / 2, FXGL.getAppHeight() / 2 - 100));
+            entity.setPosition(curveFunction().add(FXGL.getAppWidth() / 2, FXGL.getAppHeight() / 2 - 100));
 
             t += tpf;
         }
