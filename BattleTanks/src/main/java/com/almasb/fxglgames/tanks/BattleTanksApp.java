@@ -27,8 +27,7 @@
 package com.almasb.fxglgames.tanks;
 
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.ecs.Entity;
-import com.almasb.fxgl.entity.GameEntity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.gameplay.Level;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
@@ -44,16 +43,13 @@ import javafx.scene.input.KeyCode;
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class BattleTanksApp extends GameApplication {
+
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("BattleTanks");
         settings.setVersion("0.2");
         settings.setWidth(840);
         settings.setHeight(840);
-        settings.setMenuEnabled(false);
-        settings.setIntroEnabled(false);
-        settings.setProfilingEnabled(false);
-        settings.setCloseConfirmation(false);
     }
 
     private PlayerControl playerControl;
@@ -107,7 +103,7 @@ public class BattleTanksApp extends GameApplication {
 
         playerControl = new PlayerControl();
 
-        GameEntity player = new GameEntity();
+        Entity player = new Entity();
         player.getBoundingBoxComponent().addHitBox(new HitBox("BODY", new Point2D(10, 10), BoundingShape.box(54, 54)));
         player.addControl(playerControl);
 
