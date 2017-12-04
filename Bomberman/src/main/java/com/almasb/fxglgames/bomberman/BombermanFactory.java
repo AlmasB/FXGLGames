@@ -1,10 +1,8 @@
 package com.almasb.fxglgames.bomberman;
 
+import com.almasb.fxgl.entity.view.EntityView;
 import com.almasb.fxglgames.bomberman.control.BombControl;
 import com.almasb.fxglgames.bomberman.control.PlayerControl;
-import com.almasb.fxgl.annotation.SetEntityFactory;
-import com.almasb.fxgl.annotation.SpawnSymbol;
-import com.almasb.fxgl.annotation.Spawns;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.component.CollidableComponent;
@@ -19,7 +17,7 @@ import javafx.scene.shape.Rectangle;
 public class BombermanFactory implements TextEntityFactory {
 
     @Spawns("BG")
-    public GameEntity newBackground(SpawnData data) {
+    public Entity newBackground(SpawnData data) {
         return Entities.builder()
                 .at(0, 0)
                 .viewFromNode(new EntityView(new Rectangle(600, 600, Color.LIGHTGREEN), RenderLayer.BACKGROUND))
@@ -27,7 +25,7 @@ public class BombermanFactory implements TextEntityFactory {
     }
 
     @SpawnSymbol('w')
-    public GameEntity newWall(SpawnData data) {
+    public Entity newWall(SpawnData data) {
         return Entities.builder()
                 .type(BombermanType.WALL)
                 .from(data)
@@ -36,7 +34,7 @@ public class BombermanFactory implements TextEntityFactory {
     }
 
     @SpawnSymbol('b')
-    public GameEntity newBrick(SpawnData data) {
+    public Entity newBrick(SpawnData data) {
         return Entities.builder()
                 .type(BombermanType.BRICK)
                 .from(data)
@@ -45,7 +43,7 @@ public class BombermanFactory implements TextEntityFactory {
     }
 
     @Spawns("Player")
-    public GameEntity newPlayer(SpawnData data) {
+    public Entity newPlayer(SpawnData data) {
         return Entities.builder()
                 .type(BombermanType.PLAYER)
                 .from(data)
@@ -56,7 +54,7 @@ public class BombermanFactory implements TextEntityFactory {
     }
 
     @Spawns("Bomb")
-    public GameEntity newBomb(SpawnData data) {
+    public Entity newBomb(SpawnData data) {
         return Entities.builder()
                 .type(BombermanType.BOMB)
                 .from(data)
@@ -66,7 +64,7 @@ public class BombermanFactory implements TextEntityFactory {
     }
 
     @Spawns("Powerup")
-    public GameEntity newPowerup(SpawnData data) {
+    public Entity newPowerup(SpawnData data) {
         return Entities.builder()
                 .type(BombermanType.POWERUP)
                 .from(data)

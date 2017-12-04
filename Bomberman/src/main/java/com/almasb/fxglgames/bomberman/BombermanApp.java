@@ -30,9 +30,8 @@ import com.almasb.fxglgames.bomberman.control.PlayerControl;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.GameEntity;
 import com.almasb.fxgl.gameplay.Level;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.parser.text.TextLevelParser;
@@ -47,7 +46,7 @@ public class BombermanApp extends GameApplication {
 
     public static final int TILE_SIZE = 40;
 
-    private GameEntity player;
+    private Entity player;
     private PlayerControl playerControl;
 
     @Override
@@ -56,11 +55,6 @@ public class BombermanApp extends GameApplication {
         settings.setVersion("0.1");
         settings.setWidth(600);
         settings.setHeight(600);
-        settings.setIntroEnabled(false);
-        settings.setMenuEnabled(false);
-        settings.setProfilingEnabled(false);
-        settings.setCloseConfirmation(false);
-        settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
     @Override
@@ -110,7 +104,7 @@ public class BombermanApp extends GameApplication {
 
         getGameWorld().spawn("BG");
 
-        player = (GameEntity) getGameWorld().spawn("Player");
+        player = getGameWorld().spawn("Player");
         playerControl = player.getControl(PlayerControl.class);
     }
 
@@ -127,8 +121,8 @@ public class BombermanApp extends GameApplication {
 
     public void onWallDestroyed(Entity wall) {
         if (FXGLMath.randomBoolean()) {
-            int x = Entities.getPosition(wall).getGridX(BombermanApp.TILE_SIZE);
-            int y = Entities.getPosition(wall).getGridY(BombermanApp.TILE_SIZE);
+            int x = wall.getPositionComponent().getGridX(BombermanApp.TILE_SIZE);
+            int y = wall.getPositionComponent().getGridY(BombermanApp.TILE_SIZE);
 
             getGameWorld().spawn("Powerup", x*40, y*40);
         }

@@ -1,10 +1,10 @@
 package com.almasb.fxglgames.bomberman.control;
 
-import com.almasb.fxgl.ecs.Control;
+import com.almasb.fxgl.entity.Control;
 import com.almasb.fxglgames.bomberman.BombermanApp;
 import com.almasb.fxglgames.bomberman.BombermanType;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.ecs.Entity;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.PositionComponent;
@@ -80,14 +80,13 @@ public class PlayerControl extends Control {
                 &&
 
                 FXGL.getApp()
-                .getGameWorld()
-                .getEntitiesAt(newPosition)
-                .stream()
-                .filter(e -> e.hasComponent(TypeComponent.class))
-                .map(e -> e.getComponent(TypeComponent.class))
-                .filter(type -> type.isType(BombermanType.BRICK)
-                        || type.isType(BombermanType.WALL)
-                        || type.isType(BombermanType.BOMB))
-                .count() == 0;
+                        .getGameWorld()
+                        .getEntitiesAt(newPosition)
+                        .stream()
+                        .filter(e -> e.hasComponent(TypeComponent.class))
+                        .map(e -> e.getComponent(TypeComponent.class))
+                        .noneMatch(type -> type.isType(BombermanType.BRICK)
+                                || type.isType(BombermanType.WALL)
+                                || type.isType(BombermanType.BOMB));
     }
 }
