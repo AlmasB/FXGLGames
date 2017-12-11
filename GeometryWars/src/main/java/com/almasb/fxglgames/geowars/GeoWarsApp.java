@@ -30,6 +30,7 @@ import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.HealthComponent;
 import com.almasb.fxgl.entity.view.EntityView;
 import com.almasb.fxgl.event.Handles;
 import com.almasb.fxgl.input.Input;
@@ -39,7 +40,6 @@ import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.ui.WheelMenu;
 import com.almasb.fxglgames.geowars.component.GraphicsComponent;
-import com.almasb.fxglgames.geowars.component.HPComponent;
 import com.almasb.fxglgames.geowars.component.OldPositionComponent;
 import com.almasb.fxglgames.geowars.control.GraphicsUpdateControl;
 import com.almasb.fxglgames.geowars.control.PlayerControl;
@@ -185,7 +185,7 @@ public class GeoWarsApp extends GameApplication {
             protected void onCollisionBegin(Entity bullet, Entity enemy) {
                 bullet.removeFromWorld();
 
-                HPComponent hp = enemy.getComponent(HPComponent.class);
+                HealthComponent hp = enemy.getComponent(HealthComponent.class);
                 hp.setValue(hp.getValue() - 1);
 
                 if (hp.getValue() == 0) {
@@ -246,7 +246,7 @@ public class GeoWarsApp extends GameApplication {
 
         getGameScene().addUINodes(multText, scoreText, timerText, timerCircle);
 
-        Text beware = getUIFactory().newText("Beware! Seekers get smarter every time!", Color.AQUA, 38);
+        Text beware = getUIFactory().newText("Beware! Seekers get smarter every spawn!", Color.AQUA, 38);
         beware.setOpacity(0);
 
         getGameScene().addUINode(beware);

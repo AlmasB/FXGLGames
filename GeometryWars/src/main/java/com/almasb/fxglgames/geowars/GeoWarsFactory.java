@@ -8,9 +8,9 @@ import com.almasb.fxgl.effect.ParticleEmitter;
 import com.almasb.fxgl.effect.ParticleEmitters;
 import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.component.CollidableComponent;
+import com.almasb.fxgl.entity.component.HealthComponent;
 import com.almasb.fxgl.entity.control.*;
 import com.almasb.fxglgames.geowars.component.BulletComponent;
-import com.almasb.fxglgames.geowars.component.HPComponent;
 import com.almasb.fxglgames.geowars.component.OldPositionComponent;
 import com.almasb.fxglgames.geowars.control.*;
 import javafx.geometry.Point2D;
@@ -93,7 +93,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .type(GeoWarsType.WANDERER)
                 .at(getRandomSpawnPoint())
                 .viewFromTextureWithBBox(red ? "RedWanderer.png" : "Wanderer.png")
-                .with(new HPComponent(red ? config.getRedEnemyHealth() : config.getEnemyHealth()),
+                .with(new HealthComponent(red ? config.getRedEnemyHealth() : config.getEnemyHealth()),
                         new CollidableComponent(true))
                 .with(new WandererControl(moveSpeed))
                 .build();
@@ -110,7 +110,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .type(GeoWarsType.SEEKER)
                 .at(getRandomSpawnPoint())
                 .viewFromTextureWithBBox(red ? "RedSeeker.png" : "Seeker.png")
-                .with(new HPComponent(red ? config.getRedEnemyHealth() : config.getEnemyHealth()),
+                .with(new HealthComponent(red ? config.getRedEnemyHealth() : config.getEnemyHealth()),
                         new CollidableComponent(true))
                 .with(new SeekerControl(FXGL.<GeoWarsApp>getAppCast().getPlayer(), moveSpeed))
                 .build();
@@ -122,7 +122,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .type(GeoWarsType.RUNNER)
                 .at(getRandomSpawnPoint())
                 .viewFromTextureWithBBox("Runner.png")
-                .with(new HPComponent(config.getEnemyHealth()),
+                .with(new HealthComponent(config.getEnemyHealth()),
                         new CollidableComponent(true))
                 .with(new RunnerControl(config.getRunnerMoveSpeed()),
                         new RandomMoveControl(config.getRunnerMoveSpeed(), FXGLMath.random(0, 100), FXGLMath.random(250, 500), FXGL.getApp().getAppBounds()))
@@ -141,7 +141,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .type(GeoWarsType.BOUNCER)
                 .at(0, y)
                 .viewFromNodeWithBBox(view)
-                .with(new HPComponent(config.getEnemyHealth()),
+                .with(new HealthComponent(config.getEnemyHealth()),
                         new CollidableComponent(true))
                 .with(new BouncerControl(config.getBouncerMoveSpeed()))
                 .build();
