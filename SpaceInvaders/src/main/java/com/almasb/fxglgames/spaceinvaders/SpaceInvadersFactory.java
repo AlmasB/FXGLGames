@@ -56,6 +56,7 @@ import java.util.Random;
 import static com.almasb.fxgl.app.DSLKt.geti;
 import static com.almasb.fxgl.app.DSLKt.texture;
 import static com.almasb.fxglgames.spaceinvaders.Config.LEVEL_START_DELAY;
+import static com.almasb.fxglgames.spaceinvaders.SpaceInvadersType.*;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -154,7 +155,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
 
         return Entities.builder()
                 .from(data)
-                .type(SpaceInvadersType.PLAYER)
+                .type(PLAYER)
                 .viewFromNodeWithBBox(texture)
                 .with(new CollidableComponent(true), new InvincibleComponent())
                 .with(new PlayerControl())
@@ -165,7 +166,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
     public Entity newEnemy(SpawnData data) {
         return Entities.builder()
                 .from(data)
-                .type(SpaceInvadersType.ENEMY)
+                .type(ENEMY)
                 .viewFromNodeWithBBox(
                         texture("enemy" + ((int)(Math.random() * 3) + 1) + ".png").toAnimatedTexture(2, Duration.seconds(2))
                 )
@@ -178,7 +179,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
     public Entity newBoss(SpawnData data) {
         return Entities.builder()
                 .from(data)
-                .type(SpaceInvadersType.BOSS)
+                .type(BOSS)
                 .viewFromTextureWithBBox("boss.png")
                 .with(new CollidableComponent(true), new HealthComponent(50))
                 .with(new BossControl())
@@ -189,24 +190,14 @@ public final class SpaceInvadersFactory implements EntityFactory {
     public Entity newBullet(SpawnData data) {
         Entity owner = data.get("owner");
 
-        Entity bullet = new Entity();
-        bullet.getTypeComponent().setValue(SpaceInvadersType.BULLET);
-
-        Point2D center = owner.getBoundingBoxComponent()
-                .getCenterWorld()
-                .add(-8, 20 * (owner.isType(SpaceInvadersType.PLAYER) ? -1 : 1));
-
-        bullet.getPositionComponent().setValue(center);
-
-        bullet.addComponent(new CollidableComponent(true));
-        bullet.getViewComponent().setView(new EntityView(texture("tank_bullet.png")), true);
-        bullet.addControl(new ProjectileControl(new Point2D(0, owner.isType(SpaceInvadersType.PLAYER) ? -1 : 1), 10 * 60));
-        bullet.addComponent(new OwnerComponent(owner.getType()));
-        bullet.addControl(new OffscreenCleanControl());
-
-        bullet.setProperty("dead", false);
-
-        return bullet;
+        return Entities.builder()
+                .type(BULLET)
+                .at(owner.getCenter().add(-8, 20))
+                .viewFromTextureWithBBox("tank_bullet.png")
+                .with(new CollidableComponent(true), new OwnerComponent(owner.getType()))
+                .with(new ProjectileControl(new Point2D(0, 1), 600), new OffscreenCleanControl())
+                .with("dead", false)
+                .build();
     }
 
     @Spawns("Laser")
@@ -214,7 +205,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
         Entity owner = data.get("owner");
 
         Entity bullet = new Entity();
-        bullet.getTypeComponent().setValue(SpaceInvadersType.BULLET);
+        bullet.getTypeComponent().setValue(BULLET);
 
         Point2D center = owner.getCenter().add(-4.5, -20);
 
@@ -258,7 +249,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
 
         return Entities.builder()
                 .from(data)
-                .type(SpaceInvadersType.LASER_BEAM)
+                .type(LASER_BEAM)
                 .viewFromNodeWithBBox(view)
                 .with(new CollidableComponent(true))
                 .with(new LaserBeamControl())
@@ -269,7 +260,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
     public Entity newWall(SpawnData data) {
         return Entities.builder()
                 .from(data)
-                .type(SpaceInvadersType.WALL)
+                .type(WALL)
                 .viewFromNodeWithBBox(texture("wall.png", 232 / 3, 104 / 3))
                 .with(new CollidableComponent(true))
                 .with(new WallControl(7))
@@ -282,7 +273,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
 
         return Entities.builder()
                 .from(data)
-                .type(SpaceInvadersType.BONUS)
+                .type(BONUS)
                 .viewFromTextureWithBBox(type.textureName)
                 .with(new SubTypeComponent(type), new CollidableComponent(true))
                 .with(new BonusControl())

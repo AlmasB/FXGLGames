@@ -72,10 +72,10 @@ public class SpaceInvadersApp extends GameApplication {
         settings.setVersion("1.0");
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
-        settings.setIntroEnabled(true);
-        settings.setMenuEnabled(true);
-        settings.setEnabledMenuItems(EnumSet.of(MenuItem.EXTRA));
-        settings.setApplicationMode(ApplicationMode.RELEASE);
+//        settings.setIntroEnabled(true);
+//        settings.setMenuEnabled(true);
+//        settings.setEnabledMenuItems(EnumSet.of(MenuItem.EXTRA));
+//        settings.setApplicationMode(ApplicationMode.RELEASE);
     }
 
     @Override
