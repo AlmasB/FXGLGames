@@ -36,9 +36,16 @@ import com.almasb.fxglgames.geowars.component.GraphicsComponent;
  */
 public class GraphicsUpdateControl extends Control {
 
+    // hack to reduce frequency of updates
+    private int tick = 0;
+
     @Override
     public void onUpdate(Entity entity, double tpf) {
-        entity.getComponent(GraphicsComponent.class).getValue()
-                .clearRect(0, 0, FXGL.getAppWidth(), FXGL.getAppHeight());
+        if (tick == 3) {
+            entity.getComponent(GraphicsComponent.class).getValue().clearRect(0, 0, FXGL.getAppWidth(), FXGL.getAppHeight());
+            tick = 0;
+        } else {
+            tick++;
+        }
     }
 }

@@ -137,13 +137,6 @@ public class GeoWarsApp extends GameApplication {
                 playerControl.shoot(input.getMousePositionWorld());
             }
         }, MouseButton.PRIMARY);
-
-//        input.addAction(new UserAction("Weapon Menu") {
-//            @Override
-//            protected void onActionBegin() {
-//                openWeaponMenu();
-//            }
-//        }, MouseButton.SECONDARY);
     }
 
     @Override
@@ -224,8 +217,6 @@ public class GeoWarsApp extends GameApplication {
         physics.addCollisionHandler(playerEnemy.copyFor(GeoWarsType.PLAYER, GeoWarsType.BOUNCER));
     }
 
-    private WheelMenu weaponMenu;
-
     @Override
     protected void initUI() {
         Text scoreText = getUIFactory().newText("", Color.WHITE, 28);
@@ -253,24 +244,7 @@ public class GeoWarsApp extends GameApplication {
         timerCircle.setTranslateX(getWidth() / 2 - 40);
         timerCircle.setTranslateY(60 - 40 - 5);
 
-        WeaponType[] weaponTypes = WeaponType.values();
-
-        weaponMenu = new WheelMenu(
-                weaponTypes[0].toString(),
-                weaponTypes[1].toString(),
-                weaponTypes[2].toString(),
-                weaponTypes[3].toString()
-        );
-
-        weaponMenu.setSelectionHandler(typeName -> {
-            WeaponType type = WeaponType.valueOf(typeName);
-            set("weaponType", type);
-            play(typeName.toLowerCase() + ".wav");
-        });
-
-        getGameScene().addUINodes(multText, scoreText, timerText, timerCircle, weaponMenu);
-
-        weaponMenu.close();
+        getGameScene().addUINodes(multText, scoreText, timerText, timerCircle);
 
         Text beware = getUIFactory().newText("Beware! Seekers get smarter every time!", Color.AQUA, 38);
         beware.setOpacity(0);
@@ -302,7 +276,7 @@ public class GeoWarsApp extends GameApplication {
         getGameScene().addGameView(backgroundView);
 
         Canvas canvas = new Canvas(getWidth(), getHeight());
-        canvas.getGraphicsContext2D().setStroke(new Color(0.118, 0.118, 0.545, 1));
+        canvas.getGraphicsContext2D().setStroke(new Color(0.138, 0.138, 0.375, 0.3));
 
         Entities.builder()
                 .viewFromNode(canvas)
@@ -314,12 +288,6 @@ public class GeoWarsApp extends GameApplication {
         Point2D spacing = new Point2D(38.8, 40);
 
         grid = new Grid(size, spacing, getGameWorld(), canvas.getGraphicsContext2D());
-    }
-
-    private void openWeaponMenu() {
-        weaponMenu.setTranslateX(getInput().getMouseXWorld() - 20);
-        weaponMenu.setTranslateY(getInput().getMouseYWorld() - 70);
-        weaponMenu.open();
     }
 
     private Point2D getRandomPoint() {
