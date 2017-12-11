@@ -1,7 +1,6 @@
 package com.almasb.fxglgames.flappy;
 
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.audio.Music;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.component.CollidableComponent;
@@ -35,6 +34,11 @@ public class FlappyBirdApp extends GameApplication {
     }
 
     @Override
+    protected void preInit() {
+        getAudioPlayer().loopBGM("bgm.mp3");
+    }
+
+    @Override
     protected void initInput() {
         getInput().addAction(new UserAction("Jump") {
             @Override
@@ -54,8 +58,6 @@ public class FlappyBirdApp extends GameApplication {
     protected void initGame() {
         initBackground();
         initPlayer();
-
-        initBackgroundMusic();
     }
 
     private boolean requestNewGame = false;
@@ -126,24 +128,6 @@ public class FlappyBirdApp extends GameApplication {
 
         getGameScene().getViewport().setBounds(0, 0, Integer.MAX_VALUE, getHeight());
         getGameScene().getViewport().bindToEntity(player, getWidth() / 3, getHeight() / 2);
-    }
-
-    private Music bgm = null;
-
-    private void initBackgroundMusic() {
-        // already initialized
-        if (bgm != null)
-            return;
-
-        bgm = getAssetLoader().loadMusic("bgm.mp3");
-        bgm.setCycleCount(Integer.MAX_VALUE);
-
-        getAudioPlayer().playMusic(bgm);
-
-        addExitListener(() -> {
-            getAudioPlayer().stopMusic(bgm);
-            bgm.dispose();
-        });
     }
 
     private void showGameOver() {
