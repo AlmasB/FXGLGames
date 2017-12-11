@@ -28,8 +28,6 @@ package com.almasb.fxglgames.spaceinvaders.control;
 
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.*;
-import com.almasb.fxgl.entity.component.BoundingBoxComponent;
-import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxgl.entity.component.Required;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.entity.view.EntityView;
@@ -44,14 +42,10 @@ import static com.almasb.fxgl.app.DSLKt.*;
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-@Required(PositionComponent.class)
-@Required(BoundingBoxComponent.class)
 @Required(InvincibleComponent.class)
 public class PlayerControl extends Control {
 
-    private PositionComponent position;
-    private BoundingBoxComponent bbox;
-    private InvincibleComponent invicibility;
+    private InvincibleComponent invincibility;
 
     private double dx = 0;
     private double attackSpeed = Config.PLAYER_ATTACK_SPEED;
@@ -71,15 +65,15 @@ public class PlayerControl extends Control {
     }
 
     public void left() {
-        if (position.getX() - dx >= 0)
-            position.translateX(-dx);
+        if (getEntity().getX() - dx >= 0)
+            getEntity().translateX(-dx);
 
         spawnParticles();
     }
 
     public void right() {
-        if (position.getX() + bbox.getWidth() + dx <= Config.WIDTH)
-            position.translateX(dx);
+        if (getEntity().getX() + getEntity().getWidth() + dx <= Config.WIDTH)
+            getEntity().translateX(dx);
 
         spawnParticles();
     }
@@ -101,7 +95,7 @@ public class PlayerControl extends Control {
             laserBeamActive = true;
 
             Entity beam = spawn("LaserBeam");
-            beam.getPositionComponent().xProperty().bind(position.xProperty().add(21));
+            beam.xProperty().bind(getEntity().xProperty().add(21));
             beam.setY(-10);
             beam.setOnNotActive(() -> laserBeamActive = false);
         }
@@ -114,15 +108,11 @@ public class PlayerControl extends Control {
     }
 
     public void enableInvincibility() {
-        invicibility.setValue(true);
+        invincibility.setValue(true);
     }
 
     public void disableInvincibility() {
-        invicibility.setValue(false);
-    }
-
-    public boolean isInvincible() {
-        return invicibility.getValue();
+        invincibility.setValue(false);
     }
 
     public void increaseAttackSpeed(double value) {
@@ -131,49 +121,27 @@ public class PlayerControl extends Control {
 
     private Image particle;
 
+    private RenderLayer particleLayer = new RenderLayer() {
+        @Override
+        public String name() {
+            return "PARTICLES";
+        }
+
+        @Override
+        public int index() {
+            return 5000;
+        }
+    };
+
     private void spawnParticles() {
         if (particle == null) {
             particle = texture("player2.png", 40, 30).getImage();
         }
 
-        Texture t = new Texture(particle);
-
         Entities.builder()
-                .at(bbox.getCenterWorld().subtract(particle.getWidth() / 2, particle.getHeight() / 2))
-                .viewFromNode(new EntityView(t, new RenderLayer() {
-                    @Override
-                    public String name() {
-                        return "PARTICLES";
-                    }
-
-                    @Override
-                    public int index() {
-                        return 5000;
-                    }
-                }))
+                .at(getEntity().getCenter().subtract(particle.getWidth() / 2, particle.getHeight() / 2))
+                .viewFromNode(new EntityView(new Texture(particle), particleLayer))
                 .with(new ExpireCleanControl(Duration.seconds(0.33)).animateOpacity())
                 .buildAndAttach();
     }
-
-//    private static class OpacityControl extends Control {
-//
-//        private ViewComponent view;
-//        private double millis = 330;
-//        private double current = 330;
-//
-//        @Override
-//        public void onAdded(Entity entity) {
-//            view = Entities.getView(entity);
-//        }
-//
-//        @Override
-//        public void onUpdate(Entity entity, double tpf) {
-//            current -= 600 * tpf;
-//
-//            if (current < 0)
-//                current = 0;
-//
-//            view.getView().setOpacity(current / millis);
-//        }
-//    }
 }

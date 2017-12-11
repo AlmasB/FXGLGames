@@ -36,6 +36,7 @@ import com.almasb.fxgl.entity.component.ViewComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
 import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;
+import com.almasb.fxglgames.spaceinvaders.control.BossControl;
 import com.almasb.fxglgames.spaceinvaders.control.EnemyControl;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;
@@ -69,7 +70,13 @@ public class BulletEnemyHandler extends CollisionHandler {
         hp.setValue(hp.getValue() - 1);
 
         if (hp.getValue() <= 0) {
-            enemy.getControl(EnemyControl.class).die();
+
+            if (enemy.hasControl(EnemyControl.class)) {
+                enemy.getControl(EnemyControl.class).die();
+            } else {
+                enemy.getControl(BossControl.class).die();
+            }
+
         } else {
             world.spawn("LaserHit", hitPosition);
 

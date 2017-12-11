@@ -179,7 +179,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
     public Entity newBoss(SpawnData data) {
         return Entities.builder()
                 .from(data)
-                .type(BOSS)
+                .type(ENEMY)
                 .viewFromTextureWithBBox("boss.png")
                 .with(new CollidableComponent(true), new HealthComponent(50))
                 .with(new BossControl())
@@ -193,7 +193,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
         return Entities.builder()
                 .type(BULLET)
                 .at(owner.getCenter().add(-8, 20))
-                .viewFromTextureWithBBox("tank_bullet.png")
+                .viewFromTextureWithBBox("enemy_bullet.png")
                 .with(new CollidableComponent(true), new OwnerComponent(owner.getType()))
                 .with(new ProjectileControl(new Point2D(0, 1), 600), new OffscreenCleanControl())
                 .with("dead", false)
@@ -204,28 +204,22 @@ public final class SpaceInvadersFactory implements EntityFactory {
     public Entity newLaser(SpawnData data) {
         Entity owner = data.get("owner");
 
-        Entity bullet = new Entity();
-        bullet.getTypeComponent().setValue(BULLET);
-
-        Point2D center = owner.getCenter().add(-4.5, -20);
-
-        bullet.getPositionComponent().setValue(center);
-
-        bullet.getBoundingBoxComponent().addHitBox(new HitBox("HIT", BoundingShape.box(9, 20)));
-        bullet.addComponent(new CollidableComponent(true));
-        bullet.addComponent(new OwnerComponent(owner.getType()));
-        bullet.addControl(new OffscreenCleanControl());
-        bullet.addControl(new BulletControl(850));
-
-        EntityView view = new EntityView();
+        Entity bullet = Entities.builder()
+                .type(BULLET)
+                .at(owner.getCenter().add(-4.5, -20))
+                .bbox(new HitBox(BoundingShape.box(9, 20)))
+                .with(new CollidableComponent(true), new OwnerComponent(owner.getType()))
+                .with(new OffscreenCleanControl(), new BulletControl(850))
+                .build();
 
         Texture t = texture("laser2.png");
         t.relocate(-2, -20);
 
+        EntityView view = new EntityView();
         view.addNode(t);
         view.setEffect(new Bloom(0.5));
 
-        bullet.getViewComponent().setView(view);
+        bullet.setView(view);
 
         return bullet;
     }
