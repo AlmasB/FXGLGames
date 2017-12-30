@@ -29,6 +29,7 @@ package com.almasb.fxglgames.outrun
 import com.almasb.fxgl.animation.Interpolators
 import com.almasb.fxgl.app.GameApplication
 import com.almasb.fxgl.app.getd
+import com.almasb.fxgl.app.loopBGM
 import com.almasb.fxgl.app.set
 import com.almasb.fxgl.entity.Entity
 import com.almasb.fxgl.input.UserAction
@@ -49,6 +50,8 @@ import javafx.util.Duration
 /**
  * An example racing game in FXGL (using Kotlin).
  *
+ * BGM music from https://freesound.org/people/FoolBoyMedia/sounds/244088/
+ *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 class OutRunApp : GameApplication() {
@@ -60,6 +63,10 @@ class OutRunApp : GameApplication() {
             title = "OutRun"
             version = "0.3"
         }
+    }
+
+    override fun preInit() {
+        loopBGM("bgm.mp3")
     }
 
     private lateinit var playerControl: PlayerControl
@@ -94,8 +101,10 @@ class OutRunApp : GameApplication() {
 
         gameWorld.setLevel(level)
 
-        val player = gameWorld.spawn("player", width / 2 - 20.0, level.height.toDouble())
+        val player = gameWorld.spawn("player", width / 2 - 40.0, level.height.toDouble())
         playerControl = player.getControl(PlayerControl::class.java)
+
+        gameWorld.spawn("enemy", width / 2 + 40.0, level.height.toDouble())
 
         val bg = gameWorld.spawn("background")
         bg.positionComponent.yProperty().bind(gameScene.viewport.yProperty())
@@ -113,10 +122,25 @@ class OutRunApp : GameApplication() {
             }
         })
 
+        physicsWorld.addCollisionHandler(object : CollisionHandler(EntityType.ENEMY, EntityType.OBSTACLE) {
+            override fun onCollisionBegin(enemy: Entity, wall: Entity) {
+                // reset enemy to last checkpoint
+                enemy.getControl(EnemyControl::class.java).reset()
+                wall.getControl(ObstacleControl::class.java).hit()
+            }
+        })
+
         physicsWorld.addCollisionHandler(object : CollisionHandler(EntityType.PLAYER, EntityType.FINISH) {
             override fun onCollisionBegin(player: Entity, finish: Entity) {
                 display.showMessageBox("Demo Over. Your Time: %.2f s\n".format(getd("time")) +
                         "Thanks for playing!", this@OutRunApp::exit)
+            }
+        })
+
+        physicsWorld.addCollisionHandler(object : CollisionHandler(EntityType.PLAYER, EntityType.ENEMY) {
+            override fun onCollisionBegin(player: Entity, enemy: Entity) {
+                player.translateX(-30.0)
+                enemy.translateX(30.0)
             }
         })
     }

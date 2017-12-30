@@ -26,6 +26,7 @@
 
 package com.almasb.fxglgames.outrun
 
+import com.almasb.fxgl.app.texture
 import com.almasb.fxgl.entity.*
 import com.almasb.fxgl.entity.component.CollidableComponent
 import com.almasb.fxgl.entity.view.EntityView
@@ -72,12 +73,27 @@ class OutRunFactory : TextEntityFactory {
 
     @Spawns("player")
     fun newPlayer(data: SpawnData): Entity {
+        val playerTexture = texture("player.png")
+
         return Entities.builder()
                 .type(EntityType.PLAYER)
                 .from(data)
-                .viewFromTextureWithBBox("player.png")
+                .viewFromNodeWithBBox(playerTexture)
                 .with(CollidableComponent(true))
                 .with(PlayerControl())
+                .build()
+    }
+
+    @Spawns("enemy")
+    fun newEnemy(data: SpawnData): Entity {
+        val playerTexture = texture("player.png").multiplyColor(Color.rgb(11, 33, 11))
+
+        return Entities.builder()
+                .type(EntityType.ENEMY)
+                .from(data)
+                .viewFromNodeWithBBox(playerTexture)
+                .with(CollidableComponent(true))
+                .with(EnemyControl())
                 .build()
     }
 
