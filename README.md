@@ -1,5 +1,5 @@
-## FXGLGames
 This repo contains sample games built with <a href="https://github.com/AlmasB/FXGL">FXGL</a> Game Library.
+Each game focuses on one or two aspects of FXGL, e.g. Drop focuses on bare minimums, Pac-man focuses on AI, etc.
 
 ## Build
 ```bash
@@ -7,6 +7,7 @@ cd PROJECT_NAME
 mvn package
 ```
 This will produce a standalone executable with that project in <code>target/</code>.
+Most games are pre-built and can be downloaded from [binaries](binaries).
 
 ## Run
 ```bash
