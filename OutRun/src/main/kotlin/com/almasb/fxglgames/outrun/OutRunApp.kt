@@ -31,7 +31,9 @@ import com.almasb.fxgl.app.GameApplication
 import com.almasb.fxgl.app.getd
 import com.almasb.fxgl.app.loopBGM
 import com.almasb.fxgl.app.set
+import com.almasb.fxgl.entity.Effect
 import com.almasb.fxgl.entity.Entity
+import com.almasb.fxgl.entity.control.EffectControl
 import com.almasb.fxgl.input.UserAction
 import com.almasb.fxgl.parser.text.TextLevelParser
 import com.almasb.fxgl.physics.CollisionHandler
@@ -61,7 +63,7 @@ class OutRunApp : GameApplication() {
             width = 600
             height = 800;
             title = "OutRun"
-            version = "0.3"
+            version = "0.3.5"
         }
     }
 
@@ -127,6 +129,22 @@ class OutRunApp : GameApplication() {
                 // reset enemy to last checkpoint
                 enemy.getControl(EnemyControl::class.java).reset()
                 wall.getControl(ObstacleControl::class.java).hit()
+            }
+        })
+
+        physicsWorld.addCollisionHandler(object : CollisionHandler(EntityType.PLAYER, EntityType.POWERUP) {
+            override fun onCollisionBegin(player: Entity, boost: Entity) {
+                boost.removeFromWorld()
+
+                player.getControl(EffectControl::class.java).startEffect(object : Effect(Duration.seconds(1.0)) {
+                    override fun onStart(entity: Entity) {
+                        playerControl.applyExtraBoost()
+                    }
+
+                    override fun onEnd(entity: Entity) {
+                        playerControl.removeExtraBoost()
+                    }
+                })
             }
         })
 

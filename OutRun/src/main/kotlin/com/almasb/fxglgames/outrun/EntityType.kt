@@ -32,5 +32,5 @@ package com.almasb.fxglgames.outrun
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 enum class EntityType {
-    BACKGROUND, PLAYER, ENEMY, OBSTACLE, FINISH
+    BACKGROUND, PLAYER, ENEMY, OBSTACLE, FINISH, POWERUP
 }

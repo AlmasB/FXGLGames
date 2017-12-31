@@ -90,6 +90,14 @@ class PlayerControl : Control() {
         entity.y -= speed
     }
 
+    fun applyExtraBoost() {
+        dy += 10
+    }
+
+    fun removeExtraBoost() {
+        dy = Math.max(0.0, dy - 10)
+    }
+
     fun reset() {
         dy = 0.0
 

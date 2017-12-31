@@ -29,6 +29,7 @@ package com.almasb.fxglgames.outrun
 import com.almasb.fxgl.app.texture
 import com.almasb.fxgl.entity.*
 import com.almasb.fxgl.entity.component.CollidableComponent
+import com.almasb.fxgl.entity.control.EffectControl
 import com.almasb.fxgl.entity.view.EntityView
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
@@ -80,7 +81,7 @@ class OutRunFactory : TextEntityFactory {
                 .from(data)
                 .viewFromNodeWithBBox(playerTexture)
                 .with(CollidableComponent(true))
-                .with(PlayerControl())
+                .with(PlayerControl(), EffectControl())
                 .build()
     }
 
@@ -94,6 +95,16 @@ class OutRunFactory : TextEntityFactory {
                 .viewFromNodeWithBBox(playerTexture)
                 .with(CollidableComponent(true))
                 .with(EnemyControl())
+                .build()
+    }
+
+    @SpawnSymbol('b')
+    fun newPowerup(data: SpawnData): Entity {
+        return Entities.builder()
+                .type(EntityType.POWERUP)
+                .from(data)
+                .viewFromTextureWithBBox("powerup_boost.png")
+                .with(CollidableComponent(true))
                 .build()
     }
 
