@@ -337,7 +337,7 @@ public class SpaceInvadersApp extends GameApplication {
 
     @Handles(eventType = "PLAYER_GOT_HIT")
     public void onPlayerGotHit(GameEvent event) {
-        getGameScene().getViewport().shake(12);
+        getGameScene().getViewport().shake(14, 0.35);
 
         inc("lives", -1);
         uiController.loseLife();

@@ -140,7 +140,8 @@ public class PlayerControl extends Control {
 
         Entities.builder()
                 .at(getEntity().getCenter().subtract(particle.getWidth() / 2, particle.getHeight() / 2))
-                .viewFromNode(new EntityView(new Texture(particle), particleLayer))
+                .viewFromNode(new EntityView(new Texture(particle)))
+                .renderLayer(particleLayer)
                 .with(new ExpireCleanControl(Duration.seconds(0.33)).animateOpacity())
                 .buildAndAttach();
     }

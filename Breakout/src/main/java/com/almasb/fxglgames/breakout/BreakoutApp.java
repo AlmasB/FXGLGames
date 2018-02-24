@@ -132,7 +132,7 @@ public class BreakoutApp extends GameApplication {
         Rectangle bg1 = new Rectangle(getWidth(), getHeight(), Color.color(0, 0, 0, 0.2));
         bg1.setBlendMode(BlendMode.DARKEN);
 
-        EntityView bg = new EntityView(RenderLayer.BACKGROUND);
+        EntityView bg = new EntityView();
         bg.addNode(bg0);
         bg.addNode(bg1);
 
@@ -140,6 +140,7 @@ public class BreakoutApp extends GameApplication {
         // the background and screen bounds stay in the game world
         Entities.builder()
                 .viewFromNode(bg)
+                .renderLayer(RenderLayer.BACKGROUND)
                 .with(new IrremovableComponent())
                 .buildAndAttach(getGameWorld());
 

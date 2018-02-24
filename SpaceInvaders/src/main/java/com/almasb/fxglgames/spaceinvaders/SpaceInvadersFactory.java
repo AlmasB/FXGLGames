@@ -96,10 +96,11 @@ public final class SpaceInvadersFactory implements EntityFactory {
             group.getChildren().addAll(new Rectangle());
         }
 
-        EntityView view = new EntityView(group, RenderLayer.BACKGROUND);
+        EntityView view = new EntityView(group);
 
         return Entities.builder()
                 .viewFromNode(view)
+                .renderLayer(RenderLayer.BACKGROUND)
                 .with(new StarsControl())
                 .build();
     }
