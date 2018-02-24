@@ -41,10 +41,10 @@ public class WandererControl extends Control {
 
     private int screenWidth, screenHeight;
 
-    private float angleAdjustRate = FXGLMath.random(0, 0.5f);
+    private double angleAdjustRate = FXGLMath.random(0, 0.5);
 
     private Vec2 velocity = new Vec2();
-    private double directionAngle = FXGLMath.random(-1, 1) * FXGLMath.PI2 * FXGLMath.radiansToDegrees;
+    private double directionAngle = FXGLMath.toDegrees(FXGLMath.random(-1, 1) * FXGLMath.PI2);
 
     private int moveSpeed;
     private int rotationSpeed = FXGLMath.random(-100, 100);
@@ -77,7 +77,7 @@ public class WandererControl extends Control {
 
     private void adjustAngle(double tpf) {
         if (FXGLMath.randomBoolean(angleAdjustRate)) {
-            directionAngle += FXGLMath.radiansToDegrees * (FXGLMath.noise1D(tx) - 0.5);
+            directionAngle += FXGLMath.toDegrees((FXGLMath.noise1D(tx) - 0.5));
         }
     }
 
