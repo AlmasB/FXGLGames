@@ -61,7 +61,8 @@ public class PacmanFactory implements TextEntityFactory {
         return Entities.builder()
                 .from(data)
                 .type(PacmanType.BLOCK)
-                .viewFromNodeWithBBox(new EntityView(new Rectangle(40, 40), RenderLayer.BACKGROUND))
+                .viewFromNodeWithBBox(new EntityView(new Rectangle(40, 40)))
+                .renderLayer(RenderLayer.BACKGROUND)
                 .build();
     }
 
@@ -69,13 +70,13 @@ public class PacmanFactory implements TextEntityFactory {
     public Entity newCoin(SpawnData data) {
         EntityView view = new EntityView(texture("coin.png"));
         view.setTranslateX(2.5);
-        view.setRenderLayer(RenderLayer.BACKGROUND);
 
         return Entities.builder()
                 .from(data)
                 .type(PacmanType.COIN)
                 .bbox(new HitBox("Main", BoundingShape.box(40, 40)))
                 .viewFromNodeWithBBox(view)
+                .renderLayer(RenderLayer.BACKGROUND)
                 .with(new CollidableComponent(true))
                 .build();
     }
