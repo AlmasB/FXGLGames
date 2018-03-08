@@ -40,6 +40,7 @@ import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import com.almasb.fxglgames.breakout.control.BallControl;
 import com.almasb.fxglgames.breakout.control.BatControl;
 import com.almasb.fxglgames.breakout.control.BrickControl;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
@@ -83,6 +84,7 @@ public class BreakoutFactory implements TextEntityFactory {
         ParticleEmitter emitter = ParticleEmitters.newFireEmitter();
         emitter.setNumParticles(5);
         emitter.setEmissionRate(0.5);
+        emitter.setBlendMode(BlendMode.SRC_OVER);
 
         return Entities.builder()
                 .from(data)

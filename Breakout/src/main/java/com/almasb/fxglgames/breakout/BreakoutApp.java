@@ -155,10 +155,10 @@ public class BreakoutApp extends GameApplication {
         emitter.setSourceImage(getAssetLoader().loadTexture("bubble.png").getImage());
         emitter.setBlendMode(BlendMode.SRC_OVER);
         emitter.setEmissionRate(0.25);
-        emitter.setExpireFunction((i, x, y) -> Duration.seconds(3));
-        emitter.setVelocityFunction((i, x, y) -> new Point2D(0, -FXGLMath.random(2f, 4f) * 60));
-        emitter.setSpawnPointFunction((i, x, y) -> new Point2D(FXGLMath.random(0, (float)getWidth()), y - 20 + FXGLMath.random(50)));
-        emitter.setScaleFunction((i, x, y) -> new Point2D(FXGLMath.random(-0.05f, 0), FXGLMath.random(-0.05f, 0)));
+        emitter.setExpireFunction(i -> Duration.seconds(3));
+        emitter.setVelocityFunction(i -> new Point2D(0, -FXGLMath.random(2f, 4f) * 60));
+        emitter.setSpawnPointFunction(i -> new Point2D(FXGLMath.random(0, (float)getWidth()), -20 + FXGLMath.random(50)));
+        emitter.setScaleFunction(i -> new Point2D(FXGLMath.random(-0.05f, 0), FXGLMath.random(-0.05f, 0)));
         emitter.setInterpolator(Interpolators.EXPONENTIAL.EASE_IN());
 
         Entity bubbles = new Entity();
