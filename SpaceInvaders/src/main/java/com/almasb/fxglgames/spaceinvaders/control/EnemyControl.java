@@ -28,21 +28,14 @@ package com.almasb.fxglgames.spaceinvaders.control;
 
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.effect.ParticleControl;
 import com.almasb.fxgl.entity.Control;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.GameWorld;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.time.LocalTimer;
-import com.almasb.fxglgames.spaceinvaders.ExplosionEmitter;
 import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
 import javafx.util.Duration;
 
-import static com.almasb.fxgl.app.DSLKt.fire;
-import static com.almasb.fxgl.app.DSLKt.play;
-import static com.almasb.fxgl.app.DSLKt.spawn;
+import static com.almasb.fxgl.app.DSLKt.*;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -79,17 +72,9 @@ public class EnemyControl extends Control {
     }
 
     public void die() {
-        Entity entity = new Entity();
-        entity.setPosition(enemy.getCenter());
-        entity.addControl(new ParticleControl(new ExplosionEmitter()));
-        entity.addControl(new ExpireCleanControl(Duration.seconds(1)));
-
-        enemy.getWorld().addEntity(entity);
-        enemy.getWorld().spawn("Explosion", enemy.getCenter());
-
         enemy.removeFromWorld();
 
-        play("explosion.wav");
+        spawn("Explosion", enemy.getCenter());
 
         fire(new GameEvent(GameEvent.ENEMY_KILLED));
     }

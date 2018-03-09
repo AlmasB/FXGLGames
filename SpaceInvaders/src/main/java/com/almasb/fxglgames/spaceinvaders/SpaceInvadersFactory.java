@@ -32,6 +32,8 @@ import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import com.almasb.fxgl.entity.component.HealthComponent;
+import com.almasb.fxgl.entity.component.TimeComponent;
+import com.almasb.fxgl.entity.control.EffectControl;
 import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.entity.control.ProjectileControl;
@@ -53,15 +55,13 @@ import javafx.util.Duration;
 
 import java.util.Random;
 
-import static com.almasb.fxgl.app.DSLKt.geti;
-import static com.almasb.fxgl.app.DSLKt.texture;
+import static com.almasb.fxgl.app.DSLKt.*;
 import static com.almasb.fxglgames.spaceinvaders.Config.LEVEL_START_DELAY;
 import static com.almasb.fxglgames.spaceinvaders.SpaceInvadersType.*;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-@SetEntityFactory
 public final class SpaceInvadersFactory implements EntityFactory {
 
     private static final Random random = FXGLMath.getRandom();
@@ -171,8 +171,8 @@ public final class SpaceInvadersFactory implements EntityFactory {
                 .viewFromNodeWithBBox(
                         texture("enemy" + ((int)(Math.random() * 3) + 1) + ".png").toAnimatedTexture(2, Duration.seconds(2))
                 )
-                .with(new CollidableComponent(true), new HealthComponent(2))
-                .with(new EnemyControl())
+                .with(new CollidableComponent(true), new HealthComponent(2), new TimeComponent(1.0))
+                .with(new EnemyControl(), new EffectControl())
                 .build();
     }
 
@@ -277,6 +277,8 @@ public final class SpaceInvadersFactory implements EntityFactory {
 
     @Spawns("Explosion")
     public Entity newExplosion(SpawnData data) {
+        play("explosion.wav");
+
         return Entities.builder()
                 .at(data.getX() - 40, data.getY() - 40)
                 // we want a smaller texture, 80x80

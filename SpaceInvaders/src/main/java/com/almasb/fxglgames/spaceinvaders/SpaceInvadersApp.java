@@ -35,23 +35,18 @@ import com.almasb.fxgl.event.Handles;
 import com.almasb.fxgl.input.*;
 import com.almasb.fxgl.io.FS;
 import com.almasb.fxgl.settings.GameSettings;
-import com.almasb.fxgl.settings.MenuItem;
 import com.almasb.fxgl.ui.UI;
+import com.almasb.fxglgames.spaceinvaders.collision.*;
 import com.almasb.fxglgames.spaceinvaders.control.EnemyControl;
 import com.almasb.fxglgames.spaceinvaders.control.PlayerControl;
 import com.almasb.fxglgames.spaceinvaders.event.BonusPickupEvent;
 import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
 import com.almasb.fxglgames.spaceinvaders.level.*;
-import com.almasb.fxglgames.spaceinvaders.tutorial.Tutorial;
-import com.almasb.fxglgames.spaceinvaders.tutorial.TutorialStep;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -72,10 +67,11 @@ public class SpaceInvadersApp extends GameApplication {
         settings.setVersion("1.0");
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
+        settings.setProfilingEnabled(true);
 //        settings.setIntroEnabled(true);
 //        settings.setMenuEnabled(true);
 //        settings.setEnabledMenuItems(EnumSet.of(MenuItem.EXTRA));
-//        settings.setApplicationMode(ApplicationMode.RELEASE);
+        settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
     @Override
@@ -149,6 +145,8 @@ public class SpaceInvadersApp extends GameApplication {
 
     @Override
     protected void initGame() {
+        getGameWorld().setEntityFactory(new SpaceInvadersFactory());
+
         // we have to use file system directly, since we are running without menus
         FS.<SaveData>readDataTask(SAVE_DATA_NAME)
                 .onSuccess(data -> savedData = data)
@@ -158,6 +156,15 @@ public class SpaceInvadersApp extends GameApplication {
         initGame(savedData == null
                 ? new SaveData("CPU", ACHIEVEMENT_MASTER_SCORER)
                 : savedData);
+    }
+
+    @Override
+    protected void initPhysics() {
+        getPhysicsWorld().addCollisionHandler(new BonusPlayerHandler());
+        getPhysicsWorld().addCollisionHandler(new BulletEnemyHandler());
+        getPhysicsWorld().addCollisionHandler(new BulletPlayerHandler());
+        getPhysicsWorld().addCollisionHandler(new BulletWallHandler());
+        getPhysicsWorld().addCollisionHandler(new LaserBeamEnemyHandler());
     }
 
     private void initGame(SaveData data) {
@@ -284,55 +291,8 @@ public class SpaceInvadersApp extends GameApplication {
     protected void onUpdate(double tpf) {
         if (runningFirstTime) {
             nextLevel();
-//            getDisplay().showConfirmationBox("Play Tutorial?", yes -> {
-//                if (yes)
-//                    playTutorial();
-//                else
-//                    nextLevel();
-//            });
-
             runningFirstTime = false;
         }
-    }
-
-    private void playTutorial() {
-        getInput().setRegisterInput(false);
-
-        TutorialStep step1 = new TutorialStep("Press " + getInput().getTriggerByActionName("Move Left") + " to move left", Asset.DIALOG_MOVE_LEFT, () -> {
-            getInput().mockKeyPress(KeyCode.A);
-        });
-
-        TutorialStep step2 = new TutorialStep("Press " + getInput().getTriggerByActionName("Move Right") + " to move right", Asset.DIALOG_MOVE_RIGHT, () -> {
-            getInput().mockKeyRelease(KeyCode.A);
-            getInput().mockKeyPress(KeyCode.D);
-        });
-
-        TutorialStep step3 = new TutorialStep("Press " + getInput().getTriggerByActionName("Shoot") + " to shoot", Asset.DIALOG_SHOOT, () -> {
-            getInput().mockKeyRelease(KeyCode.D);
-
-            getInput().mockButtonPress(MouseButton.PRIMARY, 0, 0);
-            getInput().mockButtonRelease(MouseButton.PRIMARY);
-        });
-
-        Text tutorialText = getUIFactory().newText("", Color.AQUA, 24);
-        tutorialText.textProperty().addListener((o, old, newText) -> {
-            tutorialText.setTranslateX(getWidth() / 2 - tutorialText.getLayoutBounds().getWidth() / 2);
-        });
-
-        tutorialText.setTranslateY(getHeight() / 2 - 50);
-        getGameScene().addUINode(tutorialText);
-
-        Tutorial tutorial = new Tutorial(tutorialText, () -> {
-            player.setX(getWidth() / 2 - 20);
-            player.setY(getHeight() - 40);
-
-            getGameScene().removeUINode(tutorialText);
-            nextLevel();
-
-            getInput().setRegisterInput(true);
-        }, step1, step2, step3);
-
-        tutorial.play();
     }
 
     @Handles(eventType = "PLAYER_GOT_HIT")
@@ -416,6 +376,7 @@ public class SpaceInvadersApp extends GameApplication {
     private void showGameOver() {
         getDisplay().showConfirmationBox("Demo Over. Play Again?", yes -> {
             if (yes) {
+                getGameWorld().getEntitiesCopy().forEach(Entity::removeFromWorld);
                 startNewGame();
             } else {
 

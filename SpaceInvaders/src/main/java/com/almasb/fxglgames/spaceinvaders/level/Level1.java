@@ -3,7 +3,6 @@ package com.almasb.fxglgames.spaceinvaders.level;
 import com.almasb.fxgl.animation.Animation;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Control;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;

@@ -26,26 +26,21 @@
 
 package com.almasb.fxglgames.spaceinvaders.collision;
 
-import com.almasb.fxgl.physics.AddCollisionHandler;
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.entity.Effect;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.GameWorld;
 import com.almasb.fxgl.entity.component.HealthComponent;
-import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.fxgl.entity.component.ViewComponent;
+import com.almasb.fxgl.entity.component.TimeComponent;
+import com.almasb.fxgl.entity.control.EffectControl;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
 import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;
 import com.almasb.fxglgames.spaceinvaders.control.BossControl;
 import com.almasb.fxglgames.spaceinvaders.control.EnemyControl;
-import javafx.geometry.Point2D;
-import javafx.scene.effect.BlendMode;
 import javafx.util.Duration;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-@AddCollisionHandler
 public class BulletEnemyHandler extends CollisionHandler {
 
     public BulletEnemyHandler() {
@@ -61,9 +56,6 @@ public class BulletEnemyHandler extends CollisionHandler {
             return;
         }
 
-        GameWorld world = bullet.getWorld();
-
-        Point2D hitPosition = bullet.getComponent(PositionComponent.class).getValue();
         bullet.removeFromWorld();
 
         HealthComponent hp = enemy.getComponent(HealthComponent.class);
@@ -78,17 +70,17 @@ public class BulletEnemyHandler extends CollisionHandler {
             }
 
         } else {
-            world.spawn("LaserHit", hitPosition);
+            enemy.getControl(EffectControl.class).startEffect(new Effect(Duration.seconds(1)) {
+                @Override
+                public void onStart(Entity entity) {
+                    entity.getComponent(TimeComponent.class).setValue(0.15);
+                }
 
-            // make enemy look red
-            enemy.getComponent(ViewComponent.class).getView().setBlendMode(BlendMode.RED);
-
-            // return enemy look to normal
-            FXGL.getMasterTimer()
-                    .runOnceAfter(() -> {
-                        if (enemy.isActive())
-                            enemy.getComponent(ViewComponent.class).getView().setBlendMode(null);
-                    }, Duration.seconds(0.33));
+                @Override
+                public void onEnd(Entity entity) {
+                    entity.getComponent(TimeComponent.class).setValue(1);
+                }
+            });
         }
     }
 }

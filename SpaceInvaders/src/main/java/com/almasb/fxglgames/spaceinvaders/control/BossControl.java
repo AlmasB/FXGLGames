@@ -2,14 +2,10 @@ package com.almasb.fxglgames.spaceinvaders.control;
 
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.effect.ParticleControl;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.GameWorld;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.CollidableComponent;
-import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.fxgl.entity.control.ExpireCleanControl;
-import com.almasb.fxglgames.spaceinvaders.ExplosionEmitter;
 import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
 import javafx.util.Duration;
 
@@ -51,16 +47,7 @@ public class BossControl extends EnemyControl {
 
         for (int i = 0; i < 5; i++) {
             FXGL.getMasterTimer().runOnceAfter(() -> {
-                Entity entity = new Entity();
-                entity.setPosition(enemy.getCenter());
-                entity.addControl(new ParticleControl(new ExplosionEmitter()));
-                entity.addControl(new ExpireCleanControl(Duration.seconds(1)));
-
-                enemy.getWorld().addEntity(entity);
-
                 spawn("Explosion", enemy.getCenter().add(FXGLMath.randomPoint2D().multiply(70)));
-
-                play("explosion.wav");
             }, Duration.seconds(0.25 * i));
         }
 
