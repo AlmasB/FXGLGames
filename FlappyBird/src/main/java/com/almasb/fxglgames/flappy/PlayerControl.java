@@ -24,6 +24,10 @@ public class PlayerControl extends Control {
             acceleration.y = 5;
 
         entity.translate(acceleration.x, acceleration.y);
+
+        if (entity.getBottomY() > FXGL.getAppHeight()) {
+            FXGL.<FlappyBirdApp>getAppCast().requestNewGame();
+        }
     }
 
     public void jump() {

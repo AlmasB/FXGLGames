@@ -1,4 +1,8 @@
+## Game
+
 This is a clone of Flappy Bird.
+
+![Code](https://img.shields.io/badge/difficulty-intermediate-green.svg)
 
 ## Asset Credits
 

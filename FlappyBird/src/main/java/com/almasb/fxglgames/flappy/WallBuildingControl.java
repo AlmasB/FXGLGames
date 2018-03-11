@@ -1,9 +1,9 @@
 package com.almasb.fxglgames.flappy;
 
-import com.almasb.fxgl.entity.Control;
-import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.entity.Control;
 import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.CollidableComponent;
 import javafx.scene.shape.Rectangle;
 

@@ -1,5 +1,6 @@
 package com.almasb.fxglgames.flappy;
 
+import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.Entities;
@@ -10,6 +11,7 @@ import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.texture.Texture;
+import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -24,13 +26,14 @@ import java.util.Map;
 public class FlappyBirdApp extends GameApplication {
 
     private PlayerControl playerControl;
+    private boolean requestNewGame = false;
 
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Flappy Bird Clone");
-        settings.setVersion("0.2");
+        settings.setVersion("0.3");
     }
 
     @Override
@@ -60,14 +63,12 @@ public class FlappyBirdApp extends GameApplication {
         initPlayer();
     }
 
-    private boolean requestNewGame = false;
-
     @Override
     protected void initPhysics() {
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.PLAYER, EntityType.WALL) {
             @Override
             protected void onCollisionBegin(Entity a, Entity b) {
-                requestNewGame = true;
+                requestNewGame();
             }
         });
     }
@@ -124,10 +125,31 @@ public class FlappyBirdApp extends GameApplication {
                 .viewFromNode(view)
                 .with(new CollidableComponent(true))
                 .with(playerControl, new WallBuildingControl())
-                .buildAndAttach();
+                .build();
 
         getGameScene().getViewport().setBounds(0, 0, Integer.MAX_VALUE, getHeight());
         getGameScene().getViewport().bindToEntity(player, getWidth() / 3, getHeight() / 2);
+
+        playSpawnAnimation(player);
+    }
+
+    private void playSpawnAnimation(Entity player) {
+        player.getView().setScaleX(0);
+        player.getView().setScaleY(0);
+
+        getGameWorld().addEntity(player);
+
+        Entities.animationBuilder()
+                .duration(Duration.seconds(0.86))
+                .interpolator(Interpolators.BOUNCE.EASE_OUT())
+                .scale(player)
+                .from(new Point2D(0, 0))
+                .to(new Point2D(1, 1))
+                .buildAndPlay();
+    }
+
+    public void requestNewGame() {
+        requestNewGame = true;
     }
 
     private void showGameOver() {
