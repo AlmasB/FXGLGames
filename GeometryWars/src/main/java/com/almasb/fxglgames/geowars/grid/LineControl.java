@@ -51,7 +51,6 @@ public class LineControl extends Control {
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
-        g.strokeLine(end1.getPosition().x, end1.getPosition().y,
-                end2.getPosition().x, end2.getPosition().y);
+        g.strokeLine(end1.getPosition().x, end1.getPosition().y, end2.getPosition().x, end2.getPosition().y);
     }
 }

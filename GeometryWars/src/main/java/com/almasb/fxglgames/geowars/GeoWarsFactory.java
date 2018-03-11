@@ -25,7 +25,6 @@ import static com.almasb.fxgl.app.DSLKt.texture;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-@SetEntityFactory
 public class GeoWarsFactory implements EntityFactory {
 
     private final GeoWarsConfig config;
@@ -153,13 +152,13 @@ public class GeoWarsFactory implements EntityFactory {
 
         // explosion particle effect
         ParticleEmitter emitter = ParticleEmitters.newExplosionEmitter(100);
-        emitter.setSize(10, 12);
+        emitter.setSize(6, 8);
         emitter.setNumParticles(24);
-        emitter.setExpireFunction((i, x, y) -> Duration.seconds(2));
-        emitter.setVelocityFunction((i, x, y) -> Vec2.fromAngle(360 / 24 *i).toPoint2D().multiply(FXGLMath.random(45, 50)));
+        emitter.setExpireFunction(i -> Duration.seconds(1.5));
+        emitter.setVelocityFunction(i -> Vec2.fromAngle(360 / 24 *i).toPoint2D().multiply(FXGLMath.random(45, 50)));
         emitter.setBlendMode(BlendMode.SRC_OVER);
-        emitter.setStartColor(Color.YELLOW);
-        emitter.setEndColor(Color.RED);
+        emitter.setStartColor(Color.WHITE);
+        emitter.setEndColor(Color.RED.interpolate(Color.YELLOW, 0.5));
 
         com.almasb.fxgl.effect.ParticleControl control = new ParticleControl(emitter);
 

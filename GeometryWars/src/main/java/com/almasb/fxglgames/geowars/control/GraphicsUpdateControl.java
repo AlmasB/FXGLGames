@@ -27,25 +27,24 @@
 package com.almasb.fxglgames.geowars.control;
 
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.Control;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.control.AccumulatedUpdateControl;
 import com.almasb.fxglgames.geowars.component.GraphicsComponent;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class GraphicsUpdateControl extends Control {
+public class GraphicsUpdateControl extends AccumulatedUpdateControl {
 
-    // hack to reduce frequency of updates
-    private int tick = 0;
+    private GraphicsComponent gc;
+
+    public GraphicsUpdateControl() {
+        // skip 3 frames (update every 4th frame)
+        super(3);
+    }
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
-        if (tick == 3) {
-            entity.getComponent(GraphicsComponent.class).getValue().clearRect(0, 0, FXGL.getAppWidth(), FXGL.getAppHeight());
-            tick = 0;
-        } else {
-            tick++;
-        }
+    public void onAccumulatedUpdate(Entity entity, double tpfSum) {
+        gc.getValue().clearRect(0, 0, FXGL.getAppWidth(), FXGL.getAppHeight());
     }
 }

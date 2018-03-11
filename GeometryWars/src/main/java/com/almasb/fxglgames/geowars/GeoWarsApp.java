@@ -31,14 +31,12 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.HealthComponent;
-import com.almasb.fxgl.entity.view.EntityView;
 import com.almasb.fxgl.event.Handles;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxgl.settings.GameSettings;
-import com.almasb.fxgl.ui.WheelMenu;
 import com.almasb.fxglgames.geowars.component.GraphicsComponent;
 import com.almasb.fxglgames.geowars.component.OldPositionComponent;
 import com.almasb.fxglgames.geowars.control.GraphicsUpdateControl;
@@ -84,10 +82,12 @@ public class GeoWarsApp extends GameApplication {
         settings.setHeight(720);
         settings.setTitle("FXGL Geometry Wars");
         settings.setVersion("0.7.5");
+        settings.setConfigClass(GeoWarsConfig.class);
+        settings.setProfilingEnabled(true);
     }
 
     @Override
-    protected void initAssets() {
+    protected void preInit() {
         // preload explosion sprite sheet
         getAssetLoader().loadTexture("explosion.png", 80 * 48, 80);
     }
@@ -152,6 +152,8 @@ public class GeoWarsApp extends GameApplication {
     protected void initGame() {
         getAudioPlayer().setGlobalSoundVolume(0.2);
         getAudioPlayer().setGlobalMusicVolume(0.2);
+
+        getGameWorld().setEntityFactory(new GeoWarsFactory());
 
         initBackground();
         player = spawn("Player");
@@ -251,8 +253,8 @@ public class GeoWarsApp extends GameApplication {
 
         getGameScene().addUINode(beware);
 
-        getUIFactory().centerText(beware);
-        getUIFactory().fadeInOut(beware, Duration.seconds(2), () -> getGameScene().removeUINode(beware)).startInPlayState();
+        centerText(beware);
+        fadeInOut(beware, Duration.seconds(2), () -> getGameScene().removeUINode(beware)).startInPlayState();
 
         getGameScene().setCursor("crosshair.png", new Point2D(32, 32));
     }
@@ -272,8 +274,7 @@ public class GeoWarsApp extends GameApplication {
     }
 
     private void initBackground() {
-        EntityView backgroundView = new EntityView(new Rectangle(getWidth(), getHeight()));
-        getGameScene().addGameView(backgroundView);
+        getGameScene().setBackgroundColor(Color.BLACK);
 
         Canvas canvas = new Canvas(getWidth(), getHeight());
         canvas.getGraphicsContext2D().setStroke(new Color(0.138, 0.138, 0.375, 0.3));
@@ -308,7 +309,7 @@ public class GeoWarsApp extends GameApplication {
 
         getGameScene().addUINode(bonusText);
 
-        Animation<?> animation = getUIFactory().translate(bonusText, enemyPosition, new Point2D(1100, 70), Duration.seconds(1));
+        Animation<?> animation = translate(bonusText, enemyPosition, new Point2D(1100, 70), Duration.seconds(1));
         animation.getAnimatedValue().setInterpolator(Interpolators.EXPONENTIAL.EASE_IN());
         animation.setOnFinished(() -> {
             inc("score", +100*multiplier);
