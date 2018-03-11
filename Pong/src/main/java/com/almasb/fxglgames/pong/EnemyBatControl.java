@@ -28,7 +28,6 @@ package com.almasb.fxglgames.pong;
 
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.BoundingBoxComponent;
-import com.almasb.fxgl.entity.component.TypeComponent;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
