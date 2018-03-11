@@ -83,6 +83,8 @@ public class CannonApp extends GameApplication {
 
     @Override
     protected void initGame() {
+        getGameWorld().setEntityFactory(new CannonFactory());
+
         initScreenBounds();
         initCannon();
         initBasket();
@@ -115,13 +117,7 @@ public class CannonApp extends GameApplication {
                 bullet.removeFromWorld();
                 getGameState().increment("score", +1000);
 
-                Entities.animationBuilder()
-                        .duration(Duration.seconds(0.2))
-                        .interpolator(Interpolators.EXPONENTIAL.EASE_IN())
-                        .scale(getGameWorld().getEntitiesByType(CannonType.BASKET))
-                        .from(new Point2D(1.2, 1))
-                        .to(new Point2D(1, 1))
-                        .buildAndPlay();
+                playBasketAnimation();
             }
         });
     }
@@ -134,6 +130,16 @@ public class CannonApp extends GameApplication {
         scoreText.textProperty().bind(getGameState().intProperty("score").asString("Score: [%d]"));
 
         getGameScene().addUINode(scoreText);
+    }
+
+    private void playBasketAnimation() {
+        Entities.animationBuilder()
+                .duration(Duration.seconds(0.2))
+                .interpolator(Interpolators.EXPONENTIAL.EASE_IN())
+                .scale(getGameWorld().getEntitiesByType(CannonType.BASKET))
+                .from(new Point2D(1.2, 1))
+                .to(new Point2D(1, 1))
+                .buildAndPlay();
     }
 
     public static void main(String[] args) {

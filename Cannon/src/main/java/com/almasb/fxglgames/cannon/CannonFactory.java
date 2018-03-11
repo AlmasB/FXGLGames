@@ -16,7 +16,6 @@ import javafx.util.Duration;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-@SetEntityFactory
 public class CannonFactory implements EntityFactory {
 
     @Spawns("cannon")
