@@ -26,10 +26,13 @@
 
 package com.almasb.fxglgames.spacerunner;
 
+import com.almasb.fxgl.app.DSLKt;
 import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.component.UserDataComponent;
 import com.almasb.fxgl.entity.component.CollidableComponent;
+import com.almasb.fxgl.entity.control.EffectControl;
 import com.almasb.fxgl.entity.control.KeepOnScreenControl;
 import com.almasb.fxgl.entity.control.OffscreenCleanControl;
 import com.almasb.fxgl.entity.control.ProjectileControl;
@@ -37,30 +40,34 @@ import com.almasb.fxglgames.spacerunner.control.EnemyControl;
 import com.almasb.fxglgames.spacerunner.control.PlayerControl;
 import javafx.geometry.Point2D;
 
+import static com.almasb.fxgl.app.DSLKt.*;
+
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-@SetEntityFactory
 public class SpaceRunnerFactory implements EntityFactory {
 
     @Spawns("Player")
     public Entity newPlayer(SpawnData data) {
         return Entities.builder()
                 .type(SpaceRunnerType.PLAYER)
-                .at(data.getX(), data.getY())
+                .from(data)
                 .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("sprite_player.png", 40, 40))
                 .with(new CollidableComponent(true))
-                .with(new PlayerControl(), new KeepOnScreenControl(false, true))
+                .with(new PlayerControl(), new EffectControl(), new KeepOnScreenControl(false, true))
                 .build();
     }
 
-    public Entity newBullet(double x, double y, SpaceRunnerType ownerType) {
+    @Spawns("Bullet")
+    public Entity newBullet(SpawnData data) {
+        play("shoot" + FXGLMath.random(1, 4) + ".wav");
+
         return Entities.builder()
                 .type(SpaceRunnerType.BULLET)
-                .at(x, y - 5.5)
+                .from(data)
                 .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("sprite_bullet.png", 22, 11))
-                .with(new CollidableComponent(true), new UserDataComponent(ownerType))
-                .with(new ProjectileControl(new Point2D(ownerType == SpaceRunnerType.PLAYER ? 1 : -1, 0), 250),
+                .with(new CollidableComponent(true))
+                .with(new ProjectileControl(new Point2D(1, 0), 1550),
                         new OffscreenCleanControl())
                 .build();
     }
@@ -69,10 +76,10 @@ public class SpaceRunnerFactory implements EntityFactory {
     public Entity newEnemy(SpawnData data) {
         return Entities.builder()
                 .type(SpaceRunnerType.ENEMY)
-                .at(data.getX(), data.getY())
+                .from(data)
                 .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("sprite_enemy_1.png", 27, 33))
                 .with(new CollidableComponent(true))
-                .with(new EnemyControl())
+                .with(new EnemyControl(), new KeepOnScreenControl(false, true))
                 .build();
     }
 }

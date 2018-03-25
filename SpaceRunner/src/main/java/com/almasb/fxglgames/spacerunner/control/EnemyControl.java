@@ -33,6 +33,7 @@ import com.almasb.fxgl.entity.Control;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.PositionComponent;
 import com.almasb.fxgl.time.LocalTimer;
+import com.almasb.fxglgames.spacerunner.GameConfig;
 import com.almasb.fxglgames.spacerunner.SpaceRunnerFactory;
 import com.almasb.fxglgames.spacerunner.SpaceRunnerType;
 import javafx.util.Duration;
@@ -57,8 +58,11 @@ public class EnemyControl extends Control {
         attackTimer.capture();
     }
 
+    private double t = FXGLMath.random(1, 10000);
+
     @Override
     public void onUpdate(Entity entity, double tpf) {
+        t += tpf;
 
         if (attackTimer.elapsed(nextAttack)) {
             if (FXGLMath.randomBoolean(0.8f)) {
@@ -68,7 +72,8 @@ public class EnemyControl extends Control {
             attackTimer.capture();
         }
 
-        position.translateX(tpf * 30);
+        position.translateX(tpf * FXGL.<GameConfig>getGameConfig().getPlayerSpeed() + tpf * 60 * (FXGLMath.noise1D(t * 9.8) - 0.5));
+        position.translateY((FXGLMath.noise1D(t) - 0.5) * tpf * FXGLMath.random(150, 350));
     }
 
     private void shoot() {

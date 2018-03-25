@@ -26,14 +26,26 @@
 
 package com.almasb.fxglgames.spacerunner;
 
+import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.view.ScrollingBackgroundView;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.settings.GameSettings;
+import com.almasb.fxgl.texture.Texture;
+import com.almasb.fxglgames.spacerunner.collision.BulletEnemyHandler;
 import com.almasb.fxglgames.spacerunner.control.PlayerControl;
+import javafx.geometry.HorizontalDirection;
 import javafx.geometry.Orientation;
+import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
+import javafx.util.Duration;
+
+import static com.almasb.fxgl.app.DSLKt.loopBGM;
+import static com.almasb.fxgl.app.DSLKt.run;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -46,8 +58,14 @@ public class SpaceRunnerApp extends GameApplication {
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Space Runner");
         settings.setVersion("0.1");
-        settings.setWidth(500);
+        settings.setWidth(1000);
         settings.setHeight(500);
+        settings.setConfigClass(GameConfig.class);
+    }
+
+    @Override
+    protected void preInit() {
+        loopBGM("bgm.mp3");
     }
 
     @Override
@@ -68,15 +86,19 @@ public class SpaceRunnerApp extends GameApplication {
 
         getInput().addAction(new UserAction("Shoot") {
             @Override
-            protected void onActionBegin() {
+            protected void onAction() {
                 playerControl.shoot();
             }
-        }, KeyCode.F);
+        }, MouseButton.PRIMARY);
     }
 
     @Override
     protected void initGame() {
-        getGameScene().addGameView(new ScrollingBackgroundView(getAssetLoader().loadTexture("bg_0.png"),
+        getGameWorld().setEntityFactory(new SpaceRunnerFactory());
+
+        Texture t = getAssetLoader().loadTexture("bg_0.png");
+
+        getGameScene().addGameView(new ScrollingBackgroundView(t.superTexture(t, HorizontalDirection.RIGHT),
                 Orientation.HORIZONTAL));
 
         Entity player = getGameWorld().spawn("Player", 50, getHeight() / 2);
@@ -86,7 +108,37 @@ public class SpaceRunnerApp extends GameApplication {
         getGameScene().getViewport().setBounds(0, 0, Integer.MAX_VALUE, getHeight());
         getGameScene().getViewport().bindToEntity(player, 50, getHeight() / 2);
 
-        getGameWorld().spawn("Enemy1", 500, 300);
+        run(this::spawnWave, Duration.seconds(5));
+    }
+
+    @Override
+    protected void initPhysics() {
+        getPhysicsWorld().addCollisionHandler(new BulletEnemyHandler());
+    }
+
+    private void spawnWave() {
+        for (int i = 0; i < 10; i++) {
+            Entity e = getGameWorld().spawn("Enemy1", playerControl.getEntity().getX() + FXGLMath.random(600, 800), FXGLMath.random(100, 400));
+            e.setScaleX(0);
+            e.setScaleY(0);
+            Entities.animationBuilder()
+                    .duration(Duration.seconds(FXGLMath.random(2, 3.0)))
+                    .interpolator(Interpolators.ELASTIC.EASE_OUT())
+                    .scale(e)
+                    .from(new Point2D(0, 0))
+                    .to(new Point2D(1, 1))
+                    .buildAndPlay();
+
+            Entities.animationBuilder()
+                    .autoReverse(true)
+                    .repeat(2)
+                    .duration(Duration.seconds(FXGLMath.random(1.2, 2.0)))
+                    .interpolator(Interpolators.BOUNCE.EASE_OUT())
+                    .rotate(e)
+                    .rotateFrom(0)
+                    .rotateTo(FXGLMath.random(180, 360))
+                    .buildAndPlay();
+        }
     }
 
     public static void main(String[] args) {

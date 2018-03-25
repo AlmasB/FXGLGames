@@ -26,30 +26,42 @@
 
 package com.almasb.fxglgames.spacerunner.control;
 
+import com.almasb.fxgl.app.DSLKt;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Control;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Required;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.time.LocalTimer;
+import com.almasb.fxglgames.spacerunner.GameConfig;
 import com.almasb.fxglgames.spacerunner.SpaceRunnerFactory;
 import com.almasb.fxglgames.spacerunner.SpaceRunnerType;
+import javafx.util.Duration;
+
+import static com.almasb.fxgl.app.DSLKt.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-@Required(PositionComponent.class)
 public class PlayerControl extends Control {
 
     private PositionComponent position;
 
     private double speed;
 
+    private LocalTimer shootTimer = FXGL.newLocalTimer();
+    private boolean canShoot = true;
+
     @Override
     public void onUpdate(Entity entity, double tpf) {
         speed = tpf * 300;
 
-        position.translateX(tpf * 60);
+        position.translateX(tpf * FXGL.<GameConfig>getGameConfig().getPlayerSpeed());
+
+        if (shootTimer.elapsed(Duration.seconds(0.12))) {
+            canShoot = true;
+        }
     }
 
     public void up() {
@@ -61,9 +73,13 @@ public class PlayerControl extends Control {
     }
 
     public void shoot() {
-//        Entity bullet = FXGL.getInstance(SpaceRunnerFactory.class)
-//                .newBullet(position.getX() + 40, position.getY() + 20, SpaceRunnerType.PLAYER);
-//
-//        getEntity().getWorld().addEntity(bullet);
+        if (!canShoot)
+            return;
+
+        spawn("Bullet", getEntity().getPosition());
+        spawn("Bullet", getEntity().getPosition().add(0, getEntity().getHeight() - 10));
+
+        shootTimer.capture();
+        canShoot = false;
     }
 }
