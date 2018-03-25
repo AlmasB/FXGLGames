@@ -72,6 +72,34 @@ public class SpaceRunnerFactory implements EntityFactory {
                 .build();
     }
 
+    @Spawns("Laser")
+    public Entity newLaser(SpawnData data) {
+        play("shoot" + FXGLMath.random(1, 4) + ".wav");
+
+        return Entities.builder()
+                .type(SpaceRunnerType.BULLET)
+                .from(data)
+                .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("sprite_laser.png"))
+                .with(new CollidableComponent(true))
+                .with(new ProjectileControl(new Point2D(1, 0), 850),
+                        new OffscreenCleanControl())
+                .build();
+    }
+
+    @Spawns("Rocket")
+    public Entity newRocket(SpawnData data) {
+        play("shoot" + FXGLMath.random(1, 4) + ".wav");
+
+        return Entities.builder()
+                .type(SpaceRunnerType.BULLET)
+                .from(data)
+                .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("rocket.png", 30, 8))
+                .with(new CollidableComponent(true))
+                .with(new ProjectileControl(new Point2D(1, 0), 750),
+                        new OffscreenCleanControl())
+                .build();
+    }
+
     @Spawns("Enemy1")
     public Entity newEnemy(SpawnData data) {
         return Entities.builder()

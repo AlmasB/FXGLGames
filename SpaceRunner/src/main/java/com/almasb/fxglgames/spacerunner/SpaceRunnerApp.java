@@ -35,6 +35,7 @@ import com.almasb.fxgl.entity.view.ScrollingBackgroundView;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.texture.Texture;
+import com.almasb.fxgl.ui.ProgressBar;
 import com.almasb.fxglgames.spacerunner.collision.BulletEnemyHandler;
 import com.almasb.fxglgames.spacerunner.control.PlayerControl;
 import javafx.geometry.HorizontalDirection;
@@ -42,10 +43,14 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-import static com.almasb.fxgl.app.DSLKt.loopBGM;
-import static com.almasb.fxgl.app.DSLKt.run;
+import java.util.Map;
+
+import static com.almasb.fxgl.app.DSLKt.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -59,7 +64,7 @@ public class SpaceRunnerApp extends GameApplication {
         settings.setTitle("Space Runner");
         settings.setVersion("0.1");
         settings.setWidth(1000);
-        settings.setHeight(500);
+        settings.setHeight(700);
         settings.setConfigClass(GameConfig.class);
     }
 
@@ -84,12 +89,28 @@ public class SpaceRunnerApp extends GameApplication {
             }
         }, KeyCode.S);
 
+        getInput().addAction(new UserAction("Change Weapon") {
+            @Override
+            protected void onAction() {
+                playerControl.changeWeapon();
+
+                weaponTexture.setImage(image("sprite_laser.png"));
+                bullets.textProperty().bind(getip("laser").asString("x %d"));
+            }
+        }, KeyCode.F);
+
         getInput().addAction(new UserAction("Shoot") {
             @Override
             protected void onAction() {
                 playerControl.shoot();
             }
         }, MouseButton.PRIMARY);
+    }
+
+    @Override
+    protected void initGameVars(Map<String, Object> vars) {
+        vars.put("bullets", 90);
+        vars.put("laser", 50);
     }
 
     @Override
@@ -114,6 +135,42 @@ public class SpaceRunnerApp extends GameApplication {
     @Override
     protected void initPhysics() {
         getPhysicsWorld().addCollisionHandler(new BulletEnemyHandler());
+    }
+
+    private Texture weaponTexture;
+    private Text bullets;
+
+    @Override
+    protected void initUI() {
+        weaponTexture = texture("sprite_bullet.png", 22, 11);
+
+        bullets = getUIFactory().newText("", Color.rgb(20, 20, 20), 16);
+        bullets.textProperty().bind(getip("bullets").asString("x %d"));
+
+        HBox ui = new HBox(15,
+                weaponTexture,
+                bullets
+                );
+
+        ui.setTranslateX(20);
+        ui.setTranslateY(520);
+
+
+
+        Texture uiBorder = texture("ui.png");
+        uiBorder.setTranslateY(getHeight() - uiBorder.getHeight());
+
+        getGameScene().addUINode(uiBorder);
+        getGameScene().addUINode(ui);
+
+//        ProgressBar barHP = ProgressBar.makeHPBar();
+//        barHP.setTranslateX(100);
+//        barHP.setTranslateY(getHeight() - 125);
+//        barHP.setBackgroundFill(Color.BLUE);
+//        barHP.setTraceFill(Color.GREEN);
+//        barHP.setCurrentValue(50);
+//
+//        getGameScene().addUINode(barHP);
     }
 
     private void spawnWave() {

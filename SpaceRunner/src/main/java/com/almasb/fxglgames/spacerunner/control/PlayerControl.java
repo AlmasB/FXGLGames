@@ -37,6 +37,7 @@ import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.spacerunner.GameConfig;
 import com.almasb.fxglgames.spacerunner.SpaceRunnerFactory;
 import com.almasb.fxglgames.spacerunner.SpaceRunnerType;
+import com.almasb.fxglgames.spacerunner.WeaponType;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.app.DSLKt.*;
@@ -52,6 +53,8 @@ public class PlayerControl extends Control {
 
     private LocalTimer shootTimer = FXGL.newLocalTimer();
     private boolean canShoot = true;
+
+    private WeaponType weapon = WeaponType.NORMAL;
 
     @Override
     public void onUpdate(Entity entity, double tpf) {
@@ -72,12 +75,32 @@ public class PlayerControl extends Control {
         position.translateY(speed);
     }
 
+    public void changeWeapon() {
+        weapon = WeaponType.LASER;
+    }
+
     public void shoot() {
+        if (geti("bullets") == 0)
+            return;
+
         if (!canShoot)
             return;
 
-        spawn("Bullet", getEntity().getPosition());
-        spawn("Bullet", getEntity().getPosition().add(0, getEntity().getHeight() - 10));
+        if (weapon == WeaponType.LASER) {
+
+            spawn("Laser", getEntity().getCenter());
+
+            inc("laser", -1);
+
+        } else {
+
+            spawn("Bullet", getEntity().getPosition());
+            spawn("Bullet", getEntity().getPosition().add(0, getEntity().getHeight() - 10));
+
+            inc("bullets", -1);
+        }
+
+
 
         shootTimer.capture();
         canShoot = false;
