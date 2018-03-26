@@ -1,23 +1,20 @@
 package com.almasb.fxglgames.geojumper
 
-import com.almasb.fxgl.app.FXGL
-import com.almasb.fxgl.app.GameApplication
-import com.almasb.fxgl.app.onBtnDown
+import com.almasb.fxgl.app.*
 import com.almasb.fxgl.core.math.FXGLMath
-import com.almasb.fxgl.entity.Control
-import com.almasb.fxgl.entity.Entities
-import com.almasb.fxgl.entity.Entity
+import com.almasb.fxgl.entity.*
 import com.almasb.fxgl.entity.component.CollidableComponent
-import com.almasb.fxgl.physics.BoundingShape
-import com.almasb.fxgl.physics.CollisionHandler
-import com.almasb.fxgl.physics.HitBox
-import com.almasb.fxgl.physics.PhysicsComponent
+import com.almasb.fxgl.input.UserAction
+import com.almasb.fxgl.physics.*
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType
 import com.almasb.fxgl.settings.GameSettings
 import javafx.application.Application
+import javafx.geometry.Point2D
+import javafx.scene.input.KeyCode
 import javafx.scene.input.MouseButton
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
+import java.util.*
 
 /**
  *
@@ -43,11 +40,24 @@ class GeoJumperApp : GameApplication() {
         onBtnDown(MouseButton.PRIMARY, "Jump", Runnable {
             playerControl.jump()
         })
+
+        input.addAction(object : UserAction("Rewind") {
+            override fun onAction() {
+                playerControl.rewind()
+            }
+
+            override fun onActionEnd() {
+                playerControl.endRewind()
+            }
+        }, KeyCode.R)
     }
 
     override fun initGame() {
+        gameWorld.setEntityFactory(Factory())
+
         //gameWorld.addEntity(Entities.makeScreenBounds(40.0))
 
+        // ground
         Entities.builder()
                 .at(0.0, LEVEL_HEIGHT)
                 .bbox(HitBox(BoundingShape.box(width*1.0, 40.0)))
@@ -63,11 +73,23 @@ class GeoJumperApp : GameApplication() {
 
         physicsWorld.addCollisionHandler(object : CollisionHandler(EntityType.PLAYER, EntityType.PLATFORM) {
             override fun onCollisionBegin(player: Entity, platform: Entity) {
-                platform.getControl(PlatformControl::class.java).stop()
+
+                // only if player actually lands on the platform
+                if (player.bottomY <= platform.y) {
+
+                    platform.getControl(PlatformControl::class.java).stop()
+
+                    playerControl.startNewCapture()
+                }
             }
 
             override fun onCollisionEnd(player: Entity, platform: Entity) {
-                platform.removeFromWorld()
+
+                // only if player is jumping off that platform
+                if (player.bottomY <= platform.y) {
+                    playerControl.removedPlatformAt(platform.position)
+                    platform.removeFromWorld()
+                }
             }
         })
     }
@@ -93,16 +115,13 @@ class GeoJumperApp : GameApplication() {
 
     private fun initPlatforms() {
         for (y in 0..LEVEL_HEIGHT.toInt() step 200) {
-            val physics = PhysicsComponent()
-            physics.setBodyType(BodyType.KINEMATIC)
 
             Entities.builder()
-                    .type(EntityType.PLATFORM)
-                    .at(20.0, y * 1.0)
-                    .viewFromNodeWithBBox(Rectangle(100.0, 40.0))
-                    .with(physics, CollidableComponent(true))
-                    .with(PlatformControl())
+                    .at(0.0, y * 1.0)
+                    .viewFromNode(uiFactory.newText("$y", Color.BLACK, 16.0))
                     .buildAndAttach()
+
+            spawn("platform", 20.0, y * 1.0)
         }
     }
 }
@@ -111,12 +130,71 @@ class PlayerControl : Control() {
 
     private lateinit var physics: PhysicsComponent
 
+    private val playerPoints = ArrayDeque<Point2D>()
+    private val platformPoints = arrayListOf<Point2D>()
+
+    private var isRewinding = false
+
+    private var t = 0.0
+
     override fun onUpdate(entity: Entity, tpf: Double) {
 
+        physics.velocityX = 0.0
+
+        t += tpf
+        if (t >= 0.05 && !isRewinding) {
+            playerPoints.addLast(entity.position)
+
+            t = 0.0
+        }
     }
 
+    fun startNewCapture() {
+        //if (isOnPlatform()) {
+            playerPoints.clear()
+            platformPoints.clear()
+        //}
+    }
+
+    fun removedPlatformAt(point: Point2D) {
+        platformPoints.add(point)
+    }
+
+    fun rewind() {
+        if (playerPoints.isEmpty()) {
+            isRewinding = false
+            entity.getComponent(CollidableComponent::class.java).value = true
+            t = 0.0
+            return
+        }
+
+        //println("print")
+
+        isRewinding = true
+        entity.getComponent(CollidableComponent::class.java).value = false
+
+        val point = playerPoints.removeLast()
+        entity.getControl(PhysicsControl::class.java).reposition(point)
+
+        if (platformPoints.isNotEmpty()) {
+            platformPoints.forEach {
+                spawn("platform", it).getControl(PlatformControl::class.java).stop()
+            }
+
+            platformPoints.clear()
+        }
+    }
+
+    fun endRewind() {
+        isRewinding = false
+        entity.getComponent(CollidableComponent::class.java).value = true
+        t = 0.0
+    }
+
+    fun isOnPlatform(): Boolean = physics.isOnGround || FXGLMath.abs(physics.velocityY) < 2
+
     fun jump() {
-        if (physics.isOnGround || FXGLMath.abs(physics.velocityY) < 2) {
+        if (isOnPlatform()) {
             physics.velocityY = -800.0
         }
     }
@@ -147,6 +225,23 @@ class PlatformControl : Control() {
     fun stop() {
         pause()
         physics.velocityX = 0.0
+    }
+}
+
+class Factory : EntityFactory {
+
+    @Spawns("platform")
+    fun newPlatform(data: SpawnData): Entity {
+        val physics = PhysicsComponent()
+        physics.setBodyType(BodyType.KINEMATIC)
+
+        return Entities.builder()
+                .type(EntityType.PLATFORM)
+                .from(data)
+                .viewFromNodeWithBBox(Rectangle(100.0, 40.0))
+                .with(physics, CollidableComponent(true))
+                .with(PlatformControl())
+                .build()
     }
 }
 
