@@ -3,7 +3,8 @@ package com.almasb.fxglgames.geojumper
 import com.almasb.fxgl.app.*
 import com.almasb.fxgl.core.math.FXGLMath
 import com.almasb.fxgl.entity.*
-import com.almasb.fxgl.entity.component.CollidableComponent
+import com.almasb.fxgl.entity.component.Component
+import com.almasb.fxgl.entity.components.CollidableComponent
 import com.almasb.fxgl.input.UserAction
 import com.almasb.fxgl.physics.*
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType
@@ -53,7 +54,7 @@ class GeoJumperApp : GameApplication() {
     }
 
     override fun initGame() {
-        gameWorld.setEntityFactory(Factory())
+        gameWorld.addEntityFactory(Factory())
 
         //gameWorld.addEntity(Entities.makeScreenBounds(40.0))
 
@@ -77,7 +78,7 @@ class GeoJumperApp : GameApplication() {
                 // only if player actually lands on the platform
                 if (player.bottomY <= platform.y) {
 
-                    platform.getControl(PlatformControl::class.java).stop()
+                    platform.getComponent(PlatformControl::class.java).stop()
 
                     playerControl.startNewCapture()
                 }
@@ -126,7 +127,7 @@ class GeoJumperApp : GameApplication() {
     }
 }
 
-class PlayerControl : Control() {
+class PlayerControl : Component() {
 
     private lateinit var physics: PhysicsComponent
 
@@ -137,7 +138,7 @@ class PlayerControl : Control() {
 
     private var t = 0.0
 
-    override fun onUpdate(entity: Entity, tpf: Double) {
+    override fun onUpdate(tpf: Double) {
 
         physics.velocityX = 0.0
 
@@ -174,11 +175,11 @@ class PlayerControl : Control() {
         entity.getComponent(CollidableComponent::class.java).value = false
 
         val point = playerPoints.removeLast()
-        entity.getControl(PhysicsControl::class.java).reposition(point)
+        entity.getComponent(PhysicsComponent::class.java).reposition(point)
 
         if (platformPoints.isNotEmpty()) {
             platformPoints.forEach {
-                spawn("platform", it).getControl(PlatformControl::class.java).stop()
+                spawn("platform", it).getComponent(PlatformControl::class.java).stop()
             }
 
             platformPoints.clear()
@@ -200,19 +201,19 @@ class PlayerControl : Control() {
     }
 }
 
-class PlatformControl : Control() {
+class PlatformControl : Component() {
 
     private val speed = FXGLMath.random(100.0, 400.0)
 
     private lateinit var physics: PhysicsComponent
 
-    override fun onAdded(entity: Entity) {
+    override fun onAdded() {
         physics.setOnPhysicsInitialized {
             physics.velocityX = speed
         }
     }
 
-    override fun onUpdate(entity: Entity, tpf: Double) {
+    override fun onUpdate(tpf: Double) {
         if (entity.rightX >= FXGL.getAppWidth()) {
             physics.velocityX = -speed
         }
