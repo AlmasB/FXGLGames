@@ -2,9 +2,9 @@ package com.almasb.fxglgames.cannon;
 
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.*;
-import com.almasb.fxgl.entity.component.CollidableComponent;
-import com.almasb.fxgl.entity.control.ExpireCleanControl;
-import com.almasb.fxgl.entity.control.LiftControl;
+import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.extra.entity.components.ExpireCleanControl;
+import com.almasb.fxgl.extra.entity.components.LiftControl;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;

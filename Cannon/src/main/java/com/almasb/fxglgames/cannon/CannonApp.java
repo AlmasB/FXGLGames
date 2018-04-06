@@ -83,7 +83,7 @@ public class CannonApp extends GameApplication {
 
     @Override
     protected void initGame() {
-        getGameWorld().setEntityFactory(new CannonFactory());
+        getGameWorld().addEntityFactory(new CannonFactory());
 
         initScreenBounds();
         initCannon();
