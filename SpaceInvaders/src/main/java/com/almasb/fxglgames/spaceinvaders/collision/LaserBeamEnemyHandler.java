@@ -42,6 +42,6 @@ public class LaserBeamEnemyHandler extends CollisionHandler {
 
     @Override
     protected void onCollisionBegin(Entity beam, Entity enemy) {
-        enemy.getControl(EnemyControl.class).die();
+        enemy.getComponent(EnemyControl.class).die();
     }
 }

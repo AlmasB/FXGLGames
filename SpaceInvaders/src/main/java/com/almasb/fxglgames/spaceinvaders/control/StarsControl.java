@@ -2,9 +2,9 @@ package com.almasb.fxglgames.spaceinvaders.control;
 
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.ViewComponent;
+import com.almasb.fxgl.entity.components.ViewComponent;
 import com.almasb.fxglgames.spaceinvaders.Config;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
@@ -16,13 +16,13 @@ import java.util.stream.Collectors;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class StarsControl extends Control {
+public class StarsControl extends Component {
 
     private ViewComponent view;
     private List<Rectangle> starParticles;
 
     @Override
-    public void onAdded(Entity entity) {
+    public void onAdded() {
         starParticles = ((Group) view.getView().getNodes().get(0))
                 .getChildren()
                 .stream()
@@ -36,7 +36,7 @@ public class StarsControl extends Control {
     }
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
+    public void onUpdate(double tpf) {
         for (int i = 0; i < starParticles.size(); i++) {
             Rectangle star = starParticles.get(i);
             star.setTranslateY(star.getTranslateY() + tpf * Config.STARS_MOVE_SPEED);

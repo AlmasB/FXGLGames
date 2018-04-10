@@ -48,7 +48,7 @@ public class BulletWallHandler extends CollisionHandler {
         if (owner == SpaceInvadersType.ENEMY) {
             bullet.removeFromWorld();
 
-            wall.getControl(WallControl.class).onHit();
+            wall.getComponent(WallControl.class).onHit();
         }
     }
 }

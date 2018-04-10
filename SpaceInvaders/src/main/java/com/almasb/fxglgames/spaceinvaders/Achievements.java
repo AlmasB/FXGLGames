@@ -1,9 +1,8 @@
 package com.almasb.fxglgames.spaceinvaders;
 
-import com.almasb.fxgl.gameplay.Achievement;
-import com.almasb.fxgl.gameplay.AchievementManager;
-import com.almasb.fxgl.gameplay.AchievementStore;
-import com.almasb.fxgl.gameplay.SetAchievementStore;
+import com.almasb.fxgl.gameplay.achievement.Achievement;
+import com.almasb.fxgl.gameplay.achievement.AchievementManager;
+import com.almasb.fxgl.gameplay.achievement.AchievementStore;
 
 import static com.almasb.fxglgames.spaceinvaders.Config.ACHIEVEMENT_ENEMIES_KILLED;
 import static com.almasb.fxglgames.spaceinvaders.Config.ACHIEVEMENT_MASTER_SCORER;
@@ -11,7 +10,6 @@ import static com.almasb.fxglgames.spaceinvaders.Config.ACHIEVEMENT_MASTER_SCORE
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-@SetAchievementStore
 public class Achievements implements AchievementStore {
 
     @Override

@@ -2,7 +2,7 @@ package com.almasb.fxglgames.spaceinvaders.level;
 
 import com.almasb.fxgl.animation.Animation;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.Entity;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
@@ -34,7 +34,7 @@ public class Level1 extends SpaceLevel {
 
                     Entity enemy = spawnEnemy(50, 50);
 
-                    enemy.addControl(new ButterflyControl());
+                    enemy.addComponent(new ButterflyControl());
 
 //                    Animation<?> anim = Entities.animationBuilder()
 //                            .autoReverse(true)
@@ -60,12 +60,12 @@ public class Level1 extends SpaceLevel {
         animations.forEach(Animation::stop);
     }
 
-    private class ButterflyControl extends Control {
+    private class ButterflyControl extends Component {
 
         private double t = 0;
 
         @Override
-        public void onUpdate(Entity entity, double tpf) {
+        public void onUpdate(double tpf) {
             entity.setPosition(curveFunction().add(FXGL.getAppWidth() / 2, FXGL.getAppHeight() / 2 - 100));
 
             t += tpf;

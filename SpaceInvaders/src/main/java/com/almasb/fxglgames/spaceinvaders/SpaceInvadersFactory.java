@@ -30,14 +30,14 @@ import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.*;
-import com.almasb.fxgl.entity.component.CollidableComponent;
-import com.almasb.fxgl.entity.component.HealthComponent;
-import com.almasb.fxgl.entity.component.TimeComponent;
-import com.almasb.fxgl.entity.control.EffectControl;
-import com.almasb.fxgl.entity.control.ExpireCleanControl;
-import com.almasb.fxgl.entity.control.OffscreenCleanControl;
-import com.almasb.fxgl.entity.control.ProjectileControl;
+import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.entity.components.TimeComponent;
 import com.almasb.fxgl.entity.view.EntityView;
+import com.almasb.fxgl.extra.entity.components.ExpireCleanControl;
+import com.almasb.fxgl.extra.entity.components.HealthComponent;
+import com.almasb.fxgl.extra.entity.components.OffscreenCleanControl;
+import com.almasb.fxgl.extra.entity.components.ProjectileControl;
+import com.almasb.fxgl.extra.entity.effect.EffectComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.texture.Texture;
@@ -142,7 +142,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
         // add offscreen clean a bit later so that they are not cleaned from start
         FXGL.getMasterTimer()
                 .runOnceAfter(() -> {
-                    meteor.addControl(new OffscreenCleanControl());
+                    meteor.addComponent(new OffscreenCleanControl());
                 }, Duration.seconds(5));
 
         return meteor;
@@ -172,7 +172,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
                         texture("enemy" + ((int)(Math.random() * 3) + 1) + ".png").toAnimatedTexture(2, Duration.seconds(2))
                 )
                 .with(new CollidableComponent(true), new HealthComponent(2), new TimeComponent(1.0))
-                .with(new EnemyControl(), new EffectControl())
+                .with(new EnemyControl(), new EffectComponent())
                 .build();
     }
 

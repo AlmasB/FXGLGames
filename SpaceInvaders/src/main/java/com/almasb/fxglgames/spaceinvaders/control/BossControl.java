@@ -5,7 +5,7 @@ import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.GameWorld;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.entity.component.CollidableComponent;
+import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
 import javafx.util.Duration;
 
@@ -18,7 +18,7 @@ import static com.almasb.fxgl.app.DSLKt.spawn;
 public class BossControl extends EnemyControl {
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
+    public void onUpdate(double tpf) {
         if (attackTimer.elapsed(nextAttack)) {
             shoot();
 
@@ -43,7 +43,7 @@ public class BossControl extends EnemyControl {
     public void die() {
         Entity enemy = getEntity();
         enemy.getComponent(CollidableComponent.class).setValue(false);
-        enemy.setControlsEnabled(false);
+        enemy.setUpdateEnabled(false);
 
         for (int i = 0; i < 5; i++) {
             FXGL.getMasterTimer().runOnceAfter(() -> {

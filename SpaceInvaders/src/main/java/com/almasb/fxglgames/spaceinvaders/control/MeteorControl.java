@@ -28,19 +28,19 @@ package com.almasb.fxglgames.spaceinvaders.control;
 
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.Entity;
 import javafx.geometry.Point2D;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class MeteorControl extends Control {
+public class MeteorControl extends Component {
 
     private Point2D velocity;
 
     @Override
-    public void onAdded(Entity entity) {
+    public void onAdded() {
         double w = FXGL.getAppWidth();
         double h = FXGL.getAppHeight();
 
@@ -50,7 +50,7 @@ public class MeteorControl extends Control {
     }
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
+    public void onUpdate(double tpf) {
         entity.rotateBy(tpf * 10);
 
         entity.translate(velocity.multiply(tpf));

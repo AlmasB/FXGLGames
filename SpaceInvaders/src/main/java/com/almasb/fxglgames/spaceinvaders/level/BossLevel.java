@@ -3,8 +3,8 @@ package com.almasb.fxglgames.spaceinvaders.level;
 import com.almasb.fxgl.animation.Animation;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.HealthComponent;
-import com.almasb.fxgl.entity.control.CircularMovementControl;
+import com.almasb.fxgl.extra.entity.components.CircularMovementControl;
+import com.almasb.fxgl.extra.entity.components.HealthComponent;
 import com.almasb.fxgl.ui.ProgressBar;
 import com.almasb.fxglgames.spaceinvaders.Config;
 import javafx.scene.paint.Color;
@@ -22,7 +22,7 @@ public class BossLevel extends SpaceLevel {
     @Override
     public void init() {
         Entity boss = spawnBoss(Config.WIDTH * 2 / 3, Config.HEIGHT / 3);
-        boss.addControl(new CircularMovementControl(2, 200));
+        boss.addComponent(new CircularMovementControl(2, 200));
 
         HealthComponent hp = boss.getComponent(HealthComponent.class);
 

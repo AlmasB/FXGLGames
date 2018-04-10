@@ -145,13 +145,13 @@ public class SpaceInvadersApp extends GameApplication {
 
     @Override
     protected void initGame() {
-        getGameWorld().setEntityFactory(new SpaceInvadersFactory());
+        getGameWorld().addEntityFactory(new SpaceInvadersFactory());
 
         // we have to use file system directly, since we are running without menus
         FS.<SaveData>readDataTask(SAVE_DATA_NAME)
                 .onSuccess(data -> savedData = data)
                 .onFailure(ignore -> {})
-                .execute();
+                .run();
 
         initGame(savedData == null
                 ? new SaveData("CPU", ACHIEVEMENT_MASTER_SCORER)
@@ -199,7 +199,7 @@ public class SpaceInvadersApp extends GameApplication {
 
     private void spawnPlayer() {
         player = spawn("Player", getWidth() / 2 - 20, getHeight() - 40);
-        playerControl = player.getControl(PlayerControl.class);
+        playerControl = player.getComponent(PlayerControl.class);
     }
 
     private void spawnWall(double x, double y) {
@@ -369,7 +369,7 @@ public class SpaceInvadersApp extends GameApplication {
     private void killRandomEnemy() {
         List<Entity> list = getGameWorld().getEntitiesByType(SpaceInvadersType.ENEMY);
         list.get(FXGLMath.random(0, list.size() - 1))
-                .getControl(EnemyControl.class)
+                .getComponent(EnemyControl.class)
                 .die();
     }
 
@@ -386,7 +386,7 @@ public class SpaceInvadersApp extends GameApplication {
                     getDisplay().showInputBox("High Score! Enter your name", playerName -> {
 
                         // we have to use file system directly, since we are running without menus
-                        FS.writeDataTask(new SaveData(playerName, score), SAVE_DATA_NAME).execute();
+                        FS.writeDataTask(new SaveData(playerName, score), SAVE_DATA_NAME).run();
 
                         exit();
                     });

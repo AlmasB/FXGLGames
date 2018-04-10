@@ -26,7 +26,7 @@
 
 package com.almasb.fxglgames.spaceinvaders.control;
 
-import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Required;
 import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
@@ -36,7 +36,7 @@ import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 @Required(OwnerComponent.class)
-public class BulletControl extends Control {
+public class BulletControl extends Component {
 
     private OwnerComponent owner;
 
@@ -47,7 +47,7 @@ public class BulletControl extends Control {
     }
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
+    public void onUpdate(double tpf) {
         entity.translateY(owner.getValue() == (SpaceInvadersType.PLAYER) ? -tpf * speed : tpf * speed);
     }
 }

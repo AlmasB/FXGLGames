@@ -26,11 +26,11 @@
 
 package com.almasb.fxglgames.spaceinvaders.collision;
 
-import com.almasb.fxgl.entity.Effect;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.HealthComponent;
-import com.almasb.fxgl.entity.component.TimeComponent;
-import com.almasb.fxgl.entity.control.EffectControl;
+import com.almasb.fxgl.entity.components.TimeComponent;
+import com.almasb.fxgl.extra.entity.components.HealthComponent;
+import com.almasb.fxgl.extra.entity.effect.Effect;
+import com.almasb.fxgl.extra.entity.effect.EffectComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
 import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;
@@ -63,14 +63,14 @@ public class BulletEnemyHandler extends CollisionHandler {
 
         if (hp.getValue() <= 0) {
 
-            if (enemy.hasControl(EnemyControl.class)) {
-                enemy.getControl(EnemyControl.class).die();
+            if (enemy.hasComponent(EnemyControl.class)) {
+                enemy.getComponent(EnemyControl.class).die();
             } else {
-                enemy.getControl(BossControl.class).die();
+                enemy.getComponent(BossControl.class).die();
             }
 
         } else {
-            enemy.getControl(EffectControl.class).startEffect(new Effect(Duration.seconds(1)) {
+            enemy.getComponent(EffectComponent.class).startEffect(new Effect(Duration.seconds(1)) {
                 @Override
                 public void onStart(Entity entity) {
                     entity.getComponent(TimeComponent.class).setValue(0.15);

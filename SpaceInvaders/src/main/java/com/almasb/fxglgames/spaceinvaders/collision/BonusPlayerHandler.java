@@ -30,7 +30,7 @@ import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.CollidableComponent;
+import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.spaceinvaders.BonusType;
 import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
@@ -54,7 +54,7 @@ public class BonusPlayerHandler extends CollisionHandler {
         FXGL.getEventBus().fireEvent(new BonusPickupEvent(BonusPickupEvent.ANY, type));
 
         bonus.getComponent(CollidableComponent.class).setValue(false);
-        bonus.setControlsEnabled(false);
+        bonus.setUpdateEnabled(false);
 
         Entities.animationBuilder()
                 .duration(Duration.seconds(0.66))

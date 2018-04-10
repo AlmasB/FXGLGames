@@ -28,10 +28,10 @@ package com.almasb.fxglgames.spaceinvaders.control;
 
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.CollidableComponent;
+import com.almasb.fxgl.entity.components.CollidableComponent;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
@@ -41,7 +41,7 @@ import static com.almasb.fxgl.app.DSLKt.texture;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class WallControl extends Control {
+public class WallControl extends Component {
 
     private final int originalLives;
     private int lives;
@@ -51,10 +51,8 @@ public class WallControl extends Control {
         originalLives = lives;
     }
 
-    private Entity wall;
-
     @Override
-    public void onUpdate(Entity entity, double tpf) {}
+    public void onUpdate(double tpf) {}
 
     public void onHit() {
         lives--;
@@ -64,23 +62,23 @@ public class WallControl extends Control {
                 .repeat(2)
                 .interpolator(Interpolators.CIRCULAR.EASE_IN())
                 .duration(Duration.seconds(0.33))
-                .scale(wall)
+                .scale(entity)
                 .to(new Point2D(1.2, 1.2))
                 .buildAndPlay();
 
         if (lives == 0) {
-            wall.getComponent(CollidableComponent.class).setValue(false);
+            entity.getComponent(CollidableComponent.class).setValue(false);
 
             Entities.animationBuilder()
                     .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
                     .duration(Duration.seconds(0.8))
-                    .onFinished(wall::removeFromWorld)
-                    .translate(wall)
-                    .from(wall.getPosition())
-                    .to(new Point2D(wall.getX(), FXGL.getAppHeight() + 10))
+                    .onFinished(entity::removeFromWorld)
+                    .translate(entity)
+                    .from(entity.getPosition())
+                    .to(new Point2D(entity.getX(), FXGL.getAppHeight() + 10))
                     .buildAndPlay();
         } else if (lives == originalLives / 2) {
-            wall.setView(texture("wall2.png", 232 / 3, 104 / 3));
+            entity.setView(texture("wall2.png", 232 / 3, 104 / 3));
             play("brick_hit.wav");
         }
     }

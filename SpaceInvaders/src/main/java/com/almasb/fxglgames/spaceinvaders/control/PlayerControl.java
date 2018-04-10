@@ -28,9 +28,10 @@ package com.almasb.fxglgames.spaceinvaders.control;
 
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.*;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.component.Required;
-import com.almasb.fxgl.entity.control.ExpireCleanControl;
 import com.almasb.fxgl.entity.view.EntityView;
+import com.almasb.fxgl.extra.entity.components.ExpireCleanControl;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxglgames.spaceinvaders.Config;
 import com.almasb.fxglgames.spaceinvaders.component.InvincibleComponent;
@@ -43,7 +44,7 @@ import static com.almasb.fxgl.app.DSLKt.*;
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 @Required(InvincibleComponent.class)
-public class PlayerControl extends Control {
+public class PlayerControl extends Component {
 
     private InvincibleComponent invincibility;
 
@@ -54,7 +55,7 @@ public class PlayerControl extends Control {
     private double lastTimeShot = 0;
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
+    public void onUpdate(double tpf) {
         dx = Config.PLAYER_MOVE_SPEED * tpf;
 
         if (!canShoot) {

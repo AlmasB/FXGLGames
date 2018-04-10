@@ -28,7 +28,7 @@ package com.almasb.fxglgames.spaceinvaders.control;
 
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.time.LocalTimer;
@@ -40,22 +40,20 @@ import static com.almasb.fxgl.app.DSLKt.*;
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class EnemyControl extends Control {
+public class EnemyControl extends Component {
 
     // TODO: fix visibility hack
     protected LocalTimer attackTimer;
     protected Duration nextAttack = Duration.seconds(2);
 
-    private Entity enemy;
-
     @Override
-    public void onAdded(Entity entity) {
+    public void onAdded() {
         attackTimer = FXGL.newLocalTimer();
         attackTimer.capture();
     }
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
+    public void onUpdate(double tpf) {
         if (attackTimer.elapsed(nextAttack)) {
             if (FXGLMath.randomBoolean(0.3f)) {
                 shoot();
@@ -72,9 +70,9 @@ public class EnemyControl extends Control {
     }
 
     public void die() {
-        enemy.removeFromWorld();
+        entity.removeFromWorld();
 
-        spawn("Explosion", enemy.getCenter());
+        spawn("Explosion", entity.getCenter());
 
         fire(new GameEvent(GameEvent.ENEMY_KILLED));
     }

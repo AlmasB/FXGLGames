@@ -2,7 +2,7 @@ package com.almasb.fxglgames.spaceinvaders.level;
 
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.control.RandomMoveControl;
+import com.almasb.fxgl.extra.entity.components.RandomMoveComponent;
 import com.almasb.fxglgames.spaceinvaders.Config;
 import javafx.geometry.Rectangle2D;
 
@@ -20,7 +20,7 @@ public class Level2 extends SpaceLevel {
         for (int y = 0; y < ENEMY_ROWS; y++) {
             for (int x = 0; x < ENEMIES_PER_ROW; x++) {
                 Entity enemy = spawnEnemy(x*60, 150 + 50 * geti("level") + y*60);
-                enemy.addControl(new RandomMoveControl(FXGLMath.random(25, 75), x, y, new Rectangle2D(0, 0, Config.WIDTH, Config.HEIGHT / 2)));
+                enemy.addComponent(new RandomMoveComponent(FXGLMath.random(25, 75), x, y, new Rectangle2D(0, 0, Config.WIDTH, Config.HEIGHT / 2)));
             }
         }
     }
