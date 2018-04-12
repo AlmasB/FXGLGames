@@ -283,8 +283,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
                 .at(data.getX() - 40, data.getY() - 40)
                 // we want a smaller texture, 80x80
                 // it has 16 frames, hence 80 * 16
-                .viewFromNode(texture("explosion.png", 80 * 16, 80).toAnimatedTexture(16, Duration.seconds(0.5)))
-                .with(new ExpireCleanControl(Duration.seconds(0.5)))
+                .viewFromAnimatedTexture(texture("explosion.png", 80 * 16, 80).toAnimatedTexture(16, Duration.seconds(0.5)), false, true)
                 .build();
     }
 
