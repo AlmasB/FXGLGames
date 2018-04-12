@@ -70,9 +70,9 @@ public class EnemyControl extends Component {
     }
 
     public void die() {
-        entity.removeFromWorld();
-
         spawn("Explosion", entity.getCenter());
+
+        entity.removeFromWorld();
 
         fire(new GameEvent(GameEvent.ENEMY_KILLED));
     }
