@@ -28,9 +28,9 @@ package com.almasb.fxglgames.outrun
 
 import com.almasb.fxgl.app.texture
 import com.almasb.fxgl.entity.*
-import com.almasb.fxgl.entity.component.CollidableComponent
-import com.almasb.fxgl.entity.control.EffectControl
+import com.almasb.fxgl.entity.components.CollidableComponent
 import com.almasb.fxgl.entity.view.EntityView
+import com.almasb.fxgl.extra.entity.effect.EffectComponent
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
 import java.util.*
@@ -40,7 +40,6 @@ import java.util.*
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-@SetEntityFactory
 class OutRunFactory : TextEntityFactory {
 
     override fun emptyChar(): Char {
@@ -81,7 +80,7 @@ class OutRunFactory : TextEntityFactory {
                 .from(data)
                 .viewFromNodeWithBBox(playerTexture)
                 .with(CollidableComponent(true))
-                .with(PlayerControl(), EffectControl())
+                .with(PlayerControl(), EffectComponent())
                 .build()
     }
 

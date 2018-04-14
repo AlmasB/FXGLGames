@@ -1,7 +1,7 @@
 package com.almasb.fxglgames.tictactoe.control;
 
-import com.almasb.fxgl.entity.Control;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.component.Required;
 import com.almasb.fxglgames.tictactoe.TileValueComponent;
 import com.almasb.fxglgames.tictactoe.TileValue;
@@ -10,10 +10,7 @@ import com.almasb.fxglgames.tictactoe.TileValue;
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 @Required(TileValueComponent.class)
-public class TileControl extends Control {
-
-    @Override
-    public void onUpdate(Entity entity, double tpf) {}
+public class TileControl extends Component {
 
     /**
      * @param value tile value

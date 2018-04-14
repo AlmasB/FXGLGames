@@ -16,7 +16,7 @@ public class TileEntity extends Entity {
         addComponent(new TileValueComponent());
 
         getViewComponent().setView(new TileView(this), true);
-        addControl(new TileControl());
+        addComponent(new TileControl());
     }
 
     public TileValue getValue() {
@@ -24,6 +24,6 @@ public class TileEntity extends Entity {
     }
 
     public TileControl getControl() {
-        return getControl(TileControl.class);
+        return getComponent(TileControl.class);
     }
 }

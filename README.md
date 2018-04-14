@@ -34,6 +34,7 @@ These game demos are constantly upgraded, so feel free to fork and add something
 
 ### Intermediate
 
+* [GeoJumper](GeoJumper) (in Kotlin)
 * [Pong](Pong)
 * [Breakout](Breakout)
 * [TicTacToe](TicTacToe)

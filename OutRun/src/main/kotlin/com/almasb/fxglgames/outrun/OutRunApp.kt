@@ -27,13 +27,10 @@
 package com.almasb.fxglgames.outrun
 
 import com.almasb.fxgl.animation.Interpolators
-import com.almasb.fxgl.app.GameApplication
-import com.almasb.fxgl.app.getd
-import com.almasb.fxgl.app.loopBGM
-import com.almasb.fxgl.app.set
-import com.almasb.fxgl.entity.Effect
+import com.almasb.fxgl.app.*
 import com.almasb.fxgl.entity.Entity
-import com.almasb.fxgl.entity.control.EffectControl
+import com.almasb.fxgl.extra.entity.effect.Effect
+import com.almasb.fxgl.extra.entity.effect.EffectComponent
 import com.almasb.fxgl.input.UserAction
 import com.almasb.fxgl.parser.text.TextLevelParser
 import com.almasb.fxgl.physics.CollisionHandler
@@ -98,13 +95,17 @@ class OutRunApp : GameApplication() {
     }
 
     override fun initGame() {
-        val parser = TextLevelParser(gameWorld.getEntityFactory())
+        val factory = OutRunFactory()
+
+        gameWorld.addEntityFactory(factory)
+
+        val parser = TextLevelParser(factory)
         val level = parser.parse("level0.txt")
 
         gameWorld.setLevel(level)
 
         val player = gameWorld.spawn("player", width / 2 - 40.0, level.height.toDouble())
-        playerControl = player.getControl(PlayerControl::class.java)
+        playerControl = player.getComponent(PlayerControl::class.java)
 
         gameWorld.spawn("enemy", width / 2 + 40.0, level.height.toDouble())
 
@@ -120,15 +121,15 @@ class OutRunApp : GameApplication() {
             override fun onCollisionBegin(player: Entity, wall: Entity) {
                 // reset player to last checkpoint
                 playerControl.reset()
-                wall.getControl(ObstacleControl::class.java).hit()
+                wall.getComponent(ObstacleControl::class.java).hit()
             }
         })
 
         physicsWorld.addCollisionHandler(object : CollisionHandler(EntityType.ENEMY, EntityType.OBSTACLE) {
             override fun onCollisionBegin(enemy: Entity, wall: Entity) {
                 // reset enemy to last checkpoint
-                enemy.getControl(EnemyControl::class.java).reset()
-                wall.getControl(ObstacleControl::class.java).hit()
+                enemy.getComponent(EnemyControl::class.java).reset()
+                wall.getComponent(ObstacleControl::class.java).hit()
             }
         })
 
@@ -136,7 +137,7 @@ class OutRunApp : GameApplication() {
             override fun onCollisionBegin(player: Entity, boost: Entity) {
                 boost.removeFromWorld()
 
-                player.getControl(EffectControl::class.java).startEffect(object : Effect(Duration.seconds(1.0)) {
+                player.getComponent(EffectComponent::class.java).startEffect(object : Effect(Duration.seconds(1.0)) {
                     override fun onStart(entity: Entity) {
                         playerControl.applyExtraBoost()
                     }
@@ -167,7 +168,7 @@ class OutRunApp : GameApplication() {
 
     override fun initUI() {
         val label = uiFactory.newText("", 72.0)
-        uiFactory.centerTextBind(label)
+        centerTextBind(label)
 
         val count = SimpleIntegerProperty(3)
 
@@ -175,7 +176,7 @@ class OutRunApp : GameApplication() {
 
         gameScene.addUINode(label)
 
-        val anim = uiFactory.fadeIn(label, Duration.seconds(1.0))
+        val anim = fadeIn(label, Duration.seconds(1.0))
         anim.cycleCount = 3
         anim.animatedValue.interpolator = Interpolators.CIRCULAR.EASE_IN()
         anim.startInPlayState()

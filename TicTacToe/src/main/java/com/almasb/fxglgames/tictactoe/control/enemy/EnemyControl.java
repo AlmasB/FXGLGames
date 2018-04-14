@@ -1,20 +1,20 @@
 package com.almasb.fxglgames.tictactoe.control.enemy;
 
-import com.almasb.fxgl.entity.Control;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.event.Subscriber;
 import com.almasb.fxglgames.tictactoe.event.AIEvent;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public abstract class EnemyControl extends Control {
+public abstract class EnemyControl extends Component {
 
     private Subscriber eventListener;
 
     @Override
-    public void onAdded(Entity entity) {
+    public void onAdded() {
         eventListener = FXGL.getEventBus().addEventHandler(AIEvent.WAITING, event -> {
             makeMove();
             FXGL.getEventBus().fireEvent(new AIEvent(AIEvent.MOVED));
@@ -22,12 +22,9 @@ public abstract class EnemyControl extends Control {
     }
 
     @Override
-    public void onRemoved(Entity entity) {
+    public void onRemoved() {
         eventListener.unsubscribe();
     }
-
-    @Override
-    public void onUpdate(Entity entity, double tpf) {}
 
     public abstract void makeMove();
 }

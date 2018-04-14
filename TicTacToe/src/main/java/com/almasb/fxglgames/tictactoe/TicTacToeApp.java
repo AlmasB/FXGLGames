@@ -64,7 +64,7 @@ public class TicTacToeApp extends GameApplication {
         Entity enemy = new Entity();
 
         // this controls the AI behavior
-        enemy.addControl(new MinimaxControl());
+        enemy.addComponent(new MinimaxControl());
         getGameWorld().addEntity(enemy);
 
         combos.clear();
