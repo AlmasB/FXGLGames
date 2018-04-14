@@ -3,10 +3,10 @@ package com.almasb.fxglgames.pacman.control;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.BoundingBoxComponent;
-import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.entity.components.BoundingBoxComponent;
+import com.almasb.fxgl.entity.components.PositionComponent;
 import com.almasb.fxglgames.pacman.PacmanApp;
 import com.almasb.fxglgames.pacman.PacmanType;
 
@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class MoveControl extends Control {
+public class MoveControl extends Component {
 
     private PositionComponent position;
     private BoundingBoxComponent bbox;
@@ -27,14 +27,14 @@ public class MoveControl extends Control {
     }
 
     @Override
-    public void onAdded(Entity entity) {
+    public void onAdded() {
         moveDir = FXGLMath.random(MoveDirection.values()).get();
     }
 
     private double speed = 0;
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
+    public void onUpdate(double tpf) {
         speed = tpf * 60;
 
         switch (moveDir) {

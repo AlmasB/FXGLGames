@@ -48,6 +48,6 @@ public class InversePlayerMoveAction extends GoalAction {
     public void onUpdate(double tpf) {
         MoveDirection moveDir = FXGL.<PacmanApp>getAppCast().getPlayerControl().getMoveDirection();
 
-        getEntity().getControl(MoveControl.class).setMoveDirection(moveDir.next().next());
+        getEntity().getComponent(MoveControl.class).setMoveDirection(moveDir.next().next());
     }
 }

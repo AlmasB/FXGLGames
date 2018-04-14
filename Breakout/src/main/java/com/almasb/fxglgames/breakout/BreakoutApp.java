@@ -27,25 +27,23 @@
 package com.almasb.fxglgames.breakout;
 
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.IrremovableComponent;
-import com.almasb.fxgl.effect.ParticleControl;
-import com.almasb.fxgl.effect.ParticleEmitter;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.view.EntityView;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.Level;
 import com.almasb.fxgl.entity.RenderLayer;
-import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.fxgl.gameplay.Level;
+import com.almasb.fxgl.entity.components.IrremovableComponent;
+import com.almasb.fxgl.entity.view.EntityView;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.parser.text.TextLevelParser;
+import com.almasb.fxgl.particle.ParticleComponent;
+import com.almasb.fxgl.particle.ParticleEmitter;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.settings.GameSettings;
-import com.almasb.fxglgames.breakout.control.BallControl;
-import com.almasb.fxglgames.breakout.control.BatControl;
-import com.almasb.fxglgames.breakout.control.BrickControl;
+import com.almasb.fxglgames.breakout.control.BallComponent;
+import com.almasb.fxglgames.breakout.control.BatComponent;
+import com.almasb.fxglgames.breakout.control.BrickComponent;
 import javafx.animation.PathTransition;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;
@@ -66,12 +64,12 @@ import java.util.Map;
  */
 public class BreakoutApp extends GameApplication {
 
-    private BatControl getBatControl() {
-        return getGameWorld().getSingleton(BreakoutType.BAT).get().getControl(BatControl.class);
+    private BatComponent getBatControl() {
+        return getGameWorld().getSingleton(BreakoutType.BAT).get().getComponent(BatComponent.class);
     }
 
-    private BallControl getBallControl() {
-        return getGameWorld().getSingleton(BreakoutType.BALL).get().getControl(BallControl.class);
+    private BallComponent getBallControl() {
+        return getGameWorld().getSingleton(BreakoutType.BALL).get().getComponent(BallComponent.class);
     }
 
     @Override
@@ -163,7 +161,7 @@ public class BreakoutApp extends GameApplication {
 
         Entity bubbles = new Entity();
         bubbles.translateY(getHeight());
-        bubbles.addControl(new ParticleControl(emitter));
+        bubbles.addComponent(new ParticleComponent(emitter));
 
         getGameWorld().addEntity(bubbles);
     }
@@ -175,7 +173,7 @@ public class BreakoutApp extends GameApplication {
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(BreakoutType.BALL, BreakoutType.BRICK) {
             @Override
             protected void onCollisionBegin(Entity ball, Entity brick) {
-                brick.getControl(BrickControl.class).onHit();
+                brick.getComponent(BrickComponent.class).onHit();
             }
         });
     }

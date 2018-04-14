@@ -25,16 +25,18 @@
  */
 package com.almasb.fxglgames.pacman;
 
-import com.almasb.fxgl.ai.pathfinding.AStarGrid;
-import com.almasb.fxgl.ai.pathfinding.NodeState;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.gameplay.Level;
+import com.almasb.fxgl.entity.Level;
+import com.almasb.fxgl.extra.ai.pathfinding.AStarGrid;
+import com.almasb.fxgl.extra.ai.pathfinding.NodeState;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.parser.text.TextLevelParser;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.ui.UI;
+import com.almasb.fxglgames.pacman.collision.PlayerCoinHandler;
+import com.almasb.fxglgames.pacman.collision.PlayerEnemyHandler;
 import com.almasb.fxglgames.pacman.control.PlayerControl;
 import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
@@ -68,7 +70,7 @@ public class PacmanApp extends GameApplication {
     }
 
     public PlayerControl getPlayerControl() {
-        return getPlayer().getControl(PlayerControl.class);
+        return getPlayer().getComponent(PlayerControl.class);
     }
 
     private AStarGrid grid;
@@ -139,7 +141,11 @@ public class PacmanApp extends GameApplication {
 
     @Override
     protected void initGame() {
-        TextLevelParser parser = new TextLevelParser(getGameWorld().getEntityFactory());
+        PacmanFactory factory = new PacmanFactory();
+
+        getGameWorld().addEntityFactory(factory);
+
+        TextLevelParser parser = new TextLevelParser(factory);
 
         Level level = parser.parse("pacman_level0.txt");
         getGameWorld().setLevel(level);
@@ -169,6 +175,12 @@ public class PacmanApp extends GameApplication {
                 onPlayerKilled();
             }
         });
+    }
+
+    @Override
+    protected void initPhysics() {
+        getPhysicsWorld().addCollisionHandler(new PlayerCoinHandler());
+        getPhysicsWorld().addCollisionHandler(new PlayerEnemyHandler());
     }
 
     private PacmanUIController uiController;

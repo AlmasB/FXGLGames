@@ -27,14 +27,10 @@
 package com.almasb.fxglgames.pacman.ai;
 
 import com.almasb.fxgl.ai.GoalAction;
-import com.almasb.fxgl.ai.SingleAction;
-import com.almasb.fxgl.ai.pathfinding.NodeState;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.component.BoundingBoxComponent;
-import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.extra.ai.pathfinding.NodeState;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.pacman.PacmanApp;
 import com.almasb.fxglgames.pacman.PacmanType;
@@ -61,7 +57,7 @@ public class RandomMoveAction extends GoalAction {
     @Override
     public void start() {
         timer.capture();
-        getEntity().getControl(MoveControl.class).setMoveDirection(FXGLMath.random(MoveDirection.values()).get());
+        getEntity().getComponent(MoveControl.class).setMoveDirection(FXGLMath.random(MoveDirection.values()).get());
     }
 
     @Override

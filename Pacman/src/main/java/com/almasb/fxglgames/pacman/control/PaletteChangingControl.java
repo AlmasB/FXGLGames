@@ -27,11 +27,10 @@
 package com.almasb.fxglgames.pacman.control;
 
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.fxgl.entity.component.ViewComponent;
+import com.almasb.fxgl.entity.components.PositionComponent;
+import com.almasb.fxgl.entity.components.ViewComponent;
 import com.almasb.fxgl.texture.Texture;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.transform.Scale;
@@ -41,7 +40,7 @@ import java.util.Random;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class PaletteChangingControl extends Control {
+public class PaletteChangingControl extends Component {
 
     private PositionComponent position;
     private ViewComponent view;
@@ -52,7 +51,7 @@ public class PaletteChangingControl extends Control {
     }
 
     @Override
-    public void onAdded(Entity entity) {
+    public void onAdded() {
         view.setView(texture);
         view.getView().getTransforms().addAll(new Scale(0.26, 0.26, 0, 0));
     }
@@ -66,7 +65,7 @@ public class PaletteChangingControl extends Control {
     private Random random = FXGLMath.getRandom();
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
+    public void onUpdate(double tpf) {
         timeToSwitch += tpf;
 
         if (timeToSwitch >= 5.0) {

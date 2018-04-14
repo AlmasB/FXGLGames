@@ -31,8 +31,8 @@ import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
-import com.almasb.fxgl.extra.entity.components.KeepOnScreenControl;
-import com.almasb.fxgl.extra.entity.components.OffscreenCleanControl;
+import com.almasb.fxgl.extra.entity.components.KeepOnScreenComponent;
+import com.almasb.fxgl.extra.entity.components.OffscreenCleanComponent;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.settings.GameSettings;
@@ -126,7 +126,7 @@ public class DropApp extends GameApplication {
                 .type(DropType.BUCKET)
                 .viewFromTextureWithBBox("bucket.png")
                 .with(new CollidableComponent(true))
-                .with(new KeepOnScreenControl(true, false))
+                .with(new KeepOnScreenComponent(true, false))
                 .buildAndAttach(getGameWorld());
     }
 
@@ -136,7 +136,7 @@ public class DropApp extends GameApplication {
                 .type(DropType.DROPLET)
                 .viewFromTextureWithBBox("droplet.png")
                 .with(new CollidableComponent(true))
-                .with(new OffscreenCleanControl())
+                .with(new OffscreenCleanComponent())
                 .buildAndAttach(getGameWorld());
     }
 

@@ -27,19 +27,18 @@
 package com.almasb.fxglgames.breakout.control;
 
 import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.entity.Control;
-import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.physics.PhysicsComponent;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class BallControl extends Control {
+public class BallComponent extends Component {
 
     private PhysicsComponent physics;
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
+    public void onUpdate(double tpf) {
         limitVelocity();
     }
 

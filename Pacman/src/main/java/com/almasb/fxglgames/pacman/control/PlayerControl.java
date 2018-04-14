@@ -26,17 +26,16 @@
 
 package com.almasb.fxglgames.pacman.control;
 
-
-import com.almasb.fxgl.ai.pathfinding.AStarGrid;
-import com.almasb.fxgl.ai.pathfinding.NodeState;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.Control;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.component.BoundingBoxComponent;
-import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.fxgl.entity.component.RotationComponent;
-import com.almasb.fxgl.entity.component.ViewComponent;
+
+import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.entity.components.BoundingBoxComponent;
+import com.almasb.fxgl.entity.components.PositionComponent;
+import com.almasb.fxgl.entity.components.RotationComponent;
+import com.almasb.fxgl.entity.components.ViewComponent;
+import com.almasb.fxgl.extra.ai.pathfinding.AStarGrid;
+import com.almasb.fxgl.extra.ai.pathfinding.NodeState;
 import com.almasb.fxglgames.pacman.PacmanApp;
 import com.almasb.fxglgames.pacman.PacmanType;
 import javafx.animation.FadeTransition;
@@ -50,7 +49,7 @@ import java.util.Random;
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class PlayerControl extends Control {
+public class PlayerControl extends Component {
     private PositionComponent position;
     private BoundingBoxComponent bbox;
     private ViewComponent view;
@@ -65,7 +64,7 @@ public class PlayerControl extends Control {
     private double speed = 0;
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
+    public void onUpdate(double tpf) {
         speed = tpf * 60;
 
         if (position.getX() < 0) {

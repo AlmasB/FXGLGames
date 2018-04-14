@@ -27,20 +27,15 @@
 package com.almasb.fxglgames.breakout.control;
 
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.Entity;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class BrickControl extends Control {
+public class BrickComponent extends Component {
 
     private int lives = 2;
-
-    private Entity brick;
-
-    @Override
-    public void onUpdate(Entity entity, double tpf) {}
 
     public void onHit() {
         FXGL.getAudioPlayer().playSound("brick_hit.wav");
@@ -48,9 +43,9 @@ public class BrickControl extends Control {
         lives--;
 
         if (lives == 1) {
-            brick.setView(FXGL.getAssetLoader().loadTexture("brick_blue_cracked.png", 232 / 3, 104 / 3));
+            entity.setView(FXGL.getAssetLoader().loadTexture("brick_blue_cracked.png", 232 / 3, 104 / 3));
         } else if (lives == 0) {
-            brick.removeFromWorld();
+            entity.removeFromWorld();
         }
     }
 }

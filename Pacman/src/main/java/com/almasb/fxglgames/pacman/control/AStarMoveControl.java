@@ -26,13 +26,12 @@
 
 package com.almasb.fxglgames.pacman.control;
 
-import com.almasb.fxgl.ai.GoalAction;
-import com.almasb.fxgl.ai.pathfinding.AStarGrid;
-import com.almasb.fxgl.ai.pathfinding.AStarNode;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.entity.components.PositionComponent;
+import com.almasb.fxgl.extra.ai.pathfinding.AStarGrid;
+import com.almasb.fxgl.extra.ai.pathfinding.AStarNode;
 import com.almasb.fxglgames.pacman.PacmanApp;
 import javafx.geometry.Point2D;
 
@@ -42,7 +41,7 @@ import java.util.List;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class AStarMoveControl extends Control {
+public class AStarMoveControl extends Component {
 
     private List<AStarNode> path = new ArrayList<>();
 
@@ -70,11 +69,11 @@ public class AStarMoveControl extends Control {
         path = grid.getPath(startX, startY, targetX, targetY);
 
         // we use A*, so no need for that
-        getEntity().getControlOptional(MoveControl.class).ifPresent(c -> c.pause());
+        getEntity().getComponentOptional(MoveControl.class).ifPresent(c -> c.pause());
     }
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
+    public void onUpdate(double tpf) {
         if (path.isEmpty())
             return;
 
@@ -103,7 +102,7 @@ public class AStarMoveControl extends Control {
         }
 
         if (path.isEmpty()) {
-            getEntity().getControlOptional(MoveControl.class).ifPresent(c -> c.resume());
+            getEntity().getComponentOptional(MoveControl.class).ifPresent(c -> c.resume());
         }
     }
 }

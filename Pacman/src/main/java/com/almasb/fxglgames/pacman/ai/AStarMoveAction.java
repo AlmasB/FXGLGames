@@ -27,11 +27,10 @@
 package com.almasb.fxglgames.pacman.ai;
 
 import com.almasb.fxgl.ai.GoalAction;
-import com.almasb.fxgl.ai.pathfinding.AStarGrid;
-import com.almasb.fxgl.ai.pathfinding.AStarNode;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.entity.components.PositionComponent;
+import com.almasb.fxgl.extra.ai.pathfinding.AStarGrid;
 import com.almasb.fxglgames.pacman.PacmanApp;
 import com.almasb.fxglgames.pacman.PacmanType;
 import com.almasb.fxglgames.pacman.control.AStarMoveControl;
@@ -67,12 +66,12 @@ public class AStarMoveAction extends GoalAction {
         targetX = (int)((player.getX() + 20) / PacmanApp.BLOCK_SIZE);
         targetY = (int)((player.getY() + 20) / PacmanApp.BLOCK_SIZE);
 
-        getEntity().getControl(AStarMoveControl.class).moveTo(new Point2D(targetX * PacmanApp.BLOCK_SIZE, targetY * PacmanApp.BLOCK_SIZE));
+        getEntity().getComponent(AStarMoveControl.class).moveTo(new Point2D(targetX * PacmanApp.BLOCK_SIZE, targetY * PacmanApp.BLOCK_SIZE));
     }
 
     @Override
     public boolean reachedGoal() {
-        return getEntity().getControl(AStarMoveControl.class).isDone();
+        return getEntity().getComponent(AStarMoveControl.class).isDone();
     }
 
     @Override

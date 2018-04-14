@@ -1,19 +1,19 @@
 package com.almasb.fxglgames.flappy;
 
 import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.entity.Control;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.entity.component.Component;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class PlayerControl extends Control {
+public class PlayerControl extends Component {
 
     private Vec2 acceleration = new Vec2(6, 0);
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
+    public void onUpdate(double tpf) {
         acceleration.x += tpf * 0.1;
         acceleration.y += tpf * 10;
 

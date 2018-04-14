@@ -28,18 +28,18 @@ package com.almasb.fxglgames.breakout;
 
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.*;
-import com.almasb.fxgl.effect.ParticleControl;
-import com.almasb.fxgl.effect.ParticleEmitter;
-import com.almasb.fxgl.effect.ParticleEmitters;
-import com.almasb.fxgl.entity.component.CollidableComponent;
+import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.particle.ParticleComponent;
+import com.almasb.fxgl.particle.ParticleEmitter;
+import com.almasb.fxgl.particle.ParticleEmitters;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
-import com.almasb.fxglgames.breakout.control.BallControl;
-import com.almasb.fxglgames.breakout.control.BatControl;
-import com.almasb.fxglgames.breakout.control.BrickControl;
+import com.almasb.fxglgames.breakout.control.BallComponent;
+import com.almasb.fxglgames.breakout.control.BatComponent;
+import com.almasb.fxglgames.breakout.control.BrickComponent;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -56,7 +56,7 @@ public class BreakoutFactory implements TextEntityFactory {
                 .type(BreakoutType.BRICK)
                 .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("brick_blue.png", 232 / 3, 104 / 3))
                 .with(new PhysicsComponent(), new CollidableComponent(true))
-                .with(new BrickControl())
+                .with(new BrickComponent())
                 .build();
     }
 
@@ -71,7 +71,7 @@ public class BreakoutFactory implements TextEntityFactory {
                 .at(FXGL.getSettings().getWidth() / 2 - 50, 30)
                 .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("bat.png", 464 / 3, 102 / 3))
                 .with(physics, new CollidableComponent(true))
-                .with(new BatControl())
+                .with(new BatComponent())
                 .build();
     }
 
@@ -92,7 +92,7 @@ public class BreakoutFactory implements TextEntityFactory {
                 .bbox(new HitBox("Main", BoundingShape.circle(10)))
                 .viewFromNode(new Circle(10, Color.LIGHTCORAL))
                 .with(physics, new CollidableComponent(true))
-                .with(new BallControl(), new ParticleControl(emitter))
+                .with(new BallComponent(), new ParticleComponent(emitter))
                 .build();
     }
 

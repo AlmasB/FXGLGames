@@ -4,7 +4,7 @@ import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.component.CollidableComponent;
+import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.CollisionHandler;
@@ -115,14 +115,11 @@ public class FlappyBirdApp extends GameApplication {
     private void initPlayer() {
         playerControl = new PlayerControl();
 
-        Texture view = getAssetLoader().loadTexture("bird.png")
-                .toAnimatedTexture(2, Duration.seconds(0.5));
-
         Entity player = Entities.builder()
                 .at(100, 100)
                 .type(EntityType.PLAYER)
                 .bbox(new HitBox("BODY", BoundingShape.box(70, 60)))
-                .viewFromNode(view)
+                .viewFromAnimatedTexture("bird.png", 2, Duration.seconds(0.5))
                 .with(new CollidableComponent(true))
                 .with(playerControl, new WallBuildingControl())
                 .build();

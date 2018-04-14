@@ -28,8 +28,7 @@ package com.almasb.fxglgames.pacman;
 
 import com.almasb.fxgl.ai.AIControl;
 import com.almasb.fxgl.entity.*;
-import com.almasb.fxgl.entity.component.CollidableComponent;
-import com.almasb.fxgl.entity.component.DrawableComponent;
+import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.view.EntityView;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
@@ -53,7 +52,6 @@ import static com.almasb.fxgl.app.DSLKt.texture;
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-@SetEntityFactory
 public class PacmanFactory implements TextEntityFactory {
 
     @SpawnSymbol('1')
@@ -123,7 +121,7 @@ public class PacmanFactory implements TextEntityFactory {
                 .build();
 
         if (aiName.equals("guard.tree")) {
-            enemy.removeControl(MoveControl.class);
+            enemy.removeComponent(MoveControl.class);
         }
 
         return enemy;

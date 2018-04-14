@@ -3,8 +3,8 @@ package com.almasb.fxglgames.cannon;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.components.CollidableComponent;
-import com.almasb.fxgl.extra.entity.components.ExpireCleanControl;
-import com.almasb.fxgl.extra.entity.components.LiftControl;
+import com.almasb.fxgl.extra.entity.components.ExpireCleanComponent;
+import com.almasb.fxgl.extra.entity.components.LiftComponent;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
@@ -24,7 +24,7 @@ public class CannonFactory implements EntityFactory {
                 .type(CannonType.CANNON)
                 .from(data)
                 .viewFromNode(new Rectangle(70, 30, Color.BROWN))
-                .with(new LiftControl(Duration.seconds(1), 150, true))
+                .with(new LiftComponent(Duration.seconds(1), 150, true))
                 .build();
     }
 
@@ -45,7 +45,7 @@ public class CannonFactory implements EntityFactory {
                 .from(data)
                 .viewFromNodeWithBBox(new Rectangle(25, 25, Color.BLUE))
                 .with(physics, new CollidableComponent(true))
-                .with(new ExpireCleanControl(Duration.seconds(4)))
+                .with(new ExpireCleanComponent(Duration.seconds(4)))
                 .build();
     }
 
