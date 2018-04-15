@@ -2,8 +2,8 @@ package com.almasb.fxglgames.slotmachine;
 
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxglgames.slotmachine.control.LeverControl;
-import com.almasb.fxglgames.slotmachine.control.WheelControl;
+import com.almasb.fxglgames.slotmachine.components.LeverComponent;
+import com.almasb.fxglgames.slotmachine.components.WheelComponent;
 
 import java.util.stream.IntStream;
 
@@ -16,7 +16,7 @@ public class SlotMachineFactory {
         return Entities.builder()
                 .at(1030, 340)
                 .viewFromTexture("lever0.png")
-                .with(new LeverControl())
+                .with(new LeverComponent())
                 .build();
     }
 
@@ -34,7 +34,7 @@ public class SlotMachineFactory {
                             .type(SlotMachineType.WHEEL)
                             .at(50 + 240 * i, 70)
                             .viewFromTexture("elements.png")
-                            .with(new WheelControl())
+                            .with(new WheelComponent())
                             .build();
                 }).toArray(Entity[]::new);
     }

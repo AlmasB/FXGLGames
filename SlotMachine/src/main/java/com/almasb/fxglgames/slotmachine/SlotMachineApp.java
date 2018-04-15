@@ -1,9 +1,8 @@
 package com.almasb.fxglgames.slotmachine;
 
-import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.settings.GameSettings;
-import com.almasb.fxglgames.slotmachine.control.WheelControl;
+import com.almasb.fxglgames.slotmachine.components.WheelComponent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -64,18 +63,18 @@ public class SlotMachineApp extends GameApplication {
     private List<Integer> spinValues = new ArrayList<>();
 
     public boolean isMachineSpinning() {
-        return getWheels().stream().anyMatch(WheelControl::isSpinning);
+        return getWheels().stream().anyMatch(WheelComponent::isSpinning);
     }
 
     public void spin() {
-        getWheels().forEach(WheelControl::spin);
+        getWheels().forEach(WheelComponent::spin);
     }
 
-    public List<WheelControl> getWheels() {
+    public List<WheelComponent> getWheels() {
         return getGameWorld()
                 .getEntitiesByType(SlotMachineType.WHEEL)
                 .stream()
-                .map(e -> e.getControl(WheelControl.class))
+                .map(e -> e.getComponent(WheelComponent.class))
                 .collect(Collectors.toList());
     }
 

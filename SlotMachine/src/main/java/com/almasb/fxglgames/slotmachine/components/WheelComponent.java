@@ -1,10 +1,8 @@
-package com.almasb.fxglgames.slotmachine.control;
+package com.almasb.fxglgames.slotmachine.components;
 
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.Control;
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.entity.components.PositionComponent;
 import com.almasb.fxglgames.slotmachine.SlotMachineApp;
 
 import java.util.Random;
@@ -12,7 +10,7 @@ import java.util.Random;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class WheelControl extends Control {
+public class WheelComponent extends Component {
 
     // [0..9]
     private int value = 0;
@@ -24,7 +22,7 @@ public class WheelControl extends Control {
     private PositionComponent position;
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
+    public void onUpdate(double tpf) {
         if (!spinning)
             return;
 

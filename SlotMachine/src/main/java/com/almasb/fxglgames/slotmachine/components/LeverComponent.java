@@ -1,30 +1,23 @@
-package com.almasb.fxglgames.slotmachine.control;
+package com.almasb.fxglgames.slotmachine.components;
 
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.Control;
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.component.ViewComponent;
+import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.entity.components.ViewComponent;
 import com.almasb.fxglgames.slotmachine.SlotMachineApp;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class LeverControl extends Control {
+public class LeverComponent extends Component {
 
     private ViewComponent view;
     private String currentTexture = "lever0.png";
 
     @Override
-    public void onAdded(Entity entity) {
+    public void onAdded() {
         view.getView().setOnMouseClicked(e -> {
             trigger();
         });
-    }
-
-    @Override
-    public void onUpdate(Entity entity, double tpf) {
-
     }
 
     public void trigger() {

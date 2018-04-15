@@ -31,17 +31,17 @@ import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.effect.ParticleControl;
-import com.almasb.fxgl.effect.ParticleEmitter;
-import com.almasb.fxgl.effect.ParticleEmitters;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.CollidableComponent;
+import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.input.ActionType;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.InputMapping;
 import com.almasb.fxgl.input.OnUserAction;
 import com.almasb.fxgl.net.Server;
+import com.almasb.fxgl.particle.ParticleComponent;
+import com.almasb.fxgl.particle.ParticleEmitter;
+import com.almasb.fxgl.particle.ParticleEmitters;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.settings.GameSettings;
@@ -95,11 +95,11 @@ public class PongApp extends GameApplication {
             Platform.runLater(() -> {
                 if (bat2 != null) {
                     if (message.up) {
-                        bat2.getControl(BatControl.class).up();
+                        bat2.getComponent(BatComponent.class).up();
                     } else if (message.down) {
-                        bat2.getControl(BatControl.class).down();
+                        bat2.getComponent(BatComponent.class).down();
                     } else {
-                        bat2.getControl(BatControl.class).stop();
+                        bat2.getComponent(BatComponent.class).stop();
                     }
                 }
             });
@@ -227,18 +227,18 @@ public class PongApp extends GameApplication {
         emitter.setSize(5, 10);
         emitter.setEmissionRate(1);
 
-        ball.addControl(new ParticleControl(emitter));
+        ball.addComponent(new ParticleComponent(emitter));
 
         getGameWorld().addEntity(ball);
     }
 
-    private BatControl playerBat;
+    private BatComponent playerBat;
 
     private void initPlayerBat() {
         bat1 = factory.newBat(getWidth() / 4, getHeight() / 2 - 30, true);
         getGameWorld().addEntity(bat1);
 
-        playerBat = bat1.getControl(BatControl.class);
+        playerBat = bat1.getComponent(BatComponent.class);
     }
 
     private void initEnemyBat() {

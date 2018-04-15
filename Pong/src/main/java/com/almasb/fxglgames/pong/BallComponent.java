@@ -27,21 +27,19 @@
 package com.almasb.fxglgames.pong;
 
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.Control;
-import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.physics.PhysicsComponent;
-import com.almasb.fxgl.physics.PhysicsControl;
 import javafx.geometry.Point2D;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class BallControl extends Control {
+public class BallComponent extends Component {
 
     private PhysicsComponent physics;
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
+    public void onUpdate(double tpf) {
         limitVelocity();
         checkOffscreen();
     }
@@ -67,7 +65,7 @@ public class BallControl extends Control {
                 .getViewport()
                 .getVisibleArea())) {
 
-            getEntity().getControl(PhysicsControl.class).reposition(new Point2D(
+            getEntity().getComponent(PhysicsComponent.class).reposition(new Point2D(
                     FXGL.getAppWidth() / 2,
                     FXGL.getAppHeight() / 2
             ));

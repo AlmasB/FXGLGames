@@ -28,7 +28,7 @@ package com.almasb.fxglgames.pong;
 
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.CollidableComponent;
+import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
@@ -66,7 +66,7 @@ public class PongFactory {
 
             ball.addComponent(ballPhysics);
             ball.addComponent(new CollidableComponent(true));
-            ball.addControl(new BallControl());
+            ball.addComponent(new BallComponent());
         }
 
         return ball;
@@ -85,7 +85,7 @@ public class PongFactory {
             batPhysics.setBodyType(BodyType.KINEMATIC);
             bat.addComponent(batPhysics);
 
-            bat.addControl(isPlayer || mode == GameMode.MP_HOST ? new BatControl() : new EnemyBatControl());
+            bat.addComponent(isPlayer || mode == GameMode.MP_HOST ? new BatComponent() : new EnemyBatComponent());
         }
 
         return bat;

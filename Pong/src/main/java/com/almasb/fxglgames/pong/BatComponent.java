@@ -26,44 +26,31 @@
 
 package com.almasb.fxglgames.pong;
 
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.BoundingBoxComponent;
+import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.physics.PhysicsComponent;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class EnemyBatControl extends BatControl {
-    private Entity ball;
+public class BatComponent extends Component {
 
-    @Override
-    public void onUpdate(Entity entity, double tpf) {
-        super.onUpdate(entity, tpf);
+    protected PhysicsComponent physics;
 
-        if (ball == null) {
-            ball = entity.getWorld().getSingleton(EntityType.BALL).orElse(null);
-        } else {
-            moveAI();
-        }
+    public void up() {
+        if (entity.getY() >= 5)
+            physics.setLinearVelocity(0, -5 * 60);
+        else
+            stop();
     }
 
-    private void moveAI() {
-        BoundingBoxComponent ballBox = ball.getBoundingBoxComponent();
-        BoundingBoxComponent batBox = getEntity().getBoundingBoxComponent();
-
-        boolean isBallToLeft = ballBox.getMaxXWorld() <= batBox.getMinXWorld();
-
-        if (ballBox.getMinYWorld() < batBox.getMinYWorld()) {
-            if (isBallToLeft)
-                up();
-            else
-                down();
-        } else if (ballBox.getMinYWorld() > batBox.getMinYWorld()) {
-            if (isBallToLeft)
-                down();
-            else
-                up();
-        } else {
+    public void down() {
+        if (entity.getBottomY() <= 600 - 5)
+            physics.setLinearVelocity(0, 5 * 60);
+        else
             stop();
-        }
+    }
+
+    public void stop() {
+        physics.setLinearVelocity(0, 0);
     }
 }
