@@ -33,10 +33,10 @@ import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.components.TimeComponent;
 import com.almasb.fxgl.entity.view.EntityView;
-import com.almasb.fxgl.extra.entity.components.ExpireCleanControl;
+import com.almasb.fxgl.extra.entity.components.ExpireCleanComponent;
 import com.almasb.fxgl.extra.entity.components.HealthComponent;
-import com.almasb.fxgl.extra.entity.components.OffscreenCleanControl;
-import com.almasb.fxgl.extra.entity.components.ProjectileControl;
+import com.almasb.fxgl.extra.entity.components.OffscreenCleanComponent;
+import com.almasb.fxgl.extra.entity.components.ProjectileComponent;
 import com.almasb.fxgl.extra.entity.effect.EffectComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
@@ -142,7 +142,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
         // add offscreen clean a bit later so that they are not cleaned from start
         FXGL.getMasterTimer()
                 .runOnceAfter(() -> {
-                    meteor.addComponent(new OffscreenCleanControl());
+                    meteor.addComponent(new OffscreenCleanComponent());
                 }, Duration.seconds(5));
 
         return meteor;
@@ -196,7 +196,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
                 .at(owner.getCenter().add(-8, 20))
                 .viewFromTextureWithBBox("enemy_bullet.png")
                 .with(new CollidableComponent(true), new OwnerComponent(owner.getType()))
-                .with(new ProjectileControl(new Point2D(0, 1), 600), new OffscreenCleanControl())
+                .with(new ProjectileComponent(new Point2D(0, 1), 600), new OffscreenCleanComponent())
                 .with("dead", false)
                 .build();
     }
@@ -210,7 +210,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
                 .at(owner.getCenter().add(-4.5, -20))
                 .bbox(new HitBox(BoundingShape.box(9, 20)))
                 .with(new CollidableComponent(true), new OwnerComponent(owner.getType()))
-                .with(new OffscreenCleanControl(), new BulletControl(850))
+                .with(new OffscreenCleanComponent(), new BulletControl(850))
                 .build();
 
         Texture t = texture("laser2.png");
@@ -293,7 +293,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
 
         Entity levelInfo = Entities.builder()
                 .viewFromNode(levelText)
-                .with(new ExpireCleanControl(Duration.seconds(LEVEL_START_DELAY)))
+                .with(new ExpireCleanComponent(Duration.seconds(LEVEL_START_DELAY)))
                 .build();
 
         Entities.animationBuilder()

@@ -31,7 +31,7 @@ import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.component.Required;
 import com.almasb.fxgl.entity.view.EntityView;
-import com.almasb.fxgl.extra.entity.components.ExpireCleanControl;
+import com.almasb.fxgl.extra.entity.components.ExpireCleanComponent;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxglgames.spaceinvaders.Config;
 import com.almasb.fxglgames.spaceinvaders.component.InvincibleComponent;
@@ -143,7 +143,7 @@ public class PlayerControl extends Component {
                 .at(getEntity().getCenter().subtract(particle.getWidth() / 2, particle.getHeight() / 2))
                 .viewFromNode(new EntityView(new Texture(particle)))
                 .renderLayer(particleLayer)
-                .with(new ExpireCleanControl(Duration.seconds(0.33)).animateOpacity())
+                .with(new ExpireCleanComponent(Duration.seconds(0.33)).animateOpacity())
                 .buildAndAttach();
     }
 }

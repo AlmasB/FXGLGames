@@ -70,7 +70,7 @@ public class BulletEnemyHandler extends CollisionHandler {
             }
 
         } else {
-            enemy.getComponent(EffectComponent.class).startEffect(new Effect(Duration.seconds(1)) {
+            enemy.getComponentOptional(EffectComponent.class).ifPresent(e -> e.startEffect(new Effect(Duration.seconds(1)) {
                 @Override
                 public void onStart(Entity entity) {
                     entity.getComponent(TimeComponent.class).setValue(0.15);
@@ -80,7 +80,7 @@ public class BulletEnemyHandler extends CollisionHandler {
                 public void onEnd(Entity entity) {
                     entity.getComponent(TimeComponent.class).setValue(1);
                 }
-            });
+            }));
         }
     }
 }

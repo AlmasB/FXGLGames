@@ -4,7 +4,7 @@ import com.almasb.fxgl.animation.Animation;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.extra.entity.components.CircularMovementControl;
+import com.almasb.fxgl.extra.entity.components.CircularMovementComponent;
 import com.almasb.fxglgames.spaceinvaders.Config;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
@@ -62,7 +62,7 @@ public class Level6 extends SpaceLevel {
 
                     } else {
                         enemy = spawnEnemy(220, 180);
-                        enemy.addComponent(new CircularMovementControl(1.5, 100));
+                        enemy.addComponent(new CircularMovementComponent(1.5, 100));
                     }
 
                 }, Duration.seconds(t));
