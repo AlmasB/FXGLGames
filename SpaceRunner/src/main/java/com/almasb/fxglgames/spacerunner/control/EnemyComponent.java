@@ -27,33 +27,27 @@
 package com.almasb.fxglgames.spacerunner.control;
 
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.audio.AudioPlayer;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.entity.Control;
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.entity.components.PositionComponent;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.spacerunner.GameConfig;
-import com.almasb.fxglgames.spacerunner.SpaceRunnerFactory;
-import com.almasb.fxglgames.spacerunner.SpaceRunnerType;
 import javafx.util.Duration;
+
+import static com.almasb.fxgl.app.DSLKt.spawn;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class EnemyControl extends Control {
+public class EnemyComponent extends Component {
 
     private LocalTimer attackTimer;
     private Duration nextAttack = Duration.seconds(2);
 
-    private AudioPlayer audioPlayer;
-
     private PositionComponent position;
 
     @Override
-    public void onAdded(Entity entity) {
-        audioPlayer = FXGL.getAudioPlayer();
-
+    public void onAdded() {
         attackTimer = FXGL.newLocalTimer();
         attackTimer.capture();
     }
@@ -61,7 +55,7 @@ public class EnemyControl extends Control {
     private double t = FXGLMath.random(1, 10000);
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
+    public void onUpdate(double tpf) {
         t += tpf;
 
         if (attackTimer.elapsed(nextAttack)) {
@@ -77,12 +71,13 @@ public class EnemyControl extends Control {
     }
 
     private void shoot() {
-//        Entity bullet = FXGL.getInstance(SpaceRunnerFactory.class)
-//                .newBullet(position.getX(), position.getY() + 20, SpaceRunnerType.ENEMY);
-//
-//        getEntity().getWorld().addEntity(bullet);
+        spawn("EnemyBullet", entity.getPosition().subtract(15, 0));
+    }
 
-        //audioPlayer.playSound("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
+    public void die() {
+        spawn("Explosion", entity.getCenter());
+
+        entity.removeFromWorld();
     }
 }
 

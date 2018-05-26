@@ -27,10 +27,10 @@
 package com.almasb.fxglgames.spacerunner.collision;
 
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.entity.component.UserDataComponent;
+import com.almasb.fxgl.extra.entity.components.HealthComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.spacerunner.SpaceRunnerType;
+import com.almasb.fxglgames.spacerunner.control.EnemyComponent;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -43,13 +43,13 @@ public class BulletEnemyHandler extends CollisionHandler {
 
     @Override
     protected void onCollisionBegin(Entity bullet, Entity enemy) {
-//        SpaceRunnerType ownerType = (SpaceRunnerType) bullet.getComponent(UserDataComponent.class).getValue();
-//
-//        if (!enemy.isType(ownerType)) {
-//            enemy.getWorld().spawn("Enemy1", new SpawnData(enemy.getX() + 500, 300));
-//
-            bullet.removeFromWorld();
-            enemy.removeFromWorld();
-//        }
+        bullet.removeFromWorld();
+
+        HealthComponent health = enemy.getComponent(HealthComponent.class);
+        health.setValue(health.getValue() - 1);
+
+        if (health.getValue() == 0) {
+            enemy.getComponent(EnemyComponent.class).die();
+        }
     }
 }

@@ -32,18 +32,21 @@ import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.view.ScrollingBackgroundView;
+import com.almasb.fxgl.extra.entity.components.HealthComponent;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxgl.ui.ProgressBar;
 import com.almasb.fxglgames.spacerunner.collision.BulletEnemyHandler;
-import com.almasb.fxglgames.spacerunner.control.PlayerControl;
+import com.almasb.fxglgames.spacerunner.control.PlayerComponent;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.HorizontalDirection;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -57,7 +60,7 @@ import static com.almasb.fxgl.app.DSLKt.*;
  */
 public class SpaceRunnerApp extends GameApplication {
 
-    private PlayerControl playerControl;
+    private PlayerComponent playerComponent;
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -78,21 +81,21 @@ public class SpaceRunnerApp extends GameApplication {
         getInput().addAction(new UserAction("Move Up") {
             @Override
             protected void onAction() {
-                playerControl.up();
+                playerComponent.up();
             }
         }, KeyCode.W);
 
         getInput().addAction(new UserAction("Move Down") {
             @Override
             protected void onAction() {
-                playerControl.down();
+                playerComponent.down();
             }
         }, KeyCode.S);
 
         getInput().addAction(new UserAction("Change Weapon") {
             @Override
             protected void onAction() {
-                playerControl.changeWeapon();
+                playerComponent.changeWeapon();
 
                 weaponTexture.setImage(image("sprite_laser.png"));
                 bullets.textProperty().bind(getip("laser").asString("x %d"));
@@ -102,7 +105,7 @@ public class SpaceRunnerApp extends GameApplication {
         getInput().addAction(new UserAction("Shoot") {
             @Override
             protected void onAction() {
-                playerControl.shoot();
+                playerComponent.shoot();
             }
         }, MouseButton.PRIMARY);
     }
@@ -111,11 +114,16 @@ public class SpaceRunnerApp extends GameApplication {
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("bullets", 90);
         vars.put("laser", 50);
+        vars.put("rockets", 10);
+        vars.put("heat", 0);
+        vars.put("overheating", false);
+        vars.put("shield", 0);
+        vars.put("hasShield", false);
     }
 
     @Override
     protected void initGame() {
-        getGameWorld().setEntityFactory(new SpaceRunnerFactory());
+        getGameWorld().addEntityFactory(new SpaceRunnerFactory());
 
         Texture t = getAssetLoader().loadTexture("bg_0.png");
 
@@ -124,12 +132,34 @@ public class SpaceRunnerApp extends GameApplication {
 
         Entity player = getGameWorld().spawn("Player", 50, getHeight() / 2);
 
-        playerControl = player.getControl(PlayerControl.class);
+        playerComponent = player.getComponent(PlayerComponent.class);
 
         getGameScene().getViewport().setBounds(0, 0, Integer.MAX_VALUE, getHeight());
         getGameScene().getViewport().bindToEntity(player, 50, getHeight() / 2);
 
+        getGameState().<Integer>addListener("heat", (prev, now) -> {
+            if (now >= 100) {
+                set("overheating", true);
+            }
+
+            if (now == 0) {
+                set("overheating", false);
+            }
+        });
+
+        getbp("hasShield").bind(getip("shield").isEqualTo(100));
+
         run(this::spawnWave, Duration.seconds(5));
+
+        run(() -> {
+            if (geti("heat") > 0)
+                inc("heat", -1);
+        }, Duration.seconds(0.25));
+
+        run(() -> {
+            if (geti("shield") < 100)
+                inc("shield", +4);
+        }, Duration.seconds(0.5));
     }
 
     @Override
@@ -152,30 +182,88 @@ public class SpaceRunnerApp extends GameApplication {
                 bullets
                 );
 
-        ui.setTranslateX(20);
-        ui.setTranslateY(520);
+        Text laser = getUIFactory().newText("", Color.rgb(20, 20, 20), 16);
+        laser.textProperty().bind(getip("laser").asString("x %d"));
 
+        HBox ui2 = new HBox(15,
+                texture("sprite_laser.png"),
+                laser
+        );
 
+        Text rockets = getUIFactory().newText("", Color.rgb(20, 20, 20), 16);
+        rockets.textProperty().bind(getip("rockets").asString("x %d"));
+
+        HBox ui3 = new HBox(15,
+                texture("rocket.png", 30, 8),
+                rockets
+        );
+
+        VBox boxWeapons = new VBox(15, ui, ui2, ui3);
+        boxWeapons.setTranslateX(getWidth() - 150);
+        boxWeapons.setTranslateY(550);
+        boxWeapons.setScaleX(1.4);
+        boxWeapons.setScaleY(1.4);
 
         Texture uiBorder = texture("ui.png");
         uiBorder.setTranslateY(getHeight() - uiBorder.getHeight());
 
         getGameScene().addUINode(uiBorder);
-        getGameScene().addUINode(ui);
 
-//        ProgressBar barHP = ProgressBar.makeHPBar();
-//        barHP.setTranslateX(100);
-//        barHP.setTranslateY(getHeight() - 125);
-//        barHP.setBackgroundFill(Color.BLUE);
-//        barHP.setTraceFill(Color.GREEN);
-//        barHP.setCurrentValue(50);
-//
-//        getGameScene().addUINode(barHP);
+        ProgressBar barHP = new ProgressBar(false);
+        barHP.setHeight(30.0);
+        barHP.setLabelVisible(false);
+
+
+        barHP.setFill(Color.GREEN);
+        barHP.setBackgroundFill(Color.DARKGREY);
+        barHP.setTraceFill(Color.LIGHTGREEN);
+        barHP.currentValueProperty().bind(playerComponent.getEntity().getComponent(HealthComponent.class).valueProperty());
+
+        // heat
+
+        ProgressBar barHeat = new ProgressBar(false);
+        barHeat.setHeight(30.0);
+        barHeat.setLabelVisible(false);
+
+        barHeat.setFill(Color.RED);
+        barHeat.setBackgroundFill(Color.DARKGREY);
+        barHeat.setTraceFill(Color.YELLOW);
+        barHeat.currentValueProperty().bind(getip("heat"));
+
+        ProgressBar barShield = new ProgressBar(false);
+        barShield.setHeight(30.0);
+        barShield.setLabelVisible(false);
+
+        barShield.setFill(Color.BLUE);
+        barShield.setBackgroundFill(Color.DARKGREY);
+        barShield.setTraceFill(Color.LIGHTBLUE);
+        barShield.currentValueProperty().bind(getip("shield"));
+
+        Text textShield = getUIFactory().newText("Shield");
+        textShield.setFill(Color.BLUE);
+        textShield.visibleProperty().bind(getbp("hasShield"));
+
+        Text textDanger = getUIFactory().newText("Danger!");
+        textDanger.fillProperty().bind(
+                Bindings.when(getbp("overheating")).then(Color.RED).otherwise(Color.DARKGREY)
+        );
+        textDanger.opacityProperty().bind(
+                Bindings.when(getbp("overheating")).then(1.0).otherwise(0.5)
+        );
+
+        HBox symbols = new HBox(10, textShield, textDanger);
+        symbols.setTranslateX(25);
+
+        VBox bars = new VBox(-10, barHP, barShield, barHeat, symbols);
+        bars.setTranslateX(0);
+        bars.setTranslateY(520);
+
+        getGameScene().addUINodes(bars, boxWeapons);
     }
 
     private void spawnWave() {
         for (int i = 0; i < 10; i++) {
-            Entity e = getGameWorld().spawn("Enemy1", playerControl.getEntity().getX() + FXGLMath.random(600, 800), FXGLMath.random(100, 400));
+            Entity e = getGameWorld().spawn("Enemy1", playerComponent.getEntity().getX() + FXGLMath.random(600, 800), FXGLMath.random(100, 400));
             e.setScaleX(0);
             e.setScaleY(0);
             Entities.animationBuilder()

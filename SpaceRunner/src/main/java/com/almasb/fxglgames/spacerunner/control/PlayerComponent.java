@@ -28,11 +28,11 @@ package com.almasb.fxglgames.spacerunner.control;
 
 import com.almasb.fxgl.app.DSLKt;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.Control;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.component.Required;
 import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.entity.component.PositionComponent;
+import com.almasb.fxgl.entity.components.PositionComponent;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.spacerunner.GameConfig;
 import com.almasb.fxglgames.spacerunner.SpaceRunnerFactory;
@@ -45,7 +45,7 @@ import static com.almasb.fxgl.app.DSLKt.*;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class PlayerControl extends Control {
+public class PlayerComponent extends Component {
 
     private PositionComponent position;
 
@@ -57,7 +57,7 @@ public class PlayerControl extends Control {
     private WeaponType weapon = WeaponType.NORMAL;
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
+    public void onUpdate(double tpf) {
         speed = tpf * 300;
 
         position.translateX(tpf * FXGL.<GameConfig>getGameConfig().getPlayerSpeed());
@@ -83,7 +83,7 @@ public class PlayerControl extends Control {
         if (geti("bullets") == 0)
             return;
 
-        if (!canShoot)
+        if (!canShoot || getb("overheating"))
             return;
 
         if (weapon == WeaponType.LASER) {
@@ -91,6 +91,7 @@ public class PlayerControl extends Control {
             spawn("Laser", getEntity().getCenter());
 
             inc("laser", -1);
+            inc("heat", +5);
 
         } else {
 
@@ -98,9 +99,8 @@ public class PlayerControl extends Control {
             spawn("Bullet", getEntity().getPosition().add(0, getEntity().getHeight() - 10));
 
             inc("bullets", -1);
+            inc("heat", +2);
         }
-
-
 
         shootTimer.capture();
         canShoot = false;
