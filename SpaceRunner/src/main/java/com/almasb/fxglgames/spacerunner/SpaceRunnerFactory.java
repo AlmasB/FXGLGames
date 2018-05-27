@@ -63,7 +63,7 @@ public class SpaceRunnerFactory implements EntityFactory {
         play("shoot" + FXGLMath.random(1, 4) + ".wav");
 
         return Entities.builder()
-                .type(SpaceRunnerType.BULLET)
+                .type(SpaceRunnerType.ENEMY_BULLET)
                 .from(data)
                 .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("sprite_bullet.png", 22, 11))
                 .with(new CollidableComponent(true))

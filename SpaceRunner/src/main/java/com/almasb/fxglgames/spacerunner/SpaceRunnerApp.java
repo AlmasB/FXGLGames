@@ -38,7 +38,9 @@ import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxgl.ui.ProgressBar;
 import com.almasb.fxglgames.spacerunner.collision.BulletEnemyHandler;
+import com.almasb.fxglgames.spacerunner.collision.PlayerBulletHandler;
 import com.almasb.fxglgames.spacerunner.control.PlayerComponent;
+import com.almasb.fxglgames.spacerunner.level.Wave;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.HorizontalDirection;
 import javafx.geometry.Orientation;
@@ -112,7 +114,7 @@ public class SpaceRunnerApp extends GameApplication {
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
-        vars.put("bullets", 90);
+        vars.put("bullets", 999);
         vars.put("laser", 50);
         vars.put("rockets", 10);
         vars.put("heat", 0);
@@ -123,6 +125,9 @@ public class SpaceRunnerApp extends GameApplication {
 
     @Override
     protected void initGame() {
+        getAudioPlayer().setGlobalMusicVolume(0.3);
+        getAudioPlayer().setGlobalSoundVolume(0.4);
+
         getGameWorld().addEntityFactory(new SpaceRunnerFactory());
 
         Texture t = getAssetLoader().loadTexture("bg_0.png");
@@ -154,6 +159,10 @@ public class SpaceRunnerApp extends GameApplication {
         run(() -> {
             if (geti("heat") > 0)
                 inc("heat", -1);
+
+            if (geti("bullets") < 999)
+                inc("bullets", +1);
+
         }, Duration.seconds(0.25));
 
         run(() -> {
@@ -165,6 +174,7 @@ public class SpaceRunnerApp extends GameApplication {
     @Override
     protected void initPhysics() {
         getPhysicsWorld().addCollisionHandler(new BulletEnemyHandler());
+        getPhysicsWorld().addCollisionHandler(new PlayerBulletHandler());
     }
 
     private Texture weaponTexture;
@@ -259,31 +269,40 @@ public class SpaceRunnerApp extends GameApplication {
         bars.setTranslateY(520);
 
         getGameScene().addUINodes(bars, boxWeapons);
+
+        play("player_1.wav");
+
+        runOnce(() -> play("begin.wav"), Duration.seconds(1));
     }
 
     private void spawnWave() {
-        for (int i = 0; i < 10; i++) {
-            Entity e = getGameWorld().spawn("Enemy1", playerComponent.getEntity().getX() + FXGLMath.random(600, 800), FXGLMath.random(100, 400));
-            e.setScaleX(0);
-            e.setScaleY(0);
-            Entities.animationBuilder()
-                    .duration(Duration.seconds(FXGLMath.random(2, 3.0)))
-                    .interpolator(Interpolators.ELASTIC.EASE_OUT())
-                    .scale(e)
-                    .from(new Point2D(0, 0))
-                    .to(new Point2D(1, 1))
-                    .buildAndPlay();
 
-            Entities.animationBuilder()
-                    .autoReverse(true)
-                    .repeat(2)
-                    .duration(Duration.seconds(FXGLMath.random(1.2, 2.0)))
-                    .interpolator(Interpolators.BOUNCE.EASE_OUT())
-                    .rotate(e)
-                    .rotateFrom(0)
-                    .rotateTo(FXGLMath.random(180, 360))
-                    .buildAndPlay();
-        }
+        Wave wave = new Wave(10, "Enemy1");
+
+        wave.getEnemies().forEach(e -> getGameWorld().addEntity(e));
+
+//        for (int i = 0; i < 10; i++) {
+//            Entity e = getGameWorld().spawn("Enemy1", playerComponent.getEntity().getX() + FXGLMath.random(600, 800), FXGLMath.random(100, 400));
+//            e.setScaleX(0);
+//            e.setScaleY(0);
+//            Entities.animationBuilder()
+//                    .duration(Duration.seconds(FXGLMath.random(2, 3.0)))
+//                    .interpolator(Interpolators.ELASTIC.EASE_OUT())
+//                    .scale(e)
+//                    .from(new Point2D(0, 0))
+//                    .to(new Point2D(1, 1))
+//                    .buildAndPlay();
+//
+//            Entities.animationBuilder()
+//                    .autoReverse(true)
+//                    .repeat(2)
+//                    .duration(Duration.seconds(FXGLMath.random(1.2, 2.0)))
+//                    .interpolator(Interpolators.BOUNCE.EASE_OUT())
+//                    .rotate(e)
+//                    .rotateFrom(0)
+//                    .rotateTo(FXGLMath.random(180, 360))
+//                    .buildAndPlay();
+//        }
     }
 
     public static void main(String[] args) {
