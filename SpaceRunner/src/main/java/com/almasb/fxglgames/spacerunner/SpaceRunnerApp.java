@@ -26,10 +26,7 @@
 
 package com.almasb.fxglgames.spacerunner;
 
-import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.view.ScrollingBackgroundView;
 import com.almasb.fxgl.extra.entity.components.HealthComponent;
@@ -40,11 +37,10 @@ import com.almasb.fxgl.ui.ProgressBar;
 import com.almasb.fxglgames.spacerunner.collision.BulletEnemyHandler;
 import com.almasb.fxglgames.spacerunner.collision.PlayerBulletHandler;
 import com.almasb.fxglgames.spacerunner.control.PlayerComponent;
-import com.almasb.fxglgames.spacerunner.level.Wave;
+import com.almasb.fxglgames.spacerunner.level.Level;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.HorizontalDirection;
 import javafx.geometry.Orientation;
-import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
@@ -63,6 +59,7 @@ import static com.almasb.fxgl.app.DSLKt.*;
 public class SpaceRunnerApp extends GameApplication {
 
     private PlayerComponent playerComponent;
+    private Level level;
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -154,11 +151,11 @@ public class SpaceRunnerApp extends GameApplication {
 
         getbp("hasShield").bind(getip("shield").isEqualTo(100));
 
-        run(this::spawnWave, Duration.seconds(5));
+        run(this::spawnWaveIfNeeded, Duration.seconds(1));
 
         run(() -> {
             if (geti("heat") > 0)
-                inc("heat", -1);
+                inc("heat", -5);
 
             if (geti("bullets") < 999)
                 inc("bullets", +1);
@@ -169,6 +166,8 @@ public class SpaceRunnerApp extends GameApplication {
             if (geti("shield") < 100)
                 inc("shield", +4);
         }, Duration.seconds(0.5));
+
+        nextLevel();
     }
 
     @Override
@@ -275,34 +274,21 @@ public class SpaceRunnerApp extends GameApplication {
         runOnce(() -> play("begin.wav"), Duration.seconds(1));
     }
 
-    private void spawnWave() {
+    private void nextLevel() {
+        level = new Level();
 
-        Wave wave = new Wave(10, "Enemy1");
+        level.spawnNewWave();
+    }
 
-        wave.getEnemies().forEach(e -> getGameWorld().addEntity(e));
+    private void spawnWaveIfNeeded() {
+        if (!getGameWorld().getEntitiesByType(SpaceRunnerType.ENEMY).isEmpty())
+            return;
 
-//        for (int i = 0; i < 10; i++) {
-//            Entity e = getGameWorld().spawn("Enemy1", playerComponent.getEntity().getX() + FXGLMath.random(600, 800), FXGLMath.random(100, 400));
-//            e.setScaleX(0);
-//            e.setScaleY(0);
-//            Entities.animationBuilder()
-//                    .duration(Duration.seconds(FXGLMath.random(2, 3.0)))
-//                    .interpolator(Interpolators.ELASTIC.EASE_OUT())
-//                    .scale(e)
-//                    .from(new Point2D(0, 0))
-//                    .to(new Point2D(1, 1))
-//                    .buildAndPlay();
-//
-//            Entities.animationBuilder()
-//                    .autoReverse(true)
-//                    .repeat(2)
-//                    .duration(Duration.seconds(FXGLMath.random(1.2, 2.0)))
-//                    .interpolator(Interpolators.BOUNCE.EASE_OUT())
-//                    .rotate(e)
-//                    .rotateFrom(0)
-//                    .rotateTo(FXGLMath.random(180, 360))
-//                    .buildAndPlay();
-//        }
+        if (level.isDone()) {
+            nextLevel();
+        } else {
+            level.spawnNewWave();
+        }
     }
 
     public static void main(String[] args) {
