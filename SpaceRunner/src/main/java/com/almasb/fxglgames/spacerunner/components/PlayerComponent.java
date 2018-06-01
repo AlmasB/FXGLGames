@@ -24,19 +24,13 @@
  * SOFTWARE.
  */
 
-package com.almasb.fxglgames.spacerunner.control;
+package com.almasb.fxglgames.spacerunner.components;
 
-import com.almasb.fxgl.app.DSLKt;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.entity.component.Required;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.components.PositionComponent;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.spacerunner.GameConfig;
-import com.almasb.fxglgames.spacerunner.SpaceRunnerFactory;
-import com.almasb.fxglgames.spacerunner.SpaceRunnerType;
 import com.almasb.fxglgames.spacerunner.WeaponType;
 import javafx.util.Duration;
 

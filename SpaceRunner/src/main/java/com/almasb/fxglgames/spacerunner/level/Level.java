@@ -17,7 +17,7 @@ public class Level {
     private int currentWave = 0;
 
     public Level() {
-        System.out.println("new level");
+
     }
 
     public boolean isDone() {

@@ -30,14 +30,17 @@ import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.components.CollidableComponent;
-import com.almasb.fxgl.extra.entity.components.HealthComponent;
-import com.almasb.fxgl.extra.entity.components.KeepOnScreenComponent;
-import com.almasb.fxgl.extra.entity.components.OffscreenCleanComponent;
-import com.almasb.fxgl.extra.entity.components.ProjectileComponent;
+import com.almasb.fxgl.extra.entity.components.*;
 import com.almasb.fxgl.extra.entity.effect.EffectComponent;
-import com.almasb.fxglgames.spacerunner.control.EnemyComponent;
-import com.almasb.fxglgames.spacerunner.control.PlayerComponent;
+import com.almasb.fxgl.particle.ParticleComponent;
+import com.almasb.fxgl.particle.ParticleEmitter;
+import com.almasb.fxgl.particle.ParticleEmitters;
+import com.almasb.fxglgames.spacerunner.components.EnemyComponent;
+import com.almasb.fxglgames.spacerunner.components.PlayerComponent;
+import com.almasb.fxglgames.spacerunner.components.PowerupComponent;
 import javafx.geometry.Point2D;
+import javafx.scene.effect.BlendMode;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.app.DSLKt.*;
@@ -49,11 +52,23 @@ public class SpaceRunnerFactory implements EntityFactory {
 
     @Spawns("Player")
     public Entity newPlayer(SpawnData data) {
+        ParticleEmitter emitter = ParticleEmitters.newFireEmitter();
+        emitter.setBlendMode(BlendMode.SRC_OVER);
+        emitter.setStartColor(Color.WHITE);
+        emitter.setEndColor(Color.YELLOW);
+        emitter.setSize(1, 3);
+        emitter.setNumParticles(25);
+        emitter.setEmissionRate(1.0);
+        emitter.setExpireFunction(i -> Duration.seconds(0.2));
+        emitter.setSpawnPointFunction(i -> new Point2D(4, 17 + FXGLMath.random(-5, 5)));
+        emitter.setVelocityFunction(i -> new Point2D(FXGLMath.random(360, 400), FXGLMath.random()));
+        emitter.setAccelerationFunction(() -> Point2D.ZERO);
+
         return Entities.builder()
                 .type(SpaceRunnerType.PLAYER)
                 .from(data)
                 .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("sprite_player.png", 40, 40))
-                .with(new CollidableComponent(true))
+                .with(new CollidableComponent(true), new ParticleComponent(emitter))
                 .with(new PlayerComponent(), new HealthComponent(100), new EffectComponent(), new KeepOnScreenComponent(false, true))
                 .build();
     }
@@ -134,6 +149,16 @@ public class SpaceRunnerFactory implements EntityFactory {
                 // we want a smaller texture, 80x80
                 // it has 16 frames, hence 80 * 16
                 .viewFromAnimatedTexture(texture("explosion.png", 80 * 16, 80).toAnimatedTexture(16, Duration.seconds(0.5)), false, true)
+                .build();
+    }
+
+    @Spawns("powerup")
+    public Entity newPowerup(SpawnData data) {
+        return Entities.builder()
+                .from(data)
+                .type(SpaceRunnerType.POWERUP)
+                .viewFromTextureWithBBox("powerups/" + data.<PowerupType>get("type").getTextureName())
+                .with(new CollidableComponent(true), new PowerupComponent(data.get("type")), new ExpireCleanComponent(Duration.seconds(10)))
                 .build();
     }
 }

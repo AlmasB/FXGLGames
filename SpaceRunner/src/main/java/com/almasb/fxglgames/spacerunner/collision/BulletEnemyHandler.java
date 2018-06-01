@@ -30,7 +30,9 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.extra.entity.components.HealthComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.spacerunner.SpaceRunnerType;
-import com.almasb.fxglgames.spacerunner.control.EnemyComponent;
+import com.almasb.fxglgames.spacerunner.components.EnemyComponent;
+
+import static com.almasb.fxgl.app.DSLKt.inc;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -50,6 +52,7 @@ public class BulletEnemyHandler extends CollisionHandler {
 
         if (health.getValue() == 0) {
             enemy.getComponent(EnemyComponent.class).die();
+            inc("score", +100);
         }
     }
 }

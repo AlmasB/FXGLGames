@@ -26,8 +26,12 @@
 
 package com.almasb.fxglgames.spacerunner;
 
+import com.almasb.fxgl.animation.Animation;
+import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.view.ScrollingBackgroundView;
 import com.almasb.fxgl.extra.entity.components.HealthComponent;
 import com.almasb.fxgl.input.UserAction;
@@ -36,16 +40,21 @@ import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxgl.ui.ProgressBar;
 import com.almasb.fxglgames.spacerunner.collision.BulletEnemyHandler;
 import com.almasb.fxglgames.spacerunner.collision.PlayerBulletHandler;
-import com.almasb.fxglgames.spacerunner.control.PlayerComponent;
+import com.almasb.fxglgames.spacerunner.collision.PlayerPowerupHandler;
+import com.almasb.fxglgames.spacerunner.components.PlayerComponent;
 import com.almasb.fxglgames.spacerunner.level.Level;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.HorizontalDirection;
 import javafx.geometry.Orientation;
+import javafx.geometry.Point2D;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -111,6 +120,7 @@ public class SpaceRunnerApp extends GameApplication {
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
+        vars.put("score", 0);
         vars.put("bullets", 999);
         vars.put("laser", 50);
         vars.put("rockets", 10);
@@ -132,12 +142,12 @@ public class SpaceRunnerApp extends GameApplication {
         getGameScene().addGameView(new ScrollingBackgroundView(t.superTexture(t, HorizontalDirection.RIGHT),
                 Orientation.HORIZONTAL));
 
-        Entity player = getGameWorld().spawn("Player", 50, getHeight() / 2);
+        Entity player = getGameWorld().spawn("Player", 180, getHeight() / 2);
 
         playerComponent = player.getComponent(PlayerComponent.class);
 
         getGameScene().getViewport().setBounds(0, 0, Integer.MAX_VALUE, getHeight());
-        getGameScene().getViewport().bindToEntity(player, 50, getHeight() / 2);
+        getGameScene().getViewport().bindToEntity(player, 180, getHeight() / 2);
 
         getGameState().<Integer>addListener("heat", (prev, now) -> {
             if (now >= 100) {
@@ -167,6 +177,10 @@ public class SpaceRunnerApp extends GameApplication {
                 inc("shield", +4);
         }, Duration.seconds(0.5));
 
+        run(() -> {
+            spawnPowerup(FXGLMath.random(PowerupType.values()).get());
+        }, Duration.seconds(3));
+
         nextLevel();
     }
 
@@ -174,10 +188,12 @@ public class SpaceRunnerApp extends GameApplication {
     protected void initPhysics() {
         getPhysicsWorld().addCollisionHandler(new BulletEnemyHandler());
         getPhysicsWorld().addCollisionHandler(new PlayerBulletHandler());
+        getPhysicsWorld().addCollisionHandler(new PlayerPowerupHandler());
     }
 
     private Texture weaponTexture;
     private Text bullets;
+    private Text uiTextLevel;
 
     @Override
     protected void initUI() {
@@ -261,13 +277,41 @@ public class SpaceRunnerApp extends GameApplication {
         );
 
         HBox symbols = new HBox(10, textShield, textDanger);
-        symbols.setTranslateX(25);
+        symbols.setTranslateX(35);
+        symbols.setTranslateY(getHeight() - 35);
 
-        VBox bars = new VBox(-10, barHP, barShield, barHeat, symbols);
+        VBox bars = new VBox(-10, barHP, barShield, barHeat);
         bars.setTranslateX(0);
         bars.setTranslateY(520);
 
-        getGameScene().addUINodes(bars, boxWeapons);
+
+        Text textScore = getUIFactory().newText("", Color.WHITE, 22);
+        textScore.setTranslateX(300);
+        textScore.textProperty().bind(getip("score").asString("Score: %d"));
+        textScore.setEffect(new DropShadow(7, Color.BLACK));
+        textScore.translateXProperty().bind(
+                Bindings.createDoubleBinding(() -> {
+                    return 450 - textScore.getLayoutBounds().getWidth();
+                }, textScore.textProperty())
+        );
+
+        uiTextLevel = getUIFactory().newText("Level 1", Color.WHITE, 22);
+        uiTextLevel.setEffect(new DropShadow(7, Color.BLACK));
+
+        uiTextLevel.setVisible(false);
+
+        Rectangle map = new Rectangle(450, 120, Color.color(0, 0, 0, 0.8));
+        map.setStrokeWidth(12);
+        map.setStroke(Color.LIGHTGRAY);
+        map.setTranslateY(20);
+        map.setArcWidth(35);
+        map.setArcHeight(25);
+
+        Pane centerPane = new Pane(textScore, uiTextLevel, map);
+        centerPane.setTranslateX(300);
+        centerPane.setTranslateY(540);
+
+        getGameScene().addUINodes(bars, symbols, centerPane, boxWeapons);
 
         play("player_1.wav");
 
@@ -278,6 +322,35 @@ public class SpaceRunnerApp extends GameApplication {
         level = new Level();
 
         level.spawnNewWave();
+
+        // TODO: update level number
+        Text textLevel = getUIFactory().newText("Level 1", Color.WHITE, 22);
+        textLevel.setEffect(new DropShadow(7, Color.BLACK));
+        textLevel.setOpacity(0);
+
+        centerText(textLevel);
+        textLevel.setTranslateY(250);
+
+        getGameScene().addUINode(textLevel);
+
+        Animation<?> anim = fadeIn(textLevel, Duration.seconds(1.66), () -> {
+            Animation<?> anim2 = translate(textLevel,
+                    new Point2D(textLevel.getTranslateX(), textLevel.getTranslateY()),
+                    new Point2D(350, 540),
+                    Duration.ZERO,
+                    Duration.seconds(1.66),
+                    () -> {
+                        getGameScene().removeUINode(textLevel);
+                        uiTextLevel.setVisible(true);
+                    });
+
+            anim2.getAnimatedValue().setInterpolator(Interpolators.EXPONENTIAL.EASE_IN());
+            anim2.startInPlayState();
+        });
+
+        anim.getAnimatedValue().setInterpolator(Interpolators.SMOOTH.EASE_OUT());
+
+        anim.startInPlayState();
     }
 
     private void spawnWaveIfNeeded() {
@@ -289,6 +362,10 @@ public class SpaceRunnerApp extends GameApplication {
         } else {
             level.spawnNewWave();
         }
+    }
+
+    private void spawnPowerup(PowerupType type) {
+        spawn("powerup", new SpawnData(playerComponent.getEntity().getX() + 1000, FXGLMath.random(0, 400)).put("type", type));
     }
 
     public static void main(String[] args) {
