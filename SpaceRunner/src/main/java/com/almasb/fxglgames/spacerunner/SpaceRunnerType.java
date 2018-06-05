@@ -30,5 +30,5 @@ package com.almasb.fxglgames.spacerunner;
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public enum SpaceRunnerType {
-    PLAYER, BULLET, ENEMY_BULLET, ENEMY, POWERUP
+    PLAYER, BULLET, ENEMY_BULLET, ENEMY, POWERUP, AI_POINT
 }

@@ -38,6 +38,9 @@ import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxgl.ui.ProgressBar;
+import com.almasb.fxglgames.spacerunner.ai.AIPointComponent;
+import com.almasb.fxglgames.spacerunner.ai.SquadAI;
+import com.almasb.fxglgames.spacerunner.collision.BulletAIPointHandler;
 import com.almasb.fxglgames.spacerunner.collision.BulletEnemyHandler;
 import com.almasb.fxglgames.spacerunner.collision.PlayerBulletHandler;
 import com.almasb.fxglgames.spacerunner.collision.PlayerPowerupHandler;
@@ -149,6 +152,14 @@ public class SpaceRunnerApp extends GameApplication {
         getGameScene().getViewport().setBounds(0, 0, Integer.MAX_VALUE, getHeight());
         getGameScene().getViewport().bindToEntity(player, 180, getHeight() / 2);
 
+        for (int x = 0; x < 3; x++) {
+            for (int y = 0; y < 10; y++) {
+                spawn("ai_point", 800 + x * FXGLMath.random(30, 70), y * FXGLMath.random(10, 50));
+            }
+        }
+
+        SquadAI.INSTANCE.update(getGameWorld().getEntitiesByType(SpaceRunnerType.AI_POINT));
+
         getGameState().<Integer>addListener("heat", (prev, now) -> {
             if (now >= 100) {
                 set("overheating", true);
@@ -189,6 +200,7 @@ public class SpaceRunnerApp extends GameApplication {
         getPhysicsWorld().addCollisionHandler(new BulletEnemyHandler());
         getPhysicsWorld().addCollisionHandler(new PlayerBulletHandler());
         getPhysicsWorld().addCollisionHandler(new PlayerPowerupHandler());
+        getPhysicsWorld().addCollisionHandler(new BulletAIPointHandler());
     }
 
     private Texture weaponTexture;

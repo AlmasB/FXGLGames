@@ -35,13 +35,21 @@ import com.almasb.fxgl.extra.entity.effect.EffectComponent;
 import com.almasb.fxgl.particle.ParticleComponent;
 import com.almasb.fxgl.particle.ParticleEmitter;
 import com.almasb.fxgl.particle.ParticleEmitters;
+import com.almasb.fxgl.physics.BoundingShape;
+import com.almasb.fxgl.physics.HitBox;
+import com.almasb.fxglgames.spacerunner.ai.AIPointComponent;
+import com.almasb.fxglgames.spacerunner.ai.SquadAIComponent;
 import com.almasb.fxglgames.spacerunner.components.EnemyComponent;
+import com.almasb.fxglgames.spacerunner.components.MoveComponent;
 import com.almasb.fxglgames.spacerunner.components.PlayerComponent;
 import com.almasb.fxglgames.spacerunner.components.PowerupComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
+
+import java.util.ArrayList;
 
 import static com.almasb.fxgl.app.DSLKt.*;
 
@@ -135,8 +143,9 @@ public class SpaceRunnerFactory implements EntityFactory {
                 .type(SpaceRunnerType.ENEMY)
                 .from(data)
                 .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("sprite_enemy_1.png", 27, 33))
-                .with(new CollidableComponent(true), new HealthComponent(10))
+                .with(new CollidableComponent(true), new HealthComponent(10), new MoveComponent())
                 .with(new EnemyComponent(), new KeepOnScreenComponent(false, true))
+                .with(new SquadAIComponent())
                 .build();
     }
 
@@ -159,6 +168,20 @@ public class SpaceRunnerFactory implements EntityFactory {
                 .type(SpaceRunnerType.POWERUP)
                 .viewFromTextureWithBBox("powerups/" + data.<PowerupType>get("type").getTextureName())
                 .with(new CollidableComponent(true), new PowerupComponent(data.get("type")), new ExpireCleanComponent(Duration.seconds(10)))
+                .build();
+    }
+
+    @Spawns("ai_point")
+    public Entity newAIPoint(SpawnData data) {
+        return Entities.builder()
+                .from(data)
+                .type(SpaceRunnerType.AI_POINT)
+                .bbox(new HitBox("MAIN", new Point2D(-400, 0), BoundingShape.box(400, 30)))
+                .viewFromNode(new Text())
+                .with("collisions", new ArrayList<Entity>())
+                .with("enemies", 0)
+                .with(new AIPointComponent())
+                .with(new CollidableComponent(true), new MoveComponent())
                 .build();
     }
 }

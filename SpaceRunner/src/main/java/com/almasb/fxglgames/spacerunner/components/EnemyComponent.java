@@ -66,8 +66,8 @@ public class EnemyComponent extends Component {
             attackTimer.capture();
         }
 
-        position.translateX(tpf * FXGL.<GameConfig>getGameConfig().getPlayerSpeed() + tpf * 60 * (FXGLMath.noise1D(t * 9.8) - 0.5));
-        position.translateY((FXGLMath.noise1D(t) - 0.5) * tpf * FXGLMath.random(150, 350));
+        //position.translateX(tpf * FXGL.<GameConfig>getGameConfig().getPlayerSpeed() + tpf * 60 * (FXGLMath.noise1D(t * 9.8) - 0.5));
+        //position.translateY((FXGLMath.noise1D(t) - 0.5) * tpf * FXGLMath.random(150, 350));
     }
 
     private void shoot() {
