@@ -38,13 +38,16 @@ import com.almasb.fxgl.extra.entity.components.HealthComponent;
 import com.almasb.fxgl.extra.entity.components.OffscreenCleanComponent;
 import com.almasb.fxgl.extra.entity.components.ProjectileComponent;
 import com.almasb.fxgl.extra.entity.effect.EffectComponent;
+import com.almasb.fxgl.particle.ParticleComponent;
+import com.almasb.fxgl.particle.ParticleEmitter;
+import com.almasb.fxgl.particle.ParticleEmitters;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxglgames.spaceinvaders.component.InvincibleComponent;
 import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;
 import com.almasb.fxglgames.spaceinvaders.component.SubTypeComponent;
-import com.almasb.fxglgames.spaceinvaders.control.*;
+import com.almasb.fxglgames.spaceinvaders.components.*;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.effect.Bloom;
@@ -181,9 +184,9 @@ public final class SpaceInvadersFactory implements EntityFactory {
         return Entities.builder()
                 .from(data)
                 .type(ENEMY)
-                .viewFromTextureWithBBox("boss.png")
-                .with(new CollidableComponent(true), new HealthComponent(50))
-                .with(new BossControl())
+                .viewFromTextureWithBBox("bosses/" + data.get("textureName"))
+                .with(new CollidableComponent(true), new HealthComponent(data.get("hp")))
+                .with(new BossComponent())
                 .build();
     }
 
@@ -284,6 +287,22 @@ public final class SpaceInvadersFactory implements EntityFactory {
                 // we want a smaller texture, 80x80
                 // it has 16 frames, hence 80 * 16
                 .viewFromAnimatedTexture(texture("explosion.png", 80 * 16, 80).toAnimatedTexture(16, Duration.seconds(0.5)), false, true)
+                .build();
+    }
+
+    @Spawns("ParticleExplosion")
+    public Entity newParticleExplosion(SpawnData data) {
+        ParticleEmitter emitter = ParticleEmitters.newExplosionEmitter(FXGL.getAppWidth());
+        emitter.setStartColor(Color.web("ffffe0"));
+        emitter.setSize(3, 5);
+        emitter.setNumParticles(8);
+
+        ParticleComponent particles = new ParticleComponent(emitter);
+        particles.setOnFinished(() -> particles.getEntity().removeFromWorld());
+
+        return Entities.builder()
+                .from(data)
+                .with(particles)
                 .build();
     }
 

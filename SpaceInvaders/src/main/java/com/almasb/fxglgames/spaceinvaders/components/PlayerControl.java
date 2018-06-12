@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-package com.almasb.fxglgames.spaceinvaders.control;
+package com.almasb.fxglgames.spaceinvaders.components;
 
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.*;

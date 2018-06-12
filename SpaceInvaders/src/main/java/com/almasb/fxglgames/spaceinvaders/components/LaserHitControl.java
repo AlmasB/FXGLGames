@@ -24,30 +24,29 @@
  * SOFTWARE.
  */
 
-package com.almasb.fxglgames.spaceinvaders.control;
+package com.almasb.fxglgames.spaceinvaders.components;
 
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.Required;
-import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
-import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;
+import com.almasb.fxgl.entity.view.EntityView;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-@Required(OwnerComponent.class)
-public class BulletControl extends Component {
+public class LaserHitControl extends Component {
 
-    private OwnerComponent owner;
+    private EntityView view;
 
-    private double speed;
-
-    public BulletControl(double speed) {
-        this.speed = speed;
+    @Override
+    public void onAdded() {
+        view = entity.getView();
     }
 
     @Override
     public void onUpdate(double tpf) {
-        entity.translateY(owner.getValue() == (SpaceInvadersType.PLAYER) ? -tpf * speed : tpf * speed);
+        view.setOpacity(view.getOpacity() - tpf);
+
+        if (view.getOpacity() <= 0) {
+            entity.removeFromWorld();
+        }
     }
 }

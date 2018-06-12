@@ -34,8 +34,8 @@ import com.almasb.fxgl.extra.entity.effect.EffectComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
 import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;
-import com.almasb.fxglgames.spaceinvaders.control.BossControl;
-import com.almasb.fxglgames.spaceinvaders.control.EnemyControl;
+import com.almasb.fxglgames.spaceinvaders.components.BossComponent;
+import com.almasb.fxglgames.spaceinvaders.components.EnemyControl;
 import javafx.util.Duration;
 
 /**
@@ -66,7 +66,7 @@ public class BulletEnemyHandler extends CollisionHandler {
             if (enemy.hasComponent(EnemyControl.class)) {
                 enemy.getComponent(EnemyControl.class).die();
             } else {
-                enemy.getComponent(BossControl.class).die();
+                enemy.getComponent(BossComponent.class).die();
             }
 
         } else {

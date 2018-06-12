@@ -30,7 +30,7 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
 import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;
-import com.almasb.fxglgames.spaceinvaders.control.WallControl;
+import com.almasb.fxglgames.spaceinvaders.components.WallControl;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)

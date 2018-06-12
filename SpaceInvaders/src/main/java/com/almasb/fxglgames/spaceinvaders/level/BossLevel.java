@@ -1,32 +1,53 @@
 package com.almasb.fxglgames.spaceinvaders.level;
 
-import com.almasb.fxgl.animation.Animation;
+import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.extra.entity.components.CircularMovementComponent;
+import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.extra.entity.components.HealthComponent;
 import com.almasb.fxgl.ui.ProgressBar;
-import com.almasb.fxglgames.spaceinvaders.Config;
+import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.util.Duration;
 
-import java.util.ArrayList;
-import java.util.List;
+import static com.almasb.fxgl.app.DSLKt.centerText;
+import static com.almasb.fxgl.app.DSLKt.scale;
+import static com.almasb.fxgl.app.DSLKt.spawn;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class BossLevel extends SpaceLevel {
+abstract class BossLevel extends SpaceLevel {
 
-    private List<Animation<?>> animations = new ArrayList<>();
+    private ProgressBar bossBar;
 
-    @Override
-    public void init() {
-        Entity boss = spawnBoss(Config.WIDTH * 2 / 3, Config.HEIGHT / 3);
-        boss.addComponent(new CircularMovementComponent(2, 200));
+    public BossLevel() {
 
-        HealthComponent hp = boss.getComponent(HealthComponent.class);
+    }
 
-        ProgressBar bossBar = ProgressBar.makeHPBar();
+    Entity spawnBoss(double x, double y, int hp, String textureName) {
+        Entity boss = spawn("Boss", new SpawnData(x, y).put("hp", hp).put("textureName", textureName));
+
+        addEnemy(boss);
+
+        Entities.animationBuilder()
+                .interpolator(Interpolators.ELASTIC.EASE_OUT())
+                .duration(Duration.seconds(FXGLMath.random() * 2))
+                .scale(boss)
+                .from(new Point2D(0, 0))
+                .to(new Point2D(1, 1))
+                .buildAndPlay();
+
+
+
+        // hp bar
+
+        HealthComponent hpComponent = boss.getComponent(HealthComponent.class);
+
+        bossBar = ProgressBar.makeHPBar();
         bossBar.setFill(Color.RED);
         bossBar.setTranslateX(100);
         bossBar.setTranslateY(70);
@@ -34,14 +55,29 @@ public class BossLevel extends SpaceLevel {
         bossBar.setHeight(30);
         bossBar.setLabelVisible(false);
 
-        bossBar.setMaxValue(hp.getValue());
-        bossBar.currentValueProperty().bind(hp.valueProperty());
+        bossBar.setMaxValue(hpComponent.getValue());
+        bossBar.currentValueProperty().bind(hpComponent.valueProperty());
 
         FXGL.getApp().getGameScene().addUINode(bossBar);
+
+        // text fight
+
+        Text text = FXGL.getUIFactory().newText("Boss Fight!", Color.WHITE, 24.0);
+
+        FXGL.getApp().getGameScene().addUINode(text);
+
+        centerText(text);
+
+        scale(text, new Point2D(2, 2), Point2D.ZERO, Duration.ZERO, Duration.seconds(1), () -> {
+            FXGL.getApp().getGameScene().removeUINode(text);
+        }).startInPlayState();
+
+
+        return boss;
     }
 
     @Override
     public void destroy() {
-        animations.forEach(Animation::stop);
+        FXGL.getApp().getGameScene().removeUINode(bossBar);
     }
 }

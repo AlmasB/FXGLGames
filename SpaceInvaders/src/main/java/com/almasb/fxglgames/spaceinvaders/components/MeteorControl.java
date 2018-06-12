@@ -24,56 +24,34 @@
  * SOFTWARE.
  */
 
-package com.almasb.fxglgames.spaceinvaders.control;
+package com.almasb.fxglgames.spaceinvaders.components;
 
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.time.LocalTimer;
-import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
-import javafx.util.Duration;
-
-import static com.almasb.fxgl.app.DSLKt.*;
+import javafx.geometry.Point2D;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class EnemyControl extends Component {
+public class MeteorControl extends Component {
 
-    // TODO: fix visibility hack
-    protected LocalTimer attackTimer;
-    protected Duration nextAttack = Duration.seconds(2);
+    private Point2D velocity;
 
     @Override
     public void onAdded() {
-        attackTimer = FXGL.newLocalTimer();
-        attackTimer.capture();
+        double w = FXGL.getAppWidth();
+        double h = FXGL.getAppHeight();
+
+        velocity = new Point2D(entity.getX() < w / 2 ? 1 : -1, entity.getY() < h / 2 ? 1 : -1)
+                .normalize()
+                .multiply(FXGLMath.random(40, 50));
     }
 
     @Override
     public void onUpdate(double tpf) {
-        if (attackTimer.elapsed(nextAttack)) {
-            if (FXGLMath.randomBoolean(0.3f)) {
-                shoot();
-            }
-            nextAttack = Duration.seconds(5 * Math.random());
-            attackTimer.capture();
-        }
-    }
+        entity.rotateBy(tpf * 10);
 
-    protected void shoot() {
-        spawn("Bullet", new SpawnData(0, 0).put("owner", getEntity()));
-
-        play("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
-    }
-
-    public void die() {
-        spawn("Explosion", entity.getCenter());
-
-        entity.removeFromWorld();
-
-        fire(new GameEvent(GameEvent.ENEMY_KILLED));
+        entity.translate(velocity.multiply(tpf));
     }
 }

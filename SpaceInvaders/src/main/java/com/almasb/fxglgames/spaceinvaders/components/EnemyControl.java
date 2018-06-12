@@ -24,18 +24,56 @@
  * SOFTWARE.
  */
 
-package com.almasb.fxglgames.spaceinvaders.control;
+package com.almasb.fxglgames.spaceinvaders.components;
 
+import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxglgames.spaceinvaders.Config;
+import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.time.LocalTimer;
+import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
+import javafx.util.Duration;
+
+import static com.almasb.fxgl.app.DSLKt.*;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class BonusControl extends Component {
+public class EnemyControl extends Component {
+
+    // TODO: fix visibility hack
+    protected LocalTimer attackTimer;
+    protected Duration nextAttack = Duration.seconds(2);
+
+    @Override
+    public void onAdded() {
+        attackTimer = FXGL.newLocalTimer();
+        attackTimer.capture();
+    }
+
     @Override
     public void onUpdate(double tpf) {
-        entity.translateY(tpf * Config.BONUS_MOVE_SPEED);
+        if (attackTimer.elapsed(nextAttack)) {
+            if (FXGLMath.randomBoolean(0.3f)) {
+                shoot();
+            }
+            nextAttack = Duration.seconds(5 * Math.random());
+            attackTimer.capture();
+        }
+    }
+
+    protected void shoot() {
+        spawn("Bullet", new SpawnData(0, 0).put("owner", getEntity()));
+
+        play("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
+    }
+
+    public void die() {
+        spawn("Explosion", entity.getCenter());
+        spawn("ParticleExplosion", entity.getCenter());
+
+        entity.removeFromWorld();
+
+        fire(new GameEvent(GameEvent.ENEMY_KILLED));
     }
 }

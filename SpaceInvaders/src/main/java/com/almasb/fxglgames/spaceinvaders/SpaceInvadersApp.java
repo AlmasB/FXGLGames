@@ -37,8 +37,8 @@ import com.almasb.fxgl.io.FS;
 import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.ui.UI;
 import com.almasb.fxglgames.spaceinvaders.collision.*;
-import com.almasb.fxglgames.spaceinvaders.control.EnemyControl;
-import com.almasb.fxglgames.spaceinvaders.control.PlayerControl;
+import com.almasb.fxglgames.spaceinvaders.components.EnemyControl;
+import com.almasb.fxglgames.spaceinvaders.components.PlayerControl;
 import com.almasb.fxglgames.spaceinvaders.event.BonusPickupEvent;
 import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
 import com.almasb.fxglgames.spaceinvaders.level.*;
@@ -55,7 +55,7 @@ import static com.almasb.fxgl.app.DSLKt.*;
 import static com.almasb.fxglgames.spaceinvaders.Config.*;
 
 /**
- * A simple clone of Space Invaders. Demonstrates basic FXGL features.
+ * A clone of Space Invaders.
  *
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
@@ -64,13 +64,10 @@ public class SpaceInvadersApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Space Invaders");
-        settings.setVersion("1.0");
+        settings.setVersion("1.0.1");
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
         settings.setProfilingEnabled(true);
-//        settings.setIntroEnabled(true);
-//        settings.setMenuEnabled(true);
-//        settings.setEnabledMenuItems(EnumSet.of(MenuItem.EXTRA));
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
@@ -173,13 +170,15 @@ public class SpaceInvadersApp extends GameApplication {
 
         levels = Arrays.asList(
                 new Level1(),
+                new BossLevel2(),
                 new Level2(),
                 new Level3(),
+                new BossLevel1(),
                 new Level4(),
                 new Level5(),
                 new Level6(),
                 new Level7(),
-                new BossLevel()
+                new BossLevel2()
         );
 
         spawnBackground();

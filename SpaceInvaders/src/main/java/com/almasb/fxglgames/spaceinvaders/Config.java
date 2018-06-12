@@ -47,8 +47,8 @@ public final class Config {
 
     public static final int START_LIVES = 3;
 
-    public static final int ENEMIES_PER_ROW = 8;
-    public static final int ENEMY_ROWS = 4;
+    public static final int ENEMIES_PER_ROW = 1;
+    public static final int ENEMY_ROWS = 1;
     public static final int ENEMIES_PER_LEVEL = ENEMIES_PER_ROW * ENEMY_ROWS;
 
     public static final float BONUS_SPAWN_CHANCE = 0.25f;

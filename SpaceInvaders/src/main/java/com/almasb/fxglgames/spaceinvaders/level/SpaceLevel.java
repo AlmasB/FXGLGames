@@ -22,30 +22,18 @@ public abstract class SpaceLevel {
     public abstract void init();
     public abstract void destroy();
 
+    void addEnemy(Entity entity) {
+        enemies.add(entity);
+    }
+
     public boolean isFinished() {
         return enemies.stream().noneMatch(Entity::isActive);
     }
 
-    protected Entity spawnEnemy(double x, double y) {
-        Entity enemy = (Entity) spawn("Enemy", x, y);
+    Entity spawnEnemy(double x, double y) {
+        Entity enemy = spawn("Enemy", x, y);
 
-        enemies.add(enemy);
-
-        Entities.animationBuilder()
-                .interpolator(Interpolators.ELASTIC.EASE_OUT())
-                .duration(Duration.seconds(FXGLMath.random() * 2))
-                .scale(enemy)
-                .from(new Point2D(0, 0))
-                .to(new Point2D(1, 1))
-                .buildAndPlay();
-
-        return enemy;
-    }
-
-    protected Entity spawnBoss(double x, double y) {
-        Entity enemy = (Entity) spawn("Boss", x, y);
-
-        enemies.add(enemy);
+        addEnemy(enemy);
 
         Entities.animationBuilder()
                 .interpolator(Interpolators.ELASTIC.EASE_OUT())

@@ -1,4 +1,4 @@
-package com.almasb.fxglgames.spaceinvaders.control;
+package com.almasb.fxglgames.spaceinvaders.components;
 
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
@@ -15,28 +15,28 @@ import static com.almasb.fxgl.app.DSLKt.spawn;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class BossControl extends EnemyControl {
+public class BossComponent extends EnemyControl {
 
     @Override
     public void onUpdate(double tpf) {
-        if (attackTimer.elapsed(nextAttack)) {
-            shoot();
-
-            nextAttack = Duration.seconds(1);
-            attackTimer.capture();
-        }
+//        if (attackTimer.elapsed(nextAttack)) {
+//            shoot();
+//
+//            nextAttack = Duration.seconds(1);
+//            attackTimer.capture();
+//        }
     }
 
     @Override
     protected void shoot() {
-        for (int i = 0; i < 6; i++) {
-            GameWorld world = getEntity().getWorld();
-            Entity bullet = world.spawn("Bullet", new SpawnData(0, 0).put("owner", getEntity()));
-
-            bullet.translateX(20 * (i-3));
-        }
-
-        play("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
+//        for (int i = 0; i < 6; i++) {
+//            GameWorld world = getEntity().getWorld();
+//            Entity bullet = world.spawn("Bullet", new SpawnData(0, 0).put("owner", getEntity()));
+//
+//            bullet.translateX(20 * (i-3));
+//        }
+//
+//        play("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
     }
 
     @Override

@@ -1,7 +1,6 @@
-package com.almasb.fxglgames.spaceinvaders.control;
+package com.almasb.fxglgames.spaceinvaders.components;
 
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxglgames.spaceinvaders.Config;
 
 import static com.almasb.fxgl.app.DSLKt.*;
