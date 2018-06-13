@@ -13,9 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-import static com.almasb.fxgl.app.DSLKt.centerText;
-import static com.almasb.fxgl.app.DSLKt.scale;
-import static com.almasb.fxgl.app.DSLKt.spawn;
+import static com.almasb.fxgl.app.DSLKt.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)

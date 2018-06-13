@@ -67,7 +67,7 @@ public class SpaceInvadersApp extends GameApplication {
         settings.setVersion("1.0.1");
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
-        settings.setProfilingEnabled(true);
+        settings.setProfilingEnabled(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
@@ -170,15 +170,17 @@ public class SpaceInvadersApp extends GameApplication {
 
         levels = Arrays.asList(
                 new Level1(),
-                new BossLevel2(),
                 new Level2(),
                 new Level3(),
                 new BossLevel1(),
                 new Level4(),
                 new Level5(),
                 new Level6(),
+                new BossLevel2(),
                 new Level7(),
-                new BossLevel2()
+                new Level8(),
+                new Level9(),
+                new Level11()
         );
 
         spawnBackground();
@@ -216,6 +218,30 @@ public class SpaceInvadersApp extends GameApplication {
         getGameWorld().spawn("Bonus", new SpawnData(x, y).put("type", type));
     }
 
+    private void nextLevel() {
+        getInput().setProcessInput(false);
+
+        if (geti("level") > 0) {
+            cleanupLevel();
+        }
+
+        set("enemiesKilled", 0);
+        inc("level", +1);
+
+        if (geti("level") > levels.size()) {
+            showGameOver();
+            return;
+        }
+
+        playInCutscene(() -> {
+            spawn("LevelInfo");
+
+            getMasterTimer().runOnceAfter(this::initLevel, Duration.seconds(LEVEL_START_DELAY));
+
+            play(Asset.SOUND_NEW_LEVEL);
+        });
+    }
+
     private void initLevel() {
         getCurrentLevel().init();
 
@@ -241,25 +267,12 @@ public class SpaceInvadersApp extends GameApplication {
         getCurrentLevel().destroy();
     }
 
-    private void nextLevel() {
-        getInput().setProcessInput(false);
+    private void playInCutscene(Runnable onFinished) {
+        getCurrentLevel().playInCutscene(onFinished);
+    }
 
-        if (geti("level") > 0)
-            cleanupLevel();
-
-        set("enemiesKilled", 0);
-        inc("level", +1);
-
-        if (geti("level") > levels.size()) {
-            showGameOver();
-            return;
-        }
-
-        spawn("LevelInfo");
-
-        getMasterTimer().runOnceAfter(this::initLevel, Duration.seconds(LEVEL_START_DELAY));
-
-        play(Asset.SOUND_NEW_LEVEL);
+    private void playOutCutscene(Runnable onFinished) {
+        getCurrentLevel().playOutCutscene(onFinished);
     }
 
     private SpaceLevel getCurrentLevel() {
@@ -331,8 +344,9 @@ public class SpaceInvadersApp extends GameApplication {
             spawnRandomBonus();
         }
 
-        if (getCurrentLevel().isFinished())
-            nextLevel();
+        if (getCurrentLevel().isFinished()) {
+            playOutCutscene(this::nextLevel);
+        }
     }
 
     @Handles(eventType = "ENEMY_REACHED_END")

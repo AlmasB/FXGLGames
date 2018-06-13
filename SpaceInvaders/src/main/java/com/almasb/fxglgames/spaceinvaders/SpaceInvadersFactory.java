@@ -166,6 +166,17 @@ public final class SpaceInvadersFactory implements EntityFactory {
                 .build();
     }
 
+    @Spawns("General")
+    public Entity newGeneral(SpawnData data) {
+        Texture playerTexture = texture("player2.png", 45, 40);
+
+        return Entities.builder()
+                .from(data)
+                .type(NPC_GENERAL)
+                .viewFromNode(playerTexture.multiplyColor(FXGLMath.randomColor()))
+                .build();
+    }
+
     @Spawns("Enemy")
     public Entity newEnemy(SpawnData data) {
         return Entities.builder()

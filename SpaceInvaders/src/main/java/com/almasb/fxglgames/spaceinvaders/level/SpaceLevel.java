@@ -1,16 +1,25 @@
 package com.almasb.fxglgames.spaceinvaders.level;
 
 import com.almasb.fxgl.animation.Interpolators;
+import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.almasb.fxgl.app.DSLKt.spawn;
+import static com.almasb.fxgl.app.DSLKt.translate;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -19,8 +28,89 @@ public abstract class SpaceLevel {
 
     private List<Entity> enemies = new ArrayList<>();
 
+    private Pane storyPane = new Pane();
+    private Pane rootPane;
+
+    public SpaceLevel() {
+        Rectangle bg = new Rectangle(FXGL.getAppWidth() - 20, 200, Color.color(0, 0, 0, 0.6));
+        bg.setArcWidth(25);
+        bg.setArcHeight(25);
+        bg.setStroke(Color.color(0.1, 0.2, 0.86, 0.76));
+        bg.setStrokeWidth(3);
+
+        storyPane.setTranslateX(10);
+        storyPane.setTranslateY(25);
+
+        rootPane = new Pane(bg, storyPane);
+        rootPane.setTranslateX(10);
+        rootPane.setTranslateY(FXGL.getAppHeight() - 200);
+    }
+
     public abstract void init();
-    public abstract void destroy();
+
+    public void destroy() {
+
+    }
+
+    public void playInCutscene(Runnable onFinished) {
+        onFinished.run();
+    }
+
+    public void playOutCutscene(Runnable onFinished) {
+        onFinished.run();
+    }
+
+    void showStoryPane() {
+        FXGL.getApp().getGameScene().addUINode(rootPane);
+    }
+
+    void hideStoryPane() {
+        FXGL.getApp().getGameScene().removeUINode(rootPane);
+    }
+
+    void updateStoryText(Node node) {
+        storyPane.getChildren().setAll(node);
+    }
+
+    void updateAlienStoryText(String data) {
+        List<Text> texts = new ArrayList<>();
+        double bounds = 0;
+
+        List<Character> characters = new ArrayList<>();
+
+        for (char c : data.toCharArray()) {
+            characters.add(c);
+        }
+
+        for (char c : characters) {
+            Text t = new Text(c + "");
+            t.setFill(Color.WHITE);
+            t.setFont(Font.font(24));
+            t.setTranslateX(bounds);
+
+            texts.add(t);
+
+            t.setUserData(new Point2D(t.getTranslateX(), t.getTranslateY()));
+
+            bounds += t.getLayoutBounds().getWidth();
+        }
+
+        bounds = 0;
+
+        Collections.shuffle(texts);
+
+        for (Text t : texts) {
+            t.setTranslateX(bounds);
+
+            bounds += t.getLayoutBounds().getWidth();
+
+            Point2D p = (Point2D) t.getUserData();
+
+            translate(t, new Point2D(t.getTranslateX(), t.getTranslateY()), p, Duration.seconds(2), Duration.seconds(1)).startInPlayState();
+        }
+
+        storyPane.getChildren().setAll(texts);
+    }
 
     void addEnemy(Entity entity) {
         enemies.add(entity);

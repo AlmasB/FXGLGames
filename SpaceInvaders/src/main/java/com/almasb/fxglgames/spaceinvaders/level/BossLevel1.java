@@ -1,42 +1,69 @@
 package com.almasb.fxglgames.spaceinvaders.level;
 
-import com.almasb.fxgl.animation.Animation;
-import com.almasb.fxgl.app.DSLKt;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.GameWorld;
+import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.extra.entity.components.CircularMovementComponent;
-import com.almasb.fxgl.extra.entity.components.HealthComponent;
-import com.almasb.fxgl.ui.ProgressBar;
+import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.spaceinvaders.Config;
-import javafx.geometry.Point2D;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.almasb.fxgl.app.DSLKt.*;
+import static com.almasb.fxgl.app.DSLKt.play;
+import static com.almasb.fxgl.app.DSLKt.runOnce;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class BossLevel1 extends BossLevel {
 
-    private List<Animation<?>> animations = new ArrayList<>();
-
-
+    private Entity boss;
 
     @Override
-    public void init() {
-        Entity boss = spawnBoss(Config.WIDTH * 2 / 3, Config.HEIGHT / 3, 50, "boss1.png");
-        boss.addComponent(new CircularMovementComponent(2, 200));
+    public void playInCutscene(Runnable onFinished) {
+        boss = spawnBoss(Config.WIDTH * 2 / 3, Config.HEIGHT / 3, 50, "boss1.png");
+
+        showStoryPane();
+
+        updateAlienStoryText("I will end you!");
+
+        runOnce(() -> {
+            hideStoryPane();
+            onFinished.run();
+        }, Duration.seconds(4));
     }
 
     @Override
-    public void destroy() {
+    public void init() {
+        boss.addComponent(new CircularMovementComponent(2, 200));
+        boss.addComponent(new Level1BossComponent());
+    }
 
+    private static class Level1BossComponent extends Component {
 
-        animations.forEach(Animation::stop);
+        private LocalTimer attackTimer = FXGL.newLocalTimer();
+        private Duration nextAttack = Duration.seconds(1);
+
+        @Override
+        public void onUpdate(double tpf) {
+            if (attackTimer.elapsed(nextAttack)) {
+                shoot();
+
+                nextAttack = Duration.seconds(1);
+                attackTimer.capture();
+            }
+        }
+
+        private void shoot() {
+            for (int i = 0; i < 6; i++) {
+                GameWorld world = getEntity().getWorld();
+                Entity bullet = world.spawn("Bullet", new SpawnData(0, 0).put("owner", getEntity()));
+
+                bullet.translateX(20 * (i-3));
+            }
+
+            play("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
+        }
     }
 }

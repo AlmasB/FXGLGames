@@ -30,5 +30,6 @@ package com.almasb.fxglgames.spaceinvaders;
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public enum SpaceInvadersType {
-    PLAYER, ENEMY, BULLET, WALL, BONUS, LASER_BEAM
+    PLAYER, ENEMY, BULLET, WALL, BONUS, LASER_BEAM,
+    NPC_GENERAL
 }

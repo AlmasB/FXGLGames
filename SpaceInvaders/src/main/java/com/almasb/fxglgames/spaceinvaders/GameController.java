@@ -85,6 +85,8 @@ public class GameController implements UIController {
         labelScore.setFont(FXGL.getUIFactory().newFont(18));
         labelHighScore.setFont(FXGL.getUIFactory().newFont(18));
 
+        labelHighScore.setVisible(false);
+
         laserMeter.setLabelVisible(false);
         laserMeter.setMinValue(0);
         laserMeter.setMaxValue(Config.LASER_METER_MAX);

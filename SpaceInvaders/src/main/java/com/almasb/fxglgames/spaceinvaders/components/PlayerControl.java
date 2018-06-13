@@ -27,7 +27,10 @@
 package com.almasb.fxglgames.spaceinvaders.components;
 
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.*;
+import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.RenderLayer;
+import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.component.Required;
 import com.almasb.fxgl.entity.view.EntityView;

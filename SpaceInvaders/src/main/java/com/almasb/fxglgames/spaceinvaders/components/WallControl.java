@@ -28,8 +28,8 @@ package com.almasb.fxglgames.spaceinvaders.components;
 
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;

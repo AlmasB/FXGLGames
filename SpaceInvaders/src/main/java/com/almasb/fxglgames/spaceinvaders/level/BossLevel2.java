@@ -1,22 +1,14 @@
 package com.almasb.fxglgames.spaceinvaders.level;
 
-import com.almasb.fxgl.animation.Animation;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.GameWorld;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
-import com.almasb.fxgl.extra.entity.components.CircularMovementComponent;
-import com.almasb.fxgl.extra.entity.components.HealthComponent;
 import com.almasb.fxgl.time.LocalTimer;
-import com.almasb.fxgl.ui.ProgressBar;
 import com.almasb.fxglgames.spaceinvaders.Config;
-import javafx.scene.paint.Color;
 import javafx.util.Duration;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.almasb.fxgl.app.DSLKt.play;
 import static com.almasb.fxgl.app.DSLKt.runOnce;

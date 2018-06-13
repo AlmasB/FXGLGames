@@ -47,8 +47,8 @@ public final class Config {
 
     public static final int START_LIVES = 3;
 
-    public static final int ENEMIES_PER_ROW = 1;
-    public static final int ENEMY_ROWS = 1;
+    public static final int ENEMIES_PER_ROW = 8;
+    public static final int ENEMY_ROWS = 4;
     public static final int ENEMIES_PER_LEVEL = ENEMIES_PER_ROW * ENEMY_ROWS;
 
     public static final float BONUS_SPAWN_CHANCE = 0.25f;
@@ -64,7 +64,7 @@ public final class Config {
     public static final double PLAYER_ATTACK_SPEED = 3.0;
     public static final double PLAYER_BONUS_ATTACK_SPEED = 0.25;
 
-    public static final double LASER_METER_MAX = 10.0;
+    public static final double LASER_METER_MAX = 50.0;
 
     /**
      * Recharge per killed enemy;
@@ -74,7 +74,7 @@ public final class Config {
     /**
      * Deplete per second (when activated).
      */
-    public static final double LASER_METER_DEPLETE = 5.0;
+    public static final double LASER_METER_DEPLETE = 50.0;
 
     public static final double INVINCIBILITY_TIME = 1.0;
 
