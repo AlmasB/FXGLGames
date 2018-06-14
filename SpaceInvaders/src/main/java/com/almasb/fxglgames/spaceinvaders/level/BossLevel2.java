@@ -20,7 +20,7 @@ public class BossLevel2 extends BossLevel {
 
     @Override
     public void init() {
-        Entity boss = spawnBoss(Config.WIDTH / 2, Config.HEIGHT / 2, 100, "boss2.png");
+        Entity boss = spawnBoss(Config.WIDTH / 2, Config.HEIGHT / 2, 50, "boss2.png");
         boss.addComponent(new Level2BossComponent());
     }
 
@@ -58,8 +58,6 @@ public class BossLevel2 extends BossLevel {
         private void shoot() {
             GameWorld world = getEntity().getWorld();
             Entity bullet = world.spawn("Bullet", new SpawnData(0, 0).put("owner", getEntity()));
-
-            bullet.translateX(10);
 
             play("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
         }

@@ -68,6 +68,7 @@ public class SpaceInvadersApp extends GameApplication {
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
         settings.setProfilingEnabled(false);
+        settings.setIntroEnabled(true);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
@@ -180,7 +181,8 @@ public class SpaceInvadersApp extends GameApplication {
                 new Level7(),
                 new Level8(),
                 new Level9(),
-                new Level11()
+                new Level11(),
+                new BossLevel3()
         );
 
         spawnBackground();
@@ -380,10 +382,9 @@ public class SpaceInvadersApp extends GameApplication {
     }
 
     private void killRandomEnemy() {
-        List<Entity> list = getGameWorld().getEntitiesByType(SpaceInvadersType.ENEMY);
-        list.get(FXGLMath.random(0, list.size() - 1))
-                .getComponent(EnemyControl.class)
-                .die();
+        FXGLMath.random(getGameWorld().getEntitiesByType(SpaceInvadersType.ENEMY))
+                .flatMap(e -> e.getComponentOptional(EnemyControl.class))
+                .ifPresent(e -> e.die());
     }
 
     private void showGameOver() {

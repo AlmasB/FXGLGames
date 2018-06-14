@@ -37,7 +37,7 @@ public class Level1 extends SpaceLevel {
     @Override
     public void playInCutscene(Runnable onFinished) {
 
-        boolean b = true;
+        boolean b = false;
         if (b) {
             onFinished.run();
             return;
