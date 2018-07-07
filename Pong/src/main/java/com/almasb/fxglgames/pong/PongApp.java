@@ -75,6 +75,7 @@ public class PongApp extends GameApplication {
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Pong");
         settings.setVersion("0.3.2");
+        settings.setFontUI("pong.ttf");
         settings.setEnabledMenuItems(EnumSet.of(MenuItem.ONLINE));
     }
 

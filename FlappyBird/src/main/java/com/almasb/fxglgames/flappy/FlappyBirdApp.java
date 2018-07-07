@@ -34,6 +34,7 @@ public class FlappyBirdApp extends GameApplication {
         settings.setHeight(720);
         settings.setTitle("Flappy Bird Clone");
         settings.setVersion("0.3");
+        settings.setFontUI("sf_atarian_system.ttf");
     }
 
     @Override
