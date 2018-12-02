@@ -27,17 +27,19 @@
 package com.almasb.fxglgames.drop;
 
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
-import com.almasb.fxgl.extra.entity.components.KeepOnScreenComponent;
-import com.almasb.fxgl.extra.entity.components.OffscreenCleanComponent;
-import com.almasb.fxgl.input.UserAction;
+import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.fxgl.settings.GameSettings;
+import com.almasb.fxgl.physics.HitBox;
 import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
+
+import static com.almasb.fxgl.app.DSLKt.onKey;
+import static com.almasb.fxgl.app.DSLKt.texture;
+import static com.almasb.fxgl.app.FXGL.*;
 
 /**
  * This is an FXGL version of the libGDX simple game tutorial, which can be found
@@ -73,23 +75,8 @@ public class DropApp extends GameApplication {
 
     @Override
     protected void initInput() {
-        UserAction moveLeft = new UserAction("Move Left") {
-            @Override
-            protected void onAction() {
-                bucket.translateX(-200 * tpf());
-            }
-        };
-
-        UserAction moveRight = new UserAction("Move Right") {
-            @Override
-            protected void onAction() {
-                bucket.translateX(200 * tpf());
-            }
-        };
-
-        // bind actions to keys
-        getInput().addAction(moveLeft, KeyCode.A);
-        getInput().addAction(moveRight, KeyCode.D);
+        onKey(KeyCode.A, "Move Left", () -> bucket.translateX(-200 * tpf()));
+        onKey(KeyCode.D, "Move Right", () -> bucket.translateX(200 * tpf()));
     }
 
     @Override
@@ -100,7 +87,7 @@ public class DropApp extends GameApplication {
             spawnDroplet();
         }, Duration.seconds(1));
 
-        getAudioPlayer().loopBGM("bgm.mp3");
+        //getAudioPlayer().loopBGM("bgm.mp3");
     }
 
     @Override
@@ -110,7 +97,7 @@ public class DropApp extends GameApplication {
             protected void onCollisionBegin(Entity bucket, Entity droplet) {
                 droplet.removeFromWorld();
 
-                getAudioPlayer().playSound("drop.wav");
+                //getAudioPlayer().playSound("drop.wav");
             }
         });
     }
@@ -121,23 +108,29 @@ public class DropApp extends GameApplication {
     }
 
     private Entity spawnBucket() {
-        return Entities.builder()
-                .at(getWidth() / 2, getHeight() - 200)
-                .type(DropType.BUCKET)
-                .viewFromTextureWithBBox("bucket.png")
-                .with(new CollidableComponent(true))
-                .with(new KeepOnScreenComponent(true, false))
-                .buildAndAttach(getGameWorld());
+        Entity entity = new Entity();
+        entity.setType(DropType.BUCKET);
+        entity.setPosition(getAppWidth() / 2, getAppHeight() - 200);
+        entity.setView(texture("bucket.png"));
+        entity.getBoundingBoxComponent().addHitBox(new HitBox(BoundingShape.box(64, 64)));
+        entity.addComponent(new CollidableComponent(true));
+
+        getGameWorld().addEntity(entity);
+
+        return entity;
     }
 
     private Entity spawnDroplet() {
-        return Entities.builder()
-                .at(FXGLMath.random(getWidth() - 64), 0)
-                .type(DropType.DROPLET)
-                .viewFromTextureWithBBox("droplet.png")
-                .with(new CollidableComponent(true))
-                .with(new OffscreenCleanComponent())
-                .buildAndAttach(getGameWorld());
+        Entity entity = new Entity();
+        entity.setType(DropType.DROPLET);
+        entity.setPosition(FXGLMath.random(getAppWidth() - 64), 0);
+        entity.setView(texture("droplet.png"));
+        entity.getBoundingBoxComponent().addHitBox(new HitBox(BoundingShape.box(42, 64)));
+        entity.addComponent(new CollidableComponent(true));
+
+        getGameWorld().addEntity(entity);
+
+        return entity;
     }
 
     public static void main(String[] args) {
