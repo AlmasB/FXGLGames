@@ -28,13 +28,8 @@ package com.almasb.fxglgames.cannon;
 
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.input.Input;
-import com.almasb.fxgl.input.UserAction;
-import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.fxgl.physics.PhysicsWorld;
-import com.almasb.fxgl.settings.GameSettings;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
@@ -42,6 +37,8 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.util.Map;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * A basic FXGL game demo.
@@ -66,14 +63,7 @@ public class CannonApp extends GameApplication {
 
     @Override
     protected void initInput() {
-        Input input = getInput();
-
-        input.addAction(new UserAction("Shoot") {
-            @Override
-            protected void onActionBegin() {
-                shoot();
-            }
-        }, MouseButton.PRIMARY);
+        onBtnDown(MouseButton.PRIMARY, "Shoot", () -> shoot());
     }
 
     @Override
@@ -91,34 +81,30 @@ public class CannonApp extends GameApplication {
     }
 
     private void initScreenBounds() {
-        getGameWorld().addEntity(Entities.makeScreenBounds(100));
+        //getGameWorld().addEntity(Entities.makeScreenBounds(100));
     }
 
     private void initCannon() {
-        cannon = getGameWorld().spawn("cannon", 50, getHeight() - 30);
+        cannon = getGameWorld().spawn("cannon", 50, getAppHeight() - 30);
     }
 
     private void initBasket() {
-        getGameWorld().spawn("basketBarrier", 400, getHeight() - 300);
-        getGameWorld().spawn("basketBarrier", 700, getHeight() - 300);
-        getGameWorld().spawn("basketGround", 500, getHeight());
+        spawn("basketBarrier", 400, getAppHeight() - 300);
+        spawn("basketBarrier", 700, getAppHeight() - 300);
+        spawn("basketGround", 500, getAppHeight());
     }
 
     private void shoot() {
-        getGameWorld().spawn("bullet", cannon.getPosition().add(70, 0));
+        spawn("bullet", cannon.getPosition().add(70, 0));
     }
 
     @Override
     protected void initPhysics() {
-        PhysicsWorld physics = getPhysicsWorld();
-        physics.addCollisionHandler(new CollisionHandler(CannonType.BULLET, CannonType.BASKET) {
-            @Override
-            protected void onCollisionBegin(Entity bullet, Entity basket) {
-                bullet.removeFromWorld();
-                getGameState().increment("score", +1000);
+        onCollisionBegin(CannonType.BULLET, CannonType.BASKET, (bullet, basket) -> {
+            bullet.removeFromWorld();
+            inc("score", +1000);
 
-                playBasketAnimation();
-            }
+            playBasketAnimation();
         });
     }
 
@@ -133,7 +119,7 @@ public class CannonApp extends GameApplication {
     }
 
     private void playBasketAnimation() {
-        Entities.animationBuilder()
+        animationBuilder()
                 .duration(Duration.seconds(0.2))
                 .interpolator(Interpolators.EXPONENTIAL.EASE_IN())
                 .scale(getGameWorld().getEntitiesByType(CannonType.BASKET))

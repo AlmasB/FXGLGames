@@ -1,10 +1,8 @@
 package com.almasb.fxglgames.cannon;
 
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.components.CollidableComponent;
-import com.almasb.fxgl.extra.entity.components.ExpireCleanComponent;
-import com.almasb.fxgl.extra.entity.components.LiftComponent;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
@@ -13,6 +11,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
+import static com.almasb.fxgl.dsl.FXGL.*;
+
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
@@ -20,11 +20,11 @@ public class CannonFactory implements EntityFactory {
 
     @Spawns("cannon")
     public Entity newCannon(SpawnData data) {
-        return Entities.builder()
+        return entityBuilder()
                 .type(CannonType.CANNON)
                 .from(data)
-                .viewFromNode(new Rectangle(70, 30, Color.BROWN))
-                .with(new LiftComponent(Duration.seconds(1), 150, true))
+                .view(new Rectangle(70, 30, Color.BROWN))
+                //.with(new LiftComponent(Duration.seconds(1), 150, true))
                 .build();
     }
 
@@ -40,31 +40,31 @@ public class CannonFactory implements EntityFactory {
             physics.setLinearVelocity(mousePosition.subtract(data.getX(), data.getY()).normalize().multiply(800));
         });
 
-        return Entities.builder()
+        return entityBuilder()
                 .type(CannonType.BULLET)
                 .from(data)
-                .viewFromNodeWithBBox(new Rectangle(25, 25, Color.BLUE))
+                .viewWithBBox(new Rectangle(25, 25, Color.BLUE))
                 .with(physics, new CollidableComponent(true))
-                .with(new ExpireCleanComponent(Duration.seconds(4)))
+                //.with(new ExpireCleanComponent(Duration.seconds(4)))
                 .build();
     }
 
     @Spawns("basketBarrier")
     public Entity newBasketBarrier(SpawnData data) {
-        return Entities.builder()
+        return entityBuilder()
                 .type(CannonType.BASKET)
                 .from(data)
-                .viewFromNodeWithBBox(new Rectangle(100, 300, Color.RED))
+                .viewWithBBox(new Rectangle(100, 300, Color.RED))
                 .with(new PhysicsComponent())
                 .build();
     }
 
     @Spawns("basketGround")
     public Entity newBasketGround(SpawnData data) {
-        return Entities.builder()
+        return entityBuilder()
                 .type(CannonType.BASKET)
                 .from(data)
-                .viewFromNodeWithBBox(new Rectangle(300, 5, Color.TRANSPARENT))
+                .viewWithBBox(new Rectangle(300, 5, Color.TRANSPARENT))
                 .with(new PhysicsComponent(), new CollidableComponent(true))
                 .build();
     }
