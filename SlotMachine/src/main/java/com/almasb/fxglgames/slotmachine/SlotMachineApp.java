@@ -1,7 +1,7 @@
 package com.almasb.fxglgames.slotmachine;
 
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.settings.GameSettings;
+import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxglgames.slotmachine.components.WheelComponent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -49,7 +51,7 @@ public class SlotMachineApp extends GameApplication {
         Text textMoney = new Text();
 
         textMoney.layoutBoundsProperty().addListener((observable, oldValue, newBounds) -> {
-            textMoney.setTranslateX(getWidth() / 2 - newBounds.getWidth() / 2);
+            textMoney.setTranslateX(getAppWidth() / 2 - newBounds.getWidth() / 2);
         });
 
         textMoney.setTranslateY(50);

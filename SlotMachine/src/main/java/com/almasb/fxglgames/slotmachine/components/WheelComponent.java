@@ -1,8 +1,8 @@
 package com.almasb.fxglgames.slotmachine.components;
 
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.entity.components.PositionComponent;
+import com.almasb.fxgl.entity.components.TransformComponent;
 import com.almasb.fxglgames.slotmachine.SlotMachineApp;
 
 import java.util.Random;
@@ -19,7 +19,7 @@ public class WheelComponent extends Component {
 
     private Random random = new Random();
 
-    private PositionComponent position;
+    private TransformComponent position;
 
     @Override
     public void onUpdate(double tpf) {
