@@ -1,7 +1,7 @@
 This repo contains sample games built with <a href="https://github.com/AlmasB/FXGL">FXGL</a> Game Library.
 Each game focuses on one or two aspects of FXGL, e.g. Drop focuses on bare minimums, Pac-man focuses on AI, etc.
 
-Checkout [this commit](https://github.com/AlmasB/FXGLGames/commit/a0821c76ba4a7a64dba4f9ec6f182827d909561c) for Java 8 code (FXGL 0.5.4).
+Checkout [this commit](https://github.com/AlmasB/FXGLGames/commit/a0821c76ba4a7a64dba4f9ec6f182827d909561c) for Java 8 code for all projects (FXGL 0.5.4).
 All projects will eventually be upgraded to Java 11 code (FXGL 11.0+).
 
 ## Build
@@ -51,3 +51,12 @@ These game demos are constantly upgraded, so feel free to fork and add something
 * [Geometry Wars](GeometryWars)
 * [Mario](Mario)
 * [Pac-man](Pacman)
+
+## Community
+
+You are very welcome to contribute to any of these games, or link to your own games.
+List of community developed games / demos: (Please add links below)
+
+*
+*
+* 
