@@ -27,10 +27,7 @@
 package com.almasb.fxglgames.outrun
 
 import com.almasb.fxgl.animation.Interpolators
-import com.almasb.fxgl.app.FXGL
-import com.almasb.fxgl.app.fadeOutIn
 import com.almasb.fxgl.core.math.FXGLMath
-import com.almasb.fxgl.entity.Entity
 import com.almasb.fxgl.entity.component.Component
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.util.Duration
@@ -40,7 +37,7 @@ import javafx.util.Duration
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-class PlayerControl : Component() {
+class EnemyComponent : Component() {
 
     private var speed = 0.0
     private var dy = 0.0
@@ -91,19 +88,11 @@ class PlayerControl : Component() {
         entity.y -= speed
     }
 
-    fun applyExtraBoost() {
-        dy += 10
-    }
-
-    fun removeExtraBoost() {
-        dy = Math.max(0.0, dy - 10)
-    }
-
     fun reset() {
         dy = 0.0
 
-        val anim = fadeOutIn(entity.view, Duration.seconds(1.5))
-        anim.animatedValue.interpolator = Interpolators.BOUNCE.EASE_IN()
-        anim.startInPlayState()
+//        val anim = fadeOutIn(entity.view, Duration.seconds(1.5))
+//        anim.animatedValue.interpolator = Interpolators.BOUNCE.EASE_IN()
+//        anim.startInPlayState()
     }
 }

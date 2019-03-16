@@ -28,15 +28,18 @@ package com.almasb.fxglgames.outrun
 
 import com.almasb.fxgl.animation.Interpolators
 import com.almasb.fxgl.app.*
+import com.almasb.fxgl.core.util.BiConsumer
+import com.almasb.fxgl.dsl.FXGL
+import com.almasb.fxgl.dsl.FXGL.Companion.loopBGM
+import com.almasb.fxgl.dsl.*
+import com.almasb.fxgl.dsl.FXGL.Companion.centerTextBind
 import com.almasb.fxgl.entity.Entity
-import com.almasb.fxgl.extra.entity.effect.Effect
-import com.almasb.fxgl.extra.entity.effect.EffectComponent
+import com.almasb.fxgl.entity.level.text.TextLevelLoader
 import com.almasb.fxgl.input.UserAction
-import com.almasb.fxgl.parser.text.TextLevelParser
 import com.almasb.fxgl.physics.CollisionHandler
-import com.almasb.fxgl.settings.GameSettings
 import com.almasb.fxgl.ui.FXGLTextFlow
 import com.almasb.fxgl.ui.ProgressBar
+import com.almasb.fxglgames.outrun.EntityType.*
 import javafx.application.Application
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.geometry.Pos
@@ -64,28 +67,26 @@ class OutRunApp : GameApplication() {
         }
     }
 
-    override fun preInit() {
-        loopBGM("bgm.mp3")
-    }
-
-    private lateinit var playerControl: PlayerControl
+    private lateinit var playerComponent: PlayerComponent
 
     override fun initInput() {
-        input.addAction(object : UserAction("Boost") {
+        loopBGM("bgm.mp3")
+
+        getInput().addAction(object : UserAction("Boost") {
             override fun onAction() {
-                playerControl.boost()
+                playerComponent.boost()
             }
         }, KeyCode.W)
 
-        input.addAction(object : UserAction("Move Left") {
+        getInput().addAction(object : UserAction("Move Left") {
             override fun onAction() {
-                playerControl.left()
+                playerComponent.left()
             }
         }, KeyCode.A)
 
-        input.addAction(object : UserAction("Move Right") {
+        getInput().addAction(object : UserAction("Move Right") {
             override fun onAction() {
-                playerControl.right()
+                playerComponent.right()
             }
         }, KeyCode.D)
     }
@@ -97,98 +98,97 @@ class OutRunApp : GameApplication() {
     override fun initGame() {
         val factory = OutRunFactory()
 
-        gameWorld.addEntityFactory(factory)
+        getGameWorld().addEntityFactory(factory)
 
-        val parser = TextLevelParser(factory)
-        val level = parser.parse("level0.txt")
+        val level = getAssetLoader().loadLevel("level0.txt", TextLevelLoader(40, 40, '0'))
 
-        gameWorld.setLevel(level)
+        getGameWorld().setLevel(level)
 
-        val player = gameWorld.spawn("player", width / 2 - 40.0, level.height.toDouble())
-        playerControl = player.getComponent(PlayerControl::class.java)
+        val player = spawn("player", getAppWidth() / 2 - 40.0, level.height.toDouble())
+        playerComponent = player.getComponent(PlayerComponent::class.java)
 
-        gameWorld.spawn("enemy", width / 2 + 40.0, level.height.toDouble())
+        getGameWorld().spawn("enemy", getAppWidth() / 2 + 40.0, level.height.toDouble())
 
-        val bg = gameWorld.spawn("background")
-        bg.positionComponent.yProperty().bind(gameScene.viewport.yProperty())
+        val bg = getGameWorld().spawn("background")
+        bg.yProperty().bind(FXGL.getGameScene().viewport.yProperty())
 
-        gameScene.viewport.setBounds(0, 0, 600, level.height)
-        gameScene.viewport.bindToEntity(player, width / 2.0, height - 80.0)
+        FXGL.getGameScene().viewport.setBounds(0, 0, 600, level.height)
+        FXGL.getGameScene().viewport.bindToEntity(player, getAppWidth() / 2.0, getAppHeight() - 80.0)
     }
 
     override fun initPhysics() {
-        physicsWorld.addCollisionHandler(object : CollisionHandler(EntityType.PLAYER, EntityType.OBSTACLE) {
-            override fun onCollisionBegin(player: Entity, wall: Entity) {
-                // reset player to last checkpoint
-                playerControl.reset()
-                wall.getComponent(ObstacleControl::class.java).hit()
-            }
+        onCollisionBegin(PLAYER, OBSTACLE, BiConsumer { _, wall ->
+            // reset player to last checkpoint
+            playerComponent.reset()
+            wall.getComponent(ObstacleComponent::class.java).hit()
         })
 
-        physicsWorld.addCollisionHandler(object : CollisionHandler(EntityType.ENEMY, EntityType.OBSTACLE) {
-            override fun onCollisionBegin(enemy: Entity, wall: Entity) {
-                // reset enemy to last checkpoint
-                enemy.getComponent(EnemyControl::class.java).reset()
-                wall.getComponent(ObstacleControl::class.java).hit()
-            }
+        onCollisionBegin(ENEMY, OBSTACLE, BiConsumer { enemy, wall ->
+            // reset enemy to last checkpoint
+            enemy.getComponent(EnemyComponent::class.java).reset()
+            wall.getComponent(ObstacleComponent::class.java).hit()
         })
 
-        physicsWorld.addCollisionHandler(object : CollisionHandler(EntityType.PLAYER, EntityType.POWERUP) {
+        onCollisionBegin(PLAYER, POWERUP, BiConsumer { enemy, wall ->
+            // reset enemy to last checkpoint
+            enemy.getComponent(EnemyComponent::class.java).reset()
+            wall.getComponent(ObstacleComponent::class.java).hit()
+        })
+
+        getPhysicsWorld().addCollisionHandler(object : CollisionHandler(PLAYER, POWERUP) {
             override fun onCollisionBegin(player: Entity, boost: Entity) {
                 boost.removeFromWorld()
 
-                player.getComponent(EffectComponent::class.java).startEffect(object : Effect(Duration.seconds(1.0)) {
-                    override fun onStart(entity: Entity) {
-                        playerControl.applyExtraBoost()
-                    }
-
-                    override fun onEnd(entity: Entity) {
-                        playerControl.removeExtraBoost()
-                    }
-                })
+//                player.getComponent(EffectComponent::class.java).startEffect(object : Effect(Duration.seconds(1.0)) {
+//                    override fun onStart(entity: Entity) {
+//                        playerComponent.applyExtraBoost()
+//                    }
+//
+//                    override fun onEnd(entity: Entity) {
+//                        playerComponent.removeExtraBoost()
+//                    }
+//                })
             }
         })
 
-        physicsWorld.addCollisionHandler(object : CollisionHandler(EntityType.PLAYER, EntityType.FINISH) {
-            override fun onCollisionBegin(player: Entity, finish: Entity) {
-                display.showMessageBox("Demo Over. Your Time: %.2f s\n".format(getd("time")) +
-                        "Thanks for playing!", this@OutRunApp::exit)
-            }
+        onCollisionBegin(PLAYER, FINISH, BiConsumer { player, finish ->
+            getDisplay().showMessageBox("Demo Over. Your Time: %.2f s\n".format(getd("time")) +
+                    "Thanks for playing!", FXGL.getGameController()::exit)
         })
 
-        physicsWorld.addCollisionHandler(object : CollisionHandler(EntityType.PLAYER, EntityType.ENEMY) {
-            override fun onCollisionBegin(player: Entity, enemy: Entity) {
-                player.translateX(-30.0)
-                enemy.translateX(30.0)
-            }
+        onCollisionBegin(PLAYER, ENEMY, BiConsumer { player, enemy ->
+            player.translateX(-30.0)
+            enemy.translateX(30.0)
         })
     }
 
     private lateinit var ui: Text
 
     override fun initUI() {
-        val label = uiFactory.newText("", 72.0)
+        val label = FXGL.getUIFactory().newText("", 72.0)
         centerTextBind(label)
 
         val count = SimpleIntegerProperty(3)
 
         label.textProperty().bind(count.asString())
 
-        gameScene.addUINode(label)
+        FXGL.getGameScene().addUINode(label)
 
-        val anim = fadeIn(label, Duration.seconds(1.0))
-        anim.cycleCount = 3
-        anim.animatedValue.interpolator = Interpolators.CIRCULAR.EASE_IN()
-        anim.startInPlayState()
+        FXGL.animationBuilder()
+                .duration(Duration.seconds(1.0))
+                .repeat(3)
+                .interpolator(Interpolators.CIRCULAR.EASE_IN())
+                .fadeIn(label)
+                .buildAndPlay()
 
-        val timerAction = masterTimer.runAtInterval(Runnable {
+        val timerAction = getMasterTimer().runAtInterval(Runnable {
             count.set(count.get() - 1)
         }, Duration.seconds(1.0))
 
         count.addListener({ _, _, newValue ->
             if (newValue.toInt() == 0) {
                 timerAction.expire()
-                gameScene.removeUINode(label)
+                FXGL.getGameScene().removeUINode(label)
             }
         })
 
@@ -199,21 +199,21 @@ class OutRunApp : GameApplication() {
         boostBar.setHeight(15.0)
         boostBar.setFill(Color.GREEN.brighter())
         boostBar.setTraceFill(Color.GREEN.brighter())
-        boostBar.translateX = width - 200.0
+        boostBar.translateX = getAppWidth() - 200.0
         boostBar.translateY = 25.0
         boostBar.isLabelVisible = false
         boostBar.setMaxValue(100.0)
-        boostBar.currentValueProperty().bind(playerControl.boost)
+        boostBar.currentValueProperty().bind(playerComponent.boost)
 
-        gameScene.addUINode(boostBar)
+        FXGL.getGameScene().addUINode(boostBar)
 
         // UI text
 
-        ui = uiFactory.newText("", 16.0)
+        ui = FXGL.getUIFactory().newText("", 16.0)
         ui.translateX = 50.0
         ui.translateY = 50.0
 
-        gameScene.addUINode(ui)
+        FXGL.getGameScene().addUINode(ui)
     }
 
     private var firstTime = true
@@ -222,19 +222,20 @@ class OutRunApp : GameApplication() {
         if (firstTime) {
             val flow = FXGLTextFlow()
             flow.append("OutRun Demo\n", Color.WHITE)
-                    .append(KeyCode.W, Color.GREEN).append(" - Boost\n", Color.WHITE)
-                    .append(KeyCode.A, Color.GREEN).append(" - Move Left\n", Color.WHITE)
-                    .append(KeyCode.D, Color.GREEN).append(" - Move Right", Color.WHITE)
+
+//                    .append(KeyCode.W, Color.GREEN).append(" - Boost\n", Color.WHITE)
+//                    .append(KeyCode.A, Color.GREEN).append(" - Move Left\n", Color.WHITE)
+//                    .append(KeyCode.D, Color.GREEN).append(" - Move Right", Color.WHITE)
 
             val vbox = VBox(flow)
             vbox.translateX = 200.0
             vbox.alignment = Pos.CENTER
 
-            display.showBox("", vbox, uiFactory.newButton("OK"))
+            getDisplay().showBox("", vbox, FXGL.getUIFactory().newButton("OK"))
 
             firstTime = false
         } else {
-            ui.text = "Speed: %.2f".format(playerControl.getSpeed())
+            ui.text = "Speed: %.2f".format(playerComponent.getSpeed())
         }
 
         set("time", getd("time") + tpf)
@@ -242,5 +243,5 @@ class OutRunApp : GameApplication() {
 }
 
 fun main(args: Array<String>) {
-    Application.launch(OutRunApp::class.java, *args);
+    GameApplication.launch(OutRunApp::class.java, args);
 }

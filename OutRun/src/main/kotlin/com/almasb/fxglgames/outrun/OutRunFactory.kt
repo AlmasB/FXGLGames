@@ -26,11 +26,10 @@
 
 package com.almasb.fxglgames.outrun
 
-import com.almasb.fxgl.app.texture
+import com.almasb.fxgl.dsl.FXGL
+import com.almasb.fxgl.dsl.FXGL.Companion.texture
 import com.almasb.fxgl.entity.*
 import com.almasb.fxgl.entity.components.CollidableComponent
-import com.almasb.fxgl.entity.view.EntityView
-import com.almasb.fxgl.extra.entity.effect.EffectComponent
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
 import java.util.*
@@ -40,19 +39,7 @@ import java.util.*
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-class OutRunFactory : TextEntityFactory {
-
-    override fun emptyChar(): Char {
-        return '0'
-    }
-
-    override fun blockHeight(): Int {
-        return 40
-    }
-
-    override fun blockWidth(): Int {
-        return 40
-    }
+class OutRunFactory : EntityFactory {
 
     @Spawns("background")
     fun newBackground(data: SpawnData): Entity {
@@ -63,11 +50,11 @@ class OutRunFactory : TextEntityFactory {
         road.translateX = 80.0
         view.addNode(road)
 
-        return Entities.builder()
+        return FXGL.entityBuilder()
                 .type(EntityType.BACKGROUND)
                 .from(data)
-                .viewFromNode(view)
-                .renderLayer(RenderLayer.BACKGROUND)
+                .view(view)
+                .zIndex(-5)
                 .build()
     }
 
@@ -75,12 +62,12 @@ class OutRunFactory : TextEntityFactory {
     fun newPlayer(data: SpawnData): Entity {
         val playerTexture = texture("player.png")
 
-        return Entities.builder()
+        return FXGL.entityBuilder()
                 .type(EntityType.PLAYER)
                 .from(data)
-                .viewFromNodeWithBBox(playerTexture)
+                .viewWithBBox(playerTexture)
                 .with(CollidableComponent(true))
-                .with(PlayerControl(), EffectComponent())
+                .with(PlayerComponent())
                 .build()
     }
 
@@ -88,26 +75,26 @@ class OutRunFactory : TextEntityFactory {
     fun newEnemy(data: SpawnData): Entity {
         val playerTexture = texture("player.png").multiplyColor(Color.rgb(11, 33, 11))
 
-        return Entities.builder()
+        return FXGL.entityBuilder()
                 .type(EntityType.ENEMY)
                 .from(data)
-                .viewFromNodeWithBBox(playerTexture)
+                .viewWithBBox(playerTexture)
                 .with(CollidableComponent(true))
-                .with(EnemyControl())
+                .with(EnemyComponent())
                 .build()
     }
 
-    @SpawnSymbol('b')
+    @Spawns("b")
     fun newPowerup(data: SpawnData): Entity {
-        return Entities.builder()
+        return FXGL.entityBuilder()
                 .type(EntityType.POWERUP)
                 .from(data)
-                .viewFromTextureWithBBox("powerup_boost.png")
+                .viewWithBBox("powerup_boost.png")
                 .with(CollidableComponent(true))
                 .build()
     }
 
-    @SpawnSymbol('1')
+    @Spawns("1")
     fun newObstacle(data: SpawnData): Entity {
         val textures = arrayOf(
                 "cone_up.png".to("cone_down.png"),
@@ -116,21 +103,21 @@ class OutRunFactory : TextEntityFactory {
 
         val index = Random().nextInt(textures.size)
 
-        return Entities.builder()
+        return FXGL.entityBuilder()
                 .type(EntityType.OBSTACLE)
                 .from(data)
-                .viewFromTextureWithBBox(textures[index].first)
+                .viewWithBBox(textures[index].first)
                 .with(CollidableComponent(true))
-                .with(ObstacleControl(textures[index].first, textures[index].second))
+                .with(ObstacleComponent(textures[index].first, textures[index].second))
                 .build()
     }
 
-    @SpawnSymbol('F')
+    @Spawns("F")
     fun newFinishLine(data: SpawnData): Entity {
-        return Entities.builder()
+        return FXGL.entityBuilder()
                 .type(EntityType.FINISH)
                 .from(data)
-                .viewFromNodeWithBBox(Rectangle(600.0, 40.0))
+                .viewWithBBox(Rectangle(600.0, 40.0))
                 .with(CollidableComponent(true))
                 .build()
     }
