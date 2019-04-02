@@ -33,6 +33,8 @@ import com.almasb.fxgl.dsl.FXGL
 import com.almasb.fxgl.dsl.FXGL.Companion.loopBGM
 import com.almasb.fxgl.dsl.*
 import com.almasb.fxgl.dsl.FXGL.Companion.centerTextBind
+import com.almasb.fxgl.dsl.components.Effect
+import com.almasb.fxgl.dsl.components.EffectComponent
 import com.almasb.fxgl.entity.Entity
 import com.almasb.fxgl.entity.level.text.TextLevelLoader
 import com.almasb.fxgl.input.UserAction
@@ -117,49 +119,41 @@ class OutRunApp : GameApplication() {
     }
 
     override fun initPhysics() {
-        onCollisionBegin(PLAYER, OBSTACLE, BiConsumer { _, wall ->
+        onCollisionBegin(PLAYER, OBSTACLE) { _, wall ->
             // reset player to last checkpoint
             playerComponent.reset()
             wall.getComponent(ObstacleComponent::class.java).hit()
-        })
+        }
 
-        onCollisionBegin(ENEMY, OBSTACLE, BiConsumer { enemy, wall ->
+        onCollisionBegin(ENEMY, OBSTACLE) { enemy, wall ->
             // reset enemy to last checkpoint
             enemy.getComponent(EnemyComponent::class.java).reset()
             wall.getComponent(ObstacleComponent::class.java).hit()
-        })
+        }
 
-        onCollisionBegin(PLAYER, POWERUP, BiConsumer { enemy, wall ->
-            // reset enemy to last checkpoint
-            enemy.getComponent(EnemyComponent::class.java).reset()
-            wall.getComponent(ObstacleComponent::class.java).hit()
-        })
+        onCollisionBegin(PLAYER, POWERUP) { player, boost ->
+            boost.removeFromWorld()
 
-        getPhysicsWorld().addCollisionHandler(object : CollisionHandler(PLAYER, POWERUP) {
-            override fun onCollisionBegin(player: Entity, boost: Entity) {
-                boost.removeFromWorld()
+            player.getComponent(EffectComponent::class.java).startEffect(object : Effect(Duration.seconds(1.0)) {
+                override fun onStart(entity: Entity) {
+                    playerComponent.applyExtraBoost()
+                }
 
-//                player.getComponent(EffectComponent::class.java).startEffect(object : Effect(Duration.seconds(1.0)) {
-//                    override fun onStart(entity: Entity) {
-//                        playerComponent.applyExtraBoost()
-//                    }
-//
-//                    override fun onEnd(entity: Entity) {
-//                        playerComponent.removeExtraBoost()
-//                    }
-//                })
-            }
-        })
+                override fun onEnd(entity: Entity) {
+                    playerComponent.removeExtraBoost()
+                }
+            })
+        }
 
-        onCollisionBegin(PLAYER, FINISH, BiConsumer { player, finish ->
+        onCollisionBegin(PLAYER, FINISH) { player, finish ->
             getDisplay().showMessageBox("Demo Over. Your Time: %.2f s\n".format(getd("time")) +
                     "Thanks for playing!", FXGL.getGameController()::exit)
-        })
+        }
 
-        onCollisionBegin(PLAYER, ENEMY, BiConsumer { player, enemy ->
+        onCollisionBegin(PLAYER, ENEMY) { player, enemy ->
             player.translateX(-30.0)
             enemy.translateX(30.0)
-        })
+        }
     }
 
     private lateinit var ui: Text
@@ -185,12 +179,12 @@ class OutRunApp : GameApplication() {
             count.set(count.get() - 1)
         }, Duration.seconds(1.0))
 
-        count.addListener({ _, _, newValue ->
+        count.addListener { _, _, newValue ->
             if (newValue.toInt() == 0) {
                 timerAction.expire()
                 FXGL.getGameScene().removeUINode(label)
             }
-        })
+        }
 
         // BOOST
 

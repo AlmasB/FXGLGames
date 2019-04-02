@@ -28,6 +28,7 @@ package com.almasb.fxglgames.outrun
 
 import com.almasb.fxgl.dsl.FXGL
 import com.almasb.fxgl.dsl.FXGL.Companion.texture
+import com.almasb.fxgl.dsl.components.EffectComponent
 import com.almasb.fxgl.entity.*
 import com.almasb.fxgl.entity.components.CollidableComponent
 import javafx.scene.paint.Color
@@ -67,7 +68,7 @@ class OutRunFactory : EntityFactory {
                 .from(data)
                 .viewWithBBox(playerTexture)
                 .with(CollidableComponent(true))
-                .with(PlayerComponent())
+                .with(PlayerComponent(), EffectComponent())
                 .build()
     }
 
