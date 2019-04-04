@@ -13,6 +13,8 @@ import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 
+import static com.almasb.fxgl.dsl.FXGL.play;
+
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
@@ -40,12 +42,12 @@ public class PlayerControl extends Component {
 
     @Override
     public void onAdded() {
-        // TODO: fix scale origin
         entity.getTransformComponent().setScaleOrigin(new Point2D(16, 21));
         entity.setView(texture);
 
         onGround.addListener((obs, old, isOnGround) -> {
             if (isOnGround) {
+                //play("land.wav");
                 jumps = 2;
             }
         });
@@ -88,6 +90,7 @@ public class PlayerControl extends Component {
         if (jumps == 0)
             return;
 
+        play("jump.wav");
         physics.setVelocityY(-300);
 
         jumps--;

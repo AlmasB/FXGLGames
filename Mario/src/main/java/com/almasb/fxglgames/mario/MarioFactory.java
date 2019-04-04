@@ -80,4 +80,24 @@ public class MarioFactory implements EntityFactory {
                 .with(new CollidableComponent(true))
                 .build();
     }
+
+    @Spawns("exitSign")
+    public Entity newExit(SpawnData data) {
+        return FXGL.entityBuilder()
+                .type(MarioType.EXIT_SIGN)
+                .from(data)
+                .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
+                .with(new CollidableComponent(true))
+                .build();
+    }
+
+    @Spawns("keyPrompt")
+    public Entity newPrompt(SpawnData data) {
+        return FXGL.entityBuilder()
+                .type(MarioType.KEY_PROMPT)
+                .from(data)
+                .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
+                .with(new CollidableComponent(true))
+                .build();
+    }
 }
