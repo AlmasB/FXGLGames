@@ -43,7 +43,7 @@ public class MarioApp extends GameApplication {
         getInput().addAction(new UserAction("Left") {
             @Override
             protected void onAction() {
-                player.getComponent(PlayerControl.class).left();
+                player.getComponent(PlayerComponent.class).left();
             }
 
             @Override
@@ -55,7 +55,7 @@ public class MarioApp extends GameApplication {
         getInput().addAction(new UserAction("Right") {
             @Override
             protected void onAction() {
-                player.getComponent(PlayerControl.class).right();
+                player.getComponent(PlayerComponent.class).right();
             }
 
             @Override
@@ -67,7 +67,7 @@ public class MarioApp extends GameApplication {
         getInput().addAction(new UserAction("Jump") {
             @Override
             protected void onActionBegin() {
-                player.getComponent(PlayerControl.class).jump();
+                player.getComponent(PlayerComponent.class).jump();
             }
         }, KeyCode.W);
     }

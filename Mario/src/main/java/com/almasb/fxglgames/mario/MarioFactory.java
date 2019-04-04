@@ -18,20 +18,6 @@ import javafx.scene.shape.Rectangle;
  */
 public class MarioFactory implements EntityFactory {
 
-    @Spawns("enemy")
-    public Entity newEnemy(SpawnData data) {
-        PhysicsComponent physics = new PhysicsComponent();
-        physics.setBodyType(BodyType.DYNAMIC);
-
-        return FXGL.entityBuilder()
-                .type(MarioType.ENEMY)
-                .from(data)
-                .viewWithBBox(new Rectangle(30, 30, Color.RED))
-                .with(physics)
-                .with(new EnemyControl())
-                .build();
-    }
-
     @Spawns("platform")
     public Entity newPlatform(SpawnData data) {
         return FXGL.entityBuilder()
@@ -67,17 +53,7 @@ public class MarioFactory implements EntityFactory {
                 .with(physics)
                 .with(new CollidableComponent(true))
                 .with(new IrremovableComponent())
-                .with(new PlayerControl())
-                .build();
-    }
-
-    @Spawns("coin")
-    public Entity newCoin(SpawnData data) {
-        return FXGL.entityBuilder()
-                .type(MarioType.COIN)
-                .from(data)
-                .viewWithBBox(new Circle(data.<Integer>get("width") / 2, Color.GOLD))
-                .with(new CollidableComponent(true))
+                .with(new PlayerComponent())
                 .build();
     }
 

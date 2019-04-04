@@ -2,7 +2,6 @@ package com.almasb.fxglgames.mario;
 
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
-import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.texture.AnimatedTexture;
@@ -18,7 +17,7 @@ import static com.almasb.fxgl.dsl.FXGL.play;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class PlayerControl extends Component {
+public class PlayerComponent extends Component {
 
     private PhysicsComponent physics;
 
@@ -30,7 +29,7 @@ public class PlayerControl extends Component {
 
     private BooleanProperty onGround = new SimpleBooleanProperty(false);
 
-    public PlayerControl() {
+    public PlayerComponent() {
 
         Image image = FXGL.image("player.png");
 
