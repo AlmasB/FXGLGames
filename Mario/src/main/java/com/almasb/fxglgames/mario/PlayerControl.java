@@ -7,6 +7,8 @@ import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxgl.texture.AnimationChannel;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
@@ -21,6 +23,10 @@ public class PlayerControl extends Component {
     private AnimatedTexture texture;
 
     private AnimationChannel animIdle, animWalk;
+
+    private int jumps = 2;
+
+    private BooleanProperty onGround = new SimpleBooleanProperty(false);
 
     public PlayerControl() {
 
@@ -37,6 +43,12 @@ public class PlayerControl extends Component {
         // TODO: fix scale origin
         entity.getTransformComponent().setScaleOrigin(new Point2D(16, 21));
         entity.setView(texture);
+
+        onGround.addListener((obs, old, isOnGround) -> {
+            if (isOnGround) {
+                jumps = 2;
+            }
+        });
     }
 
     @Override
@@ -50,6 +62,12 @@ public class PlayerControl extends Component {
                 texture.loopAnimationChannel(animIdle);
             }
         }
+
+        if (physics.isOnGround()) {
+            onGround.setValue(true);
+        } else {
+            onGround.setValue(false);
+        }
     }
 
     private boolean isMoving() {
@@ -58,15 +76,20 @@ public class PlayerControl extends Component {
 
     public void left() {
         getEntity().setScaleX(-1);
-        physics.setVelocityX(-150);
+        physics.setVelocityX(-170);
     }
 
     public void right() {
         getEntity().setScaleX(1);
-        physics.setVelocityX(150);
+        physics.setVelocityX(170);
     }
 
     public void jump() {
+        if (jumps == 0)
+            return;
+
         physics.setVelocityY(-300);
+
+        jumps--;
     }
 }
