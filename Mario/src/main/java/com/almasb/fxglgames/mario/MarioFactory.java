@@ -12,7 +12,6 @@ import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
@@ -33,14 +32,40 @@ public class MarioFactory implements EntityFactory {
                 .build();
     }
 
-    @Spawns("door")
-    public Entity newDoor(SpawnData data) {
+    @Spawns("exitTrigger")
+    public Entity newExitTrigger(SpawnData data) {
         return FXGL.entityBuilder()
-                .type(DOOR)
+                .type(EXIT_TRIGGER)
                 .from(data)
                 .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
                 .with(new CollidableComponent(true))
                 .build();
+    }
+
+    @Spawns("doorTop")
+    public Entity newDoorTop(SpawnData data) {
+        var door = FXGL.entityBuilder()
+                .type(DOOR_TOP)
+                .from(data)
+                .build();
+
+        door.getViewComponent().opacityProperty().setValue(0);
+
+        return door;
+    }
+
+    @Spawns("doorBot")
+    public Entity newDoorBot(SpawnData data) {
+        var door = FXGL.entityBuilder()
+                .type(DOOR_BOT)
+                .from(data)
+                .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
+                .with(new CollidableComponent(false))
+                .build();
+
+        door.getViewComponent().opacityProperty().setValue(0);
+
+        return door;
     }
 
     @Spawns("player")

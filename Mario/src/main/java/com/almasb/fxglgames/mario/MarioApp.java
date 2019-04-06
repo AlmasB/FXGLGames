@@ -9,15 +9,11 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.input.UserAction;
-import com.almasb.fxgl.input.view.KeyView;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.scene.Viewport;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 import java.util.Map;
@@ -26,16 +22,20 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxglgames.mario.MarioType.*;
 
 /**
+ * TODO: bbox view is not visible if the entity view is not visible
+ *
+ *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class MarioApp extends GameApplication {
 
-    private static final int MAX_LEVEL = 3;
+    private static final int MAX_LEVEL = 5;
 
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(1280);
         settings.setHeight(720);
+        settings.setApplicationMode(ApplicationMode.RELEASE);
     }
 
     private Entity player;
@@ -72,6 +72,20 @@ public class MarioApp extends GameApplication {
                 player.getComponent(PlayerComponent.class).jump();
             }
         }, KeyCode.W);
+
+        getInput().addAction(new UserAction("Use") {
+            @Override
+            protected void onActionBegin() {
+                getGameWorld().getEntitiesByType(BUTTON)
+                        .stream()
+                        .filter(btn -> btn.hasComponent(CollidableComponent.class) && player.isColliding(btn))
+                        .forEach(btn -> {
+                            btn.removeComponent(CollidableComponent.class);
+
+                            makeExitDoor();
+                        });
+            }
+        }, KeyCode.E);
     }
 
     @Override
@@ -92,7 +106,7 @@ public class MarioApp extends GameApplication {
 
         Viewport viewport = getGameScene().getViewport();
 
-        viewport.setBounds(-1500, 0, 1500, getAppHeight());
+        viewport.setBounds(-1500, 0, 5000, getAppHeight());
         viewport.bindToEntity(player, getAppWidth() / 2, getAppHeight() / 2);
 
         viewport.setLazy(true);
@@ -115,7 +129,7 @@ public class MarioApp extends GameApplication {
             }
         });
 
-        getPhysicsWorld().addCollisionHandler(new CollisionHandler(PLAYER, DOOR) {
+        var playerDoorHandler = new CollisionHandler(PLAYER, EXIT_TRIGGER) {
             @Override
             protected void onCollisionBegin(Entity player, Entity door) {
                 door.removeComponent(CollidableComponent.class);
@@ -124,7 +138,10 @@ public class MarioApp extends GameApplication {
                     nextLevel();
                 });
             }
-        });
+        };
+
+        //getPhysicsWorld().addCollisionHandler(playerDoorHandler);
+        getPhysicsWorld().addCollisionHandler(playerDoorHandler.copyFor(PLAYER, DOOR_BOT));
 
         onCollisionBegin(PLAYER, EXIT_SIGN, (player, sign) -> {
             sign.removeComponent(CollidableComponent.class);
@@ -187,6 +204,22 @@ public class MarioApp extends GameApplication {
                 keyEntity.getViewComponent().opacityProperty().setValue(0);
             }
         });
+
+        onCollisionBegin(PLAYER, EXIT_TRIGGER, (player, trigger) -> {
+            trigger.removeComponent(CollidableComponent.class);
+
+            makeExitDoor();
+        });
+    }
+
+    private void makeExitDoor() {
+        var doorTop = getGameWorld().getSingleton(DOOR_TOP);
+        var doorBot = getGameWorld().getSingleton(DOOR_BOT);
+
+        doorBot.getComponent(CollidableComponent.class).setValue(true);
+
+        doorTop.getViewComponent().opacityProperty().setValue(1);
+        doorBot.getViewComponent().opacityProperty().setValue(1);
     }
 
     private void nextLevel() {

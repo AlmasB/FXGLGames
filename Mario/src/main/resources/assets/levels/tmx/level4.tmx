@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="15" height="10" tilewidth="70" tileheight="70" infinite="0" nextlayerid="3" nextobjectid="21">
+<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="15" height="10" tilewidth="70" tileheight="70" infinite="0" nextlayerid="3" nextobjectid="22">
  <tileset firstgid="1" name="tiles_spritesheet" tilewidth="70" tileheight="70" spacing="2" tilecount="156" columns="12">
   <image source="tiles_spritesheet.png" width="914" height="936"/>
  </tileset>
@@ -13,17 +13,22 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,69,57,45,0,0,0,69,57,45,0,0,0,
+0,0,0,0,0,0,69,57,45,0,0,0,0,0,0,
 116,104,104,104,104,104,104,104,104,104,104,104,104,104,92
 </data>
  </layer>
  <objectgroup id="2" name="Object Layer 1">
   <object id="1" type="platform" x="0" y="630" width="1050"/>
-  <object id="15" type="platform" x="210" y="591" width="210" height="39"/>
-  <object id="16" type="platform" x="631" y="591" width="210" height="39"/>
-  <object id="17" type="exitSign" gid="65" x="910" y="630" width="70" height="70"/>
-  <object id="18" type="doorBot" gid="58" x="980" y="630" width="70" height="70"/>
-  <object id="19" type="doorTop" gid="46" x="980" y="560" width="70" height="70"/>
-  <object id="20" type="exitTrigger" x="630" y="490" width="210" height="70"/>
+  <object id="15" type="platform" x="420" y="591" width="210" height="39"/>
+  <object id="18" type="exitSign" gid="65" x="910" y="630" width="70" height="70"/>
+  <object id="19" type="button" x="490" y="560">
+   <properties>
+    <property name="doorX" type="int" value="980"/>
+    <property name="doorY" type="int" value="529"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="20" type="doorBot" gid="58" x="980" y="630" width="70" height="70"/>
+  <object id="21" type="doorTop" gid="46" x="980" y="560" width="70" height="70"/>
  </objectgroup>
 </map>
