@@ -5,6 +5,7 @@ import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.GameView;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.components.CollidableComponent;
@@ -29,13 +30,13 @@ import static com.almasb.fxglgames.mario.MarioType.*;
  */
 public class MarioApp extends GameApplication {
 
-    private static final int MAX_LEVEL = 5;
+    private static final int MAX_LEVEL = 10;
 
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(1280);
         settings.setHeight(720);
-        settings.setApplicationMode(ApplicationMode.RELEASE);
+        settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
     private Entity player;
@@ -193,7 +194,6 @@ public class MarioApp extends GameApplication {
                     getGameWorld().addEntity(keyEntity);
                 }
 
-                // TODO: setter / getter for opacity?
                 keyEntity.getViewComponent().opacityProperty().setValue(1);
             }
 
@@ -209,6 +209,51 @@ public class MarioApp extends GameApplication {
             trigger.removeComponent(CollidableComponent.class);
 
             makeExitDoor();
+        });
+
+        onCollisionBegin(PLAYER, ENEMY, (player, enemy) -> {
+            System.out.println("Collision");
+        });
+
+        onCollisionBegin(PLAYER, MESSAGE_PROMPT, (player, prompt) -> {
+            // TODO: can we add something like SingleCollidable?
+            prompt.removeComponent(CollidableComponent.class);
+            prompt.getViewComponent().setOpacity(1);
+
+            runOnce(() -> prompt.removeFromWorld(), Duration.seconds(4.5));
+        });
+
+        onCollisionBegin(PLAYER, PORTAL, (player, portal) -> {
+            var portal1 = portal.getComponent(PortalComponent.class);
+
+            if (!portal1.isActive()) {
+                return;
+            }
+
+            var portal2 = getGameWorld().getEntitiesByType(PORTAL)
+                    .stream()
+                    .filter(e -> e != portal)
+                    .findAny()
+                    .get()
+                    .getComponent(PortalComponent.class);
+
+            portal2.activate();
+
+            animationBuilder()
+                    .duration(Duration.seconds(0.5))
+                    .onFinished(() -> {
+                        player.getComponent(PhysicsComponent.class).reposition(portal2.getEntity().getPosition());
+
+                        animationBuilder()
+                                .scale(player)
+                                .from(new Point2D(0, 0))
+                                .to(new Point2D(1, 1))
+                                .buildAndPlay();
+                    })
+                    .scale(player)
+                    .from(new Point2D(1, 1))
+                    .to(new Point2D(0, 0))
+                    .buildAndPlay();
         });
     }
 

@@ -12,6 +12,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 
+import static com.almasb.fxgl.dsl.FXGL.animationBuilder;
 import static com.almasb.fxgl.dsl.FXGL.play;
 
 /**

@@ -9,6 +9,8 @@ import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
+import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
+import com.almasb.fxgl.ui.FontType;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -44,28 +46,22 @@ public class MarioFactory implements EntityFactory {
 
     @Spawns("doorTop")
     public Entity newDoorTop(SpawnData data) {
-        var door = FXGL.entityBuilder()
+        return FXGL.entityBuilder()
                 .type(DOOR_TOP)
                 .from(data)
+                .opacity(0)
                 .build();
-
-        door.getViewComponent().opacityProperty().setValue(0);
-
-        return door;
     }
 
     @Spawns("doorBot")
     public Entity newDoorBot(SpawnData data) {
-        var door = FXGL.entityBuilder()
+        return FXGL.entityBuilder()
                 .type(DOOR_BOT)
                 .from(data)
                 .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
+                .opacity(0)
                 .with(new CollidableComponent(false))
                 .build();
-
-        door.getViewComponent().opacityProperty().setValue(0);
-
-        return door;
     }
 
     @Spawns("player")
@@ -132,6 +128,58 @@ public class MarioFactory implements EntityFactory {
                 .viewWithBBox(new Rectangle(20, 20, Color.GREEN))
                 .with(new CollidableComponent(true))
                 .with("keyEntity", keyEntity)
+                .build();
+    }
+
+    @Spawns("enemyBox")
+    public Entity newEnemyBox(SpawnData data) {
+        return FXGL.entityBuilder()
+                .type(ENEMY)
+                .from(data)
+                .bbox(new HitBox(new Point2D(10, 10), BoundingShape.box(data.<Integer>get("width") - 20, data.<Integer>get("height") - 20)))
+                .with(new EnemyBoxComponent())
+                .with(new CollidableComponent(true))
+                .build();
+    }
+
+    @Spawns("messagePrompt")
+    public Entity newMessagePrompt(SpawnData data) {
+        var text = FXGL.getUIFactory().newText(data.get("message"), Color.BLACK, 14.0);
+        text.setFont(FXGL.getUIFactory().newFont(FontType.GAME, 20.0));
+        text.setStrokeWidth(2);
+
+        return FXGL.entityBuilder()
+                .type(MESSAGE_PROMPT)
+                .from(data)
+                .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
+                .view(text)
+                .with(new CollidableComponent(true))
+                .opacity(0)
+                .build();
+    }
+
+    @Spawns("portal")
+    public Entity newPortal(SpawnData data) {
+        return FXGL.entityBuilder()
+                .type(PORTAL)
+                .from(data)
+                .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
+                .with(new PortalComponent())
+                .with(new CollidableComponent(true))
+                .build();
+    }
+
+    @Spawns("lift")
+    public Entity newLift(SpawnData data) {
+        var physics = new PhysicsComponent();
+        physics.setBodyType(BodyType.KINEMATIC);
+
+        return FXGL.entityBuilder()
+                .type(LIFT)
+                .from(data)
+                .bbox(new HitBox(new Point2D(0, 50), BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height") - 50)))
+                .with(physics)
+                .with(new PhysicsLiftComponent(Duration.seconds(5.0), 500, true))
                 .build();
     }
 }
