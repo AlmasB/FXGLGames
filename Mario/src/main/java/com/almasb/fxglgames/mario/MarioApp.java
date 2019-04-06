@@ -1,10 +1,12 @@
 package com.almasb.fxglgames.mario;
 
 import com.almasb.fxgl.animation.Interpolators;
+import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.GameView;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.view.KeyView;
@@ -74,7 +76,7 @@ public class MarioApp extends GameApplication {
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
-        vars.put("level", 0);
+        vars.put("level", getSettings().getApplicationMode() == ApplicationMode.RELEASE ? 0 : -1);
     }
 
     @Override
@@ -99,8 +101,10 @@ public class MarioApp extends GameApplication {
     @Override
     protected void initPhysics() {
         // this seems to fix a rare javafx with delayed audio playback - https://bugs.openjdk.java.net/browse/JDK-8125515
-        var mediaPlayer = new MediaPlayer(new Media(getClass().getResource("/assets/sounds/jump.wav").toExternalForm()));
-        mediaPlayer.setVolume(0);
+//        var mediaPlayer = new MediaPlayer(new Media(getClass().getResource("/assets/sounds/jump.wav").toExternalForm()));
+//        mediaPlayer.setVolume(0);
+//        mediaPlayer.seek(Duration.ZERO);
+//        mediaPlayer.play();
 
         getPhysicsWorld().setGravity(0, 760);
 
@@ -137,39 +141,51 @@ public class MarioApp extends GameApplication {
         });
 
         onCollisionBegin(PLAYER, KEY_PROMPT, (player, prompt) -> {
-            mediaPlayer.seek(Duration.ZERO);
-            mediaPlayer.play();
-
-
             String key = prompt.getString("key");
 
-            KeyCode keyCode = KeyCode.getKeyCode(key);
-
-            KeyView view = new KeyView(keyCode, Color.YELLOW, 24);
-            view.setTranslateX(prompt.getX());
-            view.setTranslateY(prompt.getY());
-
-            GameView gameView = new GameView(view, 100);
+            var entity = getGameWorld().create("keyCode", new SpawnData(prompt.getX(), prompt.getY()).put("key", key));
+            entity.getTransformComponent().setScaleOrigin(new Point2D(15, 15));
 
             animationBuilder()
                     .interpolator(Interpolators.ELASTIC.EASE_OUT())
-                    .scale(view)
+                    .scale(entity)
                     .from(new Point2D(0, 0))
                     .to(new Point2D(1, 1))
                     .buildAndPlay();
 
-            getGameScene().addGameView(gameView);
+            getGameWorld().addEntity(entity);
 
             runOnce(() -> {
                 animationBuilder()
                         .interpolator(Interpolators.ELASTIC.EASE_IN())
-                        .onFinished(() -> getGameScene().removeGameView(gameView))
-                        .scale(view)
+                        .onFinished(() -> getGameWorld().removeEntity(entity))
+                        .scale(entity)
                         .from(new Point2D(1, 1))
                         .to(new Point2D(0, 0))
                         .buildAndPlay();
 
             }, Duration.seconds(2.5));
+        });
+
+        getPhysicsWorld().addCollisionHandler(new CollisionHandler(PLAYER, BUTTON) {
+            @Override
+            protected void onCollisionBegin(Entity player, Entity btn) {
+                Entity keyEntity = btn.getObject("keyEntity");
+
+                if (!keyEntity.isActive()) {
+                    getGameWorld().addEntity(keyEntity);
+                }
+
+                // TODO: setter / getter for opacity?
+                keyEntity.getViewComponent().opacityProperty().setValue(1);
+            }
+
+            @Override
+            protected void onCollisionEnd(Entity player, Entity btn) {
+                Entity keyEntity = btn.getObject("keyEntity");
+
+                keyEntity.getViewComponent().opacityProperty().setValue(0);
+            }
         });
     }
 

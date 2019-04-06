@@ -89,7 +89,7 @@ public class PlayerComponent extends Component {
         if (jumps == 0)
             return;
 
-        play("jump.wav");
+        //play("jump.wav");
         physics.setVelocityY(-300);
 
         jumps--;
