@@ -1,0 +1,1 @@
+Star textures from https://cga-creative-game-assets.itch.io/gold-2d-mobile-ui-for-casual-game

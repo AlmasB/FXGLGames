@@ -40,6 +40,7 @@ public class LiftComponent extends Component {
     @Override
     public void onAdded() {
         timer = FXGL.newLocalTimer();
+        timer.capture();
         speed = distance / duration.toSeconds();
     }
 

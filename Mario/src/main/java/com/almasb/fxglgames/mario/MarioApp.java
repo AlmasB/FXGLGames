@@ -23,13 +23,13 @@ import static com.almasb.fxglgames.mario.MarioType.*;
 
 /**
  * TODO: bbox view is not visible if the entity view is not visible
- *
+ * TODO: when changing scene, input still registered as pressed or does not fire stop?
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class MarioApp extends GameApplication {
 
-    private static final int MAX_LEVEL = 10;
+    private static final int MAX_LEVEL = 14;
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -86,20 +86,34 @@ public class MarioApp extends GameApplication {
                         });
             }
         }, KeyCode.E);
+
+        getInput().addAction(new UserAction("Test") {
+            @Override
+            protected void onActionBegin() {
+                levelEndScene.onLevelFinish();
+            }
+        }, KeyCode.G);
     }
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("level", getSettings().getApplicationMode() == ApplicationMode.RELEASE ? 0 : -1);
+        vars.put("levelTime", 0.0);
+
+        // TODO: update per level
+        vars.put("levelTimeData", new LevelEndScene.LevelTimeData(55.0, 33.0, 11.0));
     }
 
     private boolean firstTime = true;
+    private LevelEndScene levelEndScene;
 
     @Override
     protected void initGame() {
         if (firstTime) {
             getAudioPlayer().setGlobalMusicVolume(0.25);
-            loopBGM("BGM_dash_runner.wav");
+            //loopBGM("BGM_dash_runner.wav");
+
+            levelEndScene = new LevelEndScene();
             firstTime = false;
         }
 
@@ -130,26 +144,17 @@ public class MarioApp extends GameApplication {
 
         getPhysicsWorld().setGravity(0, 760);
 
-        getPhysicsWorld().addCollisionHandler(new CollisionHandler(PLAYER, COIN) {
-            @Override
-            protected void onCollisionBegin(Entity player, Entity coin) {
-                coin.removeFromWorld();
-            }
+        onCollisionBegin(PLAYER, DOOR_BOT, (player, door) -> {
+            door.removeComponent(CollidableComponent.class);
+
+            levelEndScene.onLevelFinish();
+
+            // the above runs in its own scene, so fade will wait until
+            // the user exits that scene
+            getGameScene().getViewport().fade(() -> {
+                nextLevel();
+            });
         });
-
-        var playerDoorHandler = new CollisionHandler(PLAYER, EXIT_TRIGGER) {
-            @Override
-            protected void onCollisionBegin(Entity player, Entity door) {
-                door.removeComponent(CollidableComponent.class);
-
-                getGameScene().getViewport().fade(() -> {
-                    nextLevel();
-                });
-            }
-        };
-
-        //getPhysicsWorld().addCollisionHandler(playerDoorHandler);
-        getPhysicsWorld().addCollisionHandler(playerDoorHandler.copyFor(PLAYER, DOOR_BOT));
 
         onCollisionBegin(PLAYER, EXIT_SIGN, (player, sign) -> {
             sign.removeComponent(CollidableComponent.class);
@@ -286,8 +291,14 @@ public class MarioApp extends GameApplication {
         }
 
         inc("level", +1);
+        set("levelTime", 0.0);
 
         setLevelFromMap("tmx/level" + geti("level")  + ".tmx");
+    }
+
+    @Override
+    protected void onUpdate(double tpf) {
+        inc("levelTime", tpf);
     }
 
     public static void main(String[] args) {

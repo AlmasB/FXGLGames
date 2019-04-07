@@ -43,6 +43,7 @@ public class PhysicsLiftComponent extends Component {
     @Override
     public void onAdded() {
         timer = FXGL.newLocalTimer();
+        timer.capture();
         speed = distance / duration.toSeconds();
 
         physics.setOnPhysicsInitialized(() -> {
