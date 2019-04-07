@@ -5,7 +5,6 @@ import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.GameView;
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.components.CollidableComponent;
@@ -94,8 +93,16 @@ public class MarioApp extends GameApplication {
         vars.put("level", getSettings().getApplicationMode() == ApplicationMode.RELEASE ? 0 : -1);
     }
 
+    private boolean firstTime = true;
+
     @Override
     protected void initGame() {
+        if (firstTime) {
+            getAudioPlayer().setGlobalMusicVolume(0.25);
+            loopBGM("BGM_dash_runner.wav");
+            firstTime = false;
+        }
+
         getGameWorld().addEntityFactory(new MarioFactory());
 
         player = null;

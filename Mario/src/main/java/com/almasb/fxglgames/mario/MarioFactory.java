@@ -174,12 +174,35 @@ public class MarioFactory implements EntityFactory {
         var physics = new PhysicsComponent();
         physics.setBodyType(BodyType.KINEMATIC);
 
+        boolean isGoingUp = data.hasKey("up") ? data.get("up") : true;
+
+        var distance = (isGoingUp) ? data.getY() - data.<Integer>get("endY") : data.<Integer>get("endY") - data.getY();
+        var speed = 100;
+        var duration = Duration.seconds(distance / speed);
+
         return FXGL.entityBuilder()
                 .type(LIFT)
                 .from(data)
                 .bbox(new HitBox(new Point2D(0, 50), BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height") - 50)))
                 .with(physics)
-                .with(new PhysicsLiftComponent(Duration.seconds(5.0), 500, true))
+                .with(new PhysicsLiftComponent(duration, distance, isGoingUp))
                 .build();
+    }
+
+    @Spawns("destrBox")
+    public Entity newDestructibleBox(SpawnData data) {
+        var comp = new DestructibleBoxComponent();
+
+        var box = FXGL.entityBuilder()
+                .type(PLATFORM)
+                .from(data)
+                .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
+                .with(new PhysicsComponent())
+                .with(comp)
+                .build();
+
+        box.getViewComponent().addClickListener(comp::explode);
+
+        return box;
     }
 }
