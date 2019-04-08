@@ -1,11 +1,17 @@
 package com.almasb.fxglgames.mario;
 
+import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.scene.SubScene;
 import com.almasb.fxgl.texture.Texture;
+import com.almasb.fxgl.ui.FontFactory;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.PerspectiveTransform;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
@@ -30,16 +36,29 @@ public class LevelEndScene extends SubScene {
     private Text textUserTime = getUIFactory().newText("", Color.WHITE, 24.0);
     private HBox gradeBox = new HBox();
 
-    public LevelEndScene() {
+    private FontFactory levelFont = getAssetLoader().loadFont("level_font.ttf");
+    private BooleanProperty isAnimationDone = new SimpleBooleanProperty(false);
 
+    public LevelEndScene() {
         var bg = new Rectangle(WIDTH, HEIGHT, Color.color(0, 0, 0, 0.85));
         bg.setStroke(Color.BLUE);
         bg.setStrokeWidth(1.75);
-        bg.setEffect(new DropShadow());
+        bg.setEffect(new DropShadow(28, Color.color(0,0,0, 0.9)));
 
         VBox.setVgrow(gradeBox, Priority.ALWAYS);
 
-        var vbox = new VBox(15, textUserTime, gradeBox, getUIFactory().newText("Tap to continue", Color.WHITE, 11.0));
+        var textContinue = getUIFactory().newText("Tap to continue", Color.WHITE, 11.0);
+        textContinue.visibleProperty().bind(isAnimationDone);
+
+        animationBuilder()
+                .repeatInfinitely()
+                .autoReverse(true)
+                .scale(textContinue)
+                .from(new Point2D(1, 1))
+                .to(new Point2D(1.25, 1.25))
+                .buildAndPlay(this);
+
+        var vbox = new VBox(15, textUserTime, gradeBox, textContinue);
         vbox.setAlignment(Pos.CENTER);
         vbox.setPadding(new Insets(25));
 
@@ -50,17 +69,34 @@ public class LevelEndScene extends SubScene {
         root.setTranslateX(1280 / 2 - WIDTH / 2);
         root.setTranslateY(720 / 2 - HEIGHT / 2);
 
-        getChildren().addAll(root);
+        var textLevel = new Text();
+        textLevel.textProperty().bind(getip("level").asString("Level %d"));
+        textLevel.setFont(levelFont.newFont(52));
+        textLevel.setRotate(-20);
 
-        getInput().addAction(new UserAction("Cancel") {
+        textLevel.setFill(Color.ORANGE);
+        textLevel.setStroke(Color.BLACK);
+        textLevel.setStrokeWidth(3.5);
+
+        textLevel.setTranslateX(root.getTranslateX() - textLevel.getLayoutBounds().getWidth() / 3);
+        textLevel.setTranslateY(root.getTranslateY() + 25);
+
+        getChildren().addAll(root, textLevel);
+
+        getInput().addAction(new UserAction("Close Level End Screen") {
             @Override
             protected void onActionBegin() {
+                if (!isAnimationDone.getValue())
+                    return;
+
                 getGameController().popSubScene();
             }
         }, MouseButton.PRIMARY);
     }
 
     public void onLevelFinish() {
+        isAnimationDone.setValue(false);
+
         Duration userTime = Duration.seconds(getd("levelTime"));
 
         LevelTimeData timeData = geto("levelTimeData");
@@ -73,12 +109,28 @@ public class LevelEndScene extends SubScene {
                 new Grade(Duration.seconds(timeData.star3), userTime)
         );
 
+        for (int i = 0; i < gradeBox.getChildren().size(); i++) {
+            var builder = animationBuilder().delay(Duration.seconds(i * 0.75))
+                    .duration(Duration.seconds(0.75))
+                    .interpolator(Interpolators.ELASTIC.EASE_OUT());
+
+            // if last star animation
+            if (i == gradeBox.getChildren().size() - 1) {
+                builder = builder.onFinished(() -> isAnimationDone.setValue(true));
+            }
+
+            builder.translate(gradeBox.getChildren().get(i))
+                    .from(new Point2D(0, -500))
+                    .to(new Point2D(0, 0))
+                    .buildAndPlay(this);
+        }
+
         getGameController().pushSubScene(this);
     }
 
     private static class Grade extends VBox {
 
-        private static final Texture STAR_EMPTY = texture("star_empty.png", 65, 72);
+        private static final Texture STAR_EMPTY = texture("star_empty.png", 65, 72).darker();
         private static final Texture STAR_FULL = texture("star_full.png", 65, 72);
 
         public Grade(Duration gradeTime, Duration userTime) {
