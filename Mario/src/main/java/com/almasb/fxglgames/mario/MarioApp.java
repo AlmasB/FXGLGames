@@ -35,7 +35,7 @@ public class MarioApp extends GameApplication {
     protected void initSettings(GameSettings settings) {
         settings.setWidth(1280);
         settings.setHeight(720);
-        settings.setApplicationMode(ApplicationMode.DEVELOPER);
+        settings.setApplicationMode(ApplicationMode.RELEASE);
     }
 
     private Entity player;
@@ -99,9 +99,6 @@ public class MarioApp extends GameApplication {
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("level", getSettings().getApplicationMode() == ApplicationMode.RELEASE ? 0 : -1);
         vars.put("levelTime", 0.0);
-
-        // TODO: update per level
-        vars.put("levelTimeData", new LevelEndScene.LevelTimeData(55.0, 33.0, 11.0));
     }
 
     private boolean firstTime = true;
@@ -293,7 +290,13 @@ public class MarioApp extends GameApplication {
         inc("level", +1);
         set("levelTime", 0.0);
 
-        setLevelFromMap("tmx/level" + geti("level")  + ".tmx");
+        var level = setLevelFromMap("tmx/level" + geti("level")  + ".tmx");
+
+        var shortestTime = level.getProperties().getDouble("star1time");
+
+        var levelTimeData = new LevelEndScene.LevelTimeData(shortestTime * 2.4, shortestTime*1.3, shortestTime);
+
+        set("levelTimeData", levelTimeData);
     }
 
     @Override
