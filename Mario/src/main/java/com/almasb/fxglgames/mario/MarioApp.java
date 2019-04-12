@@ -35,7 +35,7 @@ public class MarioApp extends GameApplication {
     protected void initSettings(GameSettings settings) {
         settings.setWidth(1280);
         settings.setHeight(720);
-        settings.setApplicationMode(ApplicationMode.RELEASE);
+        settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
     private Entity player;
@@ -108,7 +108,7 @@ public class MarioApp extends GameApplication {
     protected void initGame() {
         if (firstTime) {
             getAudioPlayer().setGlobalMusicVolume(0.25);
-            //loopBGM("BGM_dash_runner.wav");
+            loopBGM("BGM_dash_runner.wav");
 
             levelEndScene = new LevelEndScene();
             firstTime = false;
@@ -251,7 +251,7 @@ public class MarioApp extends GameApplication {
             animationBuilder()
                     .duration(Duration.seconds(0.5))
                     .onFinished(() -> {
-                        player.getComponent(PhysicsComponent.class).reposition(portal2.getEntity().getPosition());
+                        player.getComponent(PhysicsComponent.class).overwritePosition(portal2.getEntity().getPosition());
 
                         animationBuilder()
                                 .scale(player)
@@ -283,7 +283,7 @@ public class MarioApp extends GameApplication {
         }
 
         if (player != null) {
-            player.getComponent(PhysicsComponent.class).reposition(new Point2D(50, 50));
+            player.getComponent(PhysicsComponent.class).overwritePosition(new Point2D(50, 50));
             player.setZ(Integer.MAX_VALUE);
         }
 

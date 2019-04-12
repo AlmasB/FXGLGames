@@ -17,6 +17,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
+import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxglgames.mario.MarioType.*;
 
 /**
@@ -26,7 +27,7 @@ public class MarioFactory implements EntityFactory {
 
     @Spawns("platform")
     public Entity newPlatform(SpawnData data) {
-        return FXGL.entityBuilder()
+        return entityBuilder()
                 .type(PLATFORM)
                 .from(data)
                 .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
@@ -36,7 +37,7 @@ public class MarioFactory implements EntityFactory {
 
     @Spawns("exitTrigger")
     public Entity newExitTrigger(SpawnData data) {
-        return FXGL.entityBuilder()
+        return entityBuilder()
                 .type(EXIT_TRIGGER)
                 .from(data)
                 .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
@@ -46,7 +47,7 @@ public class MarioFactory implements EntityFactory {
 
     @Spawns("doorTop")
     public Entity newDoorTop(SpawnData data) {
-        return FXGL.entityBuilder()
+        return entityBuilder()
                 .type(DOOR_TOP)
                 .from(data)
                 .opacity(0)
@@ -55,7 +56,7 @@ public class MarioFactory implements EntityFactory {
 
     @Spawns("doorBot")
     public Entity newDoorBot(SpawnData data) {
-        return FXGL.entityBuilder()
+        return entityBuilder()
                 .type(DOOR_BOT)
                 .from(data)
                 .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
@@ -70,7 +71,10 @@ public class MarioFactory implements EntityFactory {
         physics.setBodyType(BodyType.DYNAMIC);
         physics.addGroundSensor(new HitBox("GROUND_SENSOR", new Point2D(16, 38), BoundingShape.box(6, 8)));
 
-        return FXGL.entityBuilder()
+        // this avoids player sticking to walls
+        physics.setFixtureDef(new FixtureDef().friction(0.0f));
+
+        return entityBuilder()
                 .type(PLAYER)
                 .from(data)
                 .bbox(new HitBox(new Point2D(5,5), BoundingShape.circle(12)))
@@ -85,7 +89,7 @@ public class MarioFactory implements EntityFactory {
 
     @Spawns("exitSign")
     public Entity newExit(SpawnData data) {
-        return FXGL.entityBuilder()
+        return entityBuilder()
                 .type(EXIT_SIGN)
                 .from(data)
                 .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
@@ -95,7 +99,7 @@ public class MarioFactory implements EntityFactory {
 
     @Spawns("keyPrompt")
     public Entity newPrompt(SpawnData data) {
-        return FXGL.entityBuilder()
+        return entityBuilder()
                 .type(KEY_PROMPT)
                 .from(data)
                 .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
@@ -109,7 +113,7 @@ public class MarioFactory implements EntityFactory {
 
         KeyCode keyCode = KeyCode.getKeyCode(key);
 
-        return FXGL.entityBuilder()
+        return entityBuilder()
                 .from(data)
                 .view(new KeyView(keyCode, Color.YELLOW, 24))
                 .with(new LiftComponent(Duration.seconds(0.76), 6, true))
@@ -119,13 +123,13 @@ public class MarioFactory implements EntityFactory {
 
     @Spawns("button")
     public Entity newButton(SpawnData data) {
-        var keyEntity = FXGL.getGameWorld().create("keyCode", new SpawnData(data.getX(), data.getY() - 50).put("key", "E"));
+        var keyEntity = getGameWorld().create("keyCode", new SpawnData(data.getX(), data.getY() - 50).put("key", "E"));
         keyEntity.getViewComponent().opacityProperty().setValue(0);
 
-        return FXGL.entityBuilder()
+        return entityBuilder()
                 .type(BUTTON)
                 .from(data)
-                .viewWithBBox(new Rectangle(20, 20, Color.GREEN))
+                .viewWithBBox(texture("button.png", 20, 18))
                 .with(new CollidableComponent(true))
                 .with("keyEntity", keyEntity)
                 .build();
@@ -133,7 +137,7 @@ public class MarioFactory implements EntityFactory {
 
     @Spawns("enemyBox")
     public Entity newEnemyBox(SpawnData data) {
-        return FXGL.entityBuilder()
+        return entityBuilder()
                 .type(ENEMY)
                 .from(data)
                 .bbox(new HitBox(new Point2D(10, 10), BoundingShape.box(data.<Integer>get("width") - 20, data.<Integer>get("height") - 20)))
@@ -144,11 +148,11 @@ public class MarioFactory implements EntityFactory {
 
     @Spawns("messagePrompt")
     public Entity newMessagePrompt(SpawnData data) {
-        var text = FXGL.getUIFactory().newText(data.get("message"), Color.BLACK, 14.0);
-        text.setFont(FXGL.getUIFactory().newFont(FontType.GAME, 20.0));
+        var text = getUIFactory().newText(data.get("message"), Color.BLACK, 14.0);
+        text.setFont(getUIFactory().newFont(FontType.GAME, 20.0));
         text.setStrokeWidth(2);
 
-        return FXGL.entityBuilder()
+        return entityBuilder()
                 .type(MESSAGE_PROMPT)
                 .from(data)
                 .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
@@ -160,7 +164,7 @@ public class MarioFactory implements EntityFactory {
 
     @Spawns("portal")
     public Entity newPortal(SpawnData data) {
-        return FXGL.entityBuilder()
+        return entityBuilder()
                 .type(PORTAL)
                 .from(data)
                 .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
@@ -180,7 +184,7 @@ public class MarioFactory implements EntityFactory {
         var speed = 100;
         var duration = Duration.seconds(distance / speed);
 
-        return FXGL.entityBuilder()
+        return entityBuilder()
                 .type(LIFT)
                 .from(data)
                 .bbox(new HitBox(new Point2D(0, 50), BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height") - 50)))
@@ -193,7 +197,7 @@ public class MarioFactory implements EntityFactory {
     public Entity newDestructibleBox(SpawnData data) {
         var comp = new DestructibleBoxComponent();
 
-        var box = FXGL.entityBuilder()
+        var box = entityBuilder()
                 .type(PLATFORM)
                 .from(data)
                 .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
