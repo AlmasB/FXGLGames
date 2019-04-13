@@ -10,6 +10,7 @@ import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
+import com.almasb.fxgl.texture.AnimationChannel;
 import com.almasb.fxgl.ui.FontType;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
@@ -208,5 +209,16 @@ public class MarioFactory implements EntityFactory {
         box.getViewComponent().addClickListener(comp::explode);
 
         return box;
+    }
+
+    @Spawns("coin")
+    public Entity newCoin(SpawnData data) {
+        return entityBuilder()
+                .type(COIN)
+                .from(data)
+                .view(texture("coin.png").toAnimatedTexture(6, Duration.seconds(0.8)).loop())
+                .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
+                .with(new CollidableComponent(true))
+                .build();
     }
 }

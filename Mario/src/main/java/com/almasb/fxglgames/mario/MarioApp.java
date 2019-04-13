@@ -12,8 +12,10 @@ import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.scene.Viewport;
+import com.almasb.fxgl.ui.FontType;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 import java.util.Map;
@@ -165,6 +167,37 @@ public class MarioApp extends GameApplication {
             getGameScene().addGameView(gameView);
 
             runOnce(() -> getGameScene().removeGameView(gameView), Duration.seconds(1.6));
+        });
+
+        onCollisionBegin(PLAYER, COIN, (player, coin) -> {
+            coin.removeComponent(CollidableComponent.class);
+
+            animationBuilder()
+                    .duration(Duration.seconds(0.25))
+                    .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
+                    .onFinished(coin::removeFromWorld)
+                    .scale(coin)
+                    .from(new Point2D(1, 1))
+                    .to(new Point2D(0, 0))
+                    .buildAndPlay();
+
+            var text = getUIFactory().newText("+100");
+            text.setFont(getUIFactory().newFont(FontType.GAME, 26.0));
+            text.setStroke(Color.RED);
+            text.setStrokeWidth(2.75);
+
+            var textEntity = entityBuilder()
+                    .at(coin.getPosition())
+                    .view(text)
+                    .buildAndAttach();
+
+            animationBuilder()
+                    .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
+                    .onFinished(textEntity::removeFromWorld)
+                    .translate(textEntity)
+                    .from(textEntity.getPosition())
+                    .to(textEntity.getPosition().subtract(0, 100))
+                    .buildAndPlay();
         });
 
         onCollisionBegin(PLAYER, KEY_PROMPT, (player, prompt) -> {
