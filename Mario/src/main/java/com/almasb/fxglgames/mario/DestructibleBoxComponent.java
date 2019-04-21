@@ -1,59 +1,50 @@
 package com.almasb.fxglgames.mario;
 
-import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.dsl.FXGL;
-import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
 import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.particle.ParticleComponent;
+import com.almasb.fxgl.particle.ParticleEmitters;
 import com.almasb.fxgl.texture.Texture;
 import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
-import java.util.ArrayList;
-import java.util.List;
+import static com.almasb.fxgl.core.math.FXGLMath.random;
+import static com.almasb.fxgl.core.math.FXGLMath.randomPoint2D;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class DestructibleBoxComponent extends Component {
 
-    private static final List<Texture> textures = new ArrayList<>();
+    private static Texture texture = null;
 
     public void explode() {
-        if (textures.isEmpty()) {
+        if (texture == null) {
             EntityView view = (EntityView) entity.getViewComponent().getView();
             ImageView imageView = (ImageView) view.getNodes().get(0);
-            var texture = new Texture(imageView.getImage());
-
-            var rects = new ArrayList<Rectangle2D>();
-
-            for (int y = 0; y < texture.getHeight(); y += 5) {
-                for (int x = 0; x < texture.getWidth(); x += 5) {
-                    rects.add(new Rectangle2D(x, y, 5, 5));
-                }
-            }
-
-            rects.forEach(rect -> {
-                var subtexture = texture.subTexture(rect);
-
-                subtexture.getProperties().put("point", new Point2D(rect.getMinX(), rect.getMinY()));
-
-                textures.add(subtexture);
-            });
+            texture = new Texture(imageView.getImage());
         }
 
-
-        textures.forEach(texture -> {
-            FXGL.entityBuilder()
-                    .at(entity.getPosition().add((Point2D) texture.getProperties().get("point")))
-                    .view(new Texture(texture.getImage()))
-                    .with(new ExpireCleanComponent(Duration.seconds(2)).animateOpacity())
-                    .with(new ProjectileComponent(FXGLMath.randomPoint2D(), FXGLMath.random(15, 100)))
-                    .buildAndAttach();
+        var emitter = ParticleEmitters.newExplosionEmitter(40);
+        emitter.setSourceImage(texture);
+        emitter.setMaxEmissions(1);
+        emitter.setNumParticles(42);
+        emitter.setSize(10, 10);
+        emitter.setScaleFunction(i -> {
+            var s = random(0.01, 0.07);
+            return new Point2D(s, s);
         });
+        emitter.setBlendMode(BlendMode.SRC_OVER);
+        emitter.setSpawnPointFunction(i -> new Point2D((i % 6) * 10 - 25, (i / 7) * 10 - 25));
+        emitter.setVelocityFunction(i -> randomPoint2D().multiply(random(5, 25)));
+        emitter.setExpireFunction(i -> Duration.seconds(1.5));
 
-        entity.removeFromWorld();
+        var comp = new ParticleComponent(emitter);
+        comp.setOnFinished(() -> entity.removeFromWorld());
+
+        entity.getViewComponent().setOpacity(0);
+        entity.addComponent(comp);
     }
 }

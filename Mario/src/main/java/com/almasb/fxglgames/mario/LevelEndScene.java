@@ -81,7 +81,7 @@ public class LevelEndScene extends SubScene {
         textLevel.setTranslateX(root.getTranslateX() - textLevel.getLayoutBounds().getWidth() / 3);
         textLevel.setTranslateY(root.getTranslateY() + 25);
 
-        getChildren().addAll(root, textLevel);
+        getContentRoot().getChildren().addAll(root, textLevel);
 
         getInput().addAction(new UserAction("Close Level End Screen") {
             @Override

@@ -24,9 +24,6 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxglgames.mario.MarioType.*;
 
 /**
- * TODO: bbox view is not visible if the entity view is not visible
- * TODO: when changing scene, input still registered as pressed or does not fire stop?
- *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class MarioApp extends GameApplication {
@@ -198,6 +195,8 @@ public class MarioApp extends GameApplication {
                     .from(textEntity.getPosition())
                     .to(textEntity.getPosition().subtract(0, 100))
                     .buildAndPlay();
+
+            getNotificationService().pushNotification("Achievement unlocked! Collector");
         });
 
         onCollisionBegin(PLAYER, KEY_PROMPT, (player, prompt) -> {
