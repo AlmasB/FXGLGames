@@ -26,6 +26,16 @@ import static com.almasb.fxglgames.mario.MarioType.*;
  */
 public class MarioFactory implements EntityFactory {
 
+    @Spawns("background")
+    public Entity newBackground(SpawnData data) {
+        return entityBuilder()
+                //.view(new ScrollingBackgroundView(texture("bg_0.png", 1280, 720)))
+                //.view(texture("bg_0.png", 1280, 720))
+                .zIndex(-1)
+                .with(new IrremovableComponent())
+                .build();
+    }
+
     @Spawns("platform")
     public Entity newPlatform(SpawnData data) {
         return entityBuilder()

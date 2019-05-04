@@ -122,6 +122,8 @@ public class MarioApp extends GameApplication {
         // before the update tick _actually_ adds the player to game world
         player = getGameWorld().spawn("player", 50, 50);
 
+        spawn("background");
+
         Viewport viewport = getGameScene().getViewport();
 
         viewport.setBounds(-1500, 0, 5000, getAppHeight());
@@ -195,8 +197,6 @@ public class MarioApp extends GameApplication {
                     .from(textEntity.getPosition())
                     .to(textEntity.getPosition().subtract(0, 100))
                     .buildAndPlay();
-
-            getNotificationService().pushNotification("Achievement unlocked! Collector");
         });
 
         onCollisionBegin(PLAYER, KEY_PROMPT, (player, prompt) -> {
