@@ -106,8 +106,10 @@ public class MarioApp extends GameApplication {
     @Override
     protected void initGame() {
         if (firstTime) {
-            getAudioPlayer().setGlobalMusicVolume(0.25);
-            loopBGM("BGM_dash_runner.wav");
+            if (getSettings().getApplicationMode() == ApplicationMode.RELEASE) {
+                getAudioPlayer().setGlobalMusicVolume(0.25);
+                loopBGM("BGM_dash_runner.wav");
+            }
 
             levelEndScene = new LevelEndScene();
             firstTime = false;
@@ -130,6 +132,8 @@ public class MarioApp extends GameApplication {
         viewport.bindToEntity(player, getAppWidth() / 2, getAppHeight() / 2);
 
         viewport.setLazy(true);
+
+        getGameScene().setBackgroundRepeat(image("bg_0.png", getAppWidth(), getAppHeight()));
     }
 
     @Override
@@ -295,6 +299,17 @@ public class MarioApp extends GameApplication {
                     .from(new Point2D(1, 1))
                     .to(new Point2D(0, 0))
                     .buildAndPlay();
+        });
+
+        onCollisionBegin(PLAYER, QUESTION, (player, question) -> {
+            var q = question.getString("question");
+            var a = question.getString("answer");
+
+            getDisplay().showInputBox("Question: " + q + "?", answer -> {
+                if (a.equals(answer)) {
+                    question.removeFromWorld();
+                }
+            });
         });
     }
 
