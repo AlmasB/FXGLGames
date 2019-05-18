@@ -1,6 +1,7 @@
 package com.almasb.fxglgames.cannon;
 
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
 import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.physics.PhysicsComponent;
@@ -45,7 +46,7 @@ public class CannonFactory implements EntityFactory {
                 .from(data)
                 .viewWithBBox(new Rectangle(25, 25, Color.BLUE))
                 .with(physics, new CollidableComponent(true))
-                //.with(new ExpireCleanComponent(Duration.seconds(4)))
+                .with(new ExpireCleanComponent(Duration.seconds(4)))
                 .build();
     }
 
