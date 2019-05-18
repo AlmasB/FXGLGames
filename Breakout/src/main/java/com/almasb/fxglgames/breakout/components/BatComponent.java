@@ -24,12 +24,11 @@
  * SOFTWARE.
  */
 
-package com.almasb.fxglgames.breakout.control;
+package com.almasb.fxglgames.breakout.components;
 
-import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.Vec2;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.physics.PhysicsComponent;
 
 /**
@@ -53,8 +52,8 @@ public class BatComponent extends Component {
 
         if (entity.getX() < 0) {
             velocity.set(BOUNCE_FACTOR * (float) -entity.getX(), 0);
-        } else if (entity.getRightX() > FXGL.getApp().getWidth()) {
-            velocity.set(BOUNCE_FACTOR * (float) -(entity.getRightX() - FXGL.getApp().getWidth()), 0);
+        } else if (entity.getRightX() > FXGL.getAppWidth()) {
+            velocity.set(BOUNCE_FACTOR * (float) -(entity.getRightX() - FXGL.getAppWidth()), 0);
         }
 
         physics.setBodyLinearVelocity(velocity);

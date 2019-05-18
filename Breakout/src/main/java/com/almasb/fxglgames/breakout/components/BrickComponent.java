@@ -24,11 +24,10 @@
  * SOFTWARE.
  */
 
-package com.almasb.fxglgames.breakout.control;
+package com.almasb.fxglgames.breakout.components;
 
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.entity.Entity;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -38,7 +37,7 @@ public class BrickComponent extends Component {
     private int lives = 2;
 
     public void onHit() {
-        FXGL.getAudioPlayer().playSound("brick_hit.wav");
+        FXGL.play("brick_hit.wav");
 
         lives--;
 

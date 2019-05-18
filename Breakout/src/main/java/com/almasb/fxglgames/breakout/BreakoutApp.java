@@ -28,22 +28,20 @@ package com.almasb.fxglgames.breakout;
 
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.Level;
-import com.almasb.fxgl.entity.RenderLayer;
+import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.components.IrremovableComponent;
-import com.almasb.fxgl.entity.view.EntityView;
+import com.almasb.fxgl.entity.level.Level;
+import com.almasb.fxgl.entity.level.text.TextLevelLoader;
 import com.almasb.fxgl.input.UserAction;
-import com.almasb.fxgl.parser.text.TextLevelParser;
 import com.almasb.fxgl.particle.ParticleComponent;
 import com.almasb.fxgl.particle.ParticleEmitter;
 import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.fxgl.settings.GameSettings;
-import com.almasb.fxglgames.breakout.control.BallComponent;
-import com.almasb.fxglgames.breakout.control.BatComponent;
-import com.almasb.fxglgames.breakout.control.BrickComponent;
+import com.almasb.fxglgames.breakout.components.BallComponent;
+import com.almasb.fxglgames.breakout.components.BatComponent;
+import com.almasb.fxglgames.breakout.components.BrickComponent;
 import javafx.animation.PathTransition;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;
@@ -59,17 +57,19 @@ import javafx.util.Duration;
 
 import java.util.Map;
 
+import static com.almasb.fxgl.dsl.FXGL.*;
+
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class BreakoutApp extends GameApplication {
 
     private BatComponent getBatControl() {
-        return getGameWorld().getSingleton(BreakoutType.BAT).get().getComponent(BatComponent.class);
+        return getGameWorld().getSingleton(BreakoutType.BAT).getComponent(BatComponent.class);
     }
 
     private BallComponent getBallControl() {
-        return getGameWorld().getSingleton(BreakoutType.BALL).get().getComponent(BallComponent.class);
+        return getGameWorld().getSingleton(BreakoutType.BALL).getComponent(BallComponent.class);
     }
 
     @Override
@@ -109,43 +109,45 @@ public class BreakoutApp extends GameApplication {
         initBubbles();
     }
 
-    private void initBGM() {
-        getAudioPlayer().loopBGM("BGM01.wav");
+    private void initBGM() { 
+        loopBGM("BGM01.wav");
     }
 
     private void initLevel() {
         initBackground();
 
-        TextLevelParser parser = new TextLevelParser(new BreakoutFactory());
-        Level level = parser.parse("levels/level1.txt");
+        getGameWorld().addEntityFactory(new BreakoutFactory());
+
+        Level level = getAssetLoader().loadLevel("level1.txt", new TextLevelLoader(40, 40, '0'));
+
         getGameWorld().setLevel(level);
     }
 
     private void initBackground() {
-        Rectangle bg0 = new Rectangle(getWidth(), getHeight(),
-                new LinearGradient(getWidth() / 2, 0, getWidth() / 2, getHeight(),
+        Rectangle bg0 = new Rectangle(getAppWidth(), getAppHeight(),
+                new LinearGradient(getAppWidth() / 2, 0, getAppWidth() / 2, getAppHeight(),
                         false, CycleMethod.NO_CYCLE,
                         new Stop(0.2, Color.AQUA), new Stop(0.8, Color.BLACK)));
 
-        Rectangle bg1 = new Rectangle(getWidth(), getHeight(), Color.color(0, 0, 0, 0.2));
+        Rectangle bg1 = new Rectangle(getAppWidth(), getAppHeight(), Color.color(0, 0, 0, 0.2));
         bg1.setBlendMode(BlendMode.DARKEN);
 
         EntityView bg = new EntityView();
         bg.addNode(bg0);
         bg.addNode(bg1);
 
-        // we add IrremovableComponent because regardless of the level
-        // the background and screen bounds stay in the game world
-        Entities.builder()
-                .viewFromNode(bg)
-                .renderLayer(RenderLayer.BACKGROUND)
-                .with(new IrremovableComponent())
-                .buildAndAttach(getGameWorld());
-
-        Entity screenBounds = Entities.makeScreenBounds(40);
-        screenBounds.addComponent(new IrremovableComponent());
-
-        getGameWorld().addEntity(screenBounds);
+//        // we add IrremovableComponent because regardless of the level
+//        // the background and screen bounds stay in the game world
+//        Entities.builder()
+//                .viewFromNode(bg)
+//                .renderLayer(RenderLayer.BACKGROUND)
+//                .with(new IrremovableComponent())
+//                .buildAndAttach(getGameWorld());
+//
+//        Entity screenBounds = Entities.makeScreenBounds(40);
+//        screenBounds.addComponent(new IrremovableComponent());
+//
+//        getGameWorld().addEntity(screenBounds);
     }
 
     private void initBubbles() {
@@ -155,12 +157,12 @@ public class BreakoutApp extends GameApplication {
         emitter.setEmissionRate(0.25);
         emitter.setExpireFunction(i -> Duration.seconds(3));
         emitter.setVelocityFunction(i -> new Point2D(0, -FXGLMath.random(2f, 4f) * 60));
-        emitter.setSpawnPointFunction(i -> new Point2D(FXGLMath.random(0, (float)getWidth()), -20 + FXGLMath.random(50)));
+        emitter.setSpawnPointFunction(i -> new Point2D(FXGLMath.random(0, (float)getAppWidth()), -20 + FXGLMath.random(50)));
         emitter.setScaleFunction(i -> new Point2D(FXGLMath.random(-0.05f, 0), FXGLMath.random(-0.05f, 0)));
         emitter.setInterpolator(Interpolators.EXPONENTIAL.EASE_IN());
 
         Entity bubbles = new Entity();
-        bubbles.translateY(getHeight());
+        bubbles.translateY(getAppHeight());
         bubbles.addComponent(new ParticleComponent(emitter));
 
         getGameWorld().addEntity(bubbles);
@@ -183,7 +185,7 @@ public class BreakoutApp extends GameApplication {
         Text text = getUIFactory().newText("Level 1", Color.WHITE, 48);
         getGameScene().addUINode(text);
 
-        QuadCurve curve = new QuadCurve(-100, 0, getWidth() / 2, getHeight(), getWidth() + 100, 0);
+        QuadCurve curve = new QuadCurve(-100, 0, getAppWidth() / 2, getAppHeight(), getAppWidth() + 100, 0);
 
         PathTransition transition = new PathTransition(Duration.seconds(4), curve, text);
         transition.setOnFinished(e -> {

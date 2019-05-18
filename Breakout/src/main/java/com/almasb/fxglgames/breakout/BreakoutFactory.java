@@ -26,7 +26,7 @@
 
 package com.almasb.fxglgames.breakout;
 
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.particle.ParticleComponent;
@@ -37,9 +37,9 @@ import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
-import com.almasb.fxglgames.breakout.control.BallComponent;
-import com.almasb.fxglgames.breakout.control.BatComponent;
-import com.almasb.fxglgames.breakout.control.BrickComponent;
+import com.almasb.fxglgames.breakout.components.BallComponent;
+import com.almasb.fxglgames.breakout.components.BatComponent;
+import com.almasb.fxglgames.breakout.components.BrickComponent;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -47,35 +47,35 @@ import javafx.scene.shape.Circle;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class BreakoutFactory implements TextEntityFactory {
+public class BreakoutFactory implements EntityFactory {
 
-    @SpawnSymbol('1')
+    @Spawns("1")
     public Entity newBrick(SpawnData data) {
-        return Entities.builder()
+        return FXGL.entityBuilder()
                 .from(data)
                 .type(BreakoutType.BRICK)
-                .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("brick_blue.png", 232 / 3, 104 / 3))
+                .viewWithBBox(FXGL.getAssetLoader().loadTexture("brick_blue.png", 232 / 3, 104 / 3))
                 .with(new PhysicsComponent(), new CollidableComponent(true))
                 .with(new BrickComponent())
                 .build();
     }
 
-    @SpawnSymbol('9')
+    @Spawns("9")
     public Entity newBat(SpawnData data) {
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.KINEMATIC);
 
-        return Entities.builder()
+        return FXGL.entityBuilder()
                 .from(data)
                 .type(BreakoutType.BAT)
                 .at(FXGL.getSettings().getWidth() / 2 - 50, 30)
-                .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("bat.png", 464 / 3, 102 / 3))
+                .viewWithBBox(FXGL.getAssetLoader().loadTexture("bat.png", 464 / 3, 102 / 3))
                 .with(physics, new CollidableComponent(true))
                 .with(new BatComponent())
                 .build();
     }
 
-    @SpawnSymbol('2')
+    @Spawns("2")
     public Entity newBall(SpawnData data) {
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.DYNAMIC);
@@ -86,28 +86,13 @@ public class BreakoutFactory implements TextEntityFactory {
         emitter.setEmissionRate(0.5);
         emitter.setBlendMode(BlendMode.SRC_OVER);
 
-        return Entities.builder()
+        return FXGL.entityBuilder()
                 .from(data)
                 .type(BreakoutType.BALL)
                 .bbox(new HitBox("Main", BoundingShape.circle(10)))
-                .viewFromNode(new Circle(10, Color.LIGHTCORAL))
+                .view(new Circle(10, Color.LIGHTCORAL))
                 .with(physics, new CollidableComponent(true))
                 .with(new BallComponent(), new ParticleComponent(emitter))
                 .build();
-    }
-
-    @Override
-    public char emptyChar() {
-        return '0';
-    }
-
-    @Override
-    public int blockWidth() {
-        return 40;
-    }
-
-    @Override
-    public int blockHeight() {
-        return 40;
     }
 }
