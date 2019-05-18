@@ -28,7 +28,7 @@ import static com.almasb.fxglgames.mario.MarioType.*;
  */
 public class MarioApp extends GameApplication {
 
-    private static final int MAX_LEVEL = 14;
+    private static final int MAX_LEVEL = 16;
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -107,7 +107,7 @@ public class MarioApp extends GameApplication {
     protected void initGame() {
         if (firstTime) {
             if (getSettings().getApplicationMode() == ApplicationMode.RELEASE) {
-                getAudioPlayer().setGlobalMusicVolume(0.25);
+                getSettings().setGlobalMusicVolume(0.25);
                 loopBGM("BGM_dash_runner.wav");
             }
 
