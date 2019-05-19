@@ -1,28 +1,25 @@
-package com.almasb.fxglgames.bomberman.control;
+package com.almasb.fxglgames.bomberman.components;
 
-import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.entity.components.TransformComponent;
+import com.almasb.fxgl.entity.components.TypeComponent;
 import com.almasb.fxglgames.bomberman.BombermanApp;
 import com.almasb.fxglgames.bomberman.BombermanType;
-import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.fxgl.entity.component.TypeComponent;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class PlayerControl extends Control {
+public class PlayerComponent extends Component {
 
-    private PositionComponent position;
+    private TransformComponent position;
+
     private int maxBombs = 1;
     private int bombsPlaced = 0;
-
-    @Override
-    public void onUpdate(Entity entity, double tpf) { }
 
     public void increaseMaxBombs() {
         maxBombs++;
@@ -35,15 +32,15 @@ public class PlayerControl extends Control {
 
         bombsPlaced++;
 
-        int x = position.getGridX(BombermanApp.TILE_SIZE);
-        int y = position.getGridY(BombermanApp.TILE_SIZE);
+        // TODO: double check
+        int x = (int) position.getX() / BombermanApp.TILE_SIZE;
+        int y = (int) position.getY() / BombermanApp.TILE_SIZE;
 
-        Entity bomb = FXGL.getApp()
-                .getGameWorld()
+        Entity bomb = FXGL.getGameWorld()
                 .spawn("Bomb", new SpawnData(x * 40, y * 40).put("radius", BombermanApp.TILE_SIZE / 2));
 
-        FXGL.getMasterTimer().runOnceAfter(() -> {
-            bomb.getControl(BombControl.class).explode();
+        FXGL.getGameTimer().runOnceAfter(() -> {
+            bomb.getComponent(BombComponent.class).explode();
             bombsPlaced--;
         }, Duration.seconds(2));
     }
@@ -69,18 +66,16 @@ public class PlayerControl extends Control {
     }
 
     private boolean canMove(Point2D direction) {
-        Point2D newPosition = position.getValue().add(direction);
+        Point2D newPosition = position.getPosition().add(direction);
 
-        return FXGL.getApp()
-                .getGameScene()
+        return FXGL.getGameScene()
                 .getViewport()
                 .getVisibleArea()
                 .contains(newPosition)
 
                 &&
 
-                FXGL.getApp()
-                        .getGameWorld()
+                FXGL.getGameWorld()
                         .getEntitiesAt(newPosition)
                         .stream()
                         .filter(e -> e.hasComponent(TypeComponent.class))

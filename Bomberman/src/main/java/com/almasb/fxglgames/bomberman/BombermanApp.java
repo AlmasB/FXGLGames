@@ -26,18 +26,18 @@
 
 package com.almasb.fxglgames.bomberman;
 
-import com.almasb.fxglgames.bomberman.control.PlayerControl;
-import com.almasb.fxgl.app.ApplicationMode;
+import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.entity.level.Level;
+import com.almasb.fxgl.entity.level.text.TextLevelLoader;
+import com.almasb.fxglgames.bomberman.components.PlayerComponent;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.Entities;
-import com.almasb.fxgl.gameplay.Level;
 import com.almasb.fxgl.input.UserAction;
-import com.almasb.fxgl.parser.text.TextLevelParser;
 import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.fxgl.settings.GameSettings;
 import javafx.scene.input.KeyCode;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -47,7 +47,7 @@ public class BombermanApp extends GameApplication {
     public static final int TILE_SIZE = 40;
 
     private Entity player;
-    private PlayerControl playerControl;
+    private PlayerComponent playerComponent;
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -62,50 +62,50 @@ public class BombermanApp extends GameApplication {
         getInput().addAction(new UserAction("Move Up") {
             @Override
             protected void onActionBegin() {
-                playerControl.moveUp();
+                playerComponent.moveUp();
             }
         }, KeyCode.W);
 
         getInput().addAction(new UserAction("Move Left") {
             @Override
             protected void onActionBegin() {
-                playerControl.moveLeft();
+                playerComponent.moveLeft();
             }
         }, KeyCode.A);
 
         getInput().addAction(new UserAction("Move Down") {
             @Override
             protected void onActionBegin() {
-                playerControl.moveDown();
+                playerComponent.moveDown();
             }
         }, KeyCode.S);
 
         getInput().addAction(new UserAction("Move Right") {
             @Override
             protected void onActionBegin() {
-                playerControl.moveRight();
+                playerComponent.moveRight();
             }
         }, KeyCode.D);
 
         getInput().addAction(new UserAction("Place Bomb") {
             @Override
             protected void onActionBegin() {
-                playerControl.placeBomb();
+                playerComponent.placeBomb();
             }
         }, KeyCode.F);
     }
 
     @Override
     protected void initGame() {
-        TextLevelParser levelParser = new TextLevelParser(getGameWorld().getEntityFactory());
+        getGameWorld().addEntityFactory(new BombermanFactory());
 
-        Level level = levelParser.parse("levels/0.txt");
+        Level level = getAssetLoader().loadLevel("0.txt", new TextLevelLoader(40, 40, '0'));
         getGameWorld().setLevel(level);
 
         getGameWorld().spawn("BG");
 
         player = getGameWorld().spawn("Player");
-        playerControl = player.getControl(PlayerControl.class);
+        playerComponent = player.getComponent(PlayerComponent.class);
     }
 
     @Override
@@ -114,17 +114,18 @@ public class BombermanApp extends GameApplication {
             @Override
             protected void onCollisionBegin(Entity pl, Entity powerup) {
                 powerup.removeFromWorld();
-                playerControl.increaseMaxBombs();
+                playerComponent.increaseMaxBombs();
             }
         });
     }
 
     public void onWallDestroyed(Entity wall) {
         if (FXGLMath.randomBoolean()) {
-            int x = wall.getPositionComponent().getGridX(BombermanApp.TILE_SIZE);
-            int y = wall.getPositionComponent().getGridY(BombermanApp.TILE_SIZE);
-
-            getGameWorld().spawn("Powerup", x*40, y*40);
+            // TODO:
+//            int x = wall.getPositionComponent().getGridX(BombermanApp.TILE_SIZE);
+//            int y = wall.getPositionComponent().getGridY(BombermanApp.TILE_SIZE);
+//
+//            getGameWorld().spawn("Powerup", x*40, y*40);
         }
     }
 
