@@ -72,8 +72,6 @@ class OutRunApp : GameApplication() {
     private lateinit var playerComponent: PlayerComponent
 
     override fun initInput() {
-        loopBGM("bgm.mp3")
-
         getInput().addAction(object : UserAction("Boost") {
             override fun onAction() {
                 playerComponent.boost()
@@ -97,7 +95,14 @@ class OutRunApp : GameApplication() {
         vars.put("time", 0.0)
     }
 
+    private var bgm = true
+
     override fun initGame() {
+        if (bgm) {
+            loopBGM("bgm.mp3")
+            bgm = false
+        }
+
         val factory = OutRunFactory()
 
         getGameWorld().addEntityFactory(factory)
@@ -175,7 +180,7 @@ class OutRunApp : GameApplication() {
                 .fadeIn(label)
                 .buildAndPlay()
 
-        val timerAction = getMasterTimer().runAtInterval(Runnable {
+        val timerAction = getGameTimer().runAtInterval(Runnable {
             count.set(count.get() - 1)
         }, Duration.seconds(1.0))
 
