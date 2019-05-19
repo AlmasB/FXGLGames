@@ -51,8 +51,8 @@ public class DropApp extends GameApplication {
 
     @Override
     protected void initInput() {
-        onKey(KeyCode.A, "Move Left", () -> bucket.translateX(-200 * tpf()));
-        onKey(KeyCode.D, "Move Right", () -> bucket.translateX(200 * tpf()));
+        onKey(KeyCode.A, "Move Left", () -> bucket.translateX(-300 * tpf()));
+        onKey(KeyCode.D, "Move Right", () -> bucket.translateX(300 * tpf()));
     }
 
     @Override
