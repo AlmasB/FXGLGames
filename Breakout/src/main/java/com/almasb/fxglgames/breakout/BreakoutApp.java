@@ -136,18 +136,18 @@ public class BreakoutApp extends GameApplication {
         bg.addNode(bg0);
         bg.addNode(bg1);
 
-//        // we add IrremovableComponent because regardless of the level
-//        // the background and screen bounds stay in the game world
-//        Entities.builder()
-//                .viewFromNode(bg)
-//                .renderLayer(RenderLayer.BACKGROUND)
-//                .with(new IrremovableComponent())
-//                .buildAndAttach(getGameWorld());
-//
-//        Entity screenBounds = Entities.makeScreenBounds(40);
-//        screenBounds.addComponent(new IrremovableComponent());
-//
-//        getGameWorld().addEntity(screenBounds);
+        // we add IrremovableComponent because regardless of the level
+        // the background and screen bounds stay in the game world
+        entityBuilder()
+                .view(bg)
+                .with(new IrremovableComponent())
+                .zIndex(-1)
+                .buildAndAttach();
+
+        Entity screenBounds = entityBuilder().buildScreenBounds(40);
+        screenBounds.addComponent(new IrremovableComponent());
+
+        getGameWorld().addEntity(screenBounds);
     }
 
     private void initBubbles() {
