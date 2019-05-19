@@ -2,15 +2,13 @@ package com.almasb.fxglgames.flappy;
 
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
-import com.almasb.fxgl.settings.GameSettings;
-import com.almasb.fxgl.texture.Texture;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -20,12 +18,14 @@ import javafx.util.Duration;
 
 import java.util.Map;
 
+import static com.almasb.fxgl.dsl.FXGL.*;
+
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class FlappyBirdApp extends GameApplication {
 
-    private PlayerControl playerControl;
+    private PlayerComponent playerComponent;
     private boolean requestNewGame = false;
 
     @Override
@@ -38,16 +38,11 @@ public class FlappyBirdApp extends GameApplication {
     }
 
     @Override
-    protected void preInit() {
-        getAudioPlayer().loopBGM("bgm.mp3");
-    }
-
-    @Override
     protected void initInput() {
         getInput().addAction(new UserAction("Jump") {
             @Override
             protected void onActionBegin() {
-                playerControl.jump();
+                playerComponent.jump();
             }
         }, KeyCode.SPACE);
     }
@@ -58,8 +53,15 @@ public class FlappyBirdApp extends GameApplication {
         vars.put("score", 0);
     }
 
+    private boolean loopBGM = true;
+
     @Override
     protected void initGame() {
+        if (loopBGM) {
+            loopBGM("bgm.mp3");
+            loopBGM = false;
+        }
+
         initBackground();
         initPlayer();
     }
@@ -77,7 +79,7 @@ public class FlappyBirdApp extends GameApplication {
     @Override
     protected void initUI() {
         Text uiScore = getUIFactory().newText("", 72);
-        uiScore.setTranslateX(getWidth() - 200);
+        uiScore.setTranslateX(getAppWidth() - 200);
         uiScore.setTranslateY(50);
         uiScore.fillProperty().bind(getGameState().objectProperty("stageColor"));
         uiScore.textProperty().bind(getGameState().intProperty("score").asString());
@@ -88,25 +90,25 @@ public class FlappyBirdApp extends GameApplication {
     @Override
     protected void onUpdate(double tpf) {
         getGameState().increment("score", +1);
-    }
 
-    @Override
-    protected void onPostUpdate(double tpf) {
         if (getGameState().getInt("score") == 3000) {
             showGameOver();
         }
 
         if (requestNewGame) {
             requestNewGame = false;
-            startNewGame();
+            getGameController().startNewGame();
         }
     }
 
     private void initBackground() {
-        Entity bg = Entities.builder()
+        Rectangle rect = new Rectangle(getAppWidth(), getAppHeight(), Color.WHITE);
+
+        Entity bg = entityBuilder()
                 .type(EntityType.BACKGROUND)
-                .viewFromNode(new Rectangle(getWidth(), getHeight(), Color.WHITE))
-                .with(new ColorChangingControl())
+                .view(rect)
+                .with("rect", rect)
+                .with(new ColorChangingComponent())
                 .buildAndAttach();
 
         bg.xProperty().bind(getGameScene().getViewport().xProperty());
@@ -114,30 +116,30 @@ public class FlappyBirdApp extends GameApplication {
     }
 
     private void initPlayer() {
-        playerControl = new PlayerControl();
+        playerComponent = new PlayerComponent();
 
-        Entity player = Entities.builder()
+        Entity player = entityBuilder()
                 .at(100, 100)
                 .type(EntityType.PLAYER)
                 .bbox(new HitBox("BODY", BoundingShape.box(70, 60)))
-                .viewFromAnimatedTexture("bird.png", 2, Duration.seconds(0.5))
+                .view(texture("bird.png").toAnimatedTexture(2, Duration.seconds(0.5)).loop())
                 .with(new CollidableComponent(true))
-                .with(playerControl, new WallBuildingControl())
+                .with(playerComponent, new WallBuildingComponent())
                 .build();
 
-        getGameScene().getViewport().setBounds(0, 0, Integer.MAX_VALUE, getHeight());
-        getGameScene().getViewport().bindToEntity(player, getWidth() / 3, getHeight() / 2);
+        getGameScene().getViewport().setBounds(0, 0, Integer.MAX_VALUE, getAppHeight());
+        getGameScene().getViewport().bindToEntity(player, getAppWidth() / 3, getAppHeight() / 2);
 
         playSpawnAnimation(player);
     }
 
     private void playSpawnAnimation(Entity player) {
-        player.getView().setScaleX(0);
-        player.getView().setScaleY(0);
+        player.setScaleX(0);
+        player.setScaleY(0);
 
         getGameWorld().addEntity(player);
 
-        Entities.animationBuilder()
+        animationBuilder()
                 .duration(Duration.seconds(0.86))
                 .interpolator(Interpolators.BOUNCE.EASE_OUT())
                 .scale(player)
@@ -151,7 +153,7 @@ public class FlappyBirdApp extends GameApplication {
     }
 
     private void showGameOver() {
-        getDisplay().showMessageBox("Demo Over. Thanks for playing!", this::exit);
+        getDisplay().showMessageBox("Demo Over. Thanks for playing!", getGameController()::exit);
     }
 
     public static void main(String[] args) {

@@ -1,14 +1,13 @@
 package com.almasb.fxglgames.flappy;
 
 import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class PlayerControl extends Component {
+public class PlayerComponent extends Component {
 
     private Vec2 acceleration = new Vec2(6, 0);
 
@@ -33,6 +32,6 @@ public class PlayerControl extends Component {
     public void jump() {
         acceleration.addLocal(0, -5);
 
-        FXGL.getAudioPlayer().playSound("jump.wav");
+        FXGL.play("jump.wav");
     }
 }
