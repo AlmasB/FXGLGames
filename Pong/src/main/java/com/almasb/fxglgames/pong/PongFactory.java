@@ -26,67 +26,77 @@
 
 package com.almasb.fxglgames.pong;
 
-import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.EntityFactory;
+import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.particle.ParticleComponent;
+import com.almasb.fxgl.particle.ParticleEmitter;
+import com.almasb.fxgl.particle.ParticleEmitters;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class PongFactory {
+public class PongFactory implements EntityFactory {
 
-    private final GameMode mode;
-
-    public PongFactory(GameMode mode) {
-        this.mode = mode;
-    }
-
-    public Entity newBall(double x, double y) {
-        Entity ball = Entities.builder()
-                .at(x, y)
+    @Spawns("ball")
+    public Entity newBall(SpawnData data) {
+        Entity ball = FXGL.entityBuilder()
+                .from(data)
                 .type(EntityType.BALL)
                 .bbox(new HitBox(BoundingShape.circle(5)))
                 .build();
 
-        if (mode == GameMode.SP || mode == GameMode.MP_HOST) {
-            PhysicsComponent ballPhysics = new PhysicsComponent();
-            ballPhysics.setBodyType(BodyType.DYNAMIC);
+        PhysicsComponent ballPhysics = new PhysicsComponent();
+        ballPhysics.setBodyType(BodyType.DYNAMIC);
 
-            FixtureDef def = new FixtureDef().density(0.3f).restitution(1.0f);
+        FixtureDef def = new FixtureDef().density(0.3f).restitution(1.0f);
 
-            ballPhysics.setFixtureDef(def);
-            ballPhysics.setOnPhysicsInitialized(() -> ballPhysics.setLinearVelocity(5 * 60, -5 * 60));
+        ballPhysics.setFixtureDef(def);
+        ballPhysics.setOnPhysicsInitialized(() -> ballPhysics.setLinearVelocity(5 * 60, -5 * 60));
 
-            ball.addComponent(ballPhysics);
-            ball.addComponent(new CollidableComponent(true));
-            ball.addComponent(new BallComponent());
-        }
+        ball.addComponent(ballPhysics);
+        ball.addComponent(new CollidableComponent(true));
+        ball.addComponent(new BallComponent());
+
+        ParticleEmitter emitter = ParticleEmitters.newFireEmitter();
+        emitter.setStartColor(Color.LIGHTYELLOW);
+        emitter.setEndColor(Color.RED);
+        emitter.setBlendMode(BlendMode.SRC_OVER);
+        emitter.setSize(5, 10);
+        emitter.setEmissionRate(1);
+
+        ball.addComponent(new ParticleComponent(emitter));
 
         return ball;
     }
 
-    public Entity newBat(double x, double y, boolean isPlayer) {
-        Entity bat = Entities.builder()
-                .at(x, y)
+    @Spawns("bat")
+    public Entity newBat(SpawnData data) {
+        boolean isPlayer = data.get("isPlayer");
+
+        Entity bat = FXGL.entityBuilder()
+                .from(data)
                 .type(isPlayer ? EntityType.PLAYER_BAT : EntityType.ENEMY_BAT)
-                .viewFromNodeWithBBox(new Rectangle(20, 60, Color.LIGHTGRAY))
+                .viewWithBBox(new Rectangle(20, 60, Color.LIGHTGRAY))
                 .with(new CollidableComponent(true))
                 .build();
 
-        if (mode == GameMode.SP || mode == GameMode.MP_HOST) {
             PhysicsComponent batPhysics = new PhysicsComponent();
             batPhysics.setBodyType(BodyType.KINEMATIC);
             bat.addComponent(batPhysics);
 
-            bat.addComponent(isPlayer || mode == GameMode.MP_HOST ? new BatComponent() : new EnemyBatComponent());
-        }
+            bat.addComponent(isPlayer ? new BatComponent() : new EnemyBatComponent());
 
         return bat;
     }

@@ -37,10 +37,8 @@ public class EnemyBatComponent extends BatComponent {
 
     @Override
     public void onUpdate(double tpf) {
-        super.onUpdate(tpf);
-
         if (ball == null) {
-            ball = entity.getWorld().getSingleton(EntityType.BALL).orElse(null);
+            ball = entity.getWorld().getSingletonOptional(EntityType.BALL).orElse(null);
         } else {
             moveAI();
         }

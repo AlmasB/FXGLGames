@@ -26,7 +26,7 @@
 
 package com.almasb.fxglgames.pong;
 
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import javafx.geometry.Point2D;
@@ -60,12 +60,12 @@ public class BallComponent extends Component {
     // we use a physics engine, so it is possible to push the ball against a wall
     // so that it gets moved outside of the screen
     private void checkOffscreen() {
-        if (getEntity().getBoundingBoxComponent().isOutside(FXGL.getApp()
+        if (getEntity().getBoundingBoxComponent().isOutside(FXGL
                 .getGameScene()
                 .getViewport()
                 .getVisibleArea())) {
 
-            getEntity().getComponent(PhysicsComponent.class).reposition(new Point2D(
+            getEntity().getComponent(PhysicsComponent.class).overwritePosition(new Point2D(
                     FXGL.getAppWidth() / 2,
                     FXGL.getAppHeight() / 2
             ));

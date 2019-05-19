@@ -27,35 +27,25 @@
 package com.almasb.fxglgames.pong;
 
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.app.MenuItem;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.components.CollidableComponent;
-import com.almasb.fxgl.input.ActionType;
-import com.almasb.fxgl.input.Input;
-import com.almasb.fxgl.input.InputMapping;
-import com.almasb.fxgl.input.OnUserAction;
-import com.almasb.fxgl.net.Server;
-import com.almasb.fxgl.particle.ParticleComponent;
-import com.almasb.fxgl.particle.ParticleEmitter;
-import com.almasb.fxgl.particle.ParticleEmitters;
+import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
-import com.almasb.fxgl.settings.GameSettings;
-import com.almasb.fxgl.settings.MenuItem;
 import com.almasb.fxgl.ui.UI;
-import javafx.application.Platform;
-import javafx.geometry.Point2D;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 import java.util.EnumSet;
 import java.util.Map;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * A simple multiplayer pong.
@@ -64,12 +54,6 @@ import java.util.Map;
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class PongApp extends GameApplication {
-
-    private PongFactory factory;
-
-    private Entity ball;
-    private Entity bat1;
-    private Entity bat2;
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -80,46 +64,31 @@ public class PongApp extends GameApplication {
     }
 
     @Override
-    protected void preInit() {
-        FXGL.getNet().addDataParser(ServerMessage.class, message -> {
-            Platform.runLater(() -> {
-                if (ball != null) {
-
-                    ball.setPosition(new Point2D(message.ballPosition.x, message.ballPosition.y));
-                    bat1.setY(message.bat1PositionY);
-                    bat2.setY(message.bat2PositionY);
-                }
-            });
-        });
-
-        FXGL.getNet().addDataParser(ClientMessage.class, message -> {
-            Platform.runLater(() -> {
-                if (bat2 != null) {
-                    if (message.up) {
-                        bat2.getComponent(BatComponent.class).up();
-                    } else if (message.down) {
-                        bat2.getComponent(BatComponent.class).down();
-                    } else {
-                        bat2.getComponent(BatComponent.class).stop();
-                    }
-                }
-            });
-        });
-
-        addExitListener(() -> {
-            getNet().getConnection().ifPresent(conn -> conn.close());
-        });
-    }
-
-    @Override
     protected void initInput() {
-        Input input = getInput();
+        getInput().addAction(new UserAction("Up") {
+            @Override
+            protected void onAction() {
+                playerBat.up();
+            }
 
-        input.addInputMapping(new InputMapping("Up", KeyCode.W));
-        input.addInputMapping(new InputMapping("Down", KeyCode.S));
+            @Override
+            protected void onActionEnd() {
+                playerBat.stop();
+            }
+        }, KeyCode.W);
+
+        getInput().addAction(new UserAction("Down") {
+            @Override
+            protected void onAction() {
+                playerBat.down();
+            }
+
+            @Override
+            protected void onActionEnd() {
+                playerBat.stop();
+            }
+        }, KeyCode.S);
     }
-
-    private GameMode mode;
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
@@ -129,25 +98,19 @@ public class PongApp extends GameApplication {
 
     @Override
     protected void initGame() {
-        if (getNet().getConnection().isPresent()) {
-            mode = getNet().getConnection().get() instanceof Server ? GameMode.MP_HOST : GameMode.MP_CLIENT;
-        } else {
-            mode = GameMode.SP;
+        getGameState().<Integer>addListener("player1score", (old, newScore) -> {
+            if (newScore == 11) {
+                showGameOver("Player 1");
+            }
+        });
 
-            getGameState().<Integer>addListener("player1score", (old, newScore) -> {
-                if (newScore == 11) {
-                    showGameOver("Player 1");
-                }
-            });
+        getGameState().<Integer>addListener("player2score", (old, newScore) -> {
+            if (newScore == 11) {
+                showGameOver("Player 2");
+            }
+        });
 
-            getGameState().<Integer>addListener("player2score", (old, newScore) -> {
-                if (newScore == 11) {
-                    showGameOver("Player 2");
-                }
-            });
-        }
-
-        factory = new PongFactory(mode);
+        getGameWorld().addEntityFactory(new PongFactory());
 
         initBackground();
         initScreenBounds();
@@ -169,15 +132,15 @@ public class PongApp extends GameApplication {
                     getGameState().increment("player1score", +1);
                 }
 
-                getAudioPlayer().playSound("hit_wall.wav");
-                getGameScene().getViewport().shake(5);
+                play("hit_wall.wav");
+                getGameScene().getViewport().shakeTranslational(5);
             }
         });
 
         CollisionHandler ballBatHandler = new CollisionHandler(EntityType.BALL, EntityType.PLAYER_BAT) {
             @Override
             protected void onCollisionBegin(Entity a, Entity bat) {
-                getAudioPlayer().playSound("hit_bat.wav");
+                play("hit_bat.wav");
                 playHitAnimation(bat);
             }
         };
@@ -197,21 +160,12 @@ public class PongApp extends GameApplication {
         getGameScene().addUI(ui);
     }
 
-    @Override
-    protected void onUpdate(double tpf) {
-        if (mode == GameMode.MP_HOST) {
-            getNet().getConnection().ifPresent(conn -> {
-                conn.send(new ServerMessage(new Vec2((float)ball.getX(), (float)ball.getY()), bat1.getY(), bat2.getY()));
-            });
-        }
-    }
-
     private void initBackground() {
         getGameScene().setBackgroundColor(Color.rgb(0, 0, 5));
     }
 
     private void initScreenBounds() {
-        Entity walls = Entities.makeScreenBounds(150);
+        Entity walls = entityBuilder().buildScreenBounds(150);
         walls.setType(EntityType.WALL);
         walls.addComponent(new CollidableComponent(true));
 
@@ -219,92 +173,34 @@ public class PongApp extends GameApplication {
     }
 
     private void initBall() {
-        ball = factory.newBall(getWidth() / 2 - 5, getHeight() / 2 - 5);
-
-        ParticleEmitter emitter = ParticleEmitters.newFireEmitter();
-        emitter.setStartColor(Color.LIGHTYELLOW);
-        emitter.setEndColor(Color.RED);
-        emitter.setBlendMode(BlendMode.SRC_OVER);
-        emitter.setSize(5, 10);
-        emitter.setEmissionRate(1);
-
-        ball.addComponent(new ParticleComponent(emitter));
-
-        getGameWorld().addEntity(ball);
+        spawn("ball", getAppWidth() / 2 - 5, getAppHeight() / 2 - 5);
     }
 
     private BatComponent playerBat;
 
     private void initPlayerBat() {
-        bat1 = factory.newBat(getWidth() / 4, getHeight() / 2 - 30, true);
-        getGameWorld().addEntity(bat1);
+        Entity bat1 = spawn("bat", new SpawnData(getAppWidth() / 4, getAppHeight() / 2 - 30).put("isPlayer", true));
 
         playerBat = bat1.getComponent(BatComponent.class);
     }
 
     private void initEnemyBat() {
-        bat2 = factory.newBat(3 * getWidth() / 4 - 20, getHeight() / 2 - 30, false);
-
-        getGameWorld().addEntity(bat2);
-    }
-
-    @OnUserAction(name = "Up", type = ActionType.ON_ACTION)
-    public void up() {
-        if (mode == GameMode.MP_CLIENT) {
-            getNet().getConnection().ifPresent(conn -> {
-                conn.send(new ClientMessage(true, false, false));
-            });
-        } else {
-            playerBat.up();
-        }
-    }
-
-    @OnUserAction(name = "Down", type = ActionType.ON_ACTION)
-    public void down() {
-        if (mode == GameMode.MP_CLIENT) {
-            getNet().getConnection().ifPresent(conn -> {
-                conn.send(new ClientMessage(false, true, false));
-            });
-        } else {
-            playerBat.down();
-        }
-    }
-
-    @OnUserAction(name = "Up", type = ActionType.ON_ACTION_END)
-    public void stopBat() {
-        if (mode == GameMode.MP_CLIENT) {
-            getNet().getConnection().ifPresent(conn -> {
-                conn.send(new ClientMessage(false, false, true));
-            });
-        } else {
-            playerBat.stop();
-        }
-    }
-
-    @OnUserAction(name = "Down", type = ActionType.ON_ACTION_END)
-    public void stopBat2() {
-        if (mode == GameMode.MP_CLIENT) {
-            getNet().getConnection().ifPresent(conn -> {
-                conn.send(new ClientMessage(false, false, true));
-            });
-        } else {
-            playerBat.stop();
-        }
+        spawn("bat", new SpawnData(3 * getAppWidth() / 4 - 20, getAppHeight() / 2 - 30).put("isPlayer", true));
     }
 
     private void playHitAnimation(Entity bat) {
-        Entities.animationBuilder()
+        animationBuilder()
                 .autoReverse(true)
                 .duration(Duration.seconds(0.5))
                 .interpolator(Interpolators.BOUNCE.EASE_OUT())
                 .rotate(bat)
-                .rotateFrom(FXGLMath.random(-25, 25))
-                .rotateTo(0)
+                .from(FXGLMath.random(-25, 25))
+                .to(0)
                 .buildAndPlay();
     }
 
     private void showGameOver(String winner) {
-        getDisplay().showMessageBox(winner + " won! Demo over\nThanks for playing", this::exit);
+        getDisplay().showMessageBox(winner + " won! Demo over\nThanks for playing", getGameController()::exit);
     }
 
     public static void main(String[] args) {

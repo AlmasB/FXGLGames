@@ -26,7 +26,7 @@
 
 package com.almasb.fxglgames.pong;
 
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.ui.UIController;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
