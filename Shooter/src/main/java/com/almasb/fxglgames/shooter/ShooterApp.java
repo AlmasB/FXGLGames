@@ -1,17 +1,18 @@
 package com.almasb.fxglgames.shooter;
 
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
-import com.almasb.fxgl.settings.GameSettings;
 import javafx.scene.input.MouseButton;
 import javafx.util.Duration;
 
 import java.util.Map;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -28,12 +29,10 @@ public class ShooterApp extends GameApplication {
 
     @Override
     protected void initInput() {
-        Input input = getInput();
-
-        input.addAction(new UserAction("Shoot") {
+        getInput().addAction(new UserAction("Shoot") {
             @Override
             protected void onActionBegin() {
-                getGameWorld().spawn("Bullet", input.getMouseXWorld(), getHeight() - 10);
+                getGameWorld().spawn("Bullet", getInput().getMouseXWorld(), getAppHeight() - 10);
             }
         }, MouseButton.PRIMARY);
     }
@@ -45,15 +44,16 @@ public class ShooterApp extends GameApplication {
 
     @Override
     protected void initGame() {
+        getGameWorld().addEntityFactory(new ShooterFactory());
 
-        getMasterTimer().runAtInterval(() -> {
+        getGameTimer().runAtInterval(() -> {
 
             int numEnemies = getGameState().getInt("enemies");
 
             if (numEnemies < 5) {
                 getGameWorld().spawn("Enemy",
-                        FXGLMath.random(0, getWidth() - 40),
-                        FXGLMath.random(0, getHeight() / 2 - 40)
+                        FXGLMath.random(0, getAppWidth() - 40),
+                        FXGLMath.random(0, getAppHeight() / 2 - 40)
                 );
 
                 getGameState().increment("enemies", +1);
