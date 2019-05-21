@@ -1,6 +1,6 @@
 package com.almasb.fxglgames.spacerunner.components;
 
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxglgames.spacerunner.GameConfig;
@@ -33,7 +33,7 @@ public class MoveComponent extends Component {
             }
         }
 
-        entity.translateX(tpf * FXGL.<GameConfig>getGameConfig().getPlayerSpeed());
+        entity.translateX(tpf * 600);
     }
 
     public boolean isMoving() {

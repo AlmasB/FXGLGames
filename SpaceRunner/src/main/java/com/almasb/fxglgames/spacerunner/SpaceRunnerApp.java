@@ -28,14 +28,13 @@ package com.almasb.fxglgames.spacerunner;
 
 import com.almasb.fxgl.animation.Animation;
 import com.almasb.fxgl.animation.Interpolators;
+import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.entity.view.ScrollingBackgroundView;
-import com.almasb.fxgl.extra.entity.components.HealthComponent;
 import com.almasb.fxgl.input.UserAction;
-import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxgl.ui.ProgressBar;
 import com.almasb.fxglgames.spacerunner.ai.AIPointComponent;
@@ -63,7 +62,7 @@ import javafx.util.Duration;
 
 import java.util.Map;
 
-import static com.almasb.fxgl.app.DSLKt.*;
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -82,10 +81,10 @@ public class SpaceRunnerApp extends GameApplication {
         settings.setConfigClass(GameConfig.class);
     }
 
-    @Override
-    protected void preInit() {
-        loopBGM("bgm.mp3");
-    }
+//    @Override
+//    protected void preInit() {
+//        loopBGM("bgm.mp3");
+//    }
 
     @Override
     protected void initInput() {
@@ -135,22 +134,23 @@ public class SpaceRunnerApp extends GameApplication {
 
     @Override
     protected void initGame() {
-        getAudioPlayer().setGlobalMusicVolume(0.3);
-        getAudioPlayer().setGlobalSoundVolume(0.4);
+        getSettings().setGlobalMusicVolume(0.3);
+        getSettings().setGlobalSoundVolume(0.4);
 
         getGameWorld().addEntityFactory(new SpaceRunnerFactory());
 
         Texture t = getAssetLoader().loadTexture("bg_0.png");
 
-        getGameScene().addGameView(new ScrollingBackgroundView(t.superTexture(t, HorizontalDirection.RIGHT),
-                Orientation.HORIZONTAL));
+        // TODO:
+//        getGameScene().addGameView(new ScrollingBackgroundView(t.superTexture(t, HorizontalDirection.RIGHT),
+//                Orientation.HORIZONTAL));
 
-        Entity player = getGameWorld().spawn("Player", 180, getHeight() / 2);
+        Entity player = getGameWorld().spawn("Player", 180, getAppHeight() / 2);
 
         playerComponent = player.getComponent(PlayerComponent.class);
 
-        getGameScene().getViewport().setBounds(0, 0, Integer.MAX_VALUE, getHeight());
-        getGameScene().getViewport().bindToEntity(player, 180, getHeight() / 2);
+        getGameScene().getViewport().setBounds(0, 0, Integer.MAX_VALUE, getAppHeight());
+        getGameScene().getViewport().bindToEntity(player, 180, getAppHeight() / 2);
 
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 10; y++) {
@@ -172,27 +172,27 @@ public class SpaceRunnerApp extends GameApplication {
 
         getbp("hasShield").bind(getip("shield").isEqualTo(100));
 
-        run(this::spawnWaveIfNeeded, Duration.seconds(1));
-
-        run(() -> {
-            if (geti("heat") > 0)
-                inc("heat", -5);
-
-            if (geti("bullets") < 999)
-                inc("bullets", +1);
-
-        }, Duration.seconds(0.25));
-
-        run(() -> {
-            if (geti("shield") < 100)
-                inc("shield", +4);
-        }, Duration.seconds(0.5));
-
-        run(() -> {
-            spawnPowerup(FXGLMath.random(PowerupType.values()).get());
-        }, Duration.seconds(3));
-
-        nextLevel();
+//        run(this::spawnWaveIfNeeded, Duration.seconds(1));
+//
+//        run(() -> {
+//            if (geti("heat") > 0)
+//                inc("heat", -5);
+//
+//            if (geti("bullets") < 999)
+//                inc("bullets", +1);
+//
+//        }, Duration.seconds(0.25));
+//
+//        run(() -> {
+//            if (geti("shield") < 100)
+//                inc("shield", +4);
+//        }, Duration.seconds(0.5));
+//
+//        run(() -> {
+//            spawnPowerup(FXGLMath.random(PowerupType.values()).get());
+//        }, Duration.seconds(3));
+//
+//        nextLevel();
     }
 
     @Override
@@ -236,13 +236,13 @@ public class SpaceRunnerApp extends GameApplication {
         );
 
         VBox boxWeapons = new VBox(15, ui, ui2, ui3);
-        boxWeapons.setTranslateX(getWidth() - 150);
+        boxWeapons.setTranslateX(getAppWidth() - 150);
         boxWeapons.setTranslateY(550);
         boxWeapons.setScaleX(1.4);
         boxWeapons.setScaleY(1.4);
 
         Texture uiBorder = texture("ui.png");
-        uiBorder.setTranslateY(getHeight() - uiBorder.getHeight());
+        uiBorder.setTranslateY(getAppHeight() - uiBorder.getHeight());
 
         getGameScene().addUINode(uiBorder);
 
@@ -254,7 +254,7 @@ public class SpaceRunnerApp extends GameApplication {
         barHP.setFill(Color.GREEN);
         barHP.setBackgroundFill(Color.DARKGREY);
         barHP.setTraceFill(Color.LIGHTGREEN);
-        barHP.currentValueProperty().bind(playerComponent.getEntity().getComponent(HealthComponent.class).valueProperty());
+        //barHP.currentValueProperty().bind(playerComponent.getEntity().getComponent(HealthComponent.class).valueProperty());
 
         // heat
 
@@ -290,7 +290,7 @@ public class SpaceRunnerApp extends GameApplication {
 
         HBox symbols = new HBox(10, textShield, textDanger);
         symbols.setTranslateX(35);
-        symbols.setTranslateY(getHeight() - 35);
+        symbols.setTranslateY(getAppHeight() - 35);
 
         VBox bars = new VBox(-10, barHP, barShield, barHeat);
         bars.setTranslateX(0);
@@ -345,24 +345,25 @@ public class SpaceRunnerApp extends GameApplication {
 
         getGameScene().addUINode(textLevel);
 
-        Animation<?> anim = fadeIn(textLevel, Duration.seconds(1.66), () -> {
-            Animation<?> anim2 = translate(textLevel,
-                    new Point2D(textLevel.getTranslateX(), textLevel.getTranslateY()),
-                    new Point2D(350, 540),
-                    Duration.ZERO,
-                    Duration.seconds(1.66),
-                    () -> {
-                        getGameScene().removeUINode(textLevel);
-                        uiTextLevel.setVisible(true);
-                    });
-
-            anim2.getAnimatedValue().setInterpolator(Interpolators.EXPONENTIAL.EASE_IN());
-            anim2.startInPlayState();
-        });
-
-        anim.getAnimatedValue().setInterpolator(Interpolators.SMOOTH.EASE_OUT());
-
-        anim.startInPlayState();
+        // TODO:
+//        Animation<?> anim = animationBuilder().fadeIn(textLevel, Duration.seconds(1.66), () -> {
+//            Animation<?> anim2 = translate(textLevel,
+//                    new Point2D(textLevel.getTranslateX(), textLevel.getTranslateY()),
+//                    new Point2D(350, 540),
+//                    Duration.ZERO,
+//                    Duration.seconds(1.66),
+//                    () -> {
+//                        getGameScene().removeUINode(textLevel);
+//                        uiTextLevel.setVisible(true);
+//                    });
+//
+//            anim2.getAnimatedValue().setInterpolator(Interpolators.EXPONENTIAL.EASE_IN());
+//            anim2.startInPlayState();
+//        });
+//
+//        anim.getAnimatedValue().setInterpolator(Interpolators.SMOOTH.EASE_OUT());
+//
+//        anim.startInPlayState();
     }
 
     private void spawnWaveIfNeeded() {

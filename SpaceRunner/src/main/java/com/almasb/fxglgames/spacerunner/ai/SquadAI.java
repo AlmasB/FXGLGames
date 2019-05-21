@@ -1,12 +1,8 @@
 package com.almasb.fxglgames.spacerunner.ai;
 
-import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.core.collection.ObjectMap;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.EntityGroup;
 import com.almasb.fxglgames.spacerunner.SpaceRunnerType;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -19,13 +15,13 @@ public enum SquadAI {
     INSTANCE;
 
     private List<Entity> points = new ArrayList<>();
-    private EntityGroup<Entity> enemies;
+    //private EntityGroup<Entity> enemies;
 
     public void update(List<Entity> points) {
         this.points.clear();
         this.points.addAll(points);
 
-        enemies = FXGL.getApp().getGameWorld().getGroup(SpaceRunnerType.ENEMY);
+        //enemies = FXGL.getGameWorld().getGroup(SpaceRunnerType.ENEMY);
     }
 
     public Entity getBestPoint(Entity enemy) {
@@ -54,11 +50,11 @@ public enum SquadAI {
 
         point.setProperty("enemies", 0);
 
-        enemies.forEach(e -> e != enemy, e -> {
-            if (e.distance(point) < 60) {
-                point.setProperty("enemies", point.getInt("enemies") + 1);
-            }
-        });
+//        enemies.forEach(e -> e != enemy, e -> {
+//            if (e.distance(point) < 60) {
+//                point.setProperty("enemies", point.getInt("enemies") + 1);
+//            }
+//        });
 
         int numEnemies = point.getInt("enemies") * 10;
 

@@ -26,12 +26,11 @@
 
 package com.almasb.fxglgames.spacerunner;
 
-import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.dsl.components.*;
 import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.components.CollidableComponent;
-import com.almasb.fxgl.extra.entity.components.*;
-import com.almasb.fxgl.extra.entity.effect.EffectComponent;
 import com.almasb.fxgl.particle.ParticleComponent;
 import com.almasb.fxgl.particle.ParticleEmitter;
 import com.almasb.fxgl.particle.ParticleEmitters;
@@ -51,7 +50,8 @@ import javafx.util.Duration;
 
 import java.util.ArrayList;
 
-import static com.almasb.fxgl.app.DSLKt.*;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -72,12 +72,12 @@ public class SpaceRunnerFactory implements EntityFactory {
         emitter.setVelocityFunction(i -> new Point2D(FXGLMath.random(360, 400), FXGLMath.random()));
         emitter.setAccelerationFunction(() -> Point2D.ZERO);
 
-        return Entities.builder()
+        return entityBuilder()
                 .type(SpaceRunnerType.PLAYER)
                 .from(data)
-                .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("sprite_player.png", 40, 40))
+                .viewWithBBox(FXGL.getAssetLoader().loadTexture("sprite_player.png", 40, 40))
                 .with(new CollidableComponent(true), new ParticleComponent(emitter))
-                .with(new PlayerComponent(), new HealthComponent(100), new EffectComponent(), new KeepOnScreenComponent(false, true))
+                .with(new PlayerComponent(), new EffectComponent(), new KeepOnScreenComponent().onlyVertically())
                 .build();
     }
 
@@ -85,10 +85,10 @@ public class SpaceRunnerFactory implements EntityFactory {
     public Entity newEnemyBullet(SpawnData data) {
         play("shoot" + FXGLMath.random(1, 4) + ".wav");
 
-        return Entities.builder()
+        return entityBuilder()
                 .type(SpaceRunnerType.ENEMY_BULLET)
                 .from(data)
-                .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("sprite_bullet.png", 22, 11))
+                .viewWithBBox(FXGL.getAssetLoader().loadTexture("sprite_bullet.png", 22, 11))
                 .with(new CollidableComponent(true))
                 .with(new ProjectileComponent(new Point2D(-1, 0), 350),
                         new OffscreenCleanComponent())
@@ -99,10 +99,10 @@ public class SpaceRunnerFactory implements EntityFactory {
     public Entity newBullet(SpawnData data) {
         play("shoot" + FXGLMath.random(1, 4) + ".wav");
 
-        return Entities.builder()
+        return entityBuilder()
                 .type(SpaceRunnerType.BULLET)
                 .from(data)
-                .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("sprite_bullet.png", 22, 11))
+                .viewWithBBox(FXGL.getAssetLoader().loadTexture("sprite_bullet.png", 22, 11))
                 .with(new CollidableComponent(true))
                 .with(new ProjectileComponent(new Point2D(1, 0), 1550),
                         new OffscreenCleanComponent())
@@ -113,10 +113,10 @@ public class SpaceRunnerFactory implements EntityFactory {
     public Entity newLaser(SpawnData data) {
         play("shoot" + FXGLMath.random(1, 4) + ".wav");
 
-        return Entities.builder()
+        return entityBuilder()
                 .type(SpaceRunnerType.BULLET)
                 .from(data)
-                .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("sprite_laser.png"))
+                .viewWithBBox(FXGL.getAssetLoader().loadTexture("sprite_laser.png"))
                 .with(new CollidableComponent(true))
                 .with(new ProjectileComponent(new Point2D(1, 0), 850),
                         new OffscreenCleanComponent())
@@ -127,10 +127,10 @@ public class SpaceRunnerFactory implements EntityFactory {
     public Entity newRocket(SpawnData data) {
         play("shoot" + FXGLMath.random(1, 4) + ".wav");
 
-        return Entities.builder()
+        return entityBuilder()
                 .type(SpaceRunnerType.BULLET)
                 .from(data)
-                .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("rocket.png", 30, 8))
+                .viewWithBBox(FXGL.getAssetLoader().loadTexture("rocket.png", 30, 8))
                 .with(new CollidableComponent(true))
                 .with(new ProjectileComponent(new Point2D(1, 0), 750),
                         new OffscreenCleanComponent())
@@ -139,12 +139,12 @@ public class SpaceRunnerFactory implements EntityFactory {
 
     @Spawns("Enemy1")
     public Entity newEnemy(SpawnData data) {
-        return Entities.builder()
+        return entityBuilder()
                 .type(SpaceRunnerType.ENEMY)
                 .from(data)
-                .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("sprite_enemy_1.png", 27, 33))
-                .with(new CollidableComponent(true), new HealthComponent(10), new MoveComponent())
-                .with(new EnemyComponent(), new KeepOnScreenComponent(false, true))
+                .viewWithBBox(FXGL.getAssetLoader().loadTexture("sprite_enemy_1.png", 27, 33))
+                .with(new CollidableComponent(true), new MoveComponent())
+                .with(new EnemyComponent(), new KeepOnScreenComponent().onlyVertically())
                 .with(new SquadAIComponent())
                 .build();
     }
@@ -153,31 +153,34 @@ public class SpaceRunnerFactory implements EntityFactory {
     public Entity newExplosion(SpawnData data) {
         play("explosion.wav");
 
-        return Entities.builder()
-                .at(data.getX() - 40, data.getY() - 40)
-                // we want a smaller texture, 80x80
-                // it has 16 frames, hence 80 * 16
-                .viewFromAnimatedTexture(texture("explosion.png", 80 * 16, 80).toAnimatedTexture(16, Duration.seconds(0.5)), false, true)
+        return entityBuilder()
                 .build();
+
+//        return entityBuilder()
+//                .at(data.getX() - 40, data.getY() - 40)
+//                // we want a smaller texture, 80x80
+//                // it has 16 frames, hence 80 * 16
+//                .viewFromAnimatedTexture(texture("explosion.png", 80 * 16, 80).toAnimatedTexture(16, Duration.seconds(0.5)), false, true)
+//                .build();
     }
 
     @Spawns("powerup")
     public Entity newPowerup(SpawnData data) {
-        return Entities.builder()
+        return entityBuilder()
                 .from(data)
                 .type(SpaceRunnerType.POWERUP)
-                .viewFromTextureWithBBox("powerups/" + data.<PowerupType>get("type").getTextureName())
+                .viewWithBBox("powerups/" + data.<PowerupType>get("type").getTextureName())
                 .with(new CollidableComponent(true), new PowerupComponent(data.get("type")), new ExpireCleanComponent(Duration.seconds(10)))
                 .build();
     }
 
     @Spawns("ai_point")
     public Entity newAIPoint(SpawnData data) {
-        return Entities.builder()
+        return entityBuilder()
                 .from(data)
                 .type(SpaceRunnerType.AI_POINT)
                 .bbox(new HitBox("MAIN", new Point2D(-400, 0), BoundingShape.box(400, 30)))
-                .viewFromNode(new Text())
+                .view(new Text())
                 .with("collisions", new ArrayList<Entity>())
                 .with("enemies", 0)
                 .with(new AIPointComponent())

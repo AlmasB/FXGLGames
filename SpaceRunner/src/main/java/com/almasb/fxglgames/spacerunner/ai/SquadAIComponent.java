@@ -1,8 +1,7 @@
 package com.almasb.fxglgames.spacerunner.ai;
 
+import com.almasb.fxgl.dsl.components.AccumulatedUpdateComponent;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.extra.entity.components.AccumulatedUpdateComponent;
 import com.almasb.fxglgames.spacerunner.components.MoveComponent;
 import javafx.geometry.Point2D;
 

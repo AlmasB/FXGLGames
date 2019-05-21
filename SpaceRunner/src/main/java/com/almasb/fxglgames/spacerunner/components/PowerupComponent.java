@@ -1,8 +1,6 @@
 package com.almasb.fxglgames.spacerunner.components;
 
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.app.DSLKt;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
@@ -10,7 +8,8 @@ import com.almasb.fxglgames.spacerunner.PowerupType;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
-import static com.almasb.fxgl.app.DSLKt.*;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -46,7 +45,7 @@ public class PowerupComponent extends Component {
 
         entity.getComponent(CollidableComponent.class).setValue(false);
 
-        Entities.animationBuilder()
+        animationBuilder()
                 .duration(Duration.seconds(0.5))
                 .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
                 .onFinished(() -> entity.removeFromWorld())

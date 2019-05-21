@@ -26,22 +26,20 @@
 
 package com.almasb.fxglgames.spacerunner.components;
 
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.entity.components.PositionComponent;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.spacerunner.GameConfig;
 import com.almasb.fxglgames.spacerunner.WeaponType;
 import javafx.util.Duration;
 
-import static com.almasb.fxgl.app.DSLKt.*;
+import static com.almasb.fxgl.dsl.FXGL.*;
+
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class PlayerComponent extends Component {
-
-    private PositionComponent position;
 
     private double speed;
 
@@ -54,7 +52,7 @@ public class PlayerComponent extends Component {
     public void onUpdate(double tpf) {
         speed = tpf * 300;
 
-        position.translateX(tpf * FXGL.<GameConfig>getGameConfig().getPlayerSpeed());
+        entity.translateX(tpf * 600);
 
         if (shootTimer.elapsed(Duration.seconds(0.12))) {
             canShoot = true;
@@ -62,7 +60,7 @@ public class PlayerComponent extends Component {
     }
 
     public void up() {
-        position.translateY(-speed);
+        entity.translateY(-speed);
     }
 
     public void down() {
@@ -71,7 +69,7 @@ public class PlayerComponent extends Component {
             return;
         }
 
-        position.translateY(speed);
+        entity.translateY(speed);
     }
 
     public void changeWeapon() {
