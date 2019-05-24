@@ -27,17 +27,19 @@
 package com.almasb.fxglgames.tanks;
 
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.gameplay.Level;
+import com.almasb.fxgl.entity.level.Level;
+import com.almasb.fxgl.entity.level.text.TextLevelLoader;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
-import com.almasb.fxgl.parser.text.TextLevelParser;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
-import com.almasb.fxgl.settings.GameSettings;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -52,7 +54,7 @@ public class BattleTanksApp extends GameApplication {
         settings.setHeight(840);
     }
 
-    private PlayerControl playerControl;
+    private PlayerComponent playerComponent;
 
     @Override
     protected void initInput() {
@@ -61,51 +63,52 @@ public class BattleTanksApp extends GameApplication {
         input.addAction(new UserAction("Move Left") {
             @Override
             protected void onAction() {
-                playerControl.left();
+                playerComponent.left();
             }
         }, KeyCode.A);
 
         input.addAction(new UserAction("Move Right") {
             @Override
             protected void onAction() {
-                playerControl.right();
+                playerComponent.right();
             }
         }, KeyCode.D);
 
         input.addAction(new UserAction("Move Up") {
             @Override
             protected void onAction() {
-                playerControl.up();
+                playerComponent.up();
             }
         }, KeyCode.W);
 
         input.addAction(new UserAction("Move Down") {
             @Override
             protected void onAction() {
-                playerControl.down();
+                playerComponent.down();
             }
         }, KeyCode.S);
 
         input.addAction(new UserAction("Shoot") {
             @Override
             protected void onActionBegin() {
-                playerControl.shoot();
+                playerComponent.shoot();
             }
         }, KeyCode.F);
     }
 
     @Override
     protected void initGame() {
-        TextLevelParser levelParser = new TextLevelParser(getGameWorld().getEntityFactory());
+        getGameWorld().addEntityFactory(new BattleTanksFactory());
 
-        Level level = levelParser.parse("levels/level0.txt");
+        Level level = getAssetLoader().loadLevel("level0.txt", new TextLevelLoader(84, 84, '0'));
+
         getGameWorld().setLevel(level);
 
-        playerControl = new PlayerControl();
+        playerComponent = new PlayerComponent();
 
         Entity player = new Entity();
         player.getBoundingBoxComponent().addHitBox(new HitBox("BODY", new Point2D(10, 10), BoundingShape.box(54, 54)));
-        player.addControl(playerControl);
+        player.addComponent(playerComponent);
 
         getGameWorld().addEntity(player);
     }

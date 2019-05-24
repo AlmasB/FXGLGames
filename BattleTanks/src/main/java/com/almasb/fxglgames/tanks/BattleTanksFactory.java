@@ -26,69 +26,51 @@
 
 package com.almasb.fxglgames.tanks;
 
+import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
+import com.almasb.fxgl.dsl.components.ProjectileComponent;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.*;
-import com.almasb.fxgl.entity.component.CollidableComponent;
-import com.almasb.fxgl.entity.control.OffscreenCleanControl;
-import com.almasb.fxgl.entity.control.ProjectileControl;
-import com.almasb.fxgl.physics.BoundingShape;
-import com.almasb.fxgl.physics.HitBox;
-import javafx.geometry.Point2D;
+import com.almasb.fxgl.entity.EntityFactory;
+import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.entity.Spawns;
+import com.almasb.fxgl.entity.components.CollidableComponent;
 
-import static com.almasb.fxglgames.tanks.Config.*;
+import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
+import static com.almasb.fxglgames.tanks.Config.BULLET_SPEED;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-@SetEntityFactory
-public class BattleTanksFactory implements TextEntityFactory {
+public class BattleTanksFactory implements EntityFactory {
 
     @Spawns("Bullet")
     public Entity newBullet(SpawnData data) {
-        return Entities.builder()
+        return entityBuilder()
                 .from(data)
                 .type(BattleTanksType.BULLET)
-                .bbox(new HitBox("BODY", new Point2D(34, 34), BoundingShape.box(16, 16)))
-                .viewFromTexture("bullet.png")
+                //.bbox(new HitBox("BODY", new Point2D(34, 34), BoundingShape.box(16, 16)))
+                .viewWithBBox("tank_bullet.png")
                 .with(new CollidableComponent(true))
-                .with(new OffscreenCleanControl(), new ProjectileControl(data.get("direction"), BULLET_SPEED))
+                .with(new OffscreenCleanComponent(), new ProjectileComponent(data.get("direction"), BULLET_SPEED))
                 .build();
     }
 
-    @Spawns("Flag")
-    @SpawnSymbol('F')
+    @Spawns("F,Flag")
     public Entity newFlag(SpawnData data) {
-        return Entities.builder()
+        return entityBuilder()
                 .from(data)
                 .type(BattleTanksType.FLAG)
-                .viewFromTextureWithBBox("flag.png")
+                .viewWithBBox("flag.png")
                 .with(new CollidableComponent(true))
                 .build();
     }
 
-    @Spawns("Wall")
-    @SpawnSymbol('1')
+    @Spawns("1,Wall")
     public Entity newWall(SpawnData data) {
-        return Entities.builder()
+        return entityBuilder()
                 .from(data)
                 .type(BattleTanksType.WALL)
-                .viewFromTextureWithBBox("wall.png")
+                .viewWithBBox("wall.png")
                 .with(new CollidableComponent(true))
                 .build();
-    }
-
-    @Override
-    public char emptyChar() {
-        return '0';
-    }
-
-    @Override
-    public int blockWidth() {
-        return 84;
-    }
-
-    @Override
-    public int blockHeight() {
-        return 84;
     }
 }

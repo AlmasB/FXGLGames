@@ -26,16 +26,10 @@
 
 package com.almasb.fxglgames.tanks;
 
-import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.Control;
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.Required;
-import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.entity.component.BoundingBoxComponent;
-import com.almasb.fxgl.entity.component.ViewComponent;
-import com.almasb.fxgl.entity.component.PositionComponent;
-import com.almasb.fxgl.entity.component.RotationComponent;
+import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.entity.components.ViewComponent;
 import com.almasb.fxgl.texture.Texture;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
@@ -43,17 +37,16 @@ import javafx.geometry.Rectangle2D;
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class PlayerControl extends Control {
+public class PlayerComponent extends Component {
 
-    private PositionComponent position;
-    private RotationComponent rotation;
-    private BoundingBoxComponent bbox;
     private ViewComponent view;
 
     private Texture texture;
 
     @Override
-    public void onAdded(Entity entity) {
+    public void onAdded() {
+        getEntity().getTransformComponent().setRotationOrigin(new Point2D(42, 42));
+
         texture = FXGL.getAssetLoader().loadTexture("player.png");
         view.setView(texture);
     }
@@ -62,7 +55,7 @@ public class PlayerControl extends Control {
     private int frames = 0;
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
+    public void onUpdate(double tpf) {
         speed = tpf * 60;
 
         int frame = frames / 10;
@@ -75,37 +68,35 @@ public class PlayerControl extends Control {
     }
 
     public void up() {
-        rotation.setValue(270);
-        position.translateY(-5 * speed);
+        getEntity().setRotation(270);
+        getEntity().translateY(-5 * speed);
         frames++;
     }
 
     public void down() {
-        rotation.setValue(90);
-        position.translateY(5 * speed);
+        getEntity().setRotation(90);
+        getEntity().translateY(5 * speed);
         frames++;
     }
 
     public void left() {
-        rotation.setValue(180);
-        position.translateX(-5 * speed);
+        getEntity().setRotation(180);
+        getEntity().translateX(-5 * speed);
         frames++;
     }
 
     public void right() {
-        rotation.setValue(0);
-        position.translateX(5 * speed);
+        getEntity().setRotation(0);
+        getEntity().translateX(5 * speed);
         frames++;
     }
 
     public void shoot() {
-        Entity entity = FXGL.getApp()
-                .getGameWorld()
-                .spawn("Bullet", new SpawnData(position.getX(), position.getY()).put("direction", angleToVector()));
+        FXGL.spawn("Bullet", new SpawnData(getEntity().getCenter()).put("direction", angleToVector()));
     }
 
     private Point2D angleToVector() {
-        double angle = rotation.getValue();
+        double angle = getEntity().getRotation();
         if (angle == 0) {
             return new Point2D(1, 0);
         } else if (angle == 90) {
