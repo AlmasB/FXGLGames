@@ -27,16 +27,16 @@
 package com.almasb.fxglgames.gravity;
 
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.level.tiled.TMXLevelLoader;
+import com.almasb.fxgl.entity.level.tiled.TiledMap;
 import com.almasb.fxgl.input.UserAction;
-import com.almasb.fxgl.parser.tiled.TiledMap;
 import com.almasb.fxgl.physics.PhysicsComponent;
-import com.almasb.fxgl.settings.GameSettings;
-import com.almasb.fxglgames.gravity.scifi.PlayerControl;
 import com.almasb.fxglgames.gravity.scifi.ScifiType;
-import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  *
@@ -58,7 +58,7 @@ public class GravityApp extends GameApplication {
     }
 
     private Entity player;
-    private PlayerControl playerControl;
+    //private PlayerComponent playerComponent;
 
     //                getGameWorld().getCollidingEntities(player)
 //                        .stream()
@@ -94,34 +94,34 @@ public class GravityApp extends GameApplication {
         getInput().addAction(new UserAction("Left") {
             @Override
             protected void onAction() {
-                playerControl.left();
+                //playerComponent.left();
             }
         }, KeyCode.A);
 
         getInput().addAction(new UserAction("Right") {
             @Override
             protected void onAction() {
-                playerControl.right();
+                //playerComponent.right();
             }
         }, KeyCode.D);
     }
 
     @Override
     protected void initGame() {
-        TiledMap map = getAssetLoader().loadJSON("test_level.json", TiledMap.class);
+        getGameWorld().addEntityFactory(new GravityFactory());
 
-        getGameWorld().setLevelFromMap(map);
+        //getGameWorld().setLevel(getAssetLoader().loadLevel("test_level.json", new TMXLevelLoader()));
 
         getGameWorld().spawn("button", 30, 340);
 
         player = getGameWorld().spawn("player", 100, 100);
-        playerControl = player.getControl(PlayerControl.class);
+        //playerComponent = player.getControl(PlayerComponent.class);
 
         getGameWorld().spawn("key", 500, 10);
 
         getGameWorld().spawn("enemy", 150, 100);
 
-        getGameWorld().addEntity(Entities.makeScreenBounds(40));
+        getGameWorld().addEntity(entityBuilder().buildScreenBounds(40));
     }
 
     public static void main(String[] args) {

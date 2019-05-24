@@ -37,12 +37,12 @@ public abstract class GameEnvironment extends Application {
     public static World resetWorld() {
         // clean up first
         if (world != null) {
-            Body body = world.getBodyList();
-            while (body != null) {
-                Body nextBody = body.getNext();
-                world.destroyBody(body);
-                body = nextBody;
-            }
+//            Body body = world.getBodyList();
+//            while (body != null) {
+//                Body nextBody = body.getNext();
+//                world.destroyBody(body);
+//                body = nextBody;
+//            }
         }
 
         world = new World(Config.DEFAULT_GRAVITY);

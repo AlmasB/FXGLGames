@@ -26,18 +26,16 @@
 
 package com.almasb.fxglgames.gravity;
 
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.*;
-import com.almasb.fxgl.entity.view.EntityView;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import com.almasb.fxgl.texture.Texture;
-import com.almasb.fxglgames.gravity.scifi.PlayerControl;
 import com.almasb.fxglgames.gravity.scifi.ScifiType;
-import com.almasb.fxglgames.gravity.scifi.UsableControl;
+import com.almasb.fxglgames.gravity.scifi.UsableComponent;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -47,12 +45,11 @@ import javafx.util.Duration;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-@SetEntityFactory
 public class GravityFactory implements EntityFactory {
 
     @Spawns("platform")
     public Entity newPlatform(SpawnData data) {
-        return Entities.builder()
+        return FXGL.entityBuilder()
                 .at(data.getX(), data.getY())
                 .type(ScifiType.PLATFORM)
                 .bbox(new HitBox("main", BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
@@ -66,31 +63,22 @@ public class GravityFactory implements EntityFactory {
         physics.setBodyType(BodyType.DYNAMIC);
         physics.setFixtureDef(new FixtureDef().density(0.03f));
 
-        return Entities.builder()
+        return FXGL.entityBuilder()
                 .at(data.getX(), data.getY())
                 .type(ScifiType.ENEMY)
                 .bbox(new HitBox("main", BoundingShape.box(40, 40)))
-                .viewFromNode(new Rectangle(40, 40, Color.RED))
+                .view(new Rectangle(40, 40, Color.RED))
                 .with(physics)
                 .build();
     }
 
     @Spawns("block")
     public Entity newBlock(SpawnData data) {
-        return Entities.builder()
+        return FXGL.entityBuilder()
                 .at(data.getX(), data.getY())
                 .type(ScifiType.PLATFORM)
-                .viewFromNodeWithBBox(new EntityView(new Rectangle(640 - 512, 64, Color.DARKCYAN), new RenderLayer() {
-                    @Override
-                    public String name() {
-                        return "Block";
-                    }
-
-                    @Override
-                    public int index() {
-                        return 10000;
-                    }
-                }))
+                .viewWithBBox(new Rectangle(640 - 512, 64, Color.DARKCYAN))
+                .zIndex(10000)
                 .with(new PhysicsComponent())
                 .build();
     }
@@ -108,22 +96,22 @@ public class GravityFactory implements EntityFactory {
                 .loadTexture("dude.png")
                 .toAnimatedTexture(4, Duration.seconds(1));
 
-        return Entities.builder()
+        return FXGL.entityBuilder()
                 .at(data.getX(), data.getY())
                 .type(ScifiType.PLAYER)
                 .bbox(new HitBox("main", BoundingShape.circle(19)))
                 .with(physics)
-                .with(new PlayerControl(staticTexture, animatedTexture))
+                //.with(new PlayerComponent(staticTexture, animatedTexture))
                 .build();
     }
 
     @Spawns("button")
     public Entity newButton(SpawnData data) {
-        return Entities.builder()
+        return FXGL.entityBuilder()
                 .at(data.getX(), data.getY())
                 .type(ScifiType.BUTTON)
-                .viewFromNodeWithBBox(FXGL.getAssetLoader().loadTexture("push_button.png", 33, 22))
-                .with(new UsableControl(() -> FXGL.getApp().getGameWorld().spawn("block", 256, 352)))
+                .viewWithBBox(FXGL.getAssetLoader().loadTexture("push_button.png", 33, 22))
+                .with(new UsableComponent(() -> FXGL.getGameWorld().spawn("block", 256, 352)))
                 .build();
     }
 
@@ -136,10 +124,10 @@ public class GravityFactory implements EntityFactory {
         fd.setDensity(0.03f);
         physics.setFixtureDef(fd);
 
-        return Entities.builder()
+        return FXGL.entityBuilder()
                 .at(data.getX(), data.getY())
                 .type(ScifiType.KEY)
-                .viewFromNodeWithBBox(new Circle(10, Color.GOLD))
+                .viewWithBBox(new Circle(10, Color.GOLD))
                 .with(physics)
                 .build();
     }

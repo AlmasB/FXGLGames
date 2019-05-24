@@ -26,23 +26,17 @@
 
 package com.almasb.fxglgames.gravity.scifi;
 
-import com.almasb.fxgl.entity.Control;
-import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.Component;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class UsableControl extends Control {
+public class UsableComponent extends Component {
 
     private Runnable action;
 
-    public UsableControl(Runnable action) {
+    public UsableComponent(Runnable action) {
         this.action = action;
-    }
-
-    @Override
-    public void onUpdate(Entity entity, double tpf) {
-
     }
 
     public void use() {
