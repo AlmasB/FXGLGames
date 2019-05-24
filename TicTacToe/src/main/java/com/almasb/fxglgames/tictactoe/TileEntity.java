@@ -1,7 +1,7 @@
 package com.almasb.fxglgames.tictactoe;
 
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxglgames.tictactoe.control.TileControl;
+import com.almasb.fxglgames.tictactoe.components.TileComponent;
 
 /**
  * Instead of using generic GameEntity we add a few convenience methods.
@@ -15,15 +15,15 @@ public class TileEntity extends Entity {
         setY(y);
         addComponent(new TileValueComponent());
 
-        getViewComponent().setView(new TileView(this), true);
-        addComponent(new TileControl());
+        getViewComponent().setViewFromNode(new TileView(this));
+        addComponent(new TileComponent());
     }
 
     public TileValue getValue() {
         return getComponent(TileValueComponent.class).getValue();
     }
 
-    public TileControl getControl() {
-        return getComponent(TileControl.class);
+    public TileComponent getControl() {
+        return getComponent(TileComponent.class);
     }
 }

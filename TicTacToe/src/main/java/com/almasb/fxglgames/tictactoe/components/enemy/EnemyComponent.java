@@ -1,7 +1,6 @@
-package com.almasb.fxglgames.tictactoe.control.enemy;
+package com.almasb.fxglgames.tictactoe.components.enemy;
 
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.event.Subscriber;
 import com.almasb.fxglgames.tictactoe.event.AIEvent;
@@ -9,7 +8,7 @@ import com.almasb.fxglgames.tictactoe.event.AIEvent;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public abstract class EnemyControl extends Component {
+public abstract class EnemyComponent extends Component {
 
     private Subscriber eventListener;
 

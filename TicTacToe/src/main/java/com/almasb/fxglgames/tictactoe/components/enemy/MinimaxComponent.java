@@ -1,6 +1,6 @@
-package com.almasb.fxglgames.tictactoe.control.enemy;
+package com.almasb.fxglgames.tictactoe.components.enemy;
 
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxglgames.tictactoe.TicTacToeApp;
 import com.almasb.fxglgames.tictactoe.TileEntity;
 import com.almasb.fxglgames.tictactoe.TileValue;
@@ -14,7 +14,7 @@ import java.util.List;
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class MinimaxControl extends EnemyControl {
+public class MinimaxComponent extends EnemyComponent {
 
     private TileValue mySeed = TileValue.O;
     private TileValue oppSeed = TileValue.X;

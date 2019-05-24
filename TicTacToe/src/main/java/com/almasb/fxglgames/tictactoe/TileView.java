@@ -1,6 +1,6 @@
 package com.almasb.fxglgames.tictactoe;
 
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -25,9 +25,9 @@ public class TileView extends StackPane {
     public TileView(TileEntity tile) {
         app = FXGL.getAppCast();
 
-        Rectangle bg = new Rectangle(app.getWidth() / 3, app.getHeight() / 3, Color.rgb(13, 222, 236));
+        Rectangle bg = new Rectangle(FXGL.getAppWidth() / 3, FXGL.getAppHeight() / 3, Color.rgb(13, 222, 236));
 
-        Rectangle bg2 = new Rectangle(app.getWidth() / 4, app.getHeight() / 4, Color.rgb(250, 250, 250, 0.25));
+        Rectangle bg2 = new Rectangle(FXGL.getAppWidth() / 4, FXGL.getAppHeight() / 4, Color.rgb(250, 250, 250, 0.25));
         bg2.setArcWidth(25);
         bg2.setArcHeight(25);
 

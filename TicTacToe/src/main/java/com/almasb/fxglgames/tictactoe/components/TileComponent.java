@@ -1,6 +1,5 @@
-package com.almasb.fxglgames.tictactoe.control;
+package com.almasb.fxglgames.tictactoe.components;
 
-import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.component.Required;
 import com.almasb.fxglgames.tictactoe.TileValueComponent;
@@ -10,7 +9,7 @@ import com.almasb.fxglgames.tictactoe.TileValue;
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 @Required(TileValueComponent.class)
-public class TileControl extends Component {
+public class TileComponent extends Component {
 
     /**
      * @param value tile value

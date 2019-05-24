@@ -1,6 +1,6 @@
-package com.almasb.fxglgames.tictactoe.control.enemy;
+package com.almasb.fxglgames.tictactoe.components.enemy;
 
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxglgames.tictactoe.TicTacToeApp;
 import com.almasb.fxglgames.tictactoe.TileCombo;
 import com.almasb.fxglgames.tictactoe.TileEntity;
@@ -15,7 +15,7 @@ import java.util.function.Predicate;
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class RuleBasedControl extends EnemyControl {
+public class RuleBasedComponent extends EnemyComponent {
 
     private List<Predicate<TileCombo> > aiPredicates = Arrays.asList(
             c -> c.isTwoThirds(TileValue.O),

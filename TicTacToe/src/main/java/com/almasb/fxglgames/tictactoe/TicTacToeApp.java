@@ -1,9 +1,9 @@
 package com.almasb.fxglgames.tictactoe;
 
+import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.settings.GameSettings;
-import com.almasb.fxglgames.tictactoe.control.enemy.MinimaxControl;
+import com.almasb.fxglgames.tictactoe.components.enemy.MinimaxComponent;
 import com.almasb.fxglgames.tictactoe.event.AIEvent;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -14,6 +14,8 @@ import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * An example of a UI based game.
@@ -32,11 +34,6 @@ public class TicTacToeApp extends GameApplication {
         settings.setHeight(600);
     }
 
-    @Override
-    protected void preInit() {
-        getEventBus().addEventHandler(AIEvent.MOVED, event -> checkGameFinished());
-    }
-
     private TileEntity[][] board = new TileEntity[3][3];
     private List<TileCombo> combos = new ArrayList<>();
 
@@ -50,11 +47,18 @@ public class TicTacToeApp extends GameApplication {
         return combos;
     }
 
+    private boolean firstTime = true;
+
     @Override
     protected void initGame() {
+        if (firstTime) {
+            getEventBus().addEventHandler(AIEvent.MOVED, event -> checkGameFinished());
+            firstTime = false;
+        }
+
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 3; x++) {
-                TileEntity tile = new TileEntity(x * getWidth() / 3, y * getHeight() / 3);
+                TileEntity tile = new TileEntity(x * getAppWidth() / 3, y * getAppHeight() / 3);
                 board[x][y] = tile;
 
                 getGameWorld().addEntity(tile);
@@ -64,7 +68,7 @@ public class TicTacToeApp extends GameApplication {
         Entity enemy = new Entity();
 
         // this controls the AI behavior
-        enemy.addComponent(new MinimaxControl());
+        enemy.addComponent(new MinimaxComponent());
         getGameWorld().addEntity(enemy);
 
         combos.clear();
@@ -93,25 +97,25 @@ public class TicTacToeApp extends GameApplication {
 
     @Override
     protected void initUI() {
-        Line line1 = new Line(getWidth() / 3, 0, getWidth() / 3, 0);
-        Line line2 = new Line(getWidth() / 3 * 2, 0, getWidth() / 3 * 2, 0);
-        Line line3 = new Line(0, getHeight() / 3, 0, getHeight() / 3);
-        Line line4 = new Line(0, getHeight() / 3 * 2, 0, getHeight() / 3 * 2);
+        Line line1 = new Line(getAppWidth() / 3, 0, getAppWidth() / 3, 0);
+        Line line2 = new Line(getAppWidth() / 3 * 2, 0, getAppWidth() / 3 * 2, 0);
+        Line line3 = new Line(0, getAppHeight() / 3, 0, getAppHeight() / 3);
+        Line line4 = new Line(0, getAppHeight() / 3 * 2, 0, getAppHeight() / 3 * 2);
 
         getGameScene().addUINodes(line1, line2, line3, line4);
 
         // animation
         KeyFrame frame1 = new KeyFrame(Duration.seconds(0.5),
-                new KeyValue(line1.endYProperty(), getHeight()));
+                new KeyValue(line1.endYProperty(), getAppHeight()));
 
         KeyFrame frame2 = new KeyFrame(Duration.seconds(1),
-                new KeyValue(line2.endYProperty(), getHeight()));
+                new KeyValue(line2.endYProperty(), getAppHeight()));
 
         KeyFrame frame3 = new KeyFrame(Duration.seconds(0.5),
-                new KeyValue(line3.endXProperty(), getWidth()));
+                new KeyValue(line3.endXProperty(), getAppWidth()));
 
         KeyFrame frame4 = new KeyFrame(Duration.seconds(1),
-                new KeyValue(line4.endXProperty(), getWidth()));
+                new KeyValue(line4.endXProperty(), getAppWidth()));
 
         Timeline timeline = new Timeline(frame1, frame2, frame3, frame4);
         timeline.play();
@@ -161,9 +165,9 @@ public class TicTacToeApp extends GameApplication {
     private void gameOver(String winner) {
         getDisplay().showConfirmationBox("Winner: " + winner + "\nContinue?", yes -> {
             if (yes)
-                startNewGame();
+                getGameController().startNewGame();
             else
-                exit();
+                getGameController().exit();
         });
     }
 
