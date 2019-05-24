@@ -1,11 +1,7 @@
 package com.almasb.fxglgames.ncc;
 
-import com.almasb.fxgl.entity.view.EntityView;
+import com.almasb.fxgl.entity.EntityView;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.When;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Glow;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;

@@ -2,23 +2,20 @@ package com.almasb.fxglgames.ncc;
 
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.view.EntityView;
+import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.input.UserAction;
-import com.almasb.fxgl.settings.GameSettings;
-import com.almasb.fxgl.ui.UI;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -76,7 +73,7 @@ public class NCCApp extends GameApplication {
         CardFrame cardView = new CardFrame(card);
         cardView.addCardView(getView(entity));
 
-        entity.setView(cardView);
+        entity.getViewComponent().setViewFromNode(cardView);
 
         return entity;
     }
@@ -152,7 +149,7 @@ public class NCCApp extends GameApplication {
     }
 
     private void gameOver(String message) {
-        getDisplay().showMessageBox(message, this::startNewGame);
+        getDisplay().showMessageBox(message, getGameController()::startNewGame);
     }
 
     public static void main(String[] args) {

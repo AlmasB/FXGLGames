@@ -1,9 +1,9 @@
 package com.almasb.fxglgames.ncc;
 
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.EntityWorldListener;
 import com.almasb.fxgl.entity.GameWorld;
-import com.almasb.fxgl.entity.view.EntityView;
 import com.almasb.fxgl.ui.UIController;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
@@ -59,11 +59,11 @@ public class GameController implements UIController {
         this.world = world;
     }
 
-    CharacterControl control;
+    CharacterComponent control;
 
     public void init() {
         Entity player = new Entity();
-        control = new CharacterControl();
+        control = new CharacterComponent();
         labelAir.textProperty().bind(control.manaAirProperty().asString("Air: [%d]"));
         labelNeutral.textProperty().bind(control.manaNeutralProperty().asString("Neutral: [%d]"));
         labelEarth.textProperty().bind(control.manaEarthProperty().asString("Earth: [%d]"));

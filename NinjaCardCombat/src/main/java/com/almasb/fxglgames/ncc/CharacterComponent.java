@@ -1,7 +1,7 @@
 package com.almasb.fxglgames.ncc;
 
-import com.almasb.fxgl.entity.Control;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.Component;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
@@ -10,7 +10,7 @@ import javafx.collections.ObservableList;
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class CharacterControl extends Control {
+public class CharacterComponent extends Component {
 
     private IntegerProperty hp = new SimpleIntegerProperty(100);
 
@@ -81,10 +81,5 @@ public class CharacterControl extends Control {
 
     public ObservableList<Entity> getCards() {
         return cards;
-    }
-
-    @Override
-    public void onUpdate(Entity entity, double tpf) {
-
     }
 }
