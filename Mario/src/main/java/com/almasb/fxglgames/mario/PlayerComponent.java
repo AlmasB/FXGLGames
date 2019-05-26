@@ -12,9 +12,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 
-import static com.almasb.fxgl.dsl.FXGL.animationBuilder;
-import static com.almasb.fxgl.dsl.FXGL.play;
-
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
@@ -38,6 +35,7 @@ public class PlayerComponent extends Component {
         animWalk = new AnimationChannel(image, 4, 32, 42, Duration.seconds(0.66), 0, 3);
 
         texture = new AnimatedTexture(animIdle);
+        texture.loop();
     }
 
     @Override

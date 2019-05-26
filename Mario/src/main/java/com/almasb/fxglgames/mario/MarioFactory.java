@@ -242,4 +242,17 @@ public class MarioFactory implements EntityFactory {
                 .with(new CollidableComponent(true))
                 .build();
     }
+
+    @Spawns("enemyZombie")
+    public Entity newEnemyZombie(SpawnData data) {
+        int patrolEndX = data.get("patrolEndX");
+
+        return entityBuilder()
+                .type(ENEMY)
+                .from(data)
+                .bbox(new HitBox(new Point2D(10, 20), BoundingShape.box(232 / 4 - 20, 390 / 4 - 20)))
+                .with(new EnemyZombieComponent(patrolEndX))
+                .with(new CollidableComponent(true))
+                .build();
+    }
 }

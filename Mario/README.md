@@ -1,0 +1,1 @@
+Zombie assets: https://free-game-assets.itch.io/2d-zombie-free-sprite
