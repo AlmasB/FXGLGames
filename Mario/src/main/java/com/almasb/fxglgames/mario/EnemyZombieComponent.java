@@ -1,10 +1,10 @@
 package com.almasb.fxglgames.mario;
 
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.dsl.components.LiftComponent;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxgl.texture.AnimationChannel;
-import com.almasb.fxgl.time.LocalTimer;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
@@ -13,23 +13,13 @@ import javafx.util.Duration;
  */
 public class EnemyZombieComponent extends Component {
 
+    private LiftComponent lift;
+
     private AnimatedTexture texture;
 
     private AnimationChannel animWalk;
 
-    private int patrolEndX;
-    private boolean goingRight = true;
-
-    private LocalTimer timer;
-    private Duration duration;
-    private double distance;
-    private double speed;
-
-    public EnemyZombieComponent(int patrolEndX) {
-        this.patrolEndX = patrolEndX;
-
-        duration = Duration.seconds(2);
-
+    public EnemyZombieComponent() {
         int w = 1392 / 4;
         int h = 390 / 4;
 
@@ -41,24 +31,12 @@ public class EnemyZombieComponent extends Component {
 
     @Override
     public void onAdded() {
-        distance = patrolEndX - entity.getX();
-
-        timer = FXGL.newLocalTimer();
-        timer.capture();
-        speed = distance / duration.toSeconds();
-
         entity.getTransformComponent().setScaleOrigin(new Point2D(232 / 4 / 2, 390 / 4 / 2));
         entity.setView(texture);
     }
 
     @Override
     public void onUpdate(double tpf) {
-        if (timer.elapsed(duration)) {
-            goingRight = !goingRight;
-            timer.capture();
-        }
-
-        entity.translateX(goingRight ? speed * tpf : -speed * tpf);
-        entity.setScaleX(goingRight ? 1 : -1);
+        entity.setScaleX(lift.isGoingRight() ? 1 : -1);
     }
 }
