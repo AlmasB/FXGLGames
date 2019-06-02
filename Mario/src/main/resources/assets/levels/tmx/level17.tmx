@@ -52,12 +52,12 @@
   <object id="71" type="platform" x="2660" y="490" width="210" height="70"/>
   <object id="72" type="platform" x="2870" y="560" width="210" height="70"/>
   <object id="73" type="platform" x="3150" y="630" width="350" height="70"/>
-  <object id="74" type="enemyZombie" x="630" y="535" width="70" height="90">
+  <object id="74" type="enemyZombie" x="630" y="560" width="70" height="70">
    <properties>
     <property name="patrolEndX" type="int" value="840"/>
    </properties>
   </object>
-  <object id="75" type="enemyZombie" x="1100" y="535" width="70" height="90">
+  <object id="75" type="enemyZombie" x="1100" y="560" width="70" height="70">
    <properties>
     <property name="patrolEndX" type="int" value="1700"/>
    </properties>

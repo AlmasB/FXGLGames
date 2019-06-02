@@ -2,10 +2,7 @@ package com.almasb.fxglgames.mario;
 
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.components.LiftComponent;
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.EntityFactory;
-import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.entity.Spawns;
+import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.components.IrremovableComponent;
 import com.almasb.fxgl.input.view.KeyView;
@@ -253,7 +250,7 @@ public class MarioFactory implements EntityFactory {
     public Entity newEnemyZombie(SpawnData data) {
         int patrolEndX = data.get("patrolEndX");
 
-        return entityBuilder()
+        var e = entityBuilder()
                 .type(ENEMY)
                 .from(data)
                 .bbox(new HitBox(new Point2D(10, 20), BoundingShape.box(232 / 4 - 20, 390 / 4 - 20)))
@@ -261,5 +258,10 @@ public class MarioFactory implements EntityFactory {
                 .with(new EnemyZombieComponent())
                 .with(new CollidableComponent(true))
                 .build();
+
+        // fix zombie's height
+        e.setOnActive(() -> e.translateY(-25));
+
+        return e;
     }
 }
