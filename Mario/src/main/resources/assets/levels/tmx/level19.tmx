@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="70" height="10" tilewidth="70" tileheight="70" infinite="0" nextlayerid="5" nextobjectid="116">
+<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="70" height="10" tilewidth="70" tileheight="70" infinite="0" nextlayerid="5" nextobjectid="114">
  <properties>
   <property name="star1time" type="float" value="65"/>
  </properties>
@@ -108,6 +108,5 @@
    </properties>
   </object>
   <object id="113" type="destrBox" gid="73" x="3780" y="630" width="70" height="70"/>
-  <object id="115" type="lootBox" gid="79" x="350" y="560" width="70" height="70"/>
  </objectgroup>
 </map>

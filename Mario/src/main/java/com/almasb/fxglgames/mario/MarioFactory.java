@@ -14,7 +14,9 @@ import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import com.almasb.fxgl.ui.FontType;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -219,7 +221,7 @@ public class MarioFactory implements EntityFactory {
                 .with(comp)
                 .build();
 
-        box.getViewComponent().addClickListener(comp::explode);
+        box.getViewComponent().addEventHandler(MouseEvent.MOUSE_CLICKED, e -> comp.explode());
 
         return box;
     }
@@ -261,6 +263,47 @@ public class MarioFactory implements EntityFactory {
 
         // fix zombie's height
         e.setOnActive(() -> e.translateY(-25));
+
+        return e;
+    }
+
+    @Spawns("timeoutBox")
+    public Entity newTimeoutBox(SpawnData data) {
+        int duration = data.get("duration");
+
+        Text text = getUIFactory().newText("", Color.WHITE, 32);
+        text.setStroke(Color.BLACK);
+        text.setStrokeWidth(1.5);
+
+        var e = entityBuilder()
+                .type(TIMEOUT_BOX)
+                .from(data)
+                .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
+                .with(new TimeoutBoxComponent(text, duration))
+                .with(new PhysicsComponent())
+                .with(new CollidableComponent(true))
+                .build();
+
+        e.setOnActive(() -> {
+            e.getViewComponent().addChild(text);
+        });
+
+        return e;
+    }
+
+    @Spawns("lootBox")
+    public Entity newLootBox(SpawnData data) {
+        var e = entityBuilder()
+                .type(LOOT_BOX)
+                .from(data)
+                .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
+                .with(new CollidableComponent(true))
+                .with(new LootBoxComponent())
+                .build();
+
+        e.setOnActive(() -> {
+
+        });
 
         return e;
     }

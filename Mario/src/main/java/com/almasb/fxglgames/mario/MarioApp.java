@@ -311,6 +311,18 @@ public class MarioApp extends GameApplication {
                 }
             });
         });
+
+        onCollisionBegin(PLAYER, TIMEOUT_BOX, (player, box) -> {
+            box.getComponent(CollidableComponent.class).setValue(false);
+
+            box.getComponent(TimeoutBoxComponent.class).startCountdown();
+        });
+
+        onCollisionBegin(PLAYER, LOOT_BOX, (player, box) -> {
+            box.getComponent(CollidableComponent.class).setValue(false);
+
+            box.getComponent(LootBoxComponent.class).open();
+        });
     }
 
     private void makeExitDoor() {
