@@ -14,6 +14,7 @@ import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.scene.Viewport;
 import com.almasb.fxgl.ui.FontType;
 import javafx.geometry.Point2D;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
@@ -124,7 +125,9 @@ public class MarioApp extends GameApplication {
         // before the update tick _actually_ adds the player to game world
         player = getGameWorld().spawn("player", 50, 50);
 
-        spawn("background");
+        for (int i = 10; i >= 0; i--) {
+            spawn("background", new SpawnData(0, 0).put("index", i));
+        }
 
         Viewport viewport = getGameScene().getViewport();
 
@@ -133,7 +136,10 @@ public class MarioApp extends GameApplication {
 
         viewport.setLazy(true);
 
-        getGameScene().setBackgroundRepeat(image("bg_0.png", getAppWidth(), getAppHeight()));
+        //var bgTexture = texture("bg_trees.png", getAppWidth(), getAppHeight());
+        //bgTexture = bgTexture.blend(image("bg_6.png", getAppWidth(), getAppHeight()), BlendMode.SRC_ATOP);
+
+        //getGameScene().setBackgroundRepeat(image("bg_combined.png", getAppWidth(), getAppHeight()));
     }
 
     @Override

@@ -12,6 +12,7 @@ import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import com.almasb.fxgl.ui.FontType;
+import com.almasb.fxglgames.mario.view.ScrollingBackgroundView;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
@@ -29,9 +30,11 @@ public class MarioFactory implements EntityFactory {
 
     @Spawns("background")
     public Entity newBackground(SpawnData data) {
+        int index = data.get("index");
+        int speed = 11 - index;
+
         return entityBuilder()
-                //.view(new ScrollingBackgroundView(texture("bg_0.png", 1280, 720)))
-                //.view(texture("bg_0.png", 1280, 720))
+                .view(new ScrollingBackgroundView(texture("background/bg_" + index + ".png", getAppWidth(), getAppHeight()), 0.05 * speed))
                 .zIndex(-1)
                 .with(new IrremovableComponent())
                 .build();
