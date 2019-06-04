@@ -274,7 +274,7 @@ public class MarioApp extends GameApplication {
         });
 
         onCollisionBegin(PLAYER, ENEMY, (player, enemy) -> {
-            System.out.println("Collision");
+            player.getComponent(PlayerComponent.class).onHit();
         });
 
         onCollisionBegin(PLAYER, MESSAGE_PROMPT, (player, prompt) -> {
@@ -358,21 +358,8 @@ public class MarioApp extends GameApplication {
             return;
         }
 
-        if (player != null) {
-            player.getComponent(PhysicsComponent.class).overwritePosition(new Point2D(50, 50));
-            player.setZ(Integer.MAX_VALUE);
-        }
-
         inc("level", +1);
-        set("levelTime", 0.0);
-
-        var level = setLevelFromMap("tmx/level" + geti("level")  + ".tmx");
-
-        var shortestTime = level.getProperties().getDouble("star1time");
-
-        var levelTimeData = new LevelEndScene.LevelTimeData(shortestTime * 2.4, shortestTime*1.3, shortestTime);
-
-        set("levelTimeData", levelTimeData);
+        setLevel(geti("level"));
     }
 
     @Override
@@ -385,6 +372,33 @@ public class MarioApp extends GameApplication {
     @Override
     protected void onUpdate(double tpf) {
         inc("levelTime", tpf);
+
+        if (player.getY() > getAppHeight()) {
+            onPlayerDied();
+        }
+    }
+
+    public void onPlayerDied() {
+        setLevel(geti("level"));
+    }
+
+    private void setLevel(int levelNum) {
+        if (player != null) {
+            player.getComponent(PhysicsComponent.class).overwritePosition(new Point2D(50, 50));
+            player.setZ(Integer.MAX_VALUE);
+
+            player.getComponent(PlayerComponent.class).restoreHP();
+        }
+
+        set("levelTime", 0.0);
+
+        var level = setLevelFromMap("tmx/level" + levelNum  + ".tmx");
+
+        var shortestTime = level.getProperties().getDouble("star1time");
+
+        var levelTimeData = new LevelEndScene.LevelTimeData(shortestTime * 2.4, shortestTime*1.3, shortestTime);
+
+        set("levelTimeData", levelTimeData);
     }
 
     public static void main(String[] args) {

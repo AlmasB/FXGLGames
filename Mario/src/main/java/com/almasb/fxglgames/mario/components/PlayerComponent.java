@@ -3,9 +3,11 @@ package com.almasb.fxglgames.mario.components;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.entity.component.Required;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxgl.texture.AnimationChannel;
+import com.almasb.fxglgames.mario.MarioApp;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Point2D;
@@ -15,9 +17,11 @@ import javafx.util.Duration;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
+@Required(HPComponent.class)
 public class PlayerComponent extends Component {
 
     private PhysicsComponent physics;
+    private HPComponent hp;
 
     private AnimatedTexture texture;
 
@@ -92,5 +96,20 @@ public class PlayerComponent extends Component {
         physics.setVelocityY(-300);
 
         jumps--;
+    }
+
+    public void onHit() {
+        if (hp.getValue() == 0)
+            return;
+
+        hp.setValue(hp.getValue() - 10);
+
+        if (hp.getValue() == 0) {
+            FXGL.<MarioApp>getAppCast().onPlayerDied();
+        }
+    }
+
+    public void restoreHP() {
+        hp.setValue(hp.getMaxHP());
     }
 }
