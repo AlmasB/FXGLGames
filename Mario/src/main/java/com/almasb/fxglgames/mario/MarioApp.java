@@ -109,13 +109,16 @@ public class MarioApp extends GameApplication {
     private LevelEndScene levelEndScene;
 
     @Override
+    protected void onPreInit() {
+        if (getSettings().getApplicationMode() == ApplicationMode.RELEASE) {
+            getSettings().setGlobalMusicVolume(0.25);
+            loopBGM("BGM_dash_runner.wav");
+        }
+    }
+
+    @Override
     protected void initGame() {
         if (firstTime) {
-            if (getSettings().getApplicationMode() == ApplicationMode.RELEASE) {
-                getSettings().setGlobalMusicVolume(0.25);
-                loopBGM("BGM_dash_runner.wav");
-            }
-
             levelEndScene = new LevelEndScene();
             firstTime = false;
         }
@@ -139,11 +142,6 @@ public class MarioApp extends GameApplication {
         viewport.bindToEntity(player, getAppWidth() / 2, getAppHeight() / 2);
 
         viewport.setLazy(true);
-
-        //var bgTexture = texture("bg_trees.png", getAppWidth(), getAppHeight());
-        //bgTexture = bgTexture.blend(image("bg_6.png", getAppWidth(), getAppHeight()), BlendMode.SRC_ATOP);
-
-        //getGameScene().setBackgroundRepeat(image("bg_combined.png", getAppWidth(), getAppHeight()));
     }
 
     @Override
