@@ -1,10 +1,7 @@
 package com.almasb.fxglgames.mario;
 
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.app.ApplicationMode;
-import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.app.GameSettings;
-import com.almasb.fxgl.app.GameView;
+import com.almasb.fxgl.app.*;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.components.CollidableComponent;
@@ -16,6 +13,7 @@ import com.almasb.fxgl.ui.FontType;
 import com.almasb.fxglgames.mario.components.*;
 import com.almasb.fxglgames.mario.ui.HealthIndicator;
 import com.almasb.fxglgames.mario.ui.LevelEndScene;
+import com.almasb.fxglgames.mario.ui.MarioLoadingScene;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -37,6 +35,12 @@ public class MarioApp extends GameApplication {
     protected void initSettings(GameSettings settings) {
         settings.setWidth(1280);
         settings.setHeight(720);
+        settings.setSceneFactory(new SceneFactory() {
+            @Override
+            public LoadingScene newLoadingScene() {
+                return new MarioLoadingScene();
+            }
+        });
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
