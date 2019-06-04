@@ -13,10 +13,8 @@ import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.scene.Viewport;
 import com.almasb.fxgl.ui.FontType;
-import com.almasb.fxglgames.mario.components.LootBoxComponent;
-import com.almasb.fxglgames.mario.components.PlayerComponent;
-import com.almasb.fxglgames.mario.components.PortalComponent;
-import com.almasb.fxglgames.mario.components.TimeoutBoxComponent;
+import com.almasb.fxglgames.mario.components.*;
+import com.almasb.fxglgames.mario.ui.HealthIndicator;
 import com.almasb.fxglgames.mario.ui.LevelEndScene;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
@@ -94,9 +92,16 @@ public class MarioApp extends GameApplication {
         getInput().addAction(new UserAction("Test") {
             @Override
             protected void onActionBegin() {
-                levelEndScene.onLevelFinish();
+                player.getComponent(HPComponent.class).setValue(player.getComponent(HPComponent.class).getValue() - 10);
             }
         }, KeyCode.G);
+
+        getInput().addAction(new UserAction("Test2") {
+            @Override
+            protected void onActionBegin() {
+                player.getComponent(HPComponent.class).setValue(player.getComponent(HPComponent.class).getValue() + 10);
+            }
+        }, KeyCode.H);
     }
 
     @Override
@@ -364,6 +369,13 @@ public class MarioApp extends GameApplication {
         var levelTimeData = new LevelEndScene.LevelTimeData(shortestTime * 2.4, shortestTime*1.3, shortestTime);
 
         set("levelTimeData", levelTimeData);
+    }
+
+    @Override
+    protected void initUI() {
+        var hp = new HealthIndicator(player.getComponent(HPComponent.class));
+
+        addUINode(hp);
     }
 
     @Override

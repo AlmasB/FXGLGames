@@ -99,6 +99,7 @@ public class MarioFactory implements EntityFactory {
                 .with(physics)
                 .with(new CollidableComponent(true))
                 .with(new IrremovableComponent())
+                .with(new HPComponent(100))
                 .with(new PlayerComponent())
                 .build();
     }
