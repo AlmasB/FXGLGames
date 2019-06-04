@@ -12,6 +12,7 @@ import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import com.almasb.fxgl.ui.FontType;
+import com.almasb.fxglgames.mario.components.*;
 import com.almasb.fxglgames.mario.view.ScrollingBackgroundView;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;

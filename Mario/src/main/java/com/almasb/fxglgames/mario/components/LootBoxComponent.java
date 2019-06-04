@@ -1,4 +1,4 @@
-package com.almasb.fxglgames.mario;
+package com.almasb.fxglgames.mario.components;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.SpawnData;

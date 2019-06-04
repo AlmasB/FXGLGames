@@ -1,4 +1,4 @@
-package com.almasb.fxglgames.mario;
+package com.almasb.fxglgames.mario.ui;
 
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.input.UserAction;
