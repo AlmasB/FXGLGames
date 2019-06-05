@@ -274,7 +274,6 @@ public class MarioApp extends GameApplication {
         });
 
         onCollisionBegin(PLAYER, ENEMY, (player, enemy) -> {
-            // TODO: visual indicator
             player.getComponent(PlayerComponent.class).onHit(enemy);
         });
 
