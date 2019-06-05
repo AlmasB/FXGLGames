@@ -2,6 +2,7 @@ package com.almasb.fxglgames.mario.components;
 
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.component.Required;
 import com.almasb.fxgl.physics.PhysicsComponent;
@@ -30,6 +31,8 @@ public class PlayerComponent extends Component {
     private int jumps = 2;
 
     private BooleanProperty onGround = new SimpleBooleanProperty(false);
+
+    private boolean isBeingDamaged = false;
 
     public PlayerComponent() {
 
@@ -79,16 +82,32 @@ public class PlayerComponent extends Component {
     }
 
     public void left() {
+        if (isBeingDamaged)
+            return;
+
         getEntity().setScaleX(-1);
         physics.setVelocityX(-170);
     }
 
     public void right() {
+        if (isBeingDamaged)
+            return;
+
         getEntity().setScaleX(1);
         physics.setVelocityX(170);
     }
 
+    public void stop() {
+        if (isBeingDamaged)
+            return;
+
+        physics.setVelocityX(0);
+    }
+
     public void jump() {
+        if (isBeingDamaged)
+            return;
+
         if (jumps == 0)
             return;
 
@@ -98,11 +117,27 @@ public class PlayerComponent extends Component {
         jumps--;
     }
 
-    public void onHit() {
+    public void onHit(Entity attacker) {
+        if (isBeingDamaged)
+            return;
+
         if (hp.getValue() == 0)
             return;
 
         hp.setValue(hp.getValue() - 10);
+
+        Point2D dmgVector = entity.getPosition().subtract(attacker.getPosition());
+
+        isBeingDamaged = true;
+
+        physics.setLinearVelocity(new Point2D(Math.signum(dmgVector.getX()) * 290, -300));
+
+        // Damage time 1 sec
+        FXGL.runOnce(() -> {
+            isBeingDamaged = false;
+            physics.setVelocityX(0);
+        }, Duration.seconds(1));
+
 
         if (hp.getValue() == 0) {
             FXGL.<MarioApp>getAppCast().onPlayerDied();

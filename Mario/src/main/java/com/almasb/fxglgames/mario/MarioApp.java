@@ -56,7 +56,7 @@ public class MarioApp extends GameApplication {
 
             @Override
             protected void onActionEnd() {
-                player.getComponent(PhysicsComponent.class).setVelocityX(0);
+                player.getComponent(PlayerComponent.class).stop();
             }
         }, KeyCode.A);
 
@@ -68,7 +68,7 @@ public class MarioApp extends GameApplication {
 
             @Override
             protected void onActionEnd() {
-                player.getComponent(PhysicsComponent.class).setVelocityX(0);
+                player.getComponent(PlayerComponent.class).stop();
             }
         }, KeyCode.D);
 
@@ -274,7 +274,8 @@ public class MarioApp extends GameApplication {
         });
 
         onCollisionBegin(PLAYER, ENEMY, (player, enemy) -> {
-            player.getComponent(PlayerComponent.class).onHit();
+            // TODO: visual indicator
+            player.getComponent(PlayerComponent.class).onHit(enemy);
         });
 
         onCollisionBegin(PLAYER, MESSAGE_PROMPT, (player, prompt) -> {
