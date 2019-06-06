@@ -112,6 +112,7 @@ public class MarioApp extends GameApplication {
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("level", getSettings().getApplicationMode() == ApplicationMode.RELEASE ? 0 : -1);
         vars.put("levelTime", 0.0);
+        vars.put("score", 0);
     }
 
     private boolean firstTime = true;
@@ -191,6 +192,8 @@ public class MarioApp extends GameApplication {
 
         onCollisionBegin(PLAYER, COIN, (player, coin) -> {
             coin.removeComponent(CollidableComponent.class);
+
+            inc("score", +100);
 
             animationBuilder()
                     .duration(Duration.seconds(0.25))
@@ -366,7 +369,16 @@ public class MarioApp extends GameApplication {
     protected void initUI() {
         var hp = new HealthIndicator(player.getComponent(HPComponent.class));
 
+        var coin = texture("ui/coin.png", 48 * 0.75, 51 * 0.75);
+
+        var scoreText = getUIFactory().newText("", Color.GOLD, 38.0);
+        scoreText.setStrokeWidth(2.5);
+        scoreText.setStroke(Color.color(0.0, 0.0, 0.0, 0.56));
+        scoreText.textProperty().bind(getip("score").asString());
+
         addUINode(hp);
+        addUINode(coin, 130, 15);
+        addUINode(scoreText, 170, 48);
     }
 
     @Override
