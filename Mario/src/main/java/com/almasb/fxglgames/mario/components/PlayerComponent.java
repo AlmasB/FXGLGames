@@ -1,6 +1,5 @@
 package com.almasb.fxglgames.mario.components;
 
-import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
@@ -9,8 +8,6 @@ import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxgl.texture.AnimationChannel;
 import com.almasb.fxglgames.mario.MarioApp;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
@@ -30,8 +27,6 @@ public class PlayerComponent extends Component {
 
     private int jumps = 2;
 
-    private BooleanProperty onGround = new SimpleBooleanProperty(false);
-
     private boolean isBeingDamaged = false;
 
     public PlayerComponent() {
@@ -50,7 +45,7 @@ public class PlayerComponent extends Component {
         entity.getTransformComponent().setScaleOrigin(new Point2D(16, 21));
         entity.setView(texture);
 
-        onGround.addListener((obs, old, isOnGround) -> {
+        physics.onGroundProperty().addListener((obs, old, isOnGround) -> {
             if (isOnGround) {
                 //play("land.wav");
                 jumps = 2;
@@ -69,16 +64,10 @@ public class PlayerComponent extends Component {
                 texture.loopAnimationChannel(animIdle);
             }
         }
-
-        if (physics.isOnGround()) {
-            onGround.setValue(true);
-        } else {
-            onGround.setValue(false);
-        }
     }
 
     private boolean isMoving() {
-        return FXGLMath.abs(physics.getVelocityX()) > 0;
+        return physics.isMovingX();
     }
 
     public void left() {
