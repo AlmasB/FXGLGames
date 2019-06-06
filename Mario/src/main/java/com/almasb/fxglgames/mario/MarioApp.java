@@ -16,6 +16,8 @@ import com.almasb.fxglgames.mario.ui.LevelEndScene;
 import com.almasb.fxglgames.mario.ui.MarioLoadingScene;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
@@ -156,12 +158,6 @@ public class MarioApp extends GameApplication {
 
     @Override
     protected void initPhysics() {
-        // this seems to fix a rare javafx with delayed audio playback - https://bugs.openjdk.java.net/browse/JDK-8125515
-//        var mediaPlayer = new MediaPlayer(new Media(getClass().getResource("/assets/sounds/jump.wav").toExternalForm()));
-//        mediaPlayer.setVolume(0);
-//        mediaPlayer.seek(Duration.ZERO);
-//        mediaPlayer.play();
-
         getPhysicsWorld().setGravity(0, 760);
 
         onCollisionBegin(PLAYER, DOOR_BOT, (player, door) -> {

@@ -12,6 +12,8 @@ import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 
+import static com.almasb.fxgl.dsl.FXGL.*;
+
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
@@ -31,7 +33,7 @@ public class PlayerComponent extends Component {
 
     public PlayerComponent() {
 
-        Image image = FXGL.image("player.png");
+        Image image = image("player.png");
 
         animIdle = new AnimationChannel(image, 4, 32, 42, Duration.seconds(1), 1, 1);
         animWalk = new AnimationChannel(image, 4, 32, 42, Duration.seconds(0.66), 0, 3);
@@ -122,11 +124,10 @@ public class PlayerComponent extends Component {
         physics.setLinearVelocity(new Point2D(Math.signum(dmgVector.getX()) * 290, -300));
 
         // Damage time 1 sec
-        FXGL.runOnce(() -> {
+        runOnce(() -> {
             isBeingDamaged = false;
             physics.setVelocityX(0);
         }, Duration.seconds(1));
-
 
         if (hp.getValue() == 0) {
             FXGL.<MarioApp>getAppCast().onPlayerDied();
