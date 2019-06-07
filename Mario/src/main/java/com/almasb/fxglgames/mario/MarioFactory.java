@@ -2,6 +2,7 @@ package com.almasb.fxglgames.mario;
 
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.components.LiftComponent;
+import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
 import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.components.IrremovableComponent;
@@ -18,6 +19,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -270,6 +272,36 @@ public class MarioFactory implements EntityFactory {
         e.setOnActive(() -> e.translateY(-25));
 
         return e;
+    }
+
+    @Spawns("enemyAttackZombie")
+    public Entity newEnemyAttackZombie(SpawnData data) {
+        var e = entityBuilder()
+                .type(ENEMY)
+                .from(data)
+                .bbox(new HitBox(new Point2D(10, 20), BoundingShape.box(245 / 4 - 20, 352 / 4 - 20)))
+                .with(new EnemyAttackZombieComponent())
+                .with(new CollidableComponent(true))
+                .build();
+
+        // fix zombie's height
+        e.setOnActive(() -> {
+            e.translateY(-15);
+        });
+
+        return e;
+    }
+
+    @Spawns("enemyAttackZombieProjectile")
+    public Entity newEnemyAttackZombieProjectile(SpawnData data) {
+        return entityBuilder()
+                .type(ENEMY)
+                .from(data)
+                .viewWithBBox(texture("enemies/zombie/bone.gif").toAnimatedTexture(4, Duration.seconds(0.46)).loop())
+                .with(new CollidableComponent(true))
+                .with(new ProjectileComponent(data.get("direction"), 350))
+                .with(new OffscreenCleanComponent())
+                .build();
     }
 
     @Spawns("timeoutBox")

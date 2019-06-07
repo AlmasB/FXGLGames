@@ -144,6 +144,8 @@ public class MarioApp extends GameApplication {
         // before the update tick _actually_ adds the player to game world
         player = getGameWorld().spawn("player", 50, 50);
 
+        set("player", player);
+
         for (int i = 10; i >= 0; i--) {
             spawn("background", new SpawnData(0, 0).put("index", i));
         }

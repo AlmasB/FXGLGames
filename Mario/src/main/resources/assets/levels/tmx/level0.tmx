@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="200" height="10" tilewidth="70" tileheight="70" infinite="0" nextlayerid="6" nextobjectid="202">
+<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="200" height="10" tilewidth="70" tileheight="70" infinite="0" nextlayerid="6" nextobjectid="203">
  <properties>
   <property name="star1time" type="float" value="200"/>
  </properties>
@@ -262,5 +262,6 @@
   </object>
   <object id="200" type="destrBox" gid="73" x="11480" y="630" width="70" height="70"/>
   <object id="201" type="destrBox" gid="73" x="12320" y="630" width="70" height="70"/>
+  <object id="202" type="enemyAttackZombie" x="630" y="560" width="70" height="70"/>
  </objectgroup>
 </map>
