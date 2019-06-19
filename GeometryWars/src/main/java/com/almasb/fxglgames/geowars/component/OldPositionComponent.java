@@ -26,7 +26,7 @@
 
 package com.almasb.fxglgames.geowars.component;
 
-import com.almasb.fxgl.entity.component.ObjectComponent;
+import com.almasb.fxgl.entity.components.ObjectComponent;
 import javafx.geometry.Point2D;
 
 /**

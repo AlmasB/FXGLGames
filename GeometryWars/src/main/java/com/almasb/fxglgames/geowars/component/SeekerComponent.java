@@ -24,11 +24,11 @@
  * SOFTWARE.
  */
 
-package com.almasb.fxglgames.geowars.control;
+package com.almasb.fxglgames.geowars.component;
 
-import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.time.LocalTimer;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.Bloom;
@@ -37,7 +37,7 @@ import javafx.util.Duration;
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class SeekerControl extends Control {
+public class SeekerComponent extends Component {
 
     // in seconds
     private static double seekerAdjustDelay = 5;
@@ -52,7 +52,7 @@ public class SeekerControl extends Control {
 
     private int moveSpeed;
 
-    public SeekerControl(Entity player, int moveSpeed) {
+    public SeekerComponent(Entity player, int moveSpeed) {
         this.player = player;
         this.moveSpeed = moveSpeed;
 
@@ -65,13 +65,14 @@ public class SeekerControl extends Control {
     }
 
     @Override
-    public void onAdded(Entity entity) {
-        seeker.getView().setEffect(new Bloom(0.5));
+    public void onAdded() {
+        seeker = entity;
+        //seeker.getView().setEffect(new Bloom(0.5));
         adjustVelocity(0.016);
     }
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
+    public void onUpdate(double tpf) {
         move(tpf);
         rotate();
     }

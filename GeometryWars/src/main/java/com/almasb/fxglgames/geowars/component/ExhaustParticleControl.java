@@ -24,25 +24,24 @@
  * SOFTWARE.
  */
 
-package com.almasb.fxglgames.geowars.control;
+package com.almasb.fxglgames.geowars.component;
 
-import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.collection.ObjectMap;
 import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.entity.Control;
-import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.texture.Texture;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
-import static com.almasb.fxgl.app.DSLKt.free;
-import static com.almasb.fxgl.app.DSLKt.obtain;
+import static com.almasb.fxgl.core.pool.Pools.free;
+import static com.almasb.fxgl.core.pool.Pools.obtain;
 import static java.lang.Math.min;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class ExhaustParticleControl extends Control {
+public class ExhaustParticleControl extends Component {
 
     private static final Image PARTICLE_IMAGE;
     public static final ObjectMap<Color, Image> coloredImages = new ObjectMap<>();
@@ -74,17 +73,17 @@ public class ExhaustParticleControl extends Control {
     }
 
     @Override
-    public void onAdded(Entity entity) {
+    public void onAdded() {
         entity.setView(new Texture(coloredImages.get(color)));
     }
 
     @Override
-    public void onRemoved(Entity entity) {
+    public void onRemoved() {
         free(velocity);
     }
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
+    public void onUpdate(double tpf) {
 
         // movement
         entity.translateX(velocity.x * 3 * tpf);
@@ -108,7 +107,7 @@ public class ExhaustParticleControl extends Control {
         double opacity = min(1.5f, min(percentLife * 2, speed));
         opacity *= opacity;
 
-        entity.getView().setOpacity(opacity);
+        entity.getViewComponent().setOpacity(opacity);
 
         // is particle expired?
         if (difTime > lifespan) {

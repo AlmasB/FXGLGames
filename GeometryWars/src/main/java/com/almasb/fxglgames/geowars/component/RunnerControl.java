@@ -24,20 +24,21 @@
  * SOFTWARE.
  */
 
-package com.almasb.fxglgames.geowars.control;
+package com.almasb.fxglgames.geowars.component;
 
-import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.entity.Control;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxglgames.geowars.GeoWarsType;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.Bloom;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class WandererControl extends Control {
+public class RunnerControl extends Component {
 
     private int screenWidth, screenHeight;
 
@@ -51,28 +52,66 @@ public class WandererControl extends Control {
 
     private float tx = FXGLMath.random(1000, 10000);
 
-    private Entity wanderer;
+    private Entity runner;
 
-    public WandererControl(int moveSpeed) {
-        screenWidth = FXGL.getApp().getWidth();
-        screenHeight = FXGL.getApp().getHeight();
+    //private EntityGroup<Entity> bullets;
+
+    public RunnerControl(int moveSpeed) {
+        screenWidth = FXGL.getAppWidth();
+        screenHeight = FXGL.getAppHeight();
         this.moveSpeed = moveSpeed;
     }
 
     @Override
-    public void onAdded(Entity entity) {
-        wanderer.getView().setEffect(new Bloom(0.5));
+    public void onAdded() {
+        runner = entity;
+        //runner.getView().setEffect(new Bloom(0.5));
+
+        //bullets = FXGL.getGameWorld().getGroup(GeoWarsType.BULLET);
     }
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
-        adjustAngle(tpf);
-        move(tpf);
-        rotate(tpf);
+    public void onUpdate(double tpf) {
+        fleeBullets(tpf);
+    }
 
-        tx += tpf;
+    private int count = 0;
 
-        checkScreenBounds();
+    private void fleeBullets(double tpf) {
+
+        // from nature of code
+        float desiredDistance = 50*2;
+
+        Vec2 sum = new Vec2();
+        count = 0;
+
+        // check if it's too close
+//        bullets.forEach(bullet -> {
+//
+//            double d = bullet.distance(runner);
+//
+//            // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)
+//            if ((d > 0) && (d < desiredDistance)) {
+//                // Calculate vector pointing away from bullet
+//                Point2D diff = runner.getCenter().subtract(bullet.getCenter()).normalize().multiply(1 / d);
+//
+//                sum.addLocal(diff.getX(), diff.getY());
+//
+//                count++;
+//            }
+//        });
+//
+//        // we have a bullet close
+//        if (count > 0) {
+//            runner.getComponent(RandomMoveControl.class).pause();
+//
+//            // Our desired vector is moving away
+//            sum.normalizeLocal().mulLocal(moveSpeed * tpf);
+//
+//            runner.translate(sum);
+//        } else {
+//            runner.getComponent(RandomMoveControl.class).resume();
+//        }
     }
 
     private void adjustAngle(double tpf) {
@@ -86,17 +125,17 @@ public class WandererControl extends Control {
 
         velocity.addLocal(directionVector).mulLocal((float)tpf);
 
-        wanderer.translate(new Point2D(velocity.x, velocity.y));
+        runner.translate(new Point2D(velocity.x, velocity.y));
     }
 
     private void checkScreenBounds() {
-        if (wanderer.getX() < 0
-                || wanderer.getY() < 0
-                || wanderer.getRightX() >= screenWidth
-                || wanderer.getBottomY() >= screenHeight) {
+        if (runner.getX() < 0
+                || runner.getY() < 0
+                || runner.getRightX() >= screenWidth
+                || runner.getBottomY() >= screenHeight) {
 
             Point2D newDirectionVector = new Point2D(screenWidth / 2, screenHeight / 2)
-                    .subtract(wanderer.getCenter());
+                    .subtract(runner.getCenter());
 
             double angle = Math.toDegrees(Math.atan(newDirectionVector.getY() / newDirectionVector.getX()));
             directionAngle = newDirectionVector.getX() > 0 ? angle : 180 + angle;
@@ -104,6 +143,6 @@ public class WandererControl extends Control {
     }
 
     private void rotate(double tpf) {
-        wanderer.rotateBy(rotationSpeed * tpf);
+        runner.rotateBy(rotationSpeed * tpf);
     }
 }

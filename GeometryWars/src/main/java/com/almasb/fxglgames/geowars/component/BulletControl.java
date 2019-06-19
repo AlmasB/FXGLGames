@@ -24,17 +24,15 @@
  * SOFTWARE.
  */
 
-package com.almasb.fxglgames.geowars.control;
+package com.almasb.fxglgames.geowars.component;
 
-import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.entity.Control;
-import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.dsl.components.ProjectileComponent;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.BoundingBoxComponent;
-import com.almasb.fxgl.entity.component.ViewComponent;
-import com.almasb.fxgl.entity.control.ExpireCleanControl;
-import com.almasb.fxgl.entity.control.ProjectileControl;
+import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.entity.components.BoundingBoxComponent;
+import com.almasb.fxgl.entity.components.ViewComponent;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxglgames.geowars.grid.Grid;
 import javafx.geometry.Point2D;
@@ -45,7 +43,7 @@ import javafx.util.Duration;
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class BulletControl extends Control {
+public class BulletControl extends Component {
 
     private static final Color PARTICLE_COLOR = Color.YELLOW.brighter();
     private static final Duration PARTICLE_DURATION = Duration.seconds(1.2);
@@ -65,37 +63,37 @@ public class BulletControl extends Control {
     }
 
     @Override
-    public void onAdded(Entity entity) {
-        velocity = entity.getControl(ProjectileControl.class).getVelocity();
+    public void onAdded() {
+        velocity = entity.getComponent(ProjectileComponent.class).getVelocity();
 
-        view.getView().setEffect(new Bloom());
+        //view.getView().setEffect(new Bloom());
     }
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
+    public void onUpdate(double tpf) {
         grid.applyExplosiveForce(velocity.magnitude() / 60 * 18, bbox.getCenterWorld(), 80 * 60 * tpf);
 
         if (bbox.getMinXWorld() < 0) {
             spawnParticles(0, bbox.getCenterWorld().getY(), 1, FXGLMath.random(-1.0f, 1.0f));
 
-        } else if (bbox.getMaxXWorld() > FXGL.getApp().getWidth()) {
-            spawnParticles(FXGL.getApp().getWidth(), bbox.getCenterWorld().getY(), -1, FXGLMath.random(-1.0f, 1.0f));
+        } else if (bbox.getMaxXWorld() > FXGL.getAppWidth()) {
+            spawnParticles(FXGL.getAppWidth(), bbox.getCenterWorld().getY(), -1, FXGLMath.random(-1.0f, 1.0f));
 
         } else if (bbox.getMinYWorld() < 0) {
             spawnParticles(bbox.getCenterWorld().getX(), 0, FXGLMath.random(-1.0f, 1.0f), 1);
 
-        } else if (bbox.getMaxYWorld() > FXGL.getApp().getHeight()) {
-            spawnParticles(bbox.getCenterWorld().getX(), FXGL.getApp().getHeight(), FXGLMath.random(-1.0f, 1.0f), -1);
+        } else if (bbox.getMaxYWorld() > FXGL.getAppHeight()) {
+            spawnParticles(bbox.getCenterWorld().getX(), FXGL.getAppHeight(), FXGLMath.random(-1.0f, 1.0f), -1);
         }
     }
 
     private void spawnParticles(double x, double y, double dirX, double dirY) {
-        Entities.builder()
-                .at(x, y)
-                .viewFromNode(new Texture(ExhaustParticleControl.coloredImages.get(PARTICLE_COLOR)))
-                .with(new ProjectileControl(new Point2D(dirX, dirY), FXGLMath.random(150, 280)),
-                        new ExpireCleanControl(PARTICLE_DURATION),
-                        new ParticleControl())
-                .buildAndAttach(FXGL.getApp().getGameWorld());
+//        FXGL.entityBuilder()
+//                .at(x, y)
+//                .viewFromNode(new Texture(ExhaustParticleControl.coloredImages.get(PARTICLE_COLOR)))
+//                .with(new ProjectileControl(new Point2D(dirX, dirY), FXGLMath.random(150, 280)),
+//                        new ExpireCleanControl(PARTICLE_DURATION),
+//                        new ParticleControl())
+//                .buildAndAttach(FXGL.getApp().getGameWorld());
     }
 }

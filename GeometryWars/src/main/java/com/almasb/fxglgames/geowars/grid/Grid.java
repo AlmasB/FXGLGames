@@ -71,7 +71,7 @@ public class Grid {
 
         Entity gridEntity = new Entity();
         gridEntity.addComponent(new GraphicsComponent(g));
-        gridEntity.addControl(new GridControl());
+        gridEntity.addComponent(new GridComponent());
 
         // link the point masses with springs
         for (int y = 0; y < numRows; y++) {
@@ -92,11 +92,11 @@ public class Grid {
 
                 // add additional lines
                 if (x > 0 && y > 0) {
-                    gridEntity.getControl(GridControl.class).addControl(new AdditionalLineControl(
+                    gridEntity.getComponent(GridComponent.class).addComponent(new AdditionalLineControl(
                             points[x - 1][y], points[x][y],
                             points[x - 1][y - 1], points[x][y - 1]));
 
-                    gridEntity.getControl(GridControl.class).addControl(new AdditionalLineControl(
+                    gridEntity.getComponent(GridComponent.class).addComponent(new AdditionalLineControl(
                             points[x][y - 1], points[x][y],
                             points[x - 1][y - 1], points[x - 1][y]));
                 }

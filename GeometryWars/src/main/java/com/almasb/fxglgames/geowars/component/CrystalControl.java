@@ -1,16 +1,16 @@
-package com.almasb.fxglgames.geowars.control;
+package com.almasb.fxglgames.geowars.component;
 
-import com.almasb.fxgl.entity.Control;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxglgames.geowars.GeoWarsType;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class CrystalControl extends Control {
+public class CrystalControl extends Component {
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
+    public void onUpdate(double tpf) {
         rotate(tpf);
         followPlayer(tpf);
     }
@@ -24,7 +24,7 @@ public class CrystalControl extends Control {
     }
 
     private void followPlayer(double tpf) {
-        Entity player = getEntity().getWorld().getSingleton(GeoWarsType.PLAYER).get();
+        Entity player = getEntity().getWorld().getSingleton(GeoWarsType.PLAYER);
         if (getEntity().distance(player) < 100) {
             getEntity().translateTowards(player.getCenter(), 100 * tpf);
         }

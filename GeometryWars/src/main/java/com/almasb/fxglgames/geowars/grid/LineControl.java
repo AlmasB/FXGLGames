@@ -26,15 +26,15 @@
 
 package com.almasb.fxglgames.geowars.grid;
 
-import com.almasb.fxgl.entity.Control;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxglgames.geowars.component.GraphicsComponent;
 import javafx.scene.canvas.GraphicsContext;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class LineControl extends Control {
+public class LineControl extends Component {
 
     private PointMass end1, end2;
     private GraphicsContext g;
@@ -45,12 +45,12 @@ public class LineControl extends Control {
     }
 
     @Override
-    public void onAdded(Entity entity) {
+    public void onAdded() {
         g = entity.getComponent(GraphicsComponent.class).getValue();
     }
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
+    public void onUpdate(double tpf) {
         g.strokeLine(end1.getPosition().x, end1.getPosition().y, end2.getPosition().x, end2.getPosition().y);
     }
 }

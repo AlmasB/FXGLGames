@@ -5,17 +5,17 @@ package com.almasb.fxglgames.geowars;
  */
 public final class GeoWarsConfig {
 
-    private double redEnemyChance;
-    private int redEnemyHealth;
-    private int redEnemyMoveSpeed;
-    private int seekerMaxMoveSpeed;
-    private int wandererMaxMoveSpeed;
-    private int runnerMoveSpeed;
-    private int bouncerMoveSpeed;
+    private double redEnemyChance= 0.25;
+    private int redEnemyHealth= 3;
+    private int redEnemyMoveSpeed= 300;
+    private int seekerMaxMoveSpeed= 250;
+    private int wandererMaxMoveSpeed= 150;
+    private int runnerMoveSpeed= 350;
+    private int bouncerMoveSpeed= 500;
 
-    private int playerSpeed;
+    private int playerSpeed= 350;
 
-    private int enemyHealth;
+    private int enemyHealth= 1;
 
     public double getRedEnemyChance() {
         return redEnemyChance;

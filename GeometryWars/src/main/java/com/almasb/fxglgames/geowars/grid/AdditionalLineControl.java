@@ -27,15 +27,14 @@
 package com.almasb.fxglgames.geowars.grid;
 
 import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.entity.Control;
-import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxglgames.geowars.component.GraphicsComponent;
 import javafx.scene.canvas.GraphicsContext;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class AdditionalLineControl extends Control {
+public class AdditionalLineControl extends Component {
 
     private PointMass end11, end12, end21, end22;
     private GraphicsContext g;
@@ -52,12 +51,12 @@ public class AdditionalLineControl extends Control {
     }
 
     @Override
-    public void onAdded(Entity entity) {
+    public void onAdded() {
         g = entity.getComponent(GraphicsComponent.class).getValue();
     }
 
     @Override
-    public void onUpdate(Entity entity, double tpf) {
+    public void onUpdate(double tpf) {
         position1.x = end11.getPosition().x + (end12.getPosition().x - end11.getPosition().x) / 2;
         position1.y = end11.getPosition().y + (end12.getPosition().y - end11.getPosition().y) / 2;
 

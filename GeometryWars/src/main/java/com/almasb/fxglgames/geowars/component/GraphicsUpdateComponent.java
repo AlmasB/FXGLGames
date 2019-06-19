@@ -24,27 +24,25 @@
  * SOFTWARE.
  */
 
-package com.almasb.fxglgames.geowars.control;
+package com.almasb.fxglgames.geowars.component;
 
-import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.control.AccumulatedUpdateControl;
-import com.almasb.fxglgames.geowars.component.GraphicsComponent;
+import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.dsl.components.AccumulatedUpdateComponent;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class GraphicsUpdateControl extends AccumulatedUpdateControl {
+public class GraphicsUpdateComponent extends AccumulatedUpdateComponent {
 
     private GraphicsComponent gc;
 
-    public GraphicsUpdateControl() {
+    public GraphicsUpdateComponent() {
         // skip 3 frames (update every 4th frame)
         super(3);
     }
 
     @Override
-    public void onAccumulatedUpdate(Entity entity, double tpfSum) {
+    public void onAccumulatedUpdate(double tpfSum) {
         gc.getValue().clearRect(0, 0, FXGL.getAppWidth(), FXGL.getAppHeight());
     }
 }
