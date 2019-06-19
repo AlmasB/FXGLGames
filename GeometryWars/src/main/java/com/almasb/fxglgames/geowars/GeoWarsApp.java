@@ -25,20 +25,16 @@
  */
 package com.almasb.fxglgames.geowars;
 
-import com.almasb.fxgl.animation.Animation;
-import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
-import com.almasb.fxglgames.geowars.component.GraphicsComponent;
-import com.almasb.fxglgames.geowars.component.OldPositionComponent;
-import com.almasb.fxglgames.geowars.component.GraphicsUpdateComponent;
-import com.almasb.fxglgames.geowars.component.PlayerControl;
+import com.almasb.fxglgames.geowars.collision.BulletPortalHandler;
+import com.almasb.fxglgames.geowars.collision.PlayerCrystalHandler;
+import com.almasb.fxglgames.geowars.component.*;
 import com.almasb.fxglgames.geowars.event.DeathEvent;
 import com.almasb.fxglgames.geowars.grid.Grid;
 import javafx.animation.TranslateTransition;
@@ -63,7 +59,7 @@ import static com.almasb.fxgl.dsl.FXGLForKtKt.getInput;
 public class GeoWarsApp extends GameApplication {
 
     private Entity player;
-    private PlayerControl playerControl;
+    private PlayerComponent playerComponent;
 
     private Grid grid;
 
@@ -83,6 +79,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setVersion("0.7.5");
         settings.setConfigClass(GeoWarsConfig.class);
         settings.setProfilingEnabled(true);
+        settings.setFontUI("game_font_7.ttf");
     }
 
     @Override
@@ -98,42 +95,42 @@ public class GeoWarsApp extends GameApplication {
         input.addAction(new UserAction("Move Left") {
             @Override
             protected void onAction() {
-                playerControl.left();
+                playerComponent.left();
             }
         }, KeyCode.A);
 
         input.addAction(new UserAction("Move Right") {
             @Override
             protected void onAction() {
-                playerControl.right();
+                playerComponent.right();
             }
         }, KeyCode.D);
 
         input.addAction(new UserAction("Move Up") {
             @Override
             protected void onAction() {
-                playerControl.up();
+                playerComponent.up();
             }
         }, KeyCode.W);
 
         input.addAction(new UserAction("Move Down") {
             @Override
             protected void onAction() {
-                playerControl.down();
+                playerComponent.down();
             }
         }, KeyCode.S);
 
         input.addAction(new UserAction("Shockwave") {
             @Override
             protected void onActionBegin() {
-                playerControl.releaseShockwave();
+                playerComponent.releaseShockwave();
             }
         }, KeyCode.E);
 
         input.addAction(new UserAction("Shoot") {
             @Override
             protected void onAction() {
-                playerControl.shoot(input.getMousePositionWorld());
+                playerComponent.shoot(input.getMousePositionWorld());
             }
         }, MouseButton.PRIMARY);
     }
@@ -156,7 +153,7 @@ public class GeoWarsApp extends GameApplication {
 
         initBackground();
         player = spawn("Player");
-        playerControl = player.getComponent(PlayerControl.class);
+        playerComponent = player.getComponent(PlayerComponent.class);
 
         getGameState().<Integer>addListener("multiplier", (prev, now) -> {
             WeaponType current = geto("weaponType");
@@ -188,13 +185,13 @@ public class GeoWarsApp extends GameApplication {
             protected void onCollisionBegin(Entity bullet, Entity enemy) {
                 bullet.removeFromWorld();
 
-//                HealthComponent hp = enemy.getComponent(HealthComponent.class);
-//                hp.setValue(hp.getValue() - 1);
-//
-//                if (hp.getValue() == 0) {
-//                    getEventBus().fireEvent(new DeathEvent(enemy));
-//                    enemy.removeFromWorld();
-//                }
+                HealthComponent hp = enemy.getComponent(HealthComponent.class);
+                hp.setValue(hp.getValue() - 1);
+
+                if (hp.getValue() == 0) {
+                    getEventBus().fireEvent(new DeathEvent(enemy));
+                    enemy.removeFromWorld();
+                }
             }
         };
 
@@ -202,6 +199,8 @@ public class GeoWarsApp extends GameApplication {
         physics.addCollisionHandler(bulletEnemy.copyFor(GeoWarsType.BULLET, GeoWarsType.SEEKER));
         physics.addCollisionHandler(bulletEnemy.copyFor(GeoWarsType.BULLET, GeoWarsType.RUNNER));
         physics.addCollisionHandler(bulletEnemy.copyFor(GeoWarsType.BULLET, GeoWarsType.BOUNCER));
+        physics.addCollisionHandler(new BulletPortalHandler());
+        physics.addCollisionHandler(new PlayerCrystalHandler());
 
         CollisionHandler playerEnemy = new CollisionHandler(GeoWarsType.PLAYER, GeoWarsType.WANDERER) {
             @Override
@@ -282,8 +281,7 @@ public class GeoWarsApp extends GameApplication {
 
         entityBuilder()
                 .view(canvas)
-                .with(new GraphicsComponent(canvas.getGraphicsContext2D()))
-                .with(new GraphicsUpdateComponent())
+                .with(new GraphicsUpdateComponent(canvas.getGraphicsContext2D()))
                 .buildAndAttach();
 
         Rectangle size = new Rectangle(0, 0, getAppWidth(), getAppHeight());

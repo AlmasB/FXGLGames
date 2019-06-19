@@ -50,7 +50,7 @@ public class Spring {
         lengthAtRest = end1.getPosition().distance(end2.getPosition().x, end2.getPosition().y) * 0.95f;
 
         if (visible) {
-            gridEntity.getComponent(GridComponent.class).addComponent(new LineControl(end1, end2));
+            gridEntity.getComponent(GridComponent.class).addLine(end1, end2);
         }
     }
 

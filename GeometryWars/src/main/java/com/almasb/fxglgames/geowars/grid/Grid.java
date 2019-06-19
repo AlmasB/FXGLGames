@@ -30,7 +30,6 @@ import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.core.pool.Pools;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.GameWorld;
-import com.almasb.fxglgames.geowars.component.GraphicsComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.shape.Rectangle;
@@ -70,8 +69,7 @@ public class Grid {
         }
 
         Entity gridEntity = new Entity();
-        gridEntity.addComponent(new GraphicsComponent(g));
-        gridEntity.addComponent(new GridComponent());
+        gridEntity.addComponent(new GridComponent(g));
 
         // link the point masses with springs
         for (int y = 0; y < numRows; y++) {
@@ -92,13 +90,13 @@ public class Grid {
 
                 // add additional lines
                 if (x > 0 && y > 0) {
-                    gridEntity.getComponent(GridComponent.class).addComponent(new AdditionalLineControl(
+                    gridEntity.getComponent(GridComponent.class).addExtraLine(
                             points[x - 1][y], points[x][y],
-                            points[x - 1][y - 1], points[x][y - 1]));
+                            points[x - 1][y - 1], points[x][y - 1]);
 
-                    gridEntity.getComponent(GridComponent.class).addComponent(new AdditionalLineControl(
+                    gridEntity.getComponent(GridComponent.class).addExtraLine(
                             points[x][y - 1], points[x][y],
-                            points[x - 1][y - 1], points[x - 1][y]));
+                            points[x - 1][y - 1], points[x - 1][y]);
                 }
             }
         }

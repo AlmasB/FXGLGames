@@ -23,7 +23,7 @@ import static com.almasb.fxgl.dsl.FXGLForKtKt.geto;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class PlayerControl extends Component {
+public class PlayerComponent extends Component {
 
     private static final Duration WEAPON_DELAY = Duration.seconds(0.17);
 
@@ -34,7 +34,7 @@ public class PlayerControl extends Component {
 
     private LocalTimer weaponTimer = FXGL.newLocalTimer();
 
-    public PlayerControl(int playerSpeed) {
+    public PlayerComponent(int playerSpeed) {
         this.playerSpeed = playerSpeed;
     }
 
@@ -162,7 +162,7 @@ public class PlayerControl extends Component {
 
         FXGL.entityBuilder()
                 .at(pos.x, pos.y)
-                .with(new ExhaustParticleControl(velMid, 800, midColor))
+                .with(new ExhaustParticleComponent(velMid, 800, midColor))
                 .buildAndAttach();
 
         // side streams
@@ -174,12 +174,12 @@ public class PlayerControl extends Component {
 
         FXGL.entityBuilder()
                 .at(pos.x, pos.y)
-                .with(new ExhaustParticleControl(velSide1, 800, sideColor))
+                .with(new ExhaustParticleComponent(velSide1, 800, sideColor))
                 .buildAndAttach();
 
         FXGL.entityBuilder()
                 .at(pos.x, pos.y)
-                .with(new ExhaustParticleControl(velSide2, 800, sideColor))
+                .with(new ExhaustParticleComponent(velSide2, 800, sideColor))
                 .buildAndAttach();
 
         // TODO: this is useless because vectors above created with "new"

@@ -29,14 +29,11 @@ package com.almasb.fxglgames.geowars.component;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.ProjectileComponent;
-import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.BoundingBoxComponent;
 import com.almasb.fxgl.entity.components.ViewComponent;
-import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxglgames.geowars.grid.Grid;
 import javafx.geometry.Point2D;
-import javafx.scene.effect.Bloom;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
@@ -49,7 +46,7 @@ public class BulletControl extends Component {
     private static final Duration PARTICLE_DURATION = Duration.seconds(1.2);
 
     static {
-        ExhaustParticleControl.colorImage(PARTICLE_COLOR);
+        ExhaustParticleComponent.colorImage(PARTICLE_COLOR);
     }
 
     private BoundingBoxComponent bbox;
@@ -90,7 +87,7 @@ public class BulletControl extends Component {
     private void spawnParticles(double x, double y, double dirX, double dirY) {
 //        FXGL.entityBuilder()
 //                .at(x, y)
-//                .viewFromNode(new Texture(ExhaustParticleControl.coloredImages.get(PARTICLE_COLOR)))
+//                .viewFromNode(new Texture(ExhaustParticleComponent.coloredImages.get(PARTICLE_COLOR)))
 //                .with(new ProjectileControl(new Point2D(dirX, dirY), FXGLMath.random(150, 280)),
 //                        new ExpireCleanControl(PARTICLE_DURATION),
 //                        new ParticleControl())

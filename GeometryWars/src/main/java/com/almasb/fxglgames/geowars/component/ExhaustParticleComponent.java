@@ -41,7 +41,7 @@ import static java.lang.Math.min;
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class ExhaustParticleControl extends Component {
+public class ExhaustParticleComponent extends Component {
 
     private static final Image PARTICLE_IMAGE;
     public static final ObjectMap<Color, Image> coloredImages = new ObjectMap<>();
@@ -55,7 +55,7 @@ public class ExhaustParticleControl extends Component {
     private long spawnTime;
     private Color color;
 
-    public ExhaustParticleControl(Vec2 velocity, float lifespan, Color color) {
+    public ExhaustParticleComponent(Vec2 velocity, float lifespan, Color color) {
         this.velocity = obtain(Vec2.class);
         this.velocity.set(velocity);
 
