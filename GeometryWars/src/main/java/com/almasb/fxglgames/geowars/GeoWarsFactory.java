@@ -69,10 +69,10 @@ public class GeoWarsFactory implements EntityFactory {
                 .type(GeoWarsType.BULLET)
                 .from(data)
                 .viewWithBBox("Bullet.png")
-                .with(new BulletComponent(), new CollidableComponent(true))
-                .with(new ProjectileComponent(data.get("direction"), 800),
-                        new BulletControl(FXGL.<GeoWarsApp>getAppCast().getGrid()),
-                        new OffscreenCleanComponent())
+                .with(new CollidableComponent(true))
+                .with(new ProjectileComponent(data.get("direction"), 800))
+                .with(new BulletComponent(FXGL.<GeoWarsApp>getAppCast().getGrid()))
+                .with(new OffscreenCleanComponent())
                 .build();
     }
 
@@ -89,7 +89,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .viewWithBBox(red ? "RedWanderer.png" : "Wanderer.png")
                 .with(new HealthComponent(red ? config.getRedEnemyHealth() : config.getEnemyHealth()))
                 .with(new CollidableComponent(true))
-                .with(new WandererControl(moveSpeed))
+                .with(new WandererComponent(moveSpeed))
                 .build();
     }
 
@@ -118,7 +118,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .viewWithBBox("Runner.png")
                 .with(new HealthComponent(config.getEnemyHealth()))
                 .with(new CollidableComponent(true))
-                .with(new RunnerControl(config.getRunnerMoveSpeed()),
+                .with(new RunnerComponent(config.getRunnerMoveSpeed()),
                         new RandomMoveComponent(new Rectangle2D(0, 0, getAppWidth(), getAppHeight()), config.getRunnerMoveSpeed(), FXGLMath.random(250, 500)))
                 .build();
     }
@@ -184,7 +184,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .scale(0.65, 0.65)
                 .viewWithBBox(texture("YellowCrystal.png").toAnimatedTexture(8, Duration.seconds(1)))
                 .with(new CollidableComponent(true))
-                .with(new CrystalControl(), new ExpireCleanComponent(Duration.seconds(10)))
+                .with(new CrystalComponent(), new ExpireCleanComponent(Duration.seconds(10)))
                 .build();
     }
 }

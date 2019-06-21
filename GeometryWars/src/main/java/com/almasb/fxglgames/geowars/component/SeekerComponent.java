@@ -31,7 +31,6 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.time.LocalTimer;
 import javafx.geometry.Point2D;
-import javafx.scene.effect.Bloom;
 import javafx.util.Duration;
 
 /**
@@ -67,7 +66,6 @@ public class SeekerComponent extends Component {
     @Override
     public void onAdded() {
         seeker = entity;
-        //seeker.getView().setEffect(new Bloom(0.5));
         adjustVelocity(0.016);
     }
 

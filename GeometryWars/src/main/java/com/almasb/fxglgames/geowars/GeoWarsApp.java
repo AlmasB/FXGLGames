@@ -205,6 +205,8 @@ public class GeoWarsApp extends GameApplication {
         CollisionHandler playerEnemy = new CollisionHandler(GeoWarsType.PLAYER, GeoWarsType.WANDERER) {
             @Override
             protected void onCollisionBegin(Entity a, Entity b) {
+
+                // TODO: offset does not return to 0?
                 getGameScene().getViewport().shakeTranslational(8);
 
                 a.setPosition(getRandomPoint());

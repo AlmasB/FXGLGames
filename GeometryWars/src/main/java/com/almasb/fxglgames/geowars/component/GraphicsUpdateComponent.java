@@ -40,7 +40,7 @@ public class GraphicsUpdateComponent extends AccumulatedUpdateComponent {
     public GraphicsUpdateComponent(GraphicsContext g) {
         // skip 3 frames (update every 4th frame)
         super(3);
-        
+
         this.g = g;
     }
 

@@ -7,7 +7,7 @@ import com.almasb.fxglgames.geowars.GeoWarsType;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class CrystalControl extends Component {
+public class CrystalComponent extends Component {
 
     @Override
     public void onUpdate(double tpf) {
@@ -25,8 +25,8 @@ public class CrystalControl extends Component {
 
     private void followPlayer(double tpf) {
         Entity player = getEntity().getWorld().getSingleton(GeoWarsType.PLAYER);
-        if (getEntity().distance(player) < 100) {
-            getEntity().translateTowards(player.getCenter(), 100 * tpf);
+        if (getEntity().distance(player) < 150) {
+            getEntity().translateTowards(player.getCenter(), 150 * tpf);
         }
     }
 }

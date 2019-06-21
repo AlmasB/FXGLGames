@@ -39,11 +39,6 @@ public class PlayerComponent extends Component {
     }
 
     @Override
-    public void onAdded() {
-        //entity.getView().setEffect(new Bloom());
-    }
-
-    @Override
     public void onUpdate(double tpf) {
         speed = tpf * playerSpeed;
     }
