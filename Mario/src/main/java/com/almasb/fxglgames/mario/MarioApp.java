@@ -341,6 +341,12 @@ public class MarioApp extends GameApplication {
 
             box.getComponent(LootBoxComponent.class).open();
         });
+
+        onCollisionBegin(PLAYER, JUMP_PAD, (player, pad) -> {
+            player.getComponent(PlayerComponent.class).superJump();
+
+            pad.getComponent(JumpPadComponent.class).activate();
+        });
     }
 
     private void makeExitDoor() {

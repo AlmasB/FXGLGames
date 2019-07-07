@@ -344,4 +344,15 @@ public class MarioFactory implements EntityFactory {
 
         return e;
     }
+
+    @Spawns("jumpPad")
+    public Entity newJumpPad(SpawnData data) {
+        return entityBuilder()
+                .type(JUMP_PAD)
+                .from(data)
+                .bbox(new HitBox(new Point2D(0, 50), BoundingShape.box(data.<Integer>get("width"), 20)))
+                .with(new CollidableComponent(true))
+                .with(new JumpPadComponent())
+                .build();
+    }
 }

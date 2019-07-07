@@ -108,6 +108,10 @@ public class PlayerComponent extends Component {
         jumps--;
     }
 
+    public void superJump() {
+        physics.setVelocityY(-930);
+    }
+
     public void onHit(Entity attacker) {
         if (isBeingDamaged)
             return;
