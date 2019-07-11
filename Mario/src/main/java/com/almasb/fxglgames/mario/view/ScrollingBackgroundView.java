@@ -8,14 +8,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
-import com.almasb.fxgl.dsl.FXGL;
-import com.almasb.fxgl.entity.EntityView;
-import com.almasb.fxgl.texture.Texture;
-import javafx.geometry.Orientation;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
-
 
 /**
  * EntityView for scrollable backgrounds.

@@ -12,7 +12,8 @@ import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 
-import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxgl.dsl.FXGL.image;
+import static com.almasb.fxgl.dsl.FXGL.runOnce;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -110,6 +111,17 @@ public class PlayerComponent extends Component {
 
     public void superJump() {
         physics.setVelocityY(-930);
+    }
+
+    public void superJump(Point2D vector) {
+        physics.setLinearVelocity(vector);
+
+        isBeingDamaged = true;
+
+        // can't control player for 2 seconds
+        runOnce(() -> {
+            isBeingDamaged = false;
+        }, Duration.seconds(2));
     }
 
     public void onHit(Entity attacker) {

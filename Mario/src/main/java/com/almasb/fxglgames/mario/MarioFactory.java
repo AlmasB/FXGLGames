@@ -3,7 +3,10 @@ package com.almasb.fxglgames.mario;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.components.LiftComponent;
 import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
-import com.almasb.fxgl.entity.*;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.EntityFactory;
+import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.components.IrremovableComponent;
 import com.almasb.fxgl.input.view.KeyView;
@@ -19,7 +22,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -353,6 +356,34 @@ public class MarioFactory implements EntityFactory {
                 .bbox(new HitBox(new Point2D(0, 50), BoundingShape.box(data.<Integer>get("width"), 20)))
                 .with(new CollidableComponent(true))
                 .with(new JumpPadComponent())
+                .build();
+    }
+
+    @Spawns("catapult")
+    public Entity newCatapult(SpawnData data) {
+        var rect = new Rectangle(data.<Integer>get("width"), data.<Integer>get("height"), null);
+        rect.setStroke(Color.BLACK);
+
+        return entityBuilder()
+                .type(CATAPULT)
+                .from(data)
+                .view(rect)
+                .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
+                .with(new CollidableComponent(true))
+                .build();
+    }
+
+    @Spawns("catapultLineIndicator")
+    public Entity newCatapultLineIndicator(SpawnData data) {
+        var rect = new Rectangle(150, 15, null);
+        rect.setStroke(Color.BLUE);
+
+        return entityBuilder()
+                .from(data)
+                .view(rect)
+                .with(new IrremovableComponent())
+                .with(new CatapultLineIndicatorComponent())
+                .zIndex(5000)
                 .build();
     }
 }

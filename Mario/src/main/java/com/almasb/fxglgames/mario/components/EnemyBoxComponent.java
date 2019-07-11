@@ -2,7 +2,6 @@ package com.almasb.fxglgames.mario.components;
 
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.entity.component.Component;
-import javafx.animation.Interpolator;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 

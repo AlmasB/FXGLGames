@@ -5,6 +5,8 @@ import com.almasb.fxgl.app.*;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.entity.level.Level;
+import com.almasb.fxgl.entity.level.tiled.TMXLevelLoader;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsComponent;
@@ -14,13 +16,14 @@ import com.almasb.fxglgames.mario.components.*;
 import com.almasb.fxglgames.mario.ui.HealthIndicator;
 import com.almasb.fxglgames.mario.ui.LevelEndScene;
 import com.almasb.fxglgames.mario.ui.MarioLoadingScene;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
+import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
+import java.io.File;
 import java.util.Map;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -108,13 +111,25 @@ public class MarioApp extends GameApplication {
                 player.getComponent(HPComponent.class).setValue(player.getComponent(HPComponent.class).getValue() + 10);
             }
         }, KeyCode.H);
+
+        getInput().addAction(new UserAction("Catapult") {
+            @Override
+            protected void onActionBegin() {
+                if (getb("canCatapult")) {
+                    Point2D vector = getInput().getVectorToMouse(player.getPosition());
+
+                    player.getComponent(PlayerComponent.class).superJump(vector.normalize().multiply(900));
+                }
+            }
+        }, MouseButton.PRIMARY);
     }
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
-        vars.put("level", getSettings().getApplicationMode() == ApplicationMode.RELEASE ? 0 : -1);
+        vars.put("level", 0);
         vars.put("levelTime", 0.0);
         vars.put("score", 0);
+        vars.put("canCatapult", false);
     }
 
     private boolean firstTime = true;
@@ -122,10 +137,14 @@ public class MarioApp extends GameApplication {
 
     @Override
     protected void onPreInit() {
-        if (getSettings().getApplicationMode() == ApplicationMode.RELEASE) {
+        if (isRelease()) {
             getSettings().setGlobalMusicVolume(0.25);
             loopBGM("BGM_dash_runner.wav");
         }
+    }
+
+    private boolean isRelease() {
+        return getSettings().getApplicationMode() == ApplicationMode.RELEASE;
     }
 
     @Override
@@ -144,10 +163,19 @@ public class MarioApp extends GameApplication {
         // before the update tick _actually_ adds the player to game world
         player = getGameWorld().spawn("player", 50, 50);
 
+        var catapultLineIndicator = getGameWorld().spawn("catapultLineIndicator");
+        catapultLineIndicator.getViewComponent().opacityProperty().bind(
+                Bindings.when(getbp("canCatapult")).then(1.0).otherwise(0.0)
+        );
+        catapultLineIndicator.xProperty().bind(player.xProperty().add(16));
+        catapultLineIndicator.yProperty().bind(player.yProperty().add(21));
+
         set("player", player);
 
-        for (int i = 10; i >= 0; i--) {
-            spawn("background", new SpawnData(0, 0).put("index", i));
+        if (isRelease()) {
+            for (int i = 10; i >= 0; i--) {
+                spawn("background", new SpawnData(0, 0).put("index", i));
+            }
         }
 
         Viewport viewport = getGameScene().getViewport();
@@ -347,6 +375,18 @@ public class MarioApp extends GameApplication {
 
             pad.getComponent(JumpPadComponent.class).activate();
         });
+
+        getPhysicsWorld().addCollisionHandler(new CollisionHandler(PLAYER, CATAPULT) {
+            @Override
+            protected void onCollisionBegin(Entity player, Entity catapult) {
+                set("canCatapult", true);
+            }
+
+            @Override
+            protected void onCollisionEnd(Entity player, Entity catapult) {
+                set("canCatapult", false);
+            }
+        });
     }
 
     private void makeExitDoor() {
@@ -365,7 +405,12 @@ public class MarioApp extends GameApplication {
             return;
         }
 
-        inc("level", +1);
+        // we play test the same level if dev mode
+        // so only increase level if release mode
+        if (isRelease()) {
+            inc("level", +1);
+        }
+
         setLevel(geti("level"));
     }
 
@@ -383,6 +428,10 @@ public class MarioApp extends GameApplication {
         addUINode(hp);
         addUINode(coin, 130, 15);
         addUINode(scoreText, 170, 48);
+
+        // TODO: add convenience methods to map game world coord to UI coord
+        //var line = new Line();
+        //line.startXProperty().bind(player.xProperty());
     }
 
     @Override
@@ -408,7 +457,25 @@ public class MarioApp extends GameApplication {
 
         set("levelTime", 0.0);
 
-        var level = setLevelFromMap("tmx/level" + levelNum  + ".tmx");
+        var levelFile = new File("level0.tmx");
+
+        Level level;
+
+        if (!isRelease() && levelFile.exists()) {
+            System.out.println("Loading from development level");
+
+            try {
+                level = new TMXLevelLoader().load(levelFile.toURI().toURL(), getGameWorld());
+                getGameWorld().setLevel(level);
+
+                System.out.println("Success");
+
+            } catch (Exception e) {
+                level = setLevelFromMap("tmx/level" + levelNum  + ".tmx");
+            }
+        } else {
+            level = setLevelFromMap("tmx/level" + levelNum  + ".tmx");
+        }
 
         var shortestTime = level.getProperties().getDouble("star1time");
 
