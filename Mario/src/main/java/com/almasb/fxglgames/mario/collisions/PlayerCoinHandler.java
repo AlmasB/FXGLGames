@@ -23,7 +23,7 @@ public class PlayerCoinHandler extends CollisionHandler {
     }
 
     @Override
-    protected void onCollision(Entity player, Entity coin) {
+    protected void onCollisionBegin(Entity player, Entity coin) {
         coin.removeComponent(CollidableComponent.class);
 
         inc("score", +100);

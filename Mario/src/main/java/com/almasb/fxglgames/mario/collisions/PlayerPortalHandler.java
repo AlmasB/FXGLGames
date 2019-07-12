@@ -25,7 +25,7 @@ public class PlayerPortalHandler extends CollisionHandler {
     }
 
     @Override
-    protected void onCollision(Entity player, Entity portal) {
+    protected void onCollisionBegin(Entity player, Entity portal) {
         var portal1 = portal.getComponent(PortalComponent.class);
 
         if (!portal1.isActive()) {

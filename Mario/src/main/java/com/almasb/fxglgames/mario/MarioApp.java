@@ -39,6 +39,7 @@ public class MarioApp extends GameApplication {
 
     private static final int MAX_LEVEL = 21;
     private static final int STARTING_LEVEL = 0;
+    private static final boolean DEVELOPING_NEW_LEVEL = false;
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -50,7 +51,7 @@ public class MarioApp extends GameApplication {
                 return new MarioLoadingScene();
             }
         });
-        settings.setApplicationMode(ApplicationMode.RELEASE);
+        settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
     private Entity player;
@@ -332,7 +333,7 @@ public class MarioApp extends GameApplication {
 
         // we play test the same level if dev mode
         // so only increase level if release mode
-        if (isRelease()) {
+        if (!DEVELOPING_NEW_LEVEL) {
             inc("level", +1);
         }
 
@@ -387,7 +388,7 @@ public class MarioApp extends GameApplication {
         Level level;
 
         // this supports hot reloading of levels during development
-        if (!isRelease() && levelFile.exists()) {
+        if (!isRelease() && DEVELOPING_NEW_LEVEL && levelFile.exists()) {
             System.out.println("Loading from development level");
 
             try {
