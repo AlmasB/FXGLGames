@@ -37,7 +37,7 @@ import static com.almasb.fxglgames.mario.MarioType.*;
  */
 public class MarioApp extends GameApplication {
 
-    private static final int MAX_LEVEL = 20;
+    private static final int MAX_LEVEL = 21;
     private static final int STARTING_LEVEL = 0;
 
     @Override
