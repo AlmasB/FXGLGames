@@ -32,7 +32,7 @@ public class EnemyZombieComponent extends Component {
     @Override
     public void onAdded() {
         entity.getTransformComponent().setScaleOrigin(new Point2D(232 / 4 / 2, 390 / 4 / 2));
-        entity.setView(texture);
+        entity.getViewComponent().addChild(texture);
     }
 
     @Override

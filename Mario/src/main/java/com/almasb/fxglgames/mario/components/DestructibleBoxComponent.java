@@ -20,10 +20,17 @@ public class DestructibleBoxComponent extends Component {
 
     private static Texture texture = null;
 
+    private boolean isExploding = false;
+
     public void explode() {
+        if (isExploding)
+            return;
+
+        isExploding = true;
+
         if (texture == null) {
-            EntityView view = (EntityView) entity.getViewComponent().getView();
-            ImageView imageView = (ImageView) view.getNodes().get(0);
+            //EntityView view = (EntityView) entity.getViewComponent().getView();
+            ImageView imageView = (ImageView) entity.getViewComponent().getChildren().get(0);
             texture = new Texture(imageView.getImage());
         }
 

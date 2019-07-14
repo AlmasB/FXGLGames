@@ -33,7 +33,7 @@ public class EnemyAttackZombieComponent extends Component {
     @Override
     public void onAdded() {
         entity.getTransformComponent().setScaleOrigin(new Point2D(245 / 4 / 2, 352 / 4 / 2));
-        entity.setView(texture);
+        entity.getViewComponent().addChild(texture);
 
         texture.setOnCycleFinished(() -> {
             if (player != null) {

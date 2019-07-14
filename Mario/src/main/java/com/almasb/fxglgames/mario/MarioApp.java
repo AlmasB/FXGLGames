@@ -98,13 +98,11 @@ public class MarioApp extends GameApplication {
                         .forEach(btn -> {
                             btn.removeComponent(CollidableComponent.class);
 
-                            // TODO: easy access of set views
-                            //KeyView view = btn.getViewComponent().getChildView() ? or may getMainView also?;
-
                             Entity keyEntity = btn.getObject("keyEntity");
                             keyEntity.setProperty("activated", true);
 
-                            KeyView view = (KeyView) ((EntityView) keyEntity.getView()).getNodes().get(0);
+                            KeyView view = (KeyView) keyEntity.getViewComponent().getChildren().get(0);
+                            //KeyView view = (KeyView) ((EntityView) keyEntity.getView()).getNodes().get(0);
                             view.setKeyColor(Color.RED);
 
                             makeExitDoor();
