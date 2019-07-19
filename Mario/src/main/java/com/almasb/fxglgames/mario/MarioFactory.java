@@ -3,6 +3,8 @@ package com.almasb.fxglgames.mario;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.components.LiftComponent;
 import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
+import com.almasb.fxgl.dsl.components.OffscreenPauseComponent;
+import com.almasb.fxgl.dsl.components.view.ChildViewComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
@@ -18,6 +20,7 @@ import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import com.almasb.fxgl.ui.FontType;
 import com.almasb.fxglgames.mario.components.*;
 import com.almasb.fxglgames.mario.view.ScrollingBackgroundView;
+import com.almasb.fxglgames.mario.view.TextViewComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
@@ -384,6 +387,22 @@ public class MarioFactory implements EntityFactory {
                 .with(new IrremovableComponent())
                 .with(new CatapultLineIndicatorComponent())
                 .zIndex(5000)
+                .build();
+    }
+
+    /* ENEMIES */
+
+    @Spawns("enemyTurret")
+    public Entity newEnemyTurret(SpawnData data) {
+        return entityBuilder()
+                .type(ENEMY)
+                .from(data)
+                .view(new Rectangle(data.<Integer>get("width"), data.<Integer>get("height")))
+                .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
+                .with(new CollidableComponent(true))
+                .with(new EnemyTurretComponent())
+                .with(new OffscreenPauseComponent())
+                .with(new TextViewComponent("Turret"))
                 .build();
     }
 }
