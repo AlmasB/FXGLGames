@@ -6,3 +6,8 @@ Textures from https://cga-creative-game-assets.itch.io/gold-2d-mobile-ui-for-cas
 Coin https://opengameart.org/content/coin-animation
 
 Bone https://opengameart.org/content/throwing-bone
+
+## Contributions
+
+The turret textures were created by [Chun Ho Choi](https://chc40.brighton.domains/Index.html).
+Please contact him for license details.

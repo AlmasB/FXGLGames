@@ -11,8 +11,9 @@ import javafx.scene.shape.Rectangle;
 public class TextViewComponent extends ChildViewComponent {
 
     public TextViewComponent(String message) {
-        super(0, 35);
+        super(0, 0);
 
-        getViewRoot().getChildren().add(FXGL.getUIFactory().newText(message, Color.WHITE, 24));
+
+        //getViewRoot().getChildren().add(FXGL.getUIFactory().newText(message, Color.WHITE, 24));
     }
 }

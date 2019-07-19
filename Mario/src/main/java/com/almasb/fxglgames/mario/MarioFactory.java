@@ -397,12 +397,23 @@ public class MarioFactory implements EntityFactory {
         return entityBuilder()
                 .type(ENEMY)
                 .from(data)
-                .view(new Rectangle(data.<Integer>get("width"), data.<Integer>get("height")))
+                .view("enemies/turret/sprite_0.png")
                 .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
                 .with(new CollidableComponent(true))
                 .with(new EnemyTurretComponent())
                 .with(new OffscreenPauseComponent())
-                .with(new TextViewComponent("Turret"))
+                .build();
+    }
+
+    @Spawns("enemyTurretProjectile")
+    public Entity newEnemyTurretProjectile(SpawnData data) {
+        return entityBuilder()
+                .type(ENEMY)
+                .from(data)
+                .viewWithBBox("enemies/turret/projectile.png")
+                .with(new CollidableComponent(true))
+                .with(new ProjectileComponent(data.get("direction"), 750))
+                .with(new OffscreenCleanComponent())
                 .build();
     }
 }
