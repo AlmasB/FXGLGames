@@ -2,8 +2,8 @@ package com.almasb.fxglgames.mario;
 
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.*;
+import com.almasb.fxgl.dsl.handlers.OneTimeCollisionHandler;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.level.Level;
@@ -13,6 +13,7 @@ import com.almasb.fxgl.input.view.KeyView;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.scene.Viewport;
+import com.almasb.fxglgames.mario.collisions.PlayerButtonHandler;
 import com.almasb.fxglgames.mario.collisions.PlayerCoinHandler;
 import com.almasb.fxglgames.mario.collisions.PlayerPortalHandler;
 import com.almasb.fxglgames.mario.components.*;
@@ -39,7 +40,7 @@ public class MarioApp extends GameApplication {
 
     private static final int MAX_LEVEL = 21;
     private static final int STARTING_LEVEL = 0;
-    private static final boolean DEVELOPING_NEW_LEVEL = true;
+    private static final boolean DEVELOPING_NEW_LEVEL = false;
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -102,7 +103,6 @@ public class MarioApp extends GameApplication {
                             keyEntity.setProperty("activated", true);
 
                             KeyView view = (KeyView) keyEntity.getViewComponent().getChildren().get(0);
-                            //KeyView view = (KeyView) ((EntityView) keyEntity.getView()).getNodes().get(0);
                             view.setKeyColor(Color.RED);
 
                             makeExitDoor();
@@ -193,22 +193,9 @@ public class MarioApp extends GameApplication {
         getPhysicsWorld().setGravity(0, 760);
         getPhysicsWorld().addCollisionHandler(new PlayerCoinHandler());
         getPhysicsWorld().addCollisionHandler(new PlayerPortalHandler());
+        getPhysicsWorld().addCollisionHandler(new PlayerButtonHandler());
 
-        onCollisionBegin(PLAYER, DOOR_BOT, (player, door) -> {
-            door.removeComponent(CollidableComponent.class);
-
-            levelEndScene.onLevelFinish();
-
-            // the above runs in its own scene, so fade will wait until
-            // the user exits that scene
-            getGameScene().getViewport().fade(() -> {
-                nextLevel();
-            });
-        });
-
-        onCollisionBegin(PLAYER, EXIT_SIGN, (player, sign) -> {
-            sign.removeComponent(CollidableComponent.class);
-
+        onCollisionOneTimeOnly(PLAYER, EXIT_SIGN, (player, sign) -> {
             var texture = texture("exit_sign.png").brighter();
             texture.setTranslateX(sign.getX() + 9);
             texture.setTranslateY(sign.getY() + 13);
@@ -220,44 +207,36 @@ public class MarioApp extends GameApplication {
             runOnce(() -> getGameScene().removeGameView(gameView), Duration.seconds(1.6));
         });
 
-        getPhysicsWorld().addCollisionHandler(new CollisionHandler(PLAYER, BUTTON) {
-            @Override
-            protected void onCollisionBegin(Entity player, Entity btn) {
-                Entity keyEntity = btn.getObject("keyEntity");
-
-                if (!keyEntity.isActive()) {
-                    keyEntity.setProperty("activated", false);
-                    getGameWorld().addEntity(keyEntity);
-                }
-
-                keyEntity.getViewComponent().setOpacity(1);
-            }
-
-            @Override
-            protected void onCollisionEnd(Entity player, Entity btn) {
-                Entity keyEntity = btn.getObject("keyEntity");
-                if (!keyEntity.getBoolean("activated")) {
-                    keyEntity.getViewComponent().setOpacity(0);
-                }
-            }
+        onCollisionOneTimeOnly(PLAYER, EXIT_TRIGGER, (player, trigger) -> {
+            makeExitDoor();
         });
 
-        onCollisionBegin(PLAYER, EXIT_TRIGGER, (player, trigger) -> {
-            trigger.removeComponent(CollidableComponent.class);
+        onCollisionOneTimeOnly(PLAYER, DOOR_BOT, (player, door) -> {
+            levelEndScene.onLevelFinish();
 
-            makeExitDoor();
+            // the above runs in its own scene, so fade will wait until
+            // the user exits that scene
+            getGameScene().getViewport().fade(() -> {
+                nextLevel();
+            });
+        });
+
+        onCollisionOneTimeOnly(PLAYER, MESSAGE_PROMPT, (player, prompt) -> {
+            prompt.getViewComponent().setOpacity(1);
+
+            despawnWithDelay(prompt, Duration.seconds(4.5));
+        });
+
+        onCollisionOneTimeOnly(PLAYER, TIMEOUT_BOX, (player, box) -> {
+            box.getComponent(TimeoutBoxComponent.class).startCountdown();
+        });
+
+        onCollisionOneTimeOnly(PLAYER, LOOT_BOX, (player, box) -> {
+            box.getComponent(LootBoxComponent.class).open();
         });
 
         onCollisionBegin(PLAYER, ENEMY, (player, enemy) -> {
             player.getComponent(PlayerComponent.class).onHit(enemy);
-        });
-
-        onCollisionBegin(PLAYER, MESSAGE_PROMPT, (player, prompt) -> {
-            // TODO: can we add something like SingleCollidable?
-            prompt.removeComponent(CollidableComponent.class);
-            prompt.getViewComponent().setOpacity(1);
-
-            runOnce(() -> prompt.removeFromWorld(), Duration.seconds(4.5));
         });
 
         onCollisionBegin(PLAYER, QUESTION, (player, question) -> {
@@ -269,18 +248,6 @@ public class MarioApp extends GameApplication {
                     question.removeFromWorld();
                 }
             });
-        });
-
-        onCollisionBegin(PLAYER, TIMEOUT_BOX, (player, box) -> {
-            box.getComponent(CollidableComponent.class).setValue(false);
-
-            box.getComponent(TimeoutBoxComponent.class).startCountdown();
-        });
-
-        onCollisionBegin(PLAYER, LOOT_BOX, (player, box) -> {
-            box.getComponent(CollidableComponent.class).setValue(false);
-
-            box.getComponent(LootBoxComponent.class).open();
         });
 
         onCollisionBegin(PLAYER, JUMP_PAD, (player, pad) -> {
