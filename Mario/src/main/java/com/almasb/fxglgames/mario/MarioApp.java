@@ -2,7 +2,6 @@ package com.almasb.fxglgames.mario;
 
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.*;
-import com.almasb.fxgl.dsl.handlers.OneTimeCollisionHandler;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.components.CollidableComponent;
@@ -40,7 +39,7 @@ public class MarioApp extends GameApplication {
 
     private static final int MAX_LEVEL = 21;
     private static final int STARTING_LEVEL = 0;
-    private static final boolean DEVELOPING_NEW_LEVEL = false;
+    private static final boolean DEVELOPING_NEW_LEVEL = true;
 
     @Override
     protected void initSettings(GameSettings settings) {

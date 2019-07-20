@@ -4,7 +4,7 @@ import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.components.LiftComponent;
 import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
 import com.almasb.fxgl.dsl.components.OffscreenPauseComponent;
-import com.almasb.fxgl.dsl.components.view.ChildViewComponent;
+import com.almasb.fxgl.dsl.components.ProjectileComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
@@ -20,7 +20,6 @@ import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import com.almasb.fxgl.ui.FontType;
 import com.almasb.fxglgames.mario.components.*;
 import com.almasb.fxglgames.mario.view.ScrollingBackgroundView;
-import com.almasb.fxglgames.mario.view.TextViewComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
@@ -103,7 +102,6 @@ public class MarioFactory implements EntityFactory {
                 .from(data)
                 .bbox(new HitBox(new Point2D(5,5), BoundingShape.circle(12)))
                 .bbox(new HitBox(new Point2D(10,25), BoundingShape.box(10, 17)))
-                //.bbox(new HitBox(BoundingShape.box(32, 42)))
                 .with(physics)
                 .with(new CollidableComponent(true))
                 .with(new IrremovableComponent())
@@ -161,17 +159,6 @@ public class MarioFactory implements EntityFactory {
                 .viewWithBBox(texture("button.png", 20, 18))
                 .with(new CollidableComponent(true))
                 .with("keyEntity", keyEntity)
-                .build();
-    }
-
-    @Spawns("enemyBox")
-    public Entity newEnemyBox(SpawnData data) {
-        return entityBuilder()
-                .type(ENEMY)
-                .from(data)
-                .bbox(new HitBox(new Point2D(10, 10), BoundingShape.box(data.<Integer>get("width") - 20, data.<Integer>get("height") - 20)))
-                .with(new EnemyBoxComponent())
-                .with(new CollidableComponent(true))
                 .build();
     }
 
@@ -261,55 +248,6 @@ public class MarioFactory implements EntityFactory {
                 .build();
     }
 
-    @Spawns("enemyZombie")
-    public Entity newEnemyZombie(SpawnData data) {
-        int patrolEndX = data.get("patrolEndX");
-
-        var e = entityBuilder()
-                .type(ENEMY)
-                .from(data)
-                .bbox(new HitBox(new Point2D(10, 20), BoundingShape.box(232 / 4 - 20, 390 / 4 - 20)))
-                .with(new LiftComponent().xAxisDistanceDuration(patrolEndX - data.getX(), Duration.seconds(FXGLMath.random(1, 3))))
-                .with(new EnemyZombieComponent())
-                .with(new CollidableComponent(true))
-                .build();
-
-        // fix zombie's height
-        e.setOnActive(() -> e.translateY(-25));
-
-        return e;
-    }
-
-    @Spawns("enemyAttackZombie")
-    public Entity newEnemyAttackZombie(SpawnData data) {
-        var e = entityBuilder()
-                .type(ENEMY)
-                .from(data)
-                .bbox(new HitBox(new Point2D(10, 20), BoundingShape.box(245 / 4 - 20, 352 / 4 - 20)))
-                .with(new EnemyAttackZombieComponent())
-                .with(new CollidableComponent(true))
-                .build();
-
-        // fix zombie's height
-        e.setOnActive(() -> {
-            e.translateY(-15);
-        });
-
-        return e;
-    }
-
-    @Spawns("enemyAttackZombieProjectile")
-    public Entity newEnemyAttackZombieProjectile(SpawnData data) {
-        return entityBuilder()
-                .type(ENEMY)
-                .from(data)
-                .viewWithBBox(texture("enemies/zombie/bone.gif").toAnimatedTexture(4, Duration.seconds(0.46)).loop())
-                .with(new CollidableComponent(true))
-                .with(new ProjectileComponent(data.get("direction"), 350))
-                .with(new OffscreenCleanComponent())
-                .build();
-    }
-
     @Spawns("timeoutBox")
     public Entity newTimeoutBox(SpawnData data) {
         int duration = data.get("duration");
@@ -391,6 +329,66 @@ public class MarioFactory implements EntityFactory {
     }
 
     /* ENEMIES */
+
+    @Spawns("enemyBox")
+    public Entity newEnemyBox(SpawnData data) {
+        return entityBuilder()
+                .type(ENEMY)
+                .from(data)
+                .bbox(new HitBox(new Point2D(10, 10), BoundingShape.box(data.<Integer>get("width") - 20, data.<Integer>get("height") - 20)))
+                .with(new EnemyBoxComponent())
+                .with(new CollidableComponent(true))
+                .build();
+    }
+
+    @Spawns("enemyZombie")
+    public Entity newEnemyZombie(SpawnData data) {
+        int patrolEndX = data.get("patrolEndX");
+
+        var e = entityBuilder()
+                .type(ENEMY)
+                .from(data)
+                .bbox(new HitBox(new Point2D(10, 20), BoundingShape.box(232 / 4 - 20, 390 / 4 - 20)))
+                .with(new LiftComponent().xAxisDistanceDuration(patrolEndX - data.getX(), Duration.seconds(FXGLMath.random(1, 3))))
+                .with(new EnemyZombieComponent())
+                .with(new CollidableComponent(true))
+                .build();
+
+        // fix zombie's height
+        e.setOnActive(() -> e.translateY(-25));
+
+        return e;
+    }
+
+    @Spawns("enemyAttackZombie")
+    public Entity newEnemyAttackZombie(SpawnData data) {
+        var e = entityBuilder()
+                .type(ENEMY)
+                .from(data)
+                .bbox(new HitBox(new Point2D(10, 20), BoundingShape.box(245 / 4 - 20, 352 / 4 - 20)))
+                .with(new EnemyAttackZombieComponent())
+                .with(new CollidableComponent(true))
+                .build();
+
+        // fix zombie's height
+        e.setOnActive(() -> {
+            e.translateY(-15);
+        });
+
+        return e;
+    }
+
+    @Spawns("enemyAttackZombieProjectile")
+    public Entity newEnemyAttackZombieProjectile(SpawnData data) {
+        return entityBuilder()
+                .type(ENEMY)
+                .from(data)
+                .viewWithBBox(texture("enemies/zombie/bone.gif").toAnimatedTexture(4, Duration.seconds(0.46)).loop())
+                .with(new CollidableComponent(true))
+                .with(new ProjectileComponent(data.get("direction"), 350))
+                .with(new OffscreenCleanComponent())
+                .build();
+    }
 
     @Spawns("enemyTurret")
     public Entity newEnemyTurret(SpawnData data) {
