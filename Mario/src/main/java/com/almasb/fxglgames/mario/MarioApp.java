@@ -238,6 +238,20 @@ public class MarioApp extends GameApplication {
             player.getComponent(PlayerComponent.class).onHit(enemy);
         });
 
+        onCollisionBegin(PLAYER, PLAYER_GUARD, (player, guard) -> {
+            guard.getComponent(CollidableComponent.class).addIgnoredType(PLAYER);
+
+            guard.setProperty("isActivated", true);
+            guard.addComponent(new CircularMovementComponent(10, 600));
+        });
+
+        onCollisionBegin(PLAYER_GUARD, ENEMY, (guard, enemy) -> {
+            if (guard.getBoolean("isActivated")) {
+                guard.removeFromWorld();
+                enemy.removeFromWorld();
+            }
+        });
+
         onCollisionBegin(PLAYER, QUESTION, (player, question) -> {
             var q = question.getString("question");
             var a = question.getString("answer");

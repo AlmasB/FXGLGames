@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="200" height="10" tilewidth="70" tileheight="70" infinite="0" nextlayerid="6" nextobjectid="283">
+<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="200" height="10" tilewidth="70" tileheight="70" infinite="0" nextlayerid="6" nextobjectid="284">
  <properties>
   <property name="star1time" type="float" value="200"/>
  </properties>
@@ -144,5 +144,6 @@
   <object id="280" type="coin" x="5040" y="70" width="70" height="70"/>
   <object id="281" type="coin" x="5180" y="70" width="70" height="70"/>
   <object id="282" type="enemyBox" gid="61" x="4970" y="140" width="70" height="70"/>
+  <object id="283" type="playerGuard" x="700" y="560" width="70" height="70"/>
  </objectgroup>
 </map>

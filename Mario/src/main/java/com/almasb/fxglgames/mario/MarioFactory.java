@@ -328,6 +328,18 @@ public class MarioFactory implements EntityFactory {
                 .build();
     }
 
+    @Spawns("playerGuard")
+    public Entity newPlayerGuard(SpawnData data) {
+        return entityBuilder()
+                .type(PLAYER_GUARD)
+                .from(data)
+                .view(new Rectangle(70, 70, Color.LIGHTGREEN))
+                .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
+                .with("isActivated", false)
+                .with(new CollidableComponent(true))
+                .build();
+    }
+
     /* ENEMIES */
 
     @Spawns("enemyBox")
