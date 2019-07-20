@@ -115,6 +115,8 @@ public class MarioApp extends GameApplication {
                 if (getb("canCatapult")) {
                     Point2D vector = getInput().getVectorToMouse(player.getPosition());
 
+                    Entity catapult = geto("catapult");
+                    catapult.getComponent(CatapultComponent.class).activate();
                     player.getComponent(PlayerComponent.class).superJump(vector.normalize().multiply(900));
                 }
             }
@@ -273,6 +275,7 @@ public class MarioApp extends GameApplication {
             @Override
             protected void onCollisionBegin(Entity player, Entity catapult) {
                 set("canCatapult", true);
+                set("catapult", catapult);
             }
 
             @Override

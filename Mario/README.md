@@ -11,3 +11,5 @@ Bone https://opengameart.org/content/throwing-bone
 
 The turret textures were created by [Chun Ho Choi](https://chc40.brighton.domains/Index.html).
 Please contact him for license details.
+
+The catapult textures were created by Caleb Smith. Please contact him for license details.

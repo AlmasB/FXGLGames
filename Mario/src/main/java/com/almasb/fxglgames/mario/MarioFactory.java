@@ -21,6 +21,7 @@ import com.almasb.fxgl.ui.FontType;
 import com.almasb.fxglgames.mario.components.*;
 import com.almasb.fxglgames.mario.view.ScrollingBackgroundView;
 import javafx.geometry.Point2D;
+import javafx.scene.Group;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -302,26 +303,35 @@ public class MarioFactory implements EntityFactory {
 
     @Spawns("catapult")
     public Entity newCatapult(SpawnData data) {
-        var rect = new Rectangle(data.<Integer>get("width"), data.<Integer>get("height"), null);
-        rect.setStroke(Color.BLACK);
-
         return entityBuilder()
                 .type(CATAPULT)
                 .from(data)
-                .view(rect)
+                .view(texture("catapult.png", 140, 140))
                 .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
                 .with(new CollidableComponent(true))
+                .with(new CatapultComponent())
                 .build();
     }
 
     @Spawns("catapultLineIndicator")
     public Entity newCatapultLineIndicator(SpawnData data) {
-        var rect = new Rectangle(150, 15, null);
+        var rect = new Rectangle(150, 10, null);
         rect.setStroke(Color.BLUE);
+        rect.setStrokeWidth(2);
+
+        var arrow1 = new Rectangle(25, 2.5, Color.BLUE);
+        arrow1.setTranslateX(126);
+        arrow1.setTranslateY(-5);
+        arrow1.setRotate(20);
+
+        var arrow2 = new Rectangle(25, 2.5, Color.BLUE);
+        arrow2.setRotate(-20);
+        arrow2.setTranslateX(126);
+        arrow2.setTranslateY(12);
 
         return entityBuilder()
                 .from(data)
-                .view(rect)
+                .view(new Group(rect, arrow1, arrow2))
                 .with(new IrremovableComponent())
                 .with(new CatapultLineIndicatorComponent())
                 .zIndex(5000)

@@ -128,7 +128,7 @@
   <object id="268" type="platform" x="9240" y="280" width="140" height="70"/>
   <object id="269" type="platform" x="9590" y="490" width="140" height="70"/>
   <object id="270" type="platform" x="8470" y="630" width="1540" height="70"/>
-  <object id="271" type="catapult" x="490" y="560" width="70" height="70"/>
+  <object id="271" type="catapult" x="490" y="490" width="140" height="140"/>
   <object id="272" type="catapult" x="3570" y="560" width="70" height="70"/>
   <object id="273" type="catapult" x="4690" y="560" width="70" height="70"/>
   <object id="274" type="coin" x="490" y="210" width="70" height="70"/>
