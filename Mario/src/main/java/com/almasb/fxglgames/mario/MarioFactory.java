@@ -338,13 +338,25 @@ public class MarioFactory implements EntityFactory {
 
     @Spawns("playerGuard")
     public Entity newPlayerGuard(SpawnData data) {
+        var rect = new Rectangle(15, 15, Color.RED);
+        rect.setStrokeWidth(1.5);
+        rect.setStroke(Color.BLUEVIOLET);
+        rect.setArcWidth(10);
+        rect.setArcHeight(10);
+
         return entityBuilder()
                 .type(PLAYER_GUARD)
                 .from(data)
-                .view(new Rectangle(70, 70, Color.LIGHTGREEN))
+                .view(rect)
                 .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
                 .with("isActivated", false)
+                .with(
+                        new LiftComponent()
+                                .xAxisDistanceDuration(FXGLMath.random(5, 25), Duration.seconds(FXGLMath.random(0.5, 1.5)))
+                                .yAxisDistanceDuration(FXGLMath.random(5, 25), Duration.seconds(FXGLMath.random(0.5, 1.5)))
+                )
                 .with(new CollidableComponent(true))
+                .zIndex(2000)
                 .build();
     }
 

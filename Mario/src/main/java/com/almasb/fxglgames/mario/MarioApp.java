@@ -40,6 +40,7 @@ public class MarioApp extends GameApplication {
     private static final int MAX_LEVEL = 21;
     private static final int STARTING_LEVEL = 0;
     private static final boolean DEVELOPING_NEW_LEVEL = true;
+    private static final boolean SHOW_BG = false;
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -175,7 +176,7 @@ public class MarioApp extends GameApplication {
 
         set("player", player);
 
-        if (isRelease()) {
+        if (SHOW_BG) {
             for (int i = 10; i >= 0; i--) {
                 spawn("background", new SpawnData(0, 0).put("index", i));
             }
@@ -237,7 +238,7 @@ public class MarioApp extends GameApplication {
         });
 
         onCollisionBegin(PLAYER, ENEMY, (player, enemy) -> {
-            //player.getComponent(PlayerComponent.class).onHit(enemy);
+            player.getComponent(PlayerComponent.class).onHit(enemy);
 
             if (enemy.getProperties().exists("isProjectile")) {
                 enemy.removeFromWorld();
@@ -248,7 +249,8 @@ public class MarioApp extends GameApplication {
             guard.getComponent(CollidableComponent.class).addIgnoredType(PLAYER);
 
             guard.setProperty("isActivated", true);
-            guard.addComponent(new CircularMovementComponent(10, 600));
+            guard.addComponent(new PlayerGuardComponent());
+            //guard.addComponent(new CircularMovementComponent(10, 600));
         });
 
         onCollisionBegin(PLAYER_GUARD, ENEMY, (guard, enemy) -> {
