@@ -1,16 +1,14 @@
 package com.almasb.fxglgames.mario;
 
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.dsl.components.LiftComponent;
-import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
-import com.almasb.fxgl.dsl.components.OffscreenPauseComponent;
-import com.almasb.fxgl.dsl.components.ProjectileComponent;
+import com.almasb.fxgl.dsl.components.*;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.components.IrremovableComponent;
+import com.almasb.fxgl.entity.components.TimeComponent;
 import com.almasb.fxgl.input.view.KeyView;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
@@ -430,10 +428,42 @@ public class MarioFactory implements EntityFactory {
         return entityBuilder()
                 .type(ENEMY)
                 .from(data)
+                .with("isProjectile", true)
                 .viewWithBBox("enemies/turret/projectile.png")
                 .with(new CollidableComponent(true))
                 .with(new ProjectileComponent(data.get("direction"), 750))
                 .with(new OffscreenCleanComponent())
+                .build();
+    }
+
+    @Spawns("enemyMissileTurret")
+    public Entity newEnemyMissileTurret(SpawnData data) {
+        return entityBuilder()
+                .type(ENEMY)
+                .from(data)
+                .view("enemies/turret/sprite_0.png")
+                .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
+                .with(new CollidableComponent(true))
+                .with(new EnemyMissileTurretComponent())
+                .with(new OffscreenPauseComponent())
+                .build();
+    }
+
+    // TODO: subtypes, e.g. enemy projectile?
+
+    @Spawns("enemyMissileTurretProjectile")
+    public Entity newEnemyMissileTurretProjectile(SpawnData data) {
+        return entityBuilder()
+                .type(ENEMY)
+                .from(data)
+                .viewWithBBox(texture("enemies/turret/missile_turret_projectile.png").toAnimatedTexture(5, Duration.seconds(0.8)).loop())
+                .with("isProjectile", true)
+                .scale(1.5, 1.5)
+                .with(new TimeComponent())
+                .with(new CollidableComponent(true))
+                .with(new ProjectileComponent(new Point2D(0, -1), 150))
+                .with(new EffectComponent())
+                .with(new HomingMissileProjectileComponent())
                 .build();
     }
 }

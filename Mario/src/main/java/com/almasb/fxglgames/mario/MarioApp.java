@@ -237,7 +237,11 @@ public class MarioApp extends GameApplication {
         });
 
         onCollisionBegin(PLAYER, ENEMY, (player, enemy) -> {
-            player.getComponent(PlayerComponent.class).onHit(enemy);
+            //player.getComponent(PlayerComponent.class).onHit(enemy);
+
+            if (enemy.getProperties().exists("isProjectile")) {
+                enemy.removeFromWorld();
+            }
         });
 
         onCollisionBegin(PLAYER, PLAYER_GUARD, (player, guard) -> {
