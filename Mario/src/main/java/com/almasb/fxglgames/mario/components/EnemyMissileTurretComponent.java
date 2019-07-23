@@ -48,12 +48,10 @@ public class EnemyMissileTurretComponent extends ChildViewComponent {
             player = FXGL.geto("player");
         }
 
-        //rotate.setAngle(new Vec2(player.getPosition().subtract(entity.getPosition())).angle());
-
         if (shootTimer.elapsed(Duration.seconds(3.7))) {
             if (player != null) {
                 FXGL.spawn("enemyMissileTurretProjectile",
-                        new SpawnData(entity.getPosition().add(rotate.getPivotX() - 10, rotate.getPivotY()))
+                        new SpawnData(entity.getPosition().add(rotate.getPivotX() - 13, rotate.getPivotY()))
                                 .put("direction", player.getPosition().subtract(entity.getPosition()))
                 );
             }

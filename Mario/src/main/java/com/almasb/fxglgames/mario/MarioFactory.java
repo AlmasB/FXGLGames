@@ -10,6 +10,9 @@ import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.components.IrremovableComponent;
 import com.almasb.fxgl.entity.components.TimeComponent;
 import com.almasb.fxgl.input.view.KeyView;
+import com.almasb.fxgl.particle.ParticleComponent;
+import com.almasb.fxgl.particle.ParticleEmitter;
+import com.almasb.fxgl.particle.ParticleEmitters;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
@@ -20,6 +23,7 @@ import com.almasb.fxglgames.mario.components.*;
 import com.almasb.fxglgames.mario.view.ScrollingBackgroundView;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -462,19 +466,27 @@ public class MarioFactory implements EntityFactory {
     }
 
     // TODO: subtypes, e.g. enemy projectile?
+    // TODO: fix particles removeGameView() crash
 
     @Spawns("enemyMissileTurretProjectile")
     public Entity newEnemyMissileTurretProjectile(SpawnData data) {
+        ParticleEmitter emitter = ParticleEmitters.newSmokeEmitter();
+        emitter.setBlendMode(BlendMode.SRC_OVER);
+        emitter.setSize(1, 4);
+        emitter.setSpawnPointFunction((i) -> new Point2D(7, 13));
+        emitter.setStartColor(Color.LIGHTGRAY);
+        emitter.setEndColor(Color.BLACK);
+
         return entityBuilder()
                 .type(ENEMY)
                 .from(data)
                 .viewWithBBox(texture("enemies/turret/missile_turret_projectile.png").toAnimatedTexture(5, Duration.seconds(0.8)).loop())
                 .with("isProjectile", true)
                 .scale(1.5, 1.5)
-                .with(new TimeComponent())
                 .with(new CollidableComponent(true))
-                .with(new ProjectileComponent(new Point2D(0, -1), 150))
+                .with(new ProjectileComponent(new Point2D(0, -1), 400))
                 .with(new EffectComponent())
+                .with(new ParticleComponent(emitter))
                 .with(new HomingMissileProjectileComponent())
                 .build();
     }
