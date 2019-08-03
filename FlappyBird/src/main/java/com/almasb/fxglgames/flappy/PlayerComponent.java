@@ -32,6 +32,6 @@ public class PlayerComponent extends Component {
     public void jump() {
         acceleration.addLocal(0, -5);
 
-        FXGL.play("jump.wav");
+        //FXGL.play("jump.wav");
     }
 }

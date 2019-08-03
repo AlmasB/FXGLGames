@@ -1,18 +1,24 @@
 package com.almasb.fxglgames.flappy;
 
 import com.almasb.fxgl.animation.Interpolators;
+import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.input.UserAction;
+import com.almasb.fxgl.input.virtual.VirtualButton;
+import com.almasb.fxgl.input.virtual.VirtualControllerOverlay;
+import com.almasb.fxgl.input.virtual.VirtualControllerStyle;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -34,7 +40,9 @@ public class FlappyBirdApp extends GameApplication {
         settings.setHeight(720);
         settings.setTitle("Flappy Bird Clone");
         settings.setVersion("0.3");
-        settings.setFontUI("sf_atarian_system.ttf");
+        settings.setExperimentalNative(true);
+        settings.setApplicationMode(ApplicationMode.DEBUG);
+        //settings.setFontUI("sf_atarian_system.ttf");
     }
 
     @Override
@@ -44,7 +52,7 @@ public class FlappyBirdApp extends GameApplication {
             protected void onActionBegin() {
                 playerComponent.jump();
             }
-        }, KeyCode.SPACE);
+        }, KeyCode.SPACE, VirtualButton.UP);
     }
 
     @Override
@@ -58,7 +66,7 @@ public class FlappyBirdApp extends GameApplication {
     @Override
     protected void initGame() {
         if (loopBGM) {
-            loopBGM("bgm.mp3");
+            //loopBGM("bgm.mp3");
             loopBGM = false;
         }
 
@@ -78,13 +86,21 @@ public class FlappyBirdApp extends GameApplication {
 
     @Override
     protected void initUI() {
-        Text uiScore = getUIFactory().newText("", 72);
+        Text uiScore = new Text("");
+        uiScore.setFont(Font.font(72));
         uiScore.setTranslateX(getAppWidth() - 200);
         uiScore.setTranslateY(50);
         uiScore.fillProperty().bind(getGameState().objectProperty("stageColor"));
         uiScore.textProperty().bind(getGameState().intProperty("score").asString());
 
         getGameScene().addUINode(uiScore);
+
+        VirtualControllerOverlay vcOverlay = new VirtualControllerOverlay(getInput(), VirtualControllerStyle.XBOX);
+
+        Node dpad = vcOverlay.getDpad();
+        Node buttons = vcOverlay.getButtons();
+
+        addUINode(dpad, 0, 500);
     }
 
     @Override
