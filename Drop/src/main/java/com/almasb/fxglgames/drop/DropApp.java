@@ -10,12 +10,10 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.components.CollidableComponent;
-import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
 
-// NOTE: this is crucial, the import pulls in many useful methods
 import static com.almasb.fxgl.dsl.FXGL.*;
+// NOTE: this import above is crucial, it pulls in many useful methods
 
 /**
  * This is an FXGL version of the libGDX simple game tutorial, which can be found
@@ -50,12 +48,6 @@ public class DropApp extends GameApplication {
     }
 
     @Override
-    protected void initInput() {
-        onKey(KeyCode.A, "Move Left", () -> bucket.translateX(-300 * tpf()));
-        onKey(KeyCode.D, "Move Right", () -> bucket.translateX(300 * tpf()));
-    }
-
-    @Override
     protected void initGame() {
         bucket = spawnBucket();
 
@@ -76,6 +68,8 @@ public class DropApp extends GameApplication {
     @Override
     protected void onUpdate(double tpf) {
         getGameWorld().getEntitiesByType(DropType.DROPLET).forEach(droplet -> droplet.translateY(150 * tpf));
+
+        bucket.setX(getInput().getMouseXWorld());
     }
 
     private Entity spawnBucket() {
@@ -83,7 +77,7 @@ public class DropApp extends GameApplication {
                 .type(DropType.BUCKET)
                 .at(getAppWidth() / 2, getAppHeight() - 200)
                 .viewWithBBox("bucket.png")
-                .with(new CollidableComponent(true))
+                .collidable()
                 .buildAndAttach();
     }
 
@@ -92,7 +86,7 @@ public class DropApp extends GameApplication {
                 .type(DropType.DROPLET)
                 .at(FXGLMath.random(getAppWidth() - 64), 0)
                 .viewWithBBox("droplet.png")
-                .with(new CollidableComponent(true))
+                .collidable()
                 .buildAndAttach();
     }
 
