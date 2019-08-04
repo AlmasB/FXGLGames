@@ -2,14 +2,14 @@ package com.almasb.fxglgames.td;
 
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.app.GameView;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.entity.view.EntityView;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
-import com.almasb.fxgl.settings.GameSettings;
+import com.almasb.fxglgames.td.collision.BulletEnemyHandler;
 import com.almasb.fxglgames.td.event.EnemyKilledEvent;
 import com.almasb.fxglgames.td.event.EnemyReachedGoalEvent;
 import com.almasb.fxglgames.td.tower.TowerIcon;
@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * This is an example of a tower defense game.
@@ -73,7 +75,7 @@ public class TowerDefenseApp extends GameApplication {
         Input input = getInput();
 
         input.addAction(new UserAction("Place Tower") {
-            private Rectangle2D worldBounds = new Rectangle2D(0, 0, getWidth(), getHeight() - 100 - 40);
+            private Rectangle2D worldBounds = new Rectangle2D(0, 0, getAppWidth(), getAppHeight() - 100 - 40);
 
             @Override
             protected void onActionBegin() {
@@ -91,6 +93,8 @@ public class TowerDefenseApp extends GameApplication {
 
     @Override
     protected void initGame() {
+        getGameWorld().addEntityFactory(new TowerDefenseFactory());
+
         // TODO: read this from external level data
         waypoints.addAll(Arrays.asList(
                 new Point2D(700, 0),
@@ -103,10 +107,15 @@ public class TowerDefenseApp extends GameApplication {
         BooleanProperty enemiesLeft = new SimpleBooleanProperty();
         enemiesLeft.bind(getGameState().intProperty("numEnemies").greaterThan(0));
 
-        getMasterTimer().runAtIntervalWhile(this::spawnEnemy, Duration.seconds(1), enemiesLeft);
+        getGameTimer().runAtIntervalWhile(this::spawnEnemy, Duration.seconds(1), enemiesLeft);
 
         getEventBus().addEventHandler(EnemyKilledEvent.ANY, this::onEnemyKilled);
         getEventBus().addEventHandler(EnemyReachedGoalEvent.ANY, e -> gameOver());
+    }
+
+    @Override
+    protected void initPhysics() {
+        getPhysicsWorld().addCollisionHandler(new BulletEnemyHandler());
     }
 
     // TODO: this should be tower data
@@ -115,7 +124,7 @@ public class TowerDefenseApp extends GameApplication {
 
     @Override
     protected void initUI() {
-        Rectangle uiBG = new Rectangle(getWidth(), 100);
+        Rectangle uiBG = new Rectangle(getAppWidth(), 100);
         uiBG.setTranslateY(500);
 
         getGameScene().addUINode(uiBG);
@@ -161,16 +170,14 @@ public class TowerDefenseApp extends GameApplication {
         Point2D position = enemy.getPosition();
 
         Text xMark = getUIFactory().newText("X", Color.RED, 24);
+        xMark.setTranslateX(position.getX());
+        xMark.setTranslateY(position.getY() + 20);
 
-        EntityView view = new EntityView(xMark);
-        view.setTranslateX(position.getX());
-        view.setTranslateY(position.getY() + 20);
-
-        getGameScene().addGameView(view);
+        getGameScene().addGameView(new GameView(xMark, 1000));
     }
 
     private void gameOver() {
-        getDisplay().showMessageBox("Demo Over. Thanks for playing!", this::exit);
+        getDisplay().showMessageBox("Demo Over. Thanks for playing!", getGameController()::exit);
     }
 
     public static void main(String[] args) {

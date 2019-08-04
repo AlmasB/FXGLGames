@@ -1,61 +1,62 @@
 package com.almasb.fxglgames.td;
 
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
 import com.almasb.fxgl.entity.*;
-import com.almasb.fxgl.entity.component.CollidableComponent;
-import com.almasb.fxgl.entity.control.OffscreenCleanControl;
-import com.almasb.fxglgames.td.control.EnemyControl;
-import com.almasb.fxglgames.td.control.TowerControl;
+import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxglgames.td.components.EnemyComponent;
+import com.almasb.fxglgames.td.components.TowerComponent;
 import com.almasb.fxglgames.td.tower.TowerDataComponent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import static com.almasb.fxgl.dsl.FXGL.*;
+
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-@SetEntityFactory
 public class TowerDefenseFactory implements EntityFactory {
 
     @Spawns("Enemy")
     public Entity spawnEnemy(SpawnData data) {
-        return Entities.builder()
+        return entityBuilder()
                 .type(TowerDefenseType.ENEMY)
                 .from(data)
-                .viewFromNodeWithBBox(new Rectangle(40, 40, Color.RED))
+                .viewWithBBox(new Rectangle(40, 40, Color.RED))
                 .with(new CollidableComponent(true))
-                .with(new EnemyControl())
+                .with(new EnemyComponent())
                 .build();
     }
 
     @Spawns("Tower")
     public Entity spawnTower(SpawnData data) {
-        TowerDataComponent towerComponent;
-        try {
-            towerComponent = FXGL.getAssetLoader()
-                    .loadKV("Tower" + data.get("index") + ".kv")
-                    .to(TowerDataComponent.class);
+        TowerDataComponent towerComponent = new TowerDataComponent();
+//        try {
+//            towerComponent = getAssetLoader()
+//                    .loadKV("Tower" + data.get("index") + ".kv")
+//                    .to(TowerDataComponent.class);
+//
+//        } catch (Exception e) {
+//            throw new RuntimeException("Failed to parse KV file: " + e);
+//        }
 
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to parse KV file: " + e);
-        }
-
-        return Entities.builder()
+        return entityBuilder()
                 .type(TowerDefenseType.TOWER)
                 .from(data)
-                .viewFromNode(new Rectangle(40, 40, data.get("color")))
+                .view(new Rectangle(40, 40, data.get("color")))
                 .with(new CollidableComponent(true), towerComponent)
-                .with(new TowerControl())
+                .with(new TowerComponent())
                 .build();
     }
 
     @Spawns("Bullet")
     public Entity spawnBullet(SpawnData data) {
-        return Entities.builder()
+        return entityBuilder()
                 .type(TowerDefenseType.BULLET)
                 .from(data)
-                .viewFromNodeWithBBox(new Rectangle(15, 5, Color.DARKGREY))
+                .viewWithBBox(new Rectangle(15, 5, Color.DARKGREY))
                 .with(new CollidableComponent(true))
-                .with(new OffscreenCleanControl())
+                .with(new OffscreenCleanComponent())
                 .build();
     }
 }
