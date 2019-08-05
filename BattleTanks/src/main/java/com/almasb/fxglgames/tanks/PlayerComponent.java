@@ -48,7 +48,7 @@ public class PlayerComponent extends Component {
         getEntity().getTransformComponent().setRotationOrigin(new Point2D(42, 42));
 
         texture = FXGL.getAssetLoader().loadTexture("player.png");
-        view.setView(texture);
+        view.addChild(texture);
     }
 
     private double speed = 0;

@@ -73,7 +73,7 @@ public class NCCApp extends GameApplication {
         CardFrame cardView = new CardFrame(card);
         cardView.addCardView(getView(entity));
 
-        entity.getViewComponent().setViewFromNode(cardView);
+        entity.getViewComponent().addChild(cardView);
 
         return entity;
     }

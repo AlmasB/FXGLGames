@@ -92,11 +92,11 @@ public class PongFactory implements EntityFactory {
                 .with(new CollidableComponent(true))
                 .build();
 
-            PhysicsComponent batPhysics = new PhysicsComponent();
-            batPhysics.setBodyType(BodyType.KINEMATIC);
-            bat.addComponent(batPhysics);
+        PhysicsComponent batPhysics = new PhysicsComponent();
+        batPhysics.setBodyType(BodyType.KINEMATIC);
+        bat.addComponent(batPhysics);
 
-            bat.addComponent(isPlayer ? new BatComponent() : new EnemyBatComponent());
+        bat.addComponent(isPlayer ? new BatComponent() : new EnemyBatComponent());
 
         return bat;
     }

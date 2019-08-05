@@ -74,7 +74,7 @@ public class ExhaustParticleComponent extends Component {
 
     @Override
     public void onAdded() {
-        entity.setView(new Texture(coloredImages.get(color)));
+        entity.getViewComponent().addChild(new Texture(coloredImages.get(color)));
     }
 
     @Override

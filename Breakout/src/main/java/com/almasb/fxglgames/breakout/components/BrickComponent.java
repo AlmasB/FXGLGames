@@ -42,7 +42,8 @@ public class BrickComponent extends Component {
         lives--;
 
         if (lives == 1) {
-            entity.setView(FXGL.getAssetLoader().loadTexture("brick_blue_cracked.png", 232 / 3, 104 / 3));
+            entity.getViewComponent().clearChildren();
+            entity.getViewComponent().addChild(FXGL.getAssetLoader().loadTexture("brick_blue_cracked.png", 232 / 3, 104 / 3));
         } else if (lives == 0) {
             entity.removeFromWorld();
         }

@@ -1,6 +1,9 @@
 package com.almasb.fxglgames.tictactoe;
 
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.physics.BoundingShape;
+import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxglgames.tictactoe.components.TileComponent;
 
 /**
@@ -15,7 +18,8 @@ public class TileEntity extends Entity {
         setY(y);
         addComponent(new TileValueComponent());
 
-        getViewComponent().setViewFromNode(new TileView(this));
+        getBoundingBoxComponent().addHitBox(new HitBox(BoundingShape.box(FXGL.getAppWidth() / 3, FXGL.getAppWidth() / 3)));
+        getViewComponent().addChild(new TileView(this));
         addComponent(new TileComponent());
     }
 

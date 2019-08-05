@@ -185,7 +185,7 @@ public class PongApp extends GameApplication {
     }
 
     private void initEnemyBat() {
-        spawn("bat", new SpawnData(3 * getAppWidth() / 4 - 20, getAppHeight() / 2 - 30).put("isPlayer", true));
+        spawn("bat", new SpawnData(3 * getAppWidth() / 4 - 20, getAppHeight() / 2 - 30).put("isPlayer", false));
     }
 
     private void playHitAnimation(Entity bat) {
