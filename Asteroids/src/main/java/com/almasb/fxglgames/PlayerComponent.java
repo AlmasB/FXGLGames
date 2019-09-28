@@ -33,7 +33,7 @@ public class PlayerComponent extends Component {
     }
 
     public void shoot() {
-        Point2D center = entity.getCenter();
+        Point2D center = entity.getCenter().subtract(37/2.0, 13/2.0);
 
         Vec2 dir = Vec2.fromAngle(entity.getRotation() - 90);
 

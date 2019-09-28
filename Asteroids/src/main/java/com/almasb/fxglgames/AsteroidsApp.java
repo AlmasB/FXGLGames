@@ -6,8 +6,11 @@ import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
+import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
+
+import java.util.Map;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
@@ -36,6 +39,11 @@ public class AsteroidsApp extends GameApplication {
     }
 
     @Override
+    protected void initGameVars(Map<String, Object> vars) {
+        vars.put("score", 0);
+    }
+
+    @Override
     protected void initGame() {
         getGameWorld().addEntityFactory(new GameEntityFactory());
 
@@ -55,9 +63,20 @@ public class AsteroidsApp extends GameApplication {
     @Override
     protected void initPhysics() {
         onCollisionBegin(EntityType.BULLET, EntityType.ASTEROID, (bullet, asteroid) -> {
+            Point2D explosionSpawnPoint = asteroid.getCenter().subtract(64, 64);
+
+            spawn("explosion", explosionSpawnPoint);
+
             bullet.removeFromWorld();
             asteroid.removeFromWorld();
+
+            inc("score", +100);
         });
+    }
+
+    @Override
+    protected void initUI() {
+        addVarText(50, 50, "score");
     }
 
     public static void main(String[] args) {
