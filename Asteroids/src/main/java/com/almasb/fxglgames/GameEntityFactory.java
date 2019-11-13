@@ -1,6 +1,6 @@
 package com.almasb.fxglgames;
 
-import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
 import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
 import com.almasb.fxgl.dsl.components.ProjectileComponent;
@@ -9,16 +9,10 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
-import com.almasb.fxgl.texture.AnimatedTexture;
-import com.almasb.fxgl.texture.AnimationChannel;
-import com.almasb.fxgl.texture.AnimationChannelData;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
@@ -38,9 +32,11 @@ public class GameEntityFactory implements EntityFactory {
     @Spawns("player")
     public Entity newPlayer(SpawnData data) {
         return entityBuilder()
+                .type(EntityType.PLAYER)
                 .from(data)
                 .viewWithBBox("player.png")
                 .with(new PlayerComponent())
+                .collidable()
                 .build();
     }
 
@@ -71,10 +67,33 @@ public class GameEntityFactory implements EntityFactory {
 
     @Spawns("explosion")
     public Entity newExplosion(SpawnData data) {
+        //play("explosion.wav");
+
         return entityBuilder()
                 .from(data)
                 .view(texture("explosion.png").toAnimatedTexture(16, Duration.seconds(0.66)).play())
                 .with(new ExpireCleanComponent(Duration.seconds(0.66)))
                 .build();
+    }
+
+    @Spawns("scoreText")
+    public Entity newScoreText(SpawnData data) {
+        String text = data.get("text");
+
+        var e = entityBuilder()
+                .from(data)
+                .view(getUIFactory().newText(text, 24))
+                .with(new ExpireCleanComponent(Duration.seconds(0.66)).animateOpacity())
+                .build();
+
+        animationBuilder()
+                .duration(Duration.seconds(0.66))
+                .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
+                .translate(e)
+                .from(new Point2D(data.getX(), data.getY()))
+                .to(new Point2D(data.getX(), data.getY() - 30))
+                .buildAndPlay();
+
+        return e;
     }
 }
