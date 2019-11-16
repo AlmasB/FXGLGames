@@ -57,7 +57,7 @@ public class EnemyComponent extends Component {
             if (FXGLMath.randomBoolean(0.8f)) {
                 shoot();
             }
-            nextAttack = Duration.seconds(5 * FXGLMath.random());
+            nextAttack = Duration.seconds(5 * FXGLMath.random(0.0, 1.0));
             attackTimer.capture();
         }
 

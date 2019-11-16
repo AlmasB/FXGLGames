@@ -69,7 +69,7 @@ public class SpaceRunnerFactory implements EntityFactory {
         emitter.setEmissionRate(1.0);
         emitter.setExpireFunction(i -> Duration.seconds(0.2));
         emitter.setSpawnPointFunction(i -> new Point2D(4, 17 + FXGLMath.random(-5, 5)));
-        emitter.setVelocityFunction(i -> new Point2D(FXGLMath.random(360, 400), FXGLMath.random()));
+        emitter.setVelocityFunction(i -> new Point2D(FXGLMath.random(360, 400), FXGLMath.random(0.0, 1.0)));
         emitter.setAccelerationFunction(() -> Point2D.ZERO);
 
         return entityBuilder()

@@ -26,18 +26,15 @@
 
 package com.almasb.fxglgames.spacerunner;
 
-import com.almasb.fxgl.animation.Animation;
-import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.dsl.views.ScrollingBackgroundView;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxgl.ui.ProgressBar;
-import com.almasb.fxglgames.spacerunner.ai.AIPointComponent;
 import com.almasb.fxglgames.spacerunner.ai.SquadAI;
 import com.almasb.fxglgames.spacerunner.collision.BulletAIPointHandler;
 import com.almasb.fxglgames.spacerunner.collision.BulletEnemyHandler;
@@ -48,7 +45,6 @@ import com.almasb.fxglgames.spacerunner.level.Level;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.HorizontalDirection;
 import javafx.geometry.Orientation;
-import javafx.geometry.Point2D;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -141,9 +137,10 @@ public class SpaceRunnerApp extends GameApplication {
 
         Texture t = getAssetLoader().loadTexture("bg_0.png");
 
-        // TODO:
-//        getGameScene().addGameView(new ScrollingBackgroundView(t.superTexture(t, HorizontalDirection.RIGHT),
-//                Orientation.HORIZONTAL));
+        entityBuilder()
+                .view(new ScrollingBackgroundView(t.superTexture(t, HorizontalDirection.RIGHT),
+                        Orientation.HORIZONTAL))
+                .buildAndAttach();
 
         Entity player = getGameWorld().spawn("Player", 180, getAppHeight() / 2);
 
