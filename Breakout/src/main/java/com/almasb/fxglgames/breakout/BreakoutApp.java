@@ -31,7 +31,6 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.components.IrremovableComponent;
 import com.almasb.fxgl.entity.level.Level;
 import com.almasb.fxgl.entity.level.text.TextLevelLoader;
@@ -132,14 +131,11 @@ public class BreakoutApp extends GameApplication {
         Rectangle bg1 = new Rectangle(getAppWidth(), getAppHeight(), Color.color(0, 0, 0, 0.2));
         bg1.setBlendMode(BlendMode.DARKEN);
 
-        EntityView bg = new EntityView();
-        bg.addNode(bg0);
-        bg.addNode(bg1);
-
         // we add IrremovableComponent because regardless of the level
         // the background and screen bounds stay in the game world
         entityBuilder()
-                .view(bg)
+                .view(bg0)
+                .view(bg1)
                 .with(new IrremovableComponent())
                 .zIndex(-1)
                 .buildAndAttach();
@@ -157,7 +153,7 @@ public class BreakoutApp extends GameApplication {
         emitter.setEmissionRate(0.25);
         emitter.setExpireFunction(i -> Duration.seconds(3));
         emitter.setVelocityFunction(i -> new Point2D(0, -FXGLMath.random(2f, 4f) * 60));
-        emitter.setSpawnPointFunction(i -> new Point2D(FXGLMath.random(0, (float)getAppWidth()), -20 + FXGLMath.random(50)));
+        emitter.setSpawnPointFunction(i -> new Point2D(FXGLMath.random(0, (float)getAppWidth()), -20 + FXGLMath.random(0, 50)));
         emitter.setScaleFunction(i -> new Point2D(FXGLMath.random(-0.05f, 0), FXGLMath.random(-0.05f, 0)));
         emitter.setInterpolator(Interpolators.EXPONENTIAL.EASE_IN());
 

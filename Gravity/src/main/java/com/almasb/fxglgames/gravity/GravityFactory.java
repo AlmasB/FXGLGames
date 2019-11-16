@@ -100,6 +100,7 @@ public class GravityFactory implements EntityFactory {
                 .at(data.getX(), data.getY())
                 .type(ScifiType.PLAYER)
                 .bbox(new HitBox("main", BoundingShape.circle(19)))
+                .view(new Circle(19, 19, 19, Color.BLUE))
                 .with(physics)
                 //.with(new PlayerComponent(staticTexture, animatedTexture))
                 .build();
@@ -127,7 +128,7 @@ public class GravityFactory implements EntityFactory {
         return FXGL.entityBuilder()
                 .at(data.getX(), data.getY())
                 .type(ScifiType.KEY)
-                .viewWithBBox(new Circle(10, Color.GOLD))
+                .viewWithBBox(new Circle(10, 10, 10, Color.GOLD))
                 .with(physics)
                 .build();
     }

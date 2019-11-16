@@ -18,7 +18,7 @@ public class BombermanFactory implements EntityFactory {
     public Entity newBackground(SpawnData data) {
         return FXGL.entityBuilder()
                 .at(0, 0)
-                .view(new EntityView(new Rectangle(600, 600, Color.LIGHTGREEN)))
+                .view(new Rectangle(600, 600, Color.LIGHTGREEN))
                 .zIndex(-1)
                 .build();
     }
@@ -57,7 +57,7 @@ public class BombermanFactory implements EntityFactory {
         return FXGL.entityBuilder()
                 .type(BombermanType.BOMB)
                 .from(data)
-                .viewWithBBox(new Circle(BombermanApp.TILE_SIZE / 2, Color.BLACK))
+                .viewWithBBox(new Circle(BombermanApp.TILE_SIZE / 2, BombermanApp.TILE_SIZE / 2, BombermanApp.TILE_SIZE / 2, Color.BLACK))
                 .with(new BombComponent(data.get("radius")))
                 .build();
     }

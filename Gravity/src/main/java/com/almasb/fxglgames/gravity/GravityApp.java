@@ -55,6 +55,7 @@ public class GravityApp extends GameApplication {
         settings.setMenuEnabled(false);
         settings.setProfilingEnabled(false);
         settings.setCloseConfirmation(false);
+        settings.setDeveloperMenuEnabled(true);
     }
 
     private Entity player;
