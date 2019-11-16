@@ -152,7 +152,7 @@ public class PlayerComponent extends Component {
         Vec2 pos = position.sub(new Vec2(17.5, 10)).addLocal(direction.negate().normalizeLocal().mulLocal(20));
 
         // middle stream
-        Vec2 randVec = Vec2.fromAngle(FXGLMath.toDegrees(FXGLMath.random() * FXGLMath.PI2));
+        Vec2 randVec = Vec2.fromAngle(FXGLMath.toDegrees(FXGLMath.random(0.0, 1.0) * FXGLMath.PI2));
         Vec2 velMid = baseVel.add(randVec.mul(7.5f));
 
         FXGL.entityBuilder()
@@ -161,8 +161,8 @@ public class PlayerComponent extends Component {
                 .buildAndAttach();
 
         // side streams
-        Vec2 randVec1 = Vec2.fromAngle(FXGLMath.toDegrees(FXGLMath.random() * FXGLMath.PI2));
-        Vec2 randVec2 = Vec2.fromAngle(FXGLMath.toDegrees(FXGLMath.random() * FXGLMath.PI2));
+        Vec2 randVec1 = Vec2.fromAngle(FXGLMath.toDegrees(FXGLMath.random(0.0, 1.0) * FXGLMath.PI2));
+        Vec2 randVec2 = Vec2.fromAngle(FXGLMath.toDegrees(FXGLMath.random(0.0, 1.0) * FXGLMath.PI2));
 
         Vec2 velSide1 = baseVel.add(randVec1.mulLocal(2.4f)).addLocal(perpVel);
         Vec2 velSide2 = baseVel.add(randVec2.mulLocal(2.4f)).subLocal(perpVel);

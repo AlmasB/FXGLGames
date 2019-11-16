@@ -84,7 +84,7 @@ public class DropApp extends GameApplication {
     private Entity spawnDroplet() {
         return entityBuilder()
                 .type(DropType.DROPLET)
-                .at(FXGLMath.random(getAppWidth() - 64), 0)
+                .at(FXGLMath.random(0, getAppWidth() - 64), 0)
                 .viewWithBBox("droplet.png")
                 .collidable()
                 .buildAndAttach();

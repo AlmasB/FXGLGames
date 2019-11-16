@@ -41,7 +41,7 @@ public class GeoWarsFactory implements EntityFactory {
     };
 
     private Point2D getRandomSpawnPoint() {
-        return spawnPoints[FXGLMath.random(3)];
+        return spawnPoints[FXGLMath.random(0, 3)];
     }
 
     @Spawns("Player")

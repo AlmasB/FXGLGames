@@ -26,13 +26,15 @@
 
 package com.almasb.fxglgames.geowars.component;
 
-import com.almasb.fxgl.core.collection.ObjectMap;
 import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.texture.Texture;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.almasb.fxgl.core.pool.Pools.free;
 import static com.almasb.fxgl.core.pool.Pools.obtain;
@@ -44,7 +46,7 @@ import static java.lang.Math.min;
 public class ExhaustParticleComponent extends Component {
 
     private static final Image PARTICLE_IMAGE;
-    public static final ObjectMap<Color, Image> coloredImages = new ObjectMap<>();
+    public static final Map<Color, Image> coloredImages = new HashMap<>();
 
     static {
         PARTICLE_IMAGE = FXGL.getAssetLoader().loadTexture("Glow.png").getImage();

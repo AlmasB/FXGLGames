@@ -21,7 +21,7 @@
 
         <mainClassName>com.almasb.fxglgames.drop.DropApp</mainClassName>
 
-        <fxgl.version>dev-SNAPSHOT</fxgl.version>
+        <fxgl.version>11.5</fxgl.version>
     </properties>
     
     <repositories>
