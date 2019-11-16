@@ -8,12 +8,12 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.virtual.VirtualButton;
-import com.almasb.fxgl.input.virtual.VirtualControllerOverlay;
-import com.almasb.fxgl.input.virtual.VirtualControllerStyle;
+import com.almasb.fxgl.input.virtual.VirtualController;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
 import javafx.geometry.Point2D;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -95,12 +95,9 @@ public class FlappyBirdApp extends GameApplication {
 
         getGameScene().addUINode(uiScore);
 
-        VirtualControllerOverlay vcOverlay = new VirtualControllerOverlay(getInput(), VirtualControllerStyle.XBOX);
+        Group dpadView = getInput().createVirtualDpadView();
 
-        Node dpad = vcOverlay.getDpad();
-        Node buttons = vcOverlay.getButtons();
-
-        addUINode(dpad, 0, 500);
+        addUINode(dpadView, 0, 500);
     }
 
     @Override

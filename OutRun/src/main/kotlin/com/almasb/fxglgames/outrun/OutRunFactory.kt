@@ -44,17 +44,11 @@ class OutRunFactory : EntityFactory {
 
     @Spawns("background")
     fun newBackground(data: SpawnData): Entity {
-        val view = EntityView()
-        view.addNode(Rectangle(600.0, 800.0, Color.color(0.0, 0.5, 0.0)))
-
-        val road = Rectangle(440.0, 800.0, Color.color(0.25, 0.25, 0.25))
-        road.translateX = 80.0
-        view.addNode(road)
-
         return FXGL.entityBuilder()
                 .type(EntityType.BACKGROUND)
                 .from(data)
-                .view(view)
+                .view(Rectangle(600.0, 800.0, Color.color(0.0, 0.5, 0.0)))
+                .view(Rectangle(440.0, 800.0, Color.color(0.25, 0.25, 0.25)).also { it.translateX = 80.0 })
                 .zIndex(-5)
                 .build()
     }

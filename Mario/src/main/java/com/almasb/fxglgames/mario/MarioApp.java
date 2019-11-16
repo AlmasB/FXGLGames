@@ -11,7 +11,6 @@ import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.view.KeyView;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsComponent;
-import com.almasb.fxgl.scene.Viewport;
 import com.almasb.fxglgames.mario.collisions.PlayerButtonHandler;
 import com.almasb.fxglgames.mario.collisions.PlayerCoinHandler;
 import com.almasb.fxglgames.mario.collisions.PlayerPortalHandler;

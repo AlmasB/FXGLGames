@@ -1,6 +1,5 @@
 package com.almasb.fxglgames.mario.components;
 
-import com.almasb.fxgl.entity.EntityView;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.particle.ParticleComponent;
 import com.almasb.fxgl.particle.ParticleEmitters;

@@ -2,13 +2,13 @@ package com.almasb.fxglgames.mario;
 
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.components.*;
+import com.almasb.fxgl.dsl.views.ScrollingBackgroundView;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.components.IrremovableComponent;
-import com.almasb.fxgl.entity.components.TimeComponent;
 import com.almasb.fxgl.input.view.KeyView;
 import com.almasb.fxgl.particle.ParticleComponent;
 import com.almasb.fxgl.particle.ParticleEmitter;
@@ -20,7 +20,6 @@ import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import com.almasb.fxgl.ui.FontType;
 import com.almasb.fxglgames.mario.components.*;
-import com.almasb.fxglgames.mario.view.ScrollingBackgroundView;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.effect.BlendMode;
@@ -45,7 +44,7 @@ public class MarioFactory implements EntityFactory {
         int speed = 11 - index;
 
         return entityBuilder()
-                .view(new ScrollingBackgroundView(texture("background/bg_" + index + ".png", getAppWidth(), getAppHeight()), 0.05 * speed))
+                //.view(new ScrollingBackgroundView(texture("background/bg_" + index + ".png", getAppWidth(), getAppHeight()), 0.05 * speed))
                 .zIndex(-1)
                 .with(new IrremovableComponent())
                 .build();
