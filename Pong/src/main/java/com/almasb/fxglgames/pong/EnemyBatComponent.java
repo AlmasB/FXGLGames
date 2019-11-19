@@ -27,7 +27,6 @@
 package com.almasb.fxglgames.pong;
 
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.components.BoundingBoxComponent;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -45,17 +44,16 @@ public class EnemyBatComponent extends BatComponent {
     }
 
     private void moveAI() {
-        BoundingBoxComponent ballBox = ball.getBoundingBoxComponent();
-        BoundingBoxComponent batBox = getEntity().getBoundingBoxComponent();
+        Entity bat = entity;
 
-        boolean isBallToLeft = ballBox.getMaxXWorld() <= batBox.getMinXWorld();
+        boolean isBallToLeft = ball.getRightX() <= bat.getX();
 
-        if (ballBox.getMinYWorld() < batBox.getMinYWorld()) {
+        if (ball.getY() < bat.getY()) {
             if (isBallToLeft)
                 up();
             else
                 down();
-        } else if (ballBox.getMinYWorld() > batBox.getMinYWorld()) {
+        } else if (ball.getY() > bat.getY()) {
             if (isBallToLeft)
                 down();
             else

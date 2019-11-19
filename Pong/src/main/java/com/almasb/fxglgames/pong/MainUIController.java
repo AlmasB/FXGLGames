@@ -36,7 +36,7 @@ import javafx.util.Duration;
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class AppController implements UIController {
+public class MainUIController implements UIController {
 
     @FXML
     private Label labelScorePlayer;

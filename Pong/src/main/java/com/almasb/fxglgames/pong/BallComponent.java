@@ -26,10 +26,12 @@
 
 package com.almasb.fxglgames.pong;
 
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import javafx.geometry.Point2D;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
+import static java.lang.Math.*;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -45,29 +47,24 @@ public class BallComponent extends Component {
     }
 
     private void limitVelocity() {
-        if (Math.abs(physics.getLinearVelocity().getX()) < 5 * 60) {
-            physics.setLinearVelocity(Math.signum(physics.getLinearVelocity().getX()) * 5 * 60,
-                    physics.getLinearVelocity().getY());
+        // we don't want the ball to move too slow in X direction
+        if (abs(physics.getVelocityX()) < 5 * 60) {
+            physics.setVelocityX(signum(physics.getVelocityX()) * 5 * 60);
         }
 
-        if (Math.abs(physics.getLinearVelocity().getY()) > 5 * 60 * 2) {
-            physics.setLinearVelocity(physics.getLinearVelocity().getX(),
-                    Math.signum(physics.getLinearVelocity().getY()) * 5 * 60);
+        // we don't want the ball to move too fast in Y direction
+        if (abs(physics.getVelocityY()) > 5 * 60 * 2) {
+            physics.setVelocityY(signum(physics.getVelocityY()) * 5 * 60);
         }
     }
 
     // this is a hack:
-    // we use a physics engine, so it is possible to push the ball against a wall
-    // so that it gets moved outside of the screen
+    // we use a physics engine, so it is possible to push the ball through a wall to outside of the screen
     private void checkOffscreen() {
-        if (getEntity().getBoundingBoxComponent().isOutside(FXGL
-                .getGameScene()
-                .getViewport()
-                .getVisibleArea())) {
-
-            getEntity().getComponent(PhysicsComponent.class).overwritePosition(new Point2D(
-                    FXGL.getAppWidth() / 2,
-                    FXGL.getAppHeight() / 2
+        if (getEntity().getBoundingBoxComponent().isOutside(getGameScene().getViewport().getVisibleArea())) {
+            physics.overwritePosition(new Point2D(
+                    getAppWidth() / 2,
+                    getAppHeight() / 2
             ));
         }
     }

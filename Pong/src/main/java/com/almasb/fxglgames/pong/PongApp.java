@@ -29,11 +29,9 @@ package com.almasb.fxglgames.pong;
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
-import com.almasb.fxgl.app.MenuItem;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
@@ -42,13 +40,12 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
-import java.util.EnumSet;
 import java.util.Map;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
- * A simple multiplayer pong.
+ * A simple clone of Pong.
  * Sounds from https://freesound.org/people/NoiseCollector/sounds/4391/ under CC BY 3.0.
  *
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -58,10 +55,11 @@ public class PongApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Pong");
-        settings.setVersion("0.3.2");
+        settings.setVersion("1.0");
         settings.setFontUI("pong.ttf");
-        settings.setEnabledMenuItems(EnumSet.of(MenuItem.ONLINE));
     }
+
+    private BatComponent playerBat;
 
     @Override
     protected void initInput() {
@@ -92,8 +90,8 @@ public class PongApp extends GameApplication {
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
-        vars.put("player1score", 0);
-        vars.put("player2score", 0);
+        vars.put("player1score", 9);
+        vars.put("player2score", 9);
     }
 
     @Override
@@ -112,11 +110,10 @@ public class PongApp extends GameApplication {
 
         getGameWorld().addEntityFactory(new PongFactory());
 
-        initBackground();
+        getGameScene().setBackgroundColor(Color.rgb(0, 0, 5));
+
         initScreenBounds();
-        initBall();
-        initPlayerBat();
-        initEnemyBat();
+        initGameObjects();
     }
 
     @Override
@@ -127,9 +124,9 @@ public class PongApp extends GameApplication {
             @Override
             protected void onHitBoxTrigger(Entity a, Entity b, HitBox boxA, HitBox boxB) {
                 if (boxB.getName().equals("LEFT")) {
-                    getGameState().increment("player2score", +1);
+                    inc("player2score", +1);
                 } else if (boxB.getName().equals("RIGHT")) {
-                    getGameState().increment("player1score", +1);
+                    inc("player1score", +1);
                 }
 
                 play("hit_wall.wav");
@@ -151,41 +148,30 @@ public class PongApp extends GameApplication {
 
     @Override
     protected void initUI() {
-        AppController controller = new AppController();
+        MainUIController controller = new MainUIController();
         UI ui = getAssetLoader().loadUI("main.fxml", controller);
 
-        controller.getLabelScorePlayer().textProperty().bind(getGameState().intProperty("player1score").asString());
-        controller.getLabelScoreEnemy().textProperty().bind(getGameState().intProperty("player2score").asString());
+        controller.getLabelScorePlayer().textProperty().bind(getip("player1score").asString());
+        controller.getLabelScoreEnemy().textProperty().bind(getip("player2score").asString());
 
         getGameScene().addUI(ui);
     }
 
-    private void initBackground() {
-        getGameScene().setBackgroundColor(Color.rgb(0, 0, 5));
-    }
-
     private void initScreenBounds() {
-        Entity walls = entityBuilder().buildScreenBounds(150);
-        walls.setType(EntityType.WALL);
-        walls.addComponent(new CollidableComponent(true));
+        Entity walls = entityBuilder()
+                .type(EntityType.WALL)
+                .collidable()
+                .buildScreenBounds(150);
 
         getGameWorld().addEntity(walls);
     }
 
-    private void initBall() {
-        spawn("ball", getAppWidth() / 2 - 5, getAppHeight() / 2 - 5);
-    }
-
-    private BatComponent playerBat;
-
-    private void initPlayerBat() {
+    private void initGameObjects() {
+        Entity ball = spawn("ball", getAppWidth() / 2 - 5, getAppHeight() / 2 - 5);
         Entity bat1 = spawn("bat", new SpawnData(getAppWidth() / 4, getAppHeight() / 2 - 30).put("isPlayer", true));
+        Entity bat2 = spawn("bat", new SpawnData(3 * getAppWidth() / 4 - 20, getAppHeight() / 2 - 30).put("isPlayer", false));
 
         playerBat = bat1.getComponent(BatComponent.class);
-    }
-
-    private void initEnemyBat() {
-        spawn("bat", new SpawnData(3 * getAppWidth() / 4 - 20, getAppHeight() / 2 - 30).put("isPlayer", false));
     }
 
     private void playHitAnimation(Entity bat) {
