@@ -26,8 +26,13 @@
 
 package com.almasb.fxglgames.breakout.components;
 
+import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
+import javafx.geometry.Point2D;
+import javafx.util.Duration;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -36,16 +41,36 @@ public class BrickComponent extends Component {
 
     private int lives = 2;
 
+    private boolean canBeHit = true;
+
     public void onHit() {
-        FXGL.play("brick_hit.wav");
+        if (!canBeHit)
+            return;
+
+        canBeHit = false;
 
         lives--;
 
         if (lives == 1) {
+            playHitAnimation();
+
             entity.getViewComponent().clearChildren();
-            entity.getViewComponent().addChild(FXGL.getAssetLoader().loadTexture("brick_blue_cracked.png", 232 / 3, 104 / 3));
+            entity.getViewComponent().addChild(texture("brick_blue_cracked.png"));
         } else if (lives == 0) {
             entity.removeFromWorld();
         }
+    }
+
+    private void playHitAnimation() {
+        animationBuilder()
+                .onFinished(() -> canBeHit = true)
+                .repeat(2)
+                .autoReverse(true)
+                .duration(Duration.seconds(0.17))
+                .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
+                .scale(entity)
+                .from(new Point2D(1, 1))
+                .to(new Point2D(1.2, 1.2))
+                .buildAndPlay();
     }
 }

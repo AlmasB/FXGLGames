@@ -26,23 +26,16 @@
 
 package com.almasb.fxglgames.breakout;
 
-import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
-import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.IrremovableComponent;
-import com.almasb.fxgl.entity.level.Level;
-import com.almasb.fxgl.entity.level.text.TextLevelLoader;
 import com.almasb.fxgl.input.UserAction;
-import com.almasb.fxgl.particle.ParticleComponent;
-import com.almasb.fxgl.particle.ParticleEmitter;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.breakout.components.BallComponent;
 import com.almasb.fxglgames.breakout.components.BatComponent;
 import com.almasb.fxglgames.breakout.components.BrickComponent;
 import javafx.animation.PathTransition;
-import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -74,9 +67,10 @@ public class BreakoutApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Breakout Underwater");
-        settings.setVersion("0.2");
-        settings.setWidth(600);
-        settings.setHeight(800);
+        settings.setVersion("2.0");
+        settings.setWidth(14 * 96);
+        settings.setHeight(22 * 32);
+        settings.setDeveloperMenuEnabled(true);
     }
 
     @Override
@@ -103,23 +97,15 @@ public class BreakoutApp extends GameApplication {
 
     @Override
     protected void initGame() {
-        initBGM();
-        initLevel();
-        initBubbles();
-    }
-
-    private void initBGM() { 
-        loopBGM("BGM01.wav");
-    }
-
-    private void initLevel() {
         initBackground();
 
         getGameWorld().addEntityFactory(new BreakoutFactory());
 
-        Level level = getAssetLoader().loadLevel("level1.txt", new TextLevelLoader(40, 40, '0'));
+        setLevelFromMap("tmx/level1.tmx");
 
-        getGameWorld().setLevel(level);
+        spawn("ball", getAppWidth() / 2, getAppHeight() - 250);
+
+        spawn("bat", getAppWidth() / 2, getAppHeight() - 150);
     }
 
     private void initBackground() {
@@ -144,24 +130,6 @@ public class BreakoutApp extends GameApplication {
         screenBounds.addComponent(new IrremovableComponent());
 
         getGameWorld().addEntity(screenBounds);
-    }
-
-    private void initBubbles() {
-        ParticleEmitter emitter = new ParticleEmitter();
-        emitter.setSourceImage(getAssetLoader().loadTexture("bubble.png").getImage());
-        emitter.setBlendMode(BlendMode.SRC_OVER);
-        emitter.setEmissionRate(0.25);
-        emitter.setExpireFunction(i -> Duration.seconds(3));
-        emitter.setVelocityFunction(i -> new Point2D(0, -FXGLMath.random(2f, 4f) * 60));
-        emitter.setSpawnPointFunction(i -> new Point2D(FXGLMath.random(0, (float)getAppWidth()), -20 + FXGLMath.random(0, 50)));
-        emitter.setScaleFunction(i -> new Point2D(FXGLMath.random(-0.05f, 0), FXGLMath.random(-0.05f, 0)));
-        emitter.setInterpolator(Interpolators.EXPONENTIAL.EASE_IN());
-
-        Entity bubbles = new Entity();
-        bubbles.translateY(getAppHeight());
-        bubbles.addComponent(new ParticleComponent(emitter));
-
-        getGameWorld().addEntity(bubbles);
     }
 
     @Override

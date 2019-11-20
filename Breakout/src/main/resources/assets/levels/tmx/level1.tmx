@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="14" height="22" tilewidth="96" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="15">
+ <tileset firstgid="1" name="brick_blue" tilewidth="96" tileheight="32" tilecount="1" columns="1">
+  <image source="brick_blue.png" width="96" height="32"/>
+ </tileset>
+ <objectgroup id="3" name="brick_layer">
+  <object id="1" type="brick_blue" gid="1" x="96" y="96" width="96" height="32"/>
+  <object id="2" type="brick_blue" gid="1" x="288" y="96" width="96" height="32"/>
+  <object id="3" type="brick_blue" gid="1" x="480" y="96" width="96" height="32"/>
+  <object id="4" type="brick_blue" gid="1" x="768" y="96" width="96" height="32"/>
+  <object id="5" type="brick_blue" gid="1" x="960" y="96" width="96" height="32"/>
+  <object id="6" type="brick_blue" gid="1" x="1152" y="96" width="96" height="32"/>
+  <object id="7" type="brick_blue" gid="1" x="288" y="192" width="96" height="32"/>
+  <object id="8" type="brick_blue" gid="1" x="960" y="192" width="96" height="32"/>
+  <object id="9" type="brick_blue" gid="1" x="576" y="256" width="96" height="32"/>
+  <object id="10" type="brick_blue" gid="1" x="672" y="256" width="96" height="32"/>
+  <object id="11" type="brick_blue" gid="1" x="96" y="224" width="96" height="32"/>
+  <object id="12" type="brick_blue" gid="1" x="1152" y="224" width="96" height="32"/>
+  <object id="13" type="brick_blue" gid="1" x="480" y="288" width="96" height="32"/>
+  <object id="14" type="brick_blue" gid="1" x="768" y="288" width="96" height="32"/>
+ </objectgroup>
+</map>
