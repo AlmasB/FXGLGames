@@ -78,11 +78,11 @@ public class CannonApp extends GameApplication {
     }
 
     private void initScreenBounds() {
-        //getGameWorld().addEntity(Entities.makeScreenBounds(100));
+        entityBuilder().buildScreenBoundsAndAttach(100);
     }
 
     private void initCannon() {
-        cannon = getGameWorld().spawn("cannon", 50, getAppHeight() - 30);
+        cannon = getGameWorld().spawn("cannon", 50, getAppHeight() - 300);
     }
 
     private void initBasket() {
@@ -110,7 +110,7 @@ public class CannonApp extends GameApplication {
         scoreText.setTranslateY(100);
         scoreText.textProperty().bind(getGameState().intProperty("score").asString("Score: [%d]"));
 
-        getGameScene().addUINode(scoreText);
+        addUINode(scoreText);
     }
 
     public static void main(String[] args) {

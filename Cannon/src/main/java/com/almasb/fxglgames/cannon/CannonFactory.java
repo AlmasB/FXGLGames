@@ -2,8 +2,8 @@ package com.almasb.fxglgames.cannon;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
+import com.almasb.fxgl.dsl.components.LiftComponent;
 import com.almasb.fxgl.entity.*;
-import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
@@ -25,7 +25,7 @@ public class CannonFactory implements EntityFactory {
                 .type(CannonType.CANNON)
                 .from(data)
                 .view(new Rectangle(70, 30, Color.BROWN))
-                //.with(new LiftComponent(Duration.seconds(1), 150, true))
+                .with(new LiftComponent().yAxisSpeedDuration(150, Duration.seconds(1)))
                 .build();
     }
 
@@ -45,7 +45,8 @@ public class CannonFactory implements EntityFactory {
                 .type(CannonType.BULLET)
                 .from(data)
                 .viewWithBBox(new Rectangle(25, 25, Color.BLUE))
-                .with(physics, new CollidableComponent(true))
+                .collidable()
+                .with(physics)
                 .with(new ExpireCleanComponent(Duration.seconds(4)))
                 .build();
     }
@@ -66,7 +67,8 @@ public class CannonFactory implements EntityFactory {
                 .type(CannonType.BASKET)
                 .from(data)
                 .viewWithBBox(new Rectangle(300, 5, Color.TRANSPARENT))
-                .with(new PhysicsComponent(), new CollidableComponent(true))
+                .collidable()
+                .with(new PhysicsComponent())
                 .build();
     }
 }
