@@ -26,6 +26,9 @@ import static com.almasb.fxgl.dsl.FXGL.*;
  * In addition, most of typical FXGL API is not used to avoid overwhelming
  * FXGL beginners with a lot of new concepts to learn.
  *
+ * Although the code is self-explanatory, some may find the comments useful
+ * for following the code.
+ *
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class DropApp extends GameApplication {
@@ -33,14 +36,13 @@ public class DropApp extends GameApplication {
     /**
      * Types of entities in this game.
      */
-    public enum DropType {
+    public enum Type {
         DROPLET, BUCKET
     }
 
-    private Entity bucket;
-
     @Override
     protected void initSettings(GameSettings settings) {
+        // initialize common game / window settings.
         settings.setTitle("Drop");
         settings.setVersion("1.0");
         settings.setWidth(480);
@@ -49,41 +51,58 @@ public class DropApp extends GameApplication {
 
     @Override
     protected void initGame() {
-        bucket = spawnBucket();
+        spawnBucket();
 
+        // creates a timer that runs spawnDroplet() every second
         run(() -> spawnDroplet(), Duration.seconds(1));
 
+        // loop background music located in /resources/assets/music/
         loopBGM("bgm.mp3");
     }
 
     @Override
     protected void initPhysics() {
-        onCollisionBegin(DropType.BUCKET, DropType.DROPLET, (bucket, droplet) -> {
+        onCollisionBegin(Type.BUCKET, Type.DROPLET, (bucket, droplet) -> {
+
+            // code in this block is called when there is a collision between Type.BUCKET and Type.DROPLET
+
+            // remove the collided droplet from the game
             droplet.removeFromWorld();
 
+            // play a sound effect located in /resources/assets/sounds/
             play("drop.wav");
         });
     }
 
     @Override
     protected void onUpdate(double tpf) {
-        getGameWorld().getEntitiesByType(DropType.DROPLET).forEach(droplet -> droplet.translateY(150 * tpf));
 
-        bucket.setX(getInput().getMouseXWorld());
+        // for each entity of Type.DROPLET translate (move) it down
+        getGameWorld().getEntitiesByType(Type.DROPLET).forEach(droplet -> droplet.translateY(150 * tpf));
     }
 
-    private Entity spawnBucket() {
-        return entityBuilder()
-                .type(DropType.BUCKET)
+    private void spawnBucket() {
+        // build an entity with Type.BUCKET
+        // at the position X = getAppWidth() / 2 and Y = getAppHeight() - 200
+        // with a view "bucket.png", which is an image located in /resources/assets/textures/
+        // also create a bounding box from that view
+        // make the entity collidable
+        // finally, complete building and attach to the game world
+
+        Entity bucket = entityBuilder()
+                .type(Type.BUCKET)
                 .at(getAppWidth() / 2, getAppHeight() - 200)
                 .viewWithBBox("bucket.png")
                 .collidable()
                 .buildAndAttach();
+
+        // bind bucket's X value to mouse X
+        bucket.xProperty().bind(getInput().mouseXWorldProperty());
     }
 
-    private Entity spawnDroplet() {
-        return entityBuilder()
-                .type(DropType.DROPLET)
+    private void spawnDroplet() {
+        entityBuilder()
+                .type(Type.DROPLET)
                 .at(FXGLMath.random(0, getAppWidth() - 64), 0)
                 .viewWithBBox("droplet.png")
                 .collidable()
