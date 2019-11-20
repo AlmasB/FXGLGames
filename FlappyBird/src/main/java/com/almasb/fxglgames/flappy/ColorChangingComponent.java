@@ -1,11 +1,12 @@
 package com.almasb.fxglgames.flappy;
 
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.time.LocalTimer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -19,7 +20,7 @@ public class ColorChangingComponent extends Component {
     @Override
     public void onAdded() {
         view = entity.getObject("rect");
-        timer = FXGL.newLocalTimer();
+        timer = newLocalTimer();
     }
 
     @Override
@@ -30,7 +31,7 @@ public class ColorChangingComponent extends Component {
             Color stageColor = nextViewColor.invert();
 
             view.setFill(nextViewColor);
-            FXGL.getGameState().setValue("stageColor", stageColor);
+            set("stageColor", stageColor);
 
             timer.capture();
         }

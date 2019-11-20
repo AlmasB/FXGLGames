@@ -5,6 +5,8 @@ import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import javafx.scene.shape.Rectangle;
 
+import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
+
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
@@ -34,14 +36,14 @@ public class WallBuildingComponent extends Component {
         for (int i = 1; i <= 10; i++) {
             double topHeight = Math.random() * (height - distance);
 
-            FXGL.entityBuilder()
+            entityBuilder()
                     .at(lastWall + i * 500, 0 - 25)
                     .type(EntityType.WALL)
                     .viewWithBBox(wallView(50, topHeight))
                     .with(new CollidableComponent(true))
                     .buildAndAttach();
 
-            FXGL.entityBuilder()
+            entityBuilder()
                     .at(lastWall + i * 500, 0 + topHeight + distance + 25)
                     .type(EntityType.WALL)
                     .viewWithBBox(wallView(50, height - distance - topHeight))
