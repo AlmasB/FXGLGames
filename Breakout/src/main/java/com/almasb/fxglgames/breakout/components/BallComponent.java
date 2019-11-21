@@ -27,9 +27,13 @@
 package com.almasb.fxglgames.breakout.components;
 
 import com.almasb.fxgl.core.math.Vec2;
+import com.almasb.fxgl.dsl.components.Effect;
+import com.almasb.fxgl.dsl.components.EffectComponent;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import javafx.geometry.Point2D;
+import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static java.lang.Math.abs;
@@ -43,6 +47,7 @@ public class BallComponent extends Component {
     private static final int BALL_MIN_SPEED = 400;
 
     private PhysicsComponent physics;
+    private EffectComponent effectComponent;
 
     @Override
     public void onUpdate(double tpf) {
@@ -66,6 +71,10 @@ public class BallComponent extends Component {
         physics.setBodyLinearVelocity(new Vec2(5, 5));
     }
 
+    public void grow() {
+        effectComponent.startEffect(new GrowEffect());
+    }
+
     // this is a hack:
     // we use a physics engine, so it is possible to push the ball through a wall to outside of the screen
     private void checkOffscreen() {
@@ -74,6 +83,25 @@ public class BallComponent extends Component {
                     getAppWidth() / 2,
                     getAppHeight() / 2
             ));
+        }
+    }
+
+    public static class GrowEffect extends Effect {
+
+        public GrowEffect() {
+            super(Duration.seconds(3));
+        }
+
+        @Override
+        public void onStart(Entity entity) {
+            entity.setScaleX(0.3);
+            entity.setScaleY(0.3);
+        }
+
+        @Override
+        public void onEnd(Entity entity) {
+            entity.setScaleX(0.1);
+            entity.setScaleY(0.1);
         }
     }
 }

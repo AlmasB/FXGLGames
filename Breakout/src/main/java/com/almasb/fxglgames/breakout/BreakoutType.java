@@ -30,5 +30,6 @@ package com.almasb.fxglgames.breakout;
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public enum BreakoutType {
-    BAT, BALL, BRICK, WALL
+    BAT, BALL, BRICK, WALL,
+    POWERUP
 }

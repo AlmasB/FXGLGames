@@ -91,19 +91,6 @@ public class BrickComponent extends Component {
         }
     }
 
-    private static class MoveDownComponent extends Component {
-        private double speed;
-
-        private MoveDownComponent(double speed) {
-            this.speed = speed;
-        }
-
-        @Override
-        public void onUpdate(double tpf) {
-            entity.translateY(speed * tpf);
-        }
-    }
-
     private void playHitAnimation() {
         animationBuilder()
                 .onFinished(() -> canBeHit = true)

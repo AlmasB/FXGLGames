@@ -28,6 +28,7 @@ package com.almasb.fxglgames.breakout;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.IrremovableComponent;
 import com.almasb.fxgl.input.UserAction;
@@ -36,17 +37,9 @@ import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxglgames.breakout.components.BallComponent;
 import com.almasb.fxglgames.breakout.components.BatComponent;
 import com.almasb.fxglgames.breakout.components.BrickComponent;
-import javafx.animation.PathTransition;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.Stop;
-import javafx.scene.shape.QuadCurve;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
-import javafx.util.Duration;
 
 import java.util.Map;
 
@@ -58,21 +51,18 @@ import static com.almasb.fxglgames.breakout.BreakoutType.*;
  */
 public class BreakoutApp extends GameApplication {
 
-    private BatComponent getBatControl() {
-        return getGameWorld().getSingleton(BAT).getComponent(BatComponent.class);
-    }
-
-    private BallComponent getBallControl() {
-        return getGameWorld().getSingleton(BALL).getComponent(BallComponent.class);
-    }
-
     @Override
     protected void initSettings(GameSettings settings) {
-        settings.setTitle("Breakout Underwater");
+        settings.setTitle("FXGL Breakout");
         settings.setVersion("2.0");
         settings.setWidth(14 * 96);
         settings.setHeight(22 * 32);
-        settings.setDeveloperMenuEnabled(true);
+        settings.setFontUI("main_font.ttf");
+    }
+
+    @Override
+    protected void onPreInit() {
+        loopBGM("BGM.mp3");
     }
 
     @Override
@@ -95,6 +85,7 @@ public class BreakoutApp extends GameApplication {
     @Override
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("lives", 3);
+        vars.put("score", 0);
     }
 
     @Override
@@ -107,20 +98,16 @@ public class BreakoutApp extends GameApplication {
 
         spawn("ball", getAppWidth() / 2, getAppHeight() - 250);
 
-        spawn("bat", getAppWidth() / 2, getAppHeight() - 150);
+        spawn("bat", getAppWidth() / 2, getAppHeight() - 180);
 
         getBallControl().release();
     }
 
     private void initBackground() {
-        // we add IrremovableComponent because regardless of the level
-        // the background and screen bounds stay in the game world
-        entityBuilder()
-                .view(new Rectangle(getAppWidth(), getAppHeight()))
-                .with(new IrremovableComponent())
-                .zIndex(-1)
-                .buildAndAttach();
+        getGameScene().setBackgroundColor(Color.BLACK);
 
+        // we add IrremovableComponent because regardless of the level
+        // the screen bounds stay in the game world
         entityBuilder()
                 .type(WALL)
                 .collidable()
@@ -134,26 +121,44 @@ public class BreakoutApp extends GameApplication {
 
         onCollisionBegin(BALL, BRICK, (ball, brick) -> {
             brick.getComponent(BrickComponent.class).onHit();
+
+            inc("score", +50);
+
+            if (FXGLMath.randomBoolean()) {
+                spawn("powerupGrow", brick.getPosition());
+            }
         });
 
-        onCollisionBegin(BALL, WALL, (ball, wall) -> {
-            getGameScene().getViewport().shakeTranslational(1.5);
+        onCollisionCollectible(BAT, POWERUP, powerup -> {
+            getBallControl().grow();
+        });
+
+        getPhysicsWorld().addCollisionHandler(new CollisionHandler(BALL, WALL) {
+            @Override
+            protected void onHitBoxTrigger(Entity a, Entity b, HitBox boxA, HitBox boxB) {
+                if (boxB.getName().equals("BOT")) {
+                    inc("score", -100);
+                }
+
+                getGameScene().getViewport().shakeTranslational(1.5);
+            }
         });
     }
 
     @Override
     protected void initUI() {
-//        Text text = getUIFactory().newText("Level 1", Color.WHITE, 48);
-//        getGameScene().addUINode(text);
-//
-//        QuadCurve curve = new QuadCurve(-100, 0, getAppWidth() / 2, getAppHeight(), getAppWidth() + 100, 0);
-//
-//        PathTransition transition = new PathTransition(Duration.seconds(4), curve, text);
-//        transition.setOnFinished(e -> {
-//            getGameScene().removeUINode(text);
-//            getBallControl().release();
-//        });
-//        transition.play();
+        var textScore = getUIFactory().newText("", 24);
+        textScore.textProperty().bind(getip("score").asString());
+
+        addUINode(textScore, 50, getAppHeight() - 20);
+    }
+
+    private BatComponent getBatControl() {
+        return getGameWorld().getSingleton(BAT).getComponent(BatComponent.class);
+    }
+
+    private BallComponent getBallControl() {
+        return getGameWorld().getSingleton(BALL).getComponent(BallComponent.class);
     }
 
     public static void main(String[] args) {
