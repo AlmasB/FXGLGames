@@ -29,32 +29,51 @@ package com.almasb.fxglgames.breakout.components;
 import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.physics.PhysicsComponent;
+import javafx.geometry.Point2D;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
+import static java.lang.Math.abs;
+import static java.lang.Math.signum;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class BallComponent extends Component {
 
+    private static final int BALL_MIN_SPEED = 400;
+
     private PhysicsComponent physics;
 
     @Override
     public void onUpdate(double tpf) {
         limitVelocity();
+        checkOffscreen();
     }
 
     private void limitVelocity() {
-        if (Math.abs(physics.getLinearVelocity().getX()) < 5 * 60) {
-            physics.setLinearVelocity(Math.signum(physics.getLinearVelocity().getX()) * 5 * 60,
-                    physics.getLinearVelocity().getY());
+        // we don't want the ball to move too slow in X direction
+        if (abs(physics.getVelocityX()) < BALL_MIN_SPEED) {
+            physics.setVelocityX(signum(physics.getVelocityX()) * BALL_MIN_SPEED);
         }
 
-        if (Math.abs(physics.getLinearVelocity().getY()) < 5 * 60) {
-            physics.setLinearVelocity(physics.getLinearVelocity().getX(),
-                    Math.signum(physics.getLinearVelocity().getY()) * 5 * 60);
+        // we don't want the ball to move too slow in Y direction
+        if (abs(physics.getVelocityY()) < BALL_MIN_SPEED) {
+            physics.setVelocityY(signum(physics.getVelocityY()) * BALL_MIN_SPEED);
         }
     }
 
     public void release() {
         physics.setBodyLinearVelocity(new Vec2(5, 5));
+    }
+
+    // this is a hack:
+    // we use a physics engine, so it is possible to push the ball through a wall to outside of the screen
+    private void checkOffscreen() {
+        if (getEntity().getBoundingBoxComponent().isOutside(getGameScene().getViewport().getVisibleArea())) {
+            physics.overwritePosition(new Point2D(
+                    getAppWidth() / 2,
+                    getAppHeight() / 2
+            ));
+        }
     }
 }

@@ -45,6 +45,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
@@ -59,8 +60,8 @@ public class BreakoutFactory implements EntityFactory {
                 .from(data)
                 .type(BreakoutType.BRICK)
                 .bbox(new HitBox(BoundingShape.box(96, 32)))
-                //.viewWithBBox(FXGL.getAssetLoader().loadTexture("brick_blue.png", 232 / 3, 104 / 3))
-                .with(new PhysicsComponent(), new CollidableComponent(true))
+                .collidable()
+                .with(new PhysicsComponent())
                 .with(new BrickComponent())
                 .build();
     }
@@ -93,6 +94,15 @@ public class BreakoutFactory implements EntityFactory {
 
         physics.setBodyDef(bd);
 
+        var emitter = ParticleEmitters.newFireEmitter();
+        emitter.setSourceImage(texture("ball.png"));
+        emitter.setSize(6, 6);
+        emitter.setBlendMode(BlendMode.SRC_OVER);
+        emitter.setNumParticles(1);
+        emitter.setEmissionRate(1);
+        emitter.setScaleFunction(i -> new Point2D(-0.1, -0.1));
+        emitter.setExpireFunction(i -> Duration.millis(110));
+
         return entityBuilder()
                 .from(data)
                 .type(BreakoutType.BALL)
@@ -100,6 +110,7 @@ public class BreakoutFactory implements EntityFactory {
                 .view("ball.png")
                 .collidable()
                 .with(physics)
+                .with(new ParticleComponent(emitter))
                 .with(new BallComponent())
                 .scale(0.1, 0.1)
                 .build();

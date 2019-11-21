@@ -32,6 +32,7 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.IrremovableComponent;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
+import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxglgames.breakout.components.BallComponent;
 import com.almasb.fxglgames.breakout.components.BatComponent;
 import com.almasb.fxglgames.breakout.components.BrickComponent;
@@ -50,6 +51,7 @@ import javafx.util.Duration;
 import java.util.Map;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxglgames.breakout.BreakoutType.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -57,11 +59,11 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 public class BreakoutApp extends GameApplication {
 
     private BatComponent getBatControl() {
-        return getGameWorld().getSingleton(BreakoutType.BAT).getComponent(BatComponent.class);
+        return getGameWorld().getSingleton(BAT).getComponent(BatComponent.class);
     }
 
     private BallComponent getBallControl() {
-        return getGameWorld().getSingleton(BreakoutType.BALL).getComponent(BallComponent.class);
+        return getGameWorld().getSingleton(BALL).getComponent(BallComponent.class);
     }
 
     @Override
@@ -106,57 +108,52 @@ public class BreakoutApp extends GameApplication {
         spawn("ball", getAppWidth() / 2, getAppHeight() - 250);
 
         spawn("bat", getAppWidth() / 2, getAppHeight() - 150);
+
+        getBallControl().release();
     }
 
     private void initBackground() {
-        Rectangle bg0 = new Rectangle(getAppWidth(), getAppHeight(),
-                new LinearGradient(getAppWidth() / 2, 0, getAppWidth() / 2, getAppHeight(),
-                        false, CycleMethod.NO_CYCLE,
-                        new Stop(0.2, Color.AQUA), new Stop(0.8, Color.BLACK)));
-
-        Rectangle bg1 = new Rectangle(getAppWidth(), getAppHeight(), Color.color(0, 0, 0, 0.2));
-        bg1.setBlendMode(BlendMode.DARKEN);
-
         // we add IrremovableComponent because regardless of the level
         // the background and screen bounds stay in the game world
         entityBuilder()
-                .view(bg0)
-                .view(bg1)
+                .view(new Rectangle(getAppWidth(), getAppHeight()))
                 .with(new IrremovableComponent())
                 .zIndex(-1)
                 .buildAndAttach();
 
-        Entity screenBounds = entityBuilder().buildScreenBounds(40);
-        screenBounds.addComponent(new IrremovableComponent());
-
-        getGameWorld().addEntity(screenBounds);
+        entityBuilder()
+                .type(WALL)
+                .collidable()
+                .with(new IrremovableComponent())
+                .buildScreenBoundsAndAttach(40);
     }
 
     @Override
     protected void initPhysics() {
         getPhysicsWorld().setGravity(0, 0);
 
-        getPhysicsWorld().addCollisionHandler(new CollisionHandler(BreakoutType.BALL, BreakoutType.BRICK) {
-            @Override
-            protected void onCollisionBegin(Entity ball, Entity brick) {
-                brick.getComponent(BrickComponent.class).onHit();
-            }
+        onCollisionBegin(BALL, BRICK, (ball, brick) -> {
+            brick.getComponent(BrickComponent.class).onHit();
+        });
+
+        onCollisionBegin(BALL, WALL, (ball, wall) -> {
+            getGameScene().getViewport().shakeTranslational(1.5);
         });
     }
 
     @Override
     protected void initUI() {
-        Text text = getUIFactory().newText("Level 1", Color.WHITE, 48);
-        getGameScene().addUINode(text);
-
-        QuadCurve curve = new QuadCurve(-100, 0, getAppWidth() / 2, getAppHeight(), getAppWidth() + 100, 0);
-
-        PathTransition transition = new PathTransition(Duration.seconds(4), curve, text);
-        transition.setOnFinished(e -> {
-            getGameScene().removeUINode(text);
-            getBallControl().release();
-        });
-        transition.play();
+//        Text text = getUIFactory().newText("Level 1", Color.WHITE, 48);
+//        getGameScene().addUINode(text);
+//
+//        QuadCurve curve = new QuadCurve(-100, 0, getAppWidth() / 2, getAppHeight(), getAppWidth() + 100, 0);
+//
+//        PathTransition transition = new PathTransition(Duration.seconds(4), curve, text);
+//        transition.setOnFinished(e -> {
+//            getGameScene().removeUINode(text);
+//            getBallControl().release();
+//        });
+//        transition.play();
     }
 
     public static void main(String[] args) {

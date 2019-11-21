@@ -27,10 +27,15 @@
 package com.almasb.fxglgames.breakout.components;
 
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
+import com.almasb.fxgl.dsl.components.ProjectileComponent;
 import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.texture.Texture;
 import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import javafx.util.Duration;
+
+import java.util.ArrayList;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
@@ -57,7 +62,45 @@ public class BrickComponent extends Component {
             entity.getViewComponent().clearChildren();
             entity.getViewComponent().addChild(texture("brick_blue_cracked.png"));
         } else if (lives == 0) {
+
+
+            var t = texture("brick_blue_cracked.png");
+
+            var textures = new ArrayList<Texture>();
+
+            var t1 = t.subTexture(new Rectangle2D(0, 0, 32, 32));
+            var t2 = t.subTexture(new Rectangle2D(32, 0, 32, 32));
+            var t3 = t.subTexture(new Rectangle2D(32 + 32, 0, 32, 32));
+
+            textures.add(t1);
+            textures.add(t2);
+            textures.add(t3);
+
+            for (int i = 0; i < textures.size(); i++) {
+                var te = textures.get(i);
+
+                entityBuilder()
+                        .at(entity.getPosition().add(i*32, 0))
+                        .view(te)
+                        .with(new MoveDownComponent(random(550, 700)))
+                        .with(new ExpireCleanComponent(Duration.seconds(0.7)).animateOpacity())
+                        .buildAndAttach();
+            }
+
             entity.removeFromWorld();
+        }
+    }
+
+    private static class MoveDownComponent extends Component {
+        private double speed;
+
+        private MoveDownComponent(double speed) {
+            this.speed = speed;
+        }
+
+        @Override
+        public void onUpdate(double tpf) {
+            entity.translateY(speed * tpf);
         }
     }
 
@@ -66,11 +109,11 @@ public class BrickComponent extends Component {
                 .onFinished(() -> canBeHit = true)
                 .repeat(2)
                 .autoReverse(true)
-                .duration(Duration.seconds(0.17))
-                .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
-                .scale(entity)
-                .from(new Point2D(1, 1))
-                .to(new Point2D(1.2, 1.2))
+                .duration(Duration.seconds(0.1))
+                .interpolator(Interpolators.BACK.EASE_OUT())
+                .translate(entity)
+                .from(entity.getPosition())
+                .to(entity.getPosition().add(0, 1.5))
                 .buildAndPlay();
     }
 }

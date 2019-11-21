@@ -31,11 +31,14 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.physics.PhysicsComponent;
 
+import static com.almasb.fxgl.dsl.FXGL.*;
+
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class BatComponent extends Component {
 
+    private static final int BAT_SPEED = 750;
     private static final float BOUNCE_FACTOR = 1.5f;
     private static final float SPEED_DECAY = 0.66f;
 
@@ -46,14 +49,14 @@ public class BatComponent extends Component {
 
     @Override
     public void onUpdate(double tpf) {
-        speed = 600 * (float)tpf;
+        speed = BAT_SPEED * (float)tpf;
 
         velocity.mulLocal(SPEED_DECAY);
 
         if (entity.getX() < 0) {
             velocity.set(BOUNCE_FACTOR * (float) -entity.getX(), 0);
-        } else if (entity.getRightX() > FXGL.getAppWidth()) {
-            velocity.set(BOUNCE_FACTOR * (float) -(entity.getRightX() - FXGL.getAppWidth()), 0);
+        } else if (entity.getRightX() > getAppWidth()) {
+            velocity.set(BOUNCE_FACTOR * (float) -(entity.getRightX() - getAppWidth()), 0);
         }
 
         physics.setBodyLinearVelocity(velocity);
