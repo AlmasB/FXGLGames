@@ -32,7 +32,9 @@ import com.almasb.fxgl.dsl.components.EffectComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.physics.PhysicsComponent;
+import com.almasb.fxgl.texture.Texture;
 import javafx.geometry.Point2D;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -48,6 +50,15 @@ public class BallComponent extends Component {
 
     private PhysicsComponent physics;
     private EffectComponent effectComponent;
+
+    private Texture original;
+    private Texture red;
+
+    @Override
+    public void onAdded() {
+        original = (Texture) entity.getViewComponent().getChildren().get(0);
+        red = original.toColor(Color.RED);
+    }
 
     @Override
     public void onUpdate(double tpf) {
@@ -73,6 +84,10 @@ public class BallComponent extends Component {
 
     public void grow() {
         effectComponent.startEffect(new GrowEffect());
+    }
+
+    public void onHit() {
+        effectComponent.startEffect(new GlowRedEffect());
     }
 
     // this is a hack:
@@ -102,6 +117,23 @@ public class BallComponent extends Component {
         public void onEnd(Entity entity) {
             entity.setScaleX(0.1);
             entity.setScaleY(0.1);
+        }
+    }
+
+    public class GlowRedEffect extends Effect {
+
+        public GlowRedEffect() {
+            super(Duration.seconds(1.45));
+        }
+
+        @Override
+        public void onStart(Entity entity) {
+            entity.getViewComponent().addChild(red);
+        }
+
+        @Override
+        public void onEnd(Entity entity) {
+            entity.getViewComponent().removeChild(red);
         }
     }
 }

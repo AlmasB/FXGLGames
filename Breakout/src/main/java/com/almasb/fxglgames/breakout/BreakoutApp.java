@@ -142,7 +142,8 @@ public class BreakoutApp extends GameApplication {
         getPhysicsWorld().setGravity(0, 0);
 
         onCollisionBegin(BALL, BRICK, (ball, brick) -> {
-            brick.getComponent(BrickComponent.class).onHit();
+            ball.call("onHit");
+            brick.call("onHit");
 
             inc("score", +50);
 
