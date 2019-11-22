@@ -61,6 +61,7 @@ public class BreakoutApp extends GameApplication {
         settings.setWidth(14 * 96);
         settings.setHeight(22 * 32);
         settings.setFontUI("main_font.ttf");
+        settings.setDeveloperMenuEnabled(true);
     }
 
     @Override
@@ -97,9 +98,11 @@ public class BreakoutApp extends GameApplication {
 
         getGameWorld().addEntityFactory(new BreakoutFactory());
 
-        setLevelFromMap("tmx/level1.tmx");
+        //setLevelFromMap("tmx/level1.tmx");
 
-        spawn("ball", getAppWidth() / 2, getAppHeight() - 250);
+        spawn("ball", 20, 20);
+
+        //spawn("ball", getAppWidth() / 2, getAppHeight() - 250);
 
         spawn("bat", getAppWidth() / 2, getAppHeight() - 180);
 
@@ -145,6 +148,8 @@ public class BreakoutApp extends GameApplication {
             ball.call("onHit");
             brick.call("onHit");
 
+            spawn("sparks", ball.getPosition());
+
             inc("score", +50);
 
             if (FXGLMath.randomBoolean()) {
@@ -163,7 +168,7 @@ public class BreakoutApp extends GameApplication {
                     inc("score", -100);
                 }
 
-                getGameScene().getViewport().shakeTranslational(1.5);
+                //getGameScene().getViewport().shakeTranslational(1.5);
             }
         });
     }

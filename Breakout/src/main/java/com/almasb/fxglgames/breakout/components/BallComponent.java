@@ -63,7 +63,7 @@ public class BallComponent extends Component {
     @Override
     public void onUpdate(double tpf) {
         limitVelocity();
-        checkOffscreen();
+        //checkOffscreen();
     }
 
     private void limitVelocity() {

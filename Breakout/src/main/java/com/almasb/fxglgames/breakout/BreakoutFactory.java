@@ -28,6 +28,7 @@ package com.almasb.fxglgames.breakout;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.EffectComponent;
+import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
 import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.particle.ParticleComponent;
@@ -46,6 +47,7 @@ import com.almasb.fxglgames.breakout.components.BrickComponent;
 import com.almasb.fxglgames.breakout.components.MoveDownComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
@@ -102,8 +104,12 @@ public class BreakoutFactory implements EntityFactory {
         emitter.setBlendMode(BlendMode.SRC_OVER);
         emitter.setNumParticles(1);
         emitter.setEmissionRate(1);
+        emitter.setSpawnPointFunction(i -> new Point2D(0, 0));
         emitter.setScaleFunction(i -> new Point2D(-0.1, -0.1));
         emitter.setExpireFunction(i -> Duration.millis(110));
+        emitter.setControl(p -> {
+            ImageView view = (ImageView) p.getView();
+        });
 
         var e = entityBuilder()
                 .from(data)
@@ -118,10 +124,29 @@ public class BreakoutFactory implements EntityFactory {
                 .scale(0.1, 0.1)
                 .build();
 
+        e.getTransformComponent().setScaleOrigin(new Point2D(0, 0));
+
+        System.out.println(e.getX() + " " + e.getY());
+
         emitter.minSizeProperty().bind(e.getTransformComponent().scaleXProperty().multiply(60));
         emitter.maxSizeProperty().bind(e.getTransformComponent().scaleXProperty().multiply(60));
 
         return e;
+    }
+
+    @Spawns("sparks")
+    public Entity newSparks(SpawnData data) {
+        var emitter = ParticleEmitters.newSparkEmitter();
+        emitter.setMaxEmissions(1);
+        emitter.setAllowParticleRotation(true);
+        emitter.setStartColor(Color.LIGHTBLUE);
+        emitter.setEndColor(Color.BLUE);
+
+        return entityBuilder()
+                .from(data)
+                .with(new ParticleComponent(emitter))
+                .with(new ExpireCleanComponent(Duration.seconds(1.5)))
+                .build();
     }
 
     @Spawns("powerupGrow")
