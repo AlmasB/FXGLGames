@@ -26,6 +26,7 @@
 
 package com.almasb.fxglgames.breakout;
 
+import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.core.math.FXGLMath;
@@ -37,9 +38,11 @@ import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxglgames.breakout.components.BallComponent;
 import com.almasb.fxglgames.breakout.components.BatComponent;
 import com.almasb.fxglgames.breakout.components.BrickComponent;
+import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
 import java.util.Map;
 
@@ -100,7 +103,7 @@ public class BreakoutApp extends GameApplication {
 
         spawn("bat", getAppWidth() / 2, getAppHeight() - 180);
 
-        getBallControl().release();
+        animateCamera(getBallControl()::release);
     }
 
     private void initBackground() {
@@ -113,6 +116,25 @@ public class BreakoutApp extends GameApplication {
                 .collidable()
                 .with(new IrremovableComponent())
                 .buildScreenBoundsAndAttach(40);
+    }
+
+    private void animateCamera(Runnable onAnimationFinished) {
+        var camera = new Entity();
+        camera.setY(getAppHeight());
+
+        getGameScene().getViewport().yProperty().bind(camera.yProperty());
+
+        animationBuilder()
+                .duration(Duration.seconds(0.5))
+                .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
+                .onFinished(() -> {
+                    getGameScene().getViewport().yProperty().unbind();
+                    onAnimationFinished.run();
+                })
+                .translate(camera)
+                .from(new Point2D(0, camera.getY()))
+                .to(new Point2D(0, 0))
+                .buildAndPlay();
     }
 
     @Override
