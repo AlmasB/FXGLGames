@@ -29,6 +29,7 @@ package com.almasb.fxglgames.breakout.components;
 import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.dsl.components.Effect;
 import com.almasb.fxgl.dsl.components.EffectComponent;
+import com.almasb.fxgl.dsl.effects.SlowTimeEffect;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.physics.PhysicsComponent;
@@ -88,6 +89,10 @@ public class BallComponent extends Component {
 
     public void onHit() {
         effectComponent.startEffect(new GlowRedEffect());
+    }
+
+    public void applySlow() {
+        //effectComponent.startEffect(new SlowTimeEffect(0.25, Duration.seconds(1)));
     }
 
     // this is a hack:

@@ -66,7 +66,7 @@ public class BreakoutApp extends GameApplication {
 
     @Override
     protected void onPreInit() {
-        loopBGM("BGM.mp3");
+        //loopBGM("BGM.mp3");
     }
 
     @Override
@@ -98,11 +98,9 @@ public class BreakoutApp extends GameApplication {
 
         getGameWorld().addEntityFactory(new BreakoutFactory());
 
-        //setLevelFromMap("tmx/level1.tmx");
+        setLevelFromMap("tmx/level1.tmx");
 
-        spawn("ball", 20, 20);
-
-        //spawn("ball", getAppWidth() / 2, getAppHeight() - 250);
+        spawn("ball", getAppWidth() / 2, getAppHeight() - 250);
 
         spawn("bat", getAppWidth() / 2, getAppHeight() - 180);
 
@@ -161,6 +159,10 @@ public class BreakoutApp extends GameApplication {
             getBallControl().grow();
         });
 
+        onCollisionBegin(BAT, BALL, (bat, ball) -> {
+            ball.call("applySlow");
+        });
+
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(BALL, WALL) {
             @Override
             protected void onHitBoxTrigger(Entity a, Entity b, HitBox boxA, HitBox boxB) {
@@ -168,7 +170,7 @@ public class BreakoutApp extends GameApplication {
                     inc("score", -100);
                 }
 
-                //getGameScene().getViewport().shakeTranslational(1.5);
+                getGameScene().getViewport().shakeTranslational(1.5);
             }
         });
     }

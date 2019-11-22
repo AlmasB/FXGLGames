@@ -31,6 +31,7 @@ import com.almasb.fxgl.dsl.components.EffectComponent;
 import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
 import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.entity.components.TimeComponent;
 import com.almasb.fxgl.particle.ParticleComponent;
 import com.almasb.fxgl.particle.ParticleEmitter;
 import com.almasb.fxgl.particle.ParticleEmitters;
@@ -107,9 +108,6 @@ public class BreakoutFactory implements EntityFactory {
         emitter.setSpawnPointFunction(i -> new Point2D(0, 0));
         emitter.setScaleFunction(i -> new Point2D(-0.1, -0.1));
         emitter.setExpireFunction(i -> Duration.millis(110));
-        emitter.setControl(p -> {
-            ImageView view = (ImageView) p.getView();
-        });
 
         var e = entityBuilder()
                 .from(data)
@@ -118,15 +116,16 @@ public class BreakoutFactory implements EntityFactory {
                 .view("ball.png")
                 .collidable()
                 .with(physics)
+                .with(new TimeComponent())
                 .with(new ParticleComponent(emitter))
                 .with(new EffectComponent())
                 .with(new BallComponent())
                 .scale(0.1, 0.1)
                 .build();
 
+        emitter.setEntityScaleFunction(() -> new Point2D(0.1, 0.1));
+        emitter.setScaleOriginFunction(i -> new Point2D(0, 0));
         e.getTransformComponent().setScaleOrigin(new Point2D(0, 0));
-
-        System.out.println(e.getX() + " " + e.getY());
 
         emitter.minSizeProperty().bind(e.getTransformComponent().scaleXProperty().multiply(60));
         emitter.maxSizeProperty().bind(e.getTransformComponent().scaleXProperty().multiply(60));
