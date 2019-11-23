@@ -70,6 +70,20 @@ import static com.almasb.fxgl.dsl.FXGL.*;
  */
 public class BreakoutFactory implements EntityFactory {
 
+    private LazyValue<Image> image;
+
+    public BreakoutFactory() {
+        image = new LazyValue<>(() -> {
+            var images = IntStream.rangeClosed(1, 8)
+                    .mapToObj(i -> image("anim/Attack (" + i + ").png"))
+                    .collect(Collectors.toList());
+
+            return ImagesKt.merge(images);
+        });
+
+        image.get();
+    }
+
     @Spawns("brick_blue")
     public Entity newBrick(SpawnData data) {
         return entityBuilder()
@@ -190,22 +204,19 @@ public class BreakoutFactory implements EntityFactory {
                 .build();
     }
 
-    private LazyValue<Image> image = new LazyValue<>(() -> {
-        var images = IntStream.rangeClosed(1, 8)
-                .mapToObj(i -> image("anim/Attack (" + i + ").png"))
-                .collect(Collectors.toList());
-
-        return ImagesKt.merge(images);
-    });
-
     @Spawns("zombie")
     public Entity newZombie(SpawnData data) {
         var channel = new AnimationChannel(image.get(), Duration.seconds(1), 8);
 
-        return entityBuilder()
+        var e = entityBuilder()
                 .from(data)
                 .view(new AnimatedTexture(channel).play())
                 .with(new ExpireCleanComponent(Duration.seconds(1)))
+                .scale(0.2, 0.2)
                 .build();
+
+        e.getTransformComponent().setScaleOrigin(new Point2D(0, 0));
+
+        return e;
     }
 }

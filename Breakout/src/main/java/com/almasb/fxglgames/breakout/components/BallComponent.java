@@ -32,11 +32,14 @@ import com.almasb.fxgl.dsl.components.EffectComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.texture.Texture;
+import com.almasb.fxglgames.breakout.BreakoutType;
 import com.almasb.fxglgames.breakout.PowerupType;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -129,7 +132,22 @@ public class BallComponent extends Component {
     }
 
     private void applyZombie() {
-        spawn("zombie", new Point2D(0, 0));
+        byType(BreakoutType.BRICK).stream()
+                .filter(brick -> brick.getPropertyOptional("markedByZombie").isEmpty())
+                .findAny()
+                .ifPresent(brick -> {
+                    brick.setProperty("markedByZombie", true);
+                    brick.getComponent(CollidableComponent.class).setValue(false);
+
+                    var rect = new Rectangle(brick.getWidth(), brick.getHeight(), null);
+                    rect.setStroke(Color.YELLOW);
+
+                    brick.getViewComponent().addChild(rect);
+
+                    spawn("zombie", brick.getPosition().subtract(65, 65));
+
+                    runOnce(() -> brick.call("onHit"), Duration.seconds(1.0));
+                });
     }
 
     // this is a hack:
