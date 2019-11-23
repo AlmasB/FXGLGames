@@ -29,11 +29,12 @@ package com.almasb.fxglgames.breakout.components;
 import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.dsl.components.Effect;
 import com.almasb.fxgl.dsl.components.EffectComponent;
-import com.almasb.fxgl.dsl.effects.SlowTimeEffect;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.texture.Texture;
+import com.almasb.fxglgames.breakout.PowerupType;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
@@ -48,22 +49,28 @@ import static java.lang.Math.signum;
 public class BallComponent extends Component {
 
     private static final int BALL_MIN_SPEED = 400;
+    private static final int BALL_SLOW_SPEED = 100;
 
     private PhysicsComponent physics;
     private EffectComponent effectComponent;
 
     private Texture original;
-    private Texture red;
+    private Texture yellow;
+
+    private boolean checkVelocityLimit = true;
 
     @Override
     public void onAdded() {
         original = (Texture) entity.getViewComponent().getChildren().get(0);
-        red = original.toColor(Color.RED);
+        yellow = original.toColor(Color.YELLOW);
     }
 
     @Override
     public void onUpdate(double tpf) {
-        limitVelocity();
+        if (checkVelocityLimit) {
+            limitVelocity();
+        }
+
         //checkOffscreen();
     }
 
@@ -83,16 +90,46 @@ public class BallComponent extends Component {
         physics.setBodyLinearVelocity(new Vec2(5, 5));
     }
 
-    public void grow() {
+    public void applyPowerup(PowerupType type) {
+        switch (type) {
+            case GROW:
+                applyGrow();
+                break;
+
+            case MULTISHOT:
+                applyMultishot();
+                break;
+
+            case ZOMBIE:
+                applyZombie();
+                break;
+        }
+    }
+
+    public void applyGrow() {
         effectComponent.startEffect(new GrowEffect());
     }
 
     public void onHit() {
-        effectComponent.startEffect(new GlowRedEffect());
+        effectComponent.startEffect(new HighlightEffect());
     }
 
     public void applySlow() {
-        //effectComponent.startEffect(new SlowTimeEffect(0.25, Duration.seconds(1)));
+        effectComponent.startEffect(new SlowEffect());
+    }
+
+    public void applyMultishot() {
+        int numBalls = 10;
+
+        for (int i = 0; i < numBalls; i++) {
+            Point2D dir = Vec2.fromAngle(i*360.0 / numBalls).toPoint2D();
+
+            spawn("bulletBall", new SpawnData(entity.getX(), entity.getY()).put("dir", dir));
+        }
+    }
+
+    private void applyZombie() {
+        spawn("zombie", new Point2D(0, 0));
     }
 
     // this is a hack:
@@ -125,20 +162,45 @@ public class BallComponent extends Component {
         }
     }
 
-    public class GlowRedEffect extends Effect {
+    public class HighlightEffect extends Effect {
 
-        public GlowRedEffect() {
-            super(Duration.seconds(1.45));
+        public HighlightEffect() {
+            super(Duration.seconds(0.05));
         }
 
         @Override
         public void onStart(Entity entity) {
-            entity.getViewComponent().addChild(red);
+            entity.getViewComponent().addChild(yellow);
         }
 
         @Override
         public void onEnd(Entity entity) {
-            entity.getViewComponent().removeChild(red);
+            entity.getViewComponent().removeChild(yellow);
+        }
+    }
+
+    public class SlowEffect extends Effect {
+
+        public SlowEffect() {
+            super(Duration.seconds(0.15));
+        }
+
+        @Override
+        public void onStart(Entity entity) {
+            checkVelocityLimit = false;
+        }
+
+        @Override
+        public void onUpdate(Entity entity, double tpf) {
+            var signX = signum(physics.getVelocityX());
+            var signY = signum(physics.getVelocityY());
+
+            physics.setLinearVelocity(signX * BALL_SLOW_SPEED, signY * BALL_SLOW_SPEED);
+        }
+
+        @Override
+        public void onEnd(Entity entity) {
+            checkVelocityLimit = true;
         }
     }
 }

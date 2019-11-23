@@ -26,9 +26,12 @@
 
 package com.almasb.fxglgames.breakout;
 
+import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.core.util.LazyValue;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.EffectComponent;
 import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
+import com.almasb.fxgl.dsl.components.ProjectileComponent;
 import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.components.TimeComponent;
@@ -41,6 +44,9 @@ import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyDef;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
+import com.almasb.fxgl.texture.AnimatedTexture;
+import com.almasb.fxgl.texture.AnimationChannel;
+import com.almasb.fxgl.texture.ImagesKt;
 import com.almasb.fxgl.ui.FontType;
 import com.almasb.fxglgames.breakout.components.BallComponent;
 import com.almasb.fxglgames.breakout.components.BatComponent;
@@ -48,10 +54,14 @@ import com.almasb.fxglgames.breakout.components.BrickComponent;
 import com.almasb.fxglgames.breakout.components.MoveDownComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
+
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
@@ -133,6 +143,21 @@ public class BreakoutFactory implements EntityFactory {
         return e;
     }
 
+    @Spawns("bulletBall")
+    public Entity newBulletBall(SpawnData data) {
+        Point2D dir = data.get("dir");
+
+        return entityBuilder()
+                .from(data)
+                .type(BreakoutType.BULLET_BALL)
+                .bbox(new HitBox(BoundingShape.circle(64)))
+                .view("ball.png")
+                .collidable()
+                .with(new ProjectileComponent(dir, 800))
+                .scale(0.1, 0.1)
+                .build();
+    }
+
     @Spawns("sparks")
     public Entity newSparks(SpawnData data) {
         var emitter = ParticleEmitters.newSparkEmitter();
@@ -148,9 +173,11 @@ public class BreakoutFactory implements EntityFactory {
                 .build();
     }
 
-    @Spawns("powerupGrow")
+    @Spawns("powerup")
     public Entity newPowerupGrow(SpawnData data) {
-        var view = getUIFactory().newText("GROW", Color.WHITE, 16);
+        var powerupType = FXGLMath.random(PowerupType.values()).get();
+
+        var view = getUIFactory().newText(powerupType.toString(), Color.WHITE, 16);
         view.setFont(getUIFactory().newFont(FontType.GAME, 16));
 
         return entityBuilder()
@@ -159,6 +186,26 @@ public class BreakoutFactory implements EntityFactory {
                 .viewWithBBox(view)
                 .collidable()
                 .with(new MoveDownComponent(400))
+                .with("powerupType", powerupType)
+                .build();
+    }
+
+    private LazyValue<Image> image = new LazyValue<>(() -> {
+        var images = IntStream.rangeClosed(1, 8)
+                .mapToObj(i -> image("anim/Attack (" + i + ").png"))
+                .collect(Collectors.toList());
+
+        return ImagesKt.merge(images);
+    });
+
+    @Spawns("zombie")
+    public Entity newZombie(SpawnData data) {
+        var channel = new AnimationChannel(image.get(), Duration.seconds(1), 8);
+
+        return entityBuilder()
+                .from(data)
+                .view(new AnimatedTexture(channel).play())
+                .with(new ExpireCleanComponent(Duration.seconds(1)))
                 .build();
     }
 }

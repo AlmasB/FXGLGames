@@ -151,12 +151,20 @@ public class BreakoutApp extends GameApplication {
             inc("score", +50);
 
             if (FXGLMath.randomBoolean()) {
-                spawn("powerupGrow", brick.getPosition());
+                spawn("powerup", brick.getPosition());
             }
         });
 
         onCollisionCollectible(BAT, POWERUP, powerup -> {
-            getBallControl().grow();
+            PowerupType type = powerup.getObject("powerupType");
+
+            getBallControl().applyPowerup(type);
+
+        });
+
+        onCollisionBegin(BULLET_BALL, BRICK, (ball, brick) -> {
+            ball.removeFromWorld();
+            brick.call("onHit");
         });
 
         onCollisionBegin(BAT, BALL, (bat, ball) -> {
