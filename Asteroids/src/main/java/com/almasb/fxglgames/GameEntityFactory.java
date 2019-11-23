@@ -9,8 +9,11 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
+import com.almasb.fxgl.particle.ParticleComponent;
+import com.almasb.fxgl.particle.ParticleEmitters;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
@@ -69,10 +72,18 @@ public class GameEntityFactory implements EntityFactory {
     public Entity newExplosion(SpawnData data) {
         //play("explosion.wav");
 
+        var emitter = ParticleEmitters.newExplosionEmitter(350);
+        emitter.setMaxEmissions(1);
+        emitter.setSize(2, 10);
+        emitter.setStartColor(Color.WHITE);
+        emitter.setEndColor(Color.BLUE);
+        emitter.setSpawnPointFunction(i -> new Point2D(64, 64));
+
         return entityBuilder()
                 .from(data)
                 .view(texture("explosion.png").toAnimatedTexture(16, Duration.seconds(0.66)).play())
                 .with(new ExpireCleanComponent(Duration.seconds(0.66)))
+                .with(new ParticleComponent(emitter))
                 .build();
     }
 

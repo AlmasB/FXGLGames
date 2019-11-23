@@ -1,8 +1,10 @@
 package com.almasb.fxglgames;
 
 import com.almasb.fxgl.animation.Interpolators;
+import com.almasb.fxgl.app.FXGLMenu;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.app.SceneFactory;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import javafx.geometry.Point2D;
@@ -26,6 +28,13 @@ public class AsteroidsApp extends GameApplication {
         settings.setHeight(750);
         settings.setTitle("Asteroids");
         settings.setVersion("0.1");
+        settings.setMenuEnabled(true);
+        settings.setSceneFactory(new SceneFactory() {
+            @Override
+            public FXGLMenu newMainMenu() {
+                return new AsteroidsMainMenu();
+            }
+        });
     }
 
     @Override
