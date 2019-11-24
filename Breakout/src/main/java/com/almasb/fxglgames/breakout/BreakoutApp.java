@@ -37,11 +37,9 @@ import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxglgames.breakout.components.BallComponent;
 import com.almasb.fxglgames.breakout.components.BatComponent;
-import com.almasb.fxglgames.breakout.components.BrickComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import java.util.Map;
@@ -66,7 +64,8 @@ public class BreakoutApp extends GameApplication {
 
     @Override
     protected void onPreInit() {
-        //loopBGM("BGM.mp3");
+        getSettings().setGlobalMusicVolume(0.2);
+        loopBGM("BGM.mp3");
     }
 
     @Override
@@ -143,6 +142,9 @@ public class BreakoutApp extends GameApplication {
         getPhysicsWorld().setGravity(0, 0);
 
         onCollisionBegin(BALL, BRICK, (ball, brick) -> {
+
+            play("hit.wav");
+
             ball.call("onHit");
             brick.call("onHit");
 
@@ -168,12 +170,16 @@ public class BreakoutApp extends GameApplication {
         });
 
         onCollisionBegin(BAT, BALL, (bat, ball) -> {
+            play("hit.wav");
+
             ball.call("applySlow");
         });
 
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(BALL, WALL) {
             @Override
             protected void onHitBoxTrigger(Entity a, Entity b, HitBox boxA, HitBox boxB) {
+                play("hit.wav");
+
                 if (boxB.getName().equals("BOT")) {
                     inc("score", -100);
                 }

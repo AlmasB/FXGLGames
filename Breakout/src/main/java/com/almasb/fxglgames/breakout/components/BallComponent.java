@@ -137,7 +137,6 @@ public class BallComponent extends Component {
                 .findAny()
                 .ifPresent(brick -> {
                     brick.setProperty("markedByZombie", true);
-                    brick.getComponent(CollidableComponent.class).setValue(false);
 
                     var rect = new Rectangle(brick.getWidth(), brick.getHeight(), null);
                     rect.setStroke(Color.YELLOW);
@@ -146,7 +145,10 @@ public class BallComponent extends Component {
 
                     spawn("zombie", brick.getPosition().subtract(65, 65));
 
-                    runOnce(() -> brick.call("onHit"), Duration.seconds(1.0));
+                    runOnce(() -> {
+                        if (brick.isActive())
+                            brick.call("onHit");
+                    }, Duration.seconds(1.0));
                 });
     }
 

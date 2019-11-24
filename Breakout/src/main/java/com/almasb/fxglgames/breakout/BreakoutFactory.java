@@ -174,11 +174,13 @@ public class BreakoutFactory implements EntityFactory {
 
     @Spawns("sparks")
     public Entity newSparks(SpawnData data) {
-        var emitter = ParticleEmitters.newSparkEmitter();
+        var emitter = ParticleEmitters.newExplosionEmitter(14);
         emitter.setMaxEmissions(1);
-        emitter.setAllowParticleRotation(true);
-        emitter.setStartColor(Color.LIGHTBLUE);
-        emitter.setEndColor(Color.BLUE);
+        emitter.setStartColor(Color.WHITE);
+        emitter.setEndColor(Color.YELLOW);
+        emitter.setSize(2, 8);
+        emitter.setBlendMode(BlendMode.SRC_OVER);
+        emitter.setNumParticles(20);
 
         return entityBuilder()
                 .from(data)
