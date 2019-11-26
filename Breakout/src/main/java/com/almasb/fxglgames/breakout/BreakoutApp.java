@@ -31,12 +31,14 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.components.IrremovableComponent;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxglgames.breakout.components.BallComponent;
 import com.almasb.fxglgames.breakout.components.BatComponent;
+import com.almasb.fxglgames.breakout.components.BrickComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -147,10 +149,14 @@ public class BreakoutApp extends GameApplication {
 
             play("hit.wav");
 
+            if (!getBallControl().getColor().equals(brick.getComponent(BrickComponent.class).getColor())) {
+                return;
+            }
+
             ball.call("onHit");
             brick.call("onHit");
 
-            spawn("sparks", ball.getPosition());
+            spawn("sparks", new SpawnData(ball.getPosition()).put("color", getBallControl().getColor()));
 
             inc("score", +50);
 

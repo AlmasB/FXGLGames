@@ -84,15 +84,17 @@ public class BreakoutFactory implements EntityFactory {
         image.get();
     }
 
-    @Spawns("brick_blue")
+    @Spawns("brick")
     public Entity newBrick(SpawnData data) {
+        var color = Color.valueOf(data.<String>get("color").toUpperCase());
+
         return entityBuilder()
                 .from(data)
                 .type(BreakoutType.BRICK)
                 .bbox(new HitBox(BoundingShape.box(96, 32)))
                 .collidable()
                 .with(new PhysicsComponent())
-                .with(new BrickComponent())
+                .with(new BrickComponent(color))
                 .build();
     }
 
@@ -177,7 +179,10 @@ public class BreakoutFactory implements EntityFactory {
         var emitter = ParticleEmitters.newExplosionEmitter(14);
         emitter.setMaxEmissions(1);
         emitter.setStartColor(Color.WHITE);
-        emitter.setEndColor(Color.YELLOW);
+
+        Color color = data.get("color");
+
+        emitter.setEndColor(color);
         emitter.setSize(2, 8);
         emitter.setBlendMode(BlendMode.SRC_OVER);
         emitter.setNumParticles(20);

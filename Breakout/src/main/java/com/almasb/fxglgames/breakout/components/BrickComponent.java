@@ -33,6 +33,7 @@ import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.texture.Texture;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
@@ -48,6 +49,16 @@ public class BrickComponent extends Component {
 
     private boolean canBeHit = true;
 
+    private Color color;
+
+    public BrickComponent(Color color) {
+        this.color = color;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
     public void onHit() {
         if (!canBeHit)
             return;
@@ -60,11 +71,14 @@ public class BrickComponent extends Component {
             playHitAnimation();
 
             entity.getViewComponent().clearChildren();
-            entity.getViewComponent().addChild(texture("brick_blue_cracked.png"));
+
+            var colorName = entity.getString("color");
+
+            entity.getViewComponent().addChild(texture("brick_" + colorName + "_cracked.png"));
         } else if (lives == 0) {
 
-
-            var t = texture("brick_blue_cracked.png");
+            var colorName = entity.getString("color");
+            var t = texture("brick_" + colorName + "_cracked.png");
 
             var textures = new ArrayList<Texture>();
 

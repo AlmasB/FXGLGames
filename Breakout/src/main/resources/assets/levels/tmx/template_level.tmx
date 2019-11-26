@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="14" height="22" tilewidth="96" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="46">
+ <tileset firstgid="1" name="brick_blue" tilewidth="96" tileheight="32" tilecount="1" columns="1">
+  <image source="brick_blue.png" width="96" height="32"/>
+ </tileset>
+ <tileset firstgid="2" name="brick_yellow" tilewidth="96" tileheight="32" tilecount="1" columns="1">
+  <image source="brick_yellow.png" width="96" height="32"/>
+ </tileset>
+ <tileset firstgid="3" name="brick_green" tilewidth="96" tileheight="32" tilecount="1" columns="1">
+  <image source="brick_green.png" width="96" height="32"/>
+ </tileset>
+ <tileset firstgid="4" name="brick_red" tilewidth="96" tileheight="32" tilecount="1" columns="1">
+  <image source="brick_red.png" width="96" height="32"/>
+ </tileset>
+ <objectgroup id="3" name="brick_layer">
+  <object id="35" type="brick" gid="1" x="1248" y="704" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="43" type="brick" gid="3" x="1248" y="672" width="96" height="32">
+   <properties>
+    <property name="color" value="green"/>
+   </properties>
+  </object>
+  <object id="44" type="brick" gid="2" x="1248" y="608" width="96" height="32">
+   <properties>
+    <property name="color" value="yellow"/>
+   </properties>
+  </object>
+  <object id="45" type="brick" gid="4" x="1248" y="640" width="96" height="32">
+   <properties>
+    <property name="color" value="red"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

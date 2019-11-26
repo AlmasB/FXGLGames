@@ -90,7 +90,7 @@ public class BallComponent extends Component {
         original = (Texture) entity.getViewComponent().getChildren().get(0);
 
         for (int i = 0; i < COLORS.length; i++) {
-            textures[i] = original.multiplyColor(COLORS[i]);
+            textures[i] = (i == 0) ? original.copy() : original.multiplyColor(COLORS[i]).brighter().brighter();
         }
     }
 
