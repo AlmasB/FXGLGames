@@ -83,6 +83,8 @@ public class BreakoutApp extends GameApplication {
                 getBatControl().right();
             }
         }, KeyCode.D);
+
+        onKeyDown(KeyCode.SPACE, "Change color", () -> getBallControl().changeColorToNext());
     }
 
     @Override

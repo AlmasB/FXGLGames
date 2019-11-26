@@ -33,10 +33,13 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.particle.ParticleComponent;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxglgames.breakout.BreakoutType;
 import com.almasb.fxglgames.breakout.PowerupType;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -51,21 +54,44 @@ import static java.lang.Math.signum;
  */
 public class BallComponent extends Component {
 
+    private static final Color[] COLORS = new Color[] {
+            Color.WHITE, Color.BLUE, Color.YELLOW, Color.RED, Color.GREEN
+    };
+
     private static final int BALL_MIN_SPEED = 400;
     private static final int BALL_SLOW_SPEED = 100;
 
     private PhysicsComponent physics;
     private EffectComponent effectComponent;
 
+    private Texture[] textures = new Texture[COLORS.length];
+    private int colorIndex = 0;
+
     private Texture original;
-    private Texture yellow;
 
     private boolean checkVelocityLimit = true;
+
+    private ObjectProperty<Color> color = new SimpleObjectProperty<>(Color.WHITE);
+
+    public Color getColor() {
+        return color.get();
+    }
+
+    public void setColor(Color color) {
+        this.color.set(color);
+    }
+
+    public ObjectProperty<Color> colorProperty() {
+        return color;
+    }
 
     @Override
     public void onAdded() {
         original = (Texture) entity.getViewComponent().getChildren().get(0);
-        yellow = original.toColor(Color.YELLOW);
+
+        for (int i = 0; i < COLORS.length; i++) {
+            textures[i] = original.multiplyColor(COLORS[i]);
+        }
     }
 
     @Override
@@ -87,6 +113,23 @@ public class BallComponent extends Component {
         if (abs(physics.getVelocityY()) < BALL_MIN_SPEED) {
             physics.setVelocityY(signum(physics.getVelocityY()) * BALL_MIN_SPEED);
         }
+    }
+
+    public void changeColorToNext() {
+        entity.getViewComponent().removeChild(textures[colorIndex]);
+
+        colorIndex++;
+
+        if (colorIndex == textures.length)
+            colorIndex = 0;
+
+        setColor(COLORS[colorIndex]);
+
+        // update emitter
+        var emitter = entity.getComponent(ParticleComponent.class).getEmitter();
+        emitter.setSourceImage(textures[colorIndex]);
+
+        entity.getViewComponent().addChild(textures[colorIndex]);
     }
 
     public void release() {
@@ -190,12 +233,12 @@ public class BallComponent extends Component {
 
         @Override
         public void onStart(Entity entity) {
-            entity.getViewComponent().addChild(yellow);
+            //entity.getViewComponent().addChild(yellow);
         }
 
         @Override
         public void onEnd(Entity entity) {
-            entity.getViewComponent().removeChild(yellow);
+            //entity.getViewComponent().removeChild(yellow);
         }
     }
 
