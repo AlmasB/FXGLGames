@@ -46,8 +46,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
-import static java.lang.Math.abs;
-import static java.lang.Math.signum;
+import static java.lang.Math.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -69,7 +68,7 @@ public class BallComponent extends Component {
 
     private Texture original;
 
-    private boolean checkVelocityLimit = true;
+    private boolean checkVelocityLimit = false;
 
     private ObjectProperty<Color> color = new SimpleObjectProperty<>(Color.WHITE);
 
@@ -106,12 +105,24 @@ public class BallComponent extends Component {
     private void limitVelocity() {
         // we don't want the ball to move too slow in X direction
         if (abs(physics.getVelocityX()) < BALL_MIN_SPEED) {
-            physics.setVelocityX(signum(physics.getVelocityX()) * BALL_MIN_SPEED);
+            var signX = signum(physics.getVelocityX());
+
+            // if 0, then choose direction to the right
+            if (signX == 0.0)
+                signX = 1.0;
+
+            physics.setVelocityX(signX * BALL_MIN_SPEED);
         }
 
         // we don't want the ball to move too slow in Y direction
         if (abs(physics.getVelocityY()) < BALL_MIN_SPEED) {
-            physics.setVelocityY(signum(physics.getVelocityY()) * BALL_MIN_SPEED);
+            var signY = signum(physics.getVelocityY());
+
+            // if 0, then choose upwards direction
+            if (signY == 0.0)
+                signY = -1.0;
+
+            physics.setVelocityY(signY * BALL_MIN_SPEED);
         }
     }
 
@@ -133,6 +144,8 @@ public class BallComponent extends Component {
     }
 
     public void release() {
+        checkVelocityLimit = true;
+
         physics.setBodyLinearVelocity(new Vec2(5, 5));
     }
 

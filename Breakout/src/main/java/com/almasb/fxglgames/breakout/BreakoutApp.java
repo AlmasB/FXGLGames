@@ -36,12 +36,14 @@ import com.almasb.fxgl.entity.components.IrremovableComponent;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
+import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxglgames.breakout.components.BallComponent;
 import com.almasb.fxglgames.breakout.components.BatComponent;
 import com.almasb.fxglgames.breakout.components.BrickComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.util.Map;
@@ -63,6 +65,8 @@ public class BreakoutApp extends GameApplication {
         settings.setFontUI("main_font.ttf");
         settings.setDeveloperMenuEnabled(true);
     }
+
+    private Text debugText;
 
     @Override
     protected void onPreInit() {
@@ -93,6 +97,7 @@ public class BreakoutApp extends GameApplication {
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("lives", 3);
         vars.put("score", 0);
+        vars.put("level", 1);
     }
 
     @Override
@@ -101,7 +106,18 @@ public class BreakoutApp extends GameApplication {
 
         getGameWorld().addEntityFactory(new BreakoutFactory());
 
-        setLevelFromMap("tmx/level1.tmx");
+        setLevel(1);
+    }
+
+    private void nextLevel() {
+        inc("level", +1);
+        var levelNum = geti("level");
+        setLevel(levelNum);
+    }
+
+    private void setLevel(int levelNum) {
+        getGameWorld().getEntitiesCopy().forEach(e -> e.removeFromWorld());
+        setLevelFromMap("tmx/level" + levelNum + ".tmx");
 
         spawn("ball", getAppWidth() / 2, getAppHeight() - 250);
 
@@ -199,10 +215,25 @@ public class BreakoutApp extends GameApplication {
 
     @Override
     protected void initUI() {
+        debugText = new Text();
+        debugText.setFill(Color.WHITE);
+
         var textScore = getUIFactory().newText("", 24);
         textScore.textProperty().bind(getip("score").asString());
 
         addUINode(textScore, 50, getAppHeight() - 20);
+        addUINode(debugText, 50, 50);
+    }
+
+    @Override
+    protected void onUpdate(double tpf) {
+        //PhysicsComponent physics = getBallControl().getEntity().getComponent(PhysicsComponent.class);
+
+        //debugText.setText(Math.abs(physics.getVelocityY()) + ": " + getBallControl().checkVelocityLimit);
+
+        if (byType(BRICK).isEmpty()) {
+            nextLevel();
+        }
     }
 
     private BatComponent getBatControl() {
