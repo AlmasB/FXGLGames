@@ -26,6 +26,9 @@
 
 package com.almasb.fxglgames.breakout;
 
+import com.almasb.fxgl.animation.AnimatedValue;
+import com.almasb.fxgl.animation.Animation;
+import com.almasb.fxgl.animation.AnimationBuilder;
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
@@ -138,23 +141,25 @@ public class BreakoutApp extends GameApplication {
                 .buildScreenBoundsAndAttach(40);
     }
 
+    private Animation<Double> cameraAnimation;
+
     private void animateCamera(Runnable onAnimationFinished) {
-        var camera = new Entity();
-        camera.setY(getAppHeight());
+        // TODO: add to FXGL, generic animationBuilder().onProgress(value -> {});
+        // TODO: is getViewport().getCamera() functional?
 
-        getGameScene().getViewport().yProperty().bind(camera.yProperty());
-
-        animationBuilder()
+        AnimatedValue<Double> value = new AnimatedValue<>(getAppHeight() * 1.0, 0.0);
+        var builder = new AnimationBuilder()
                 .duration(Duration.seconds(0.5))
                 .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
-                .onFinished(() -> {
-                    getGameScene().getViewport().yProperty().unbind();
-                    onAnimationFinished.run();
-                })
-                .translate(camera)
-                .from(new Point2D(0, camera.getY()))
-                .to(new Point2D(0, 0))
-                .buildAndPlay();
+                .onFinished(onAnimationFinished::run);
+
+        cameraAnimation = new Animation<>(builder, value) {
+            @Override
+            public void onProgress(Double y) {
+                getGameScene().getViewport().setY(y);
+            }
+        };
+        cameraAnimation.start();
     }
 
     @Override
@@ -227,9 +232,7 @@ public class BreakoutApp extends GameApplication {
 
     @Override
     protected void onUpdate(double tpf) {
-        //PhysicsComponent physics = getBallControl().getEntity().getComponent(PhysicsComponent.class);
-
-        //debugText.setText(Math.abs(physics.getVelocityY()) + ": " + getBallControl().checkVelocityLimit);
+        cameraAnimation.onUpdate(tpf);
 
         if (byType(BRICK).isEmpty()) {
             nextLevel();
