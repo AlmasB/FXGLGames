@@ -54,8 +54,8 @@ public class BattleTanksFactory implements EntityFactory {
                 .build();
     }
 
-    @Spawns("F,Flag")
-    public Entity newFlag(SpawnData data) {
+    @Spawns("playerFlag")
+    public Entity newPlayerFlag(SpawnData data) {
         return entityBuilder()
                 .from(data)
                 .type(BattleTanksType.FLAG)
@@ -64,13 +64,53 @@ public class BattleTanksFactory implements EntityFactory {
                 .build();
     }
 
-    @Spawns("1,Wall")
+    @Spawns("enemyFlag")
+    public Entity newEnemyFlag(SpawnData data) {
+        return entityBuilder()
+                .from(data)
+                .type(BattleTanksType.FLAG)
+                .viewWithBBox("flag.png")
+                .with(new CollidableComponent(true))
+                .build();
+    }
+
+    @Spawns("wall")
     public Entity newWall(SpawnData data) {
         return entityBuilder()
                 .from(data)
                 .type(BattleTanksType.WALL)
                 .viewWithBBox("wall.png")
                 .with(new CollidableComponent(true))
+                .build();
+    }
+
+    @Spawns("enemy")
+    public Entity newEnemy(SpawnData data) {
+        return entityBuilder()
+                .from(data)
+                .type(BattleTanksType.ENEMY)
+                .viewWithBBox("tank_enemy.png")
+                .collidable()
+                .build();
+    }
+
+    @Spawns("enemySpawnPoint")
+    public Entity newEnemySpawnPoint(SpawnData data) {
+        return entityBuilder()
+                .from(data)
+                .type(BattleTanksType.ENEMY)
+                .viewWithBBox("tank_enemy.png")
+                .collidable()
+                .build();
+    }
+
+    @Spawns("playerSpawnPoint")
+    public Entity newPlayerSpawnPoint(SpawnData data) {
+        return entityBuilder()
+                .from(data)
+                .type(BattleTanksType.ENEMY)
+                .viewWithBBox("tank_enemy.png")
+                .collidable()
                 .build();
     }
 }

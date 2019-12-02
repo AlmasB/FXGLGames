@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="32" height="18" tilewidth="40" tileheight="40" infinite="0" nextlayerid="3" nextobjectid="29">
+ <layer id="1" name="Tile Layer 1" width="32" height="18">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="2" name="World">
+  <object id="1" type="wall" x="40" y="320" width="40" height="40"/>
+  <object id="2" type="wall" x="120" y="320" width="40" height="40"/>
+  <object id="3" type="wall" x="200" y="320" width="40" height="40"/>
+  <object id="4" type="wall" x="80" y="400" width="40" height="40"/>
+  <object id="5" type="wall" x="160" y="400" width="40" height="40"/>
+  <object id="6" type="wall" x="240" y="400" width="40" height="40"/>
+  <object id="7" type="wall" x="360" y="320" width="40" height="40"/>
+  <object id="8" type="wall" x="440" y="320" width="40" height="40"/>
+  <object id="9" type="wall" x="520" y="320" width="40" height="40"/>
+  <object id="10" type="wall" x="400" y="400" width="40" height="40"/>
+  <object id="11" type="wall" x="480" y="400" width="40" height="40"/>
+  <object id="12" type="wall" x="560" y="400" width="40" height="40"/>
+  <object id="13" type="wall" x="680" y="320" width="40" height="40"/>
+  <object id="14" type="wall" x="760" y="320" width="40" height="40"/>
+  <object id="15" type="wall" x="840" y="320" width="40" height="40"/>
+  <object id="16" type="wall" x="720" y="400" width="40" height="40"/>
+  <object id="17" type="wall" x="800" y="400" width="40" height="40"/>
+  <object id="18" type="wall" x="880" y="400" width="40" height="40"/>
+  <object id="19" type="wall" x="1000" y="320" width="40" height="40"/>
+  <object id="20" type="wall" x="1080" y="320" width="40" height="40"/>
+  <object id="21" type="wall" x="1160" y="320" width="40" height="40"/>
+  <object id="22" type="wall" x="1040" y="400" width="40" height="40"/>
+  <object id="23" type="wall" x="1120" y="400" width="40" height="40"/>
+  <object id="24" type="wall" x="1200" y="400" width="40" height="40"/>
+  <object id="25" type="playerFlag" x="640" y="680" width="40" height="40"/>
+  <object id="26" type="enemyFlag" x="640" y="0" width="40" height="40"/>
+  <object id="27" type="enemySpawnPoint" x="360" y="0" width="40" height="40"/>
+  <object id="28" type="playerSpawnPoint" x="960" y="680" width="40" height="40"/>
+ </objectgroup>
+</map>

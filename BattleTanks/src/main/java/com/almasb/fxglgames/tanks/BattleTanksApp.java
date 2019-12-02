@@ -50,8 +50,8 @@ public class BattleTanksApp extends GameApplication {
     protected void initSettings(GameSettings settings) {
         settings.setTitle("BattleTanks");
         settings.setVersion("0.2");
-        settings.setWidth(840);
-        settings.setHeight(840);
+        settings.setWidth(40 * 32);
+        settings.setHeight(40 * 18);
     }
 
     private PlayerComponent playerComponent;
@@ -100,9 +100,7 @@ public class BattleTanksApp extends GameApplication {
     protected void initGame() {
         getGameWorld().addEntityFactory(new BattleTanksFactory());
 
-        Level level = getAssetLoader().loadLevel("level0.txt", new TextLevelLoader(84, 84, '0'));
-
-        getGameWorld().setLevel(level);
+        setLevelFromMap("tmx/level1.tmx");
 
         playerComponent = new PlayerComponent();
 
