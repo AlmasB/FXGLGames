@@ -33,11 +33,12 @@ import com.almasb.fxgl.entity.components.ViewComponent;
 import com.almasb.fxgl.texture.Texture;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.paint.Color;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class PlayerComponent extends Component {
+public class TankViewComponent extends Component {
 
     private MoveComponent moveComponent;
     private ViewComponent view;
@@ -48,7 +49,7 @@ public class PlayerComponent extends Component {
     public void onAdded() {
         getEntity().getTransformComponent().setRotationOrigin(new Point2D(42, 42));
 
-        texture = FXGL.getAssetLoader().loadTexture("player.png");
+        texture = FXGL.getAssetLoader().loadTexture("player.png").multiplyColor(Color.LIGHTBLUE);
         view.addChild(texture);
     }
 
@@ -69,25 +70,25 @@ public class PlayerComponent extends Component {
     }
 
     public void up() {
-        getEntity().setRotation(270);
+
         moveComponent.setMoveDirection(MoveDirection.UP);
         frames++;
     }
 
     public void down() {
-        getEntity().setRotation(90);
+
         moveComponent.setMoveDirection(MoveDirection.DOWN);
         frames++;
     }
 
     public void left() {
-        getEntity().setRotation(180);
+
         moveComponent.setMoveDirection(MoveDirection.LEFT);
         frames++;
     }
 
     public void right() {
-        getEntity().setRotation(0);
+
         moveComponent.setMoveDirection(MoveDirection.RIGHT);
         frames++;
     }

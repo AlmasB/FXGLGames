@@ -4,5 +4,6 @@ package com.almasb.fxglgames.tanks;
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public enum BattleTanksType {
-    BULLET, WALL, FLAG, ENEMY
+    PLAYER, ALLY, ENEMY,
+    BULLET, BRICK, WALL, FLAG,
 }

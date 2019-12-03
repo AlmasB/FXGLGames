@@ -33,16 +33,37 @@ import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
-import com.almasb.fxgl.physics.PhysicsComponent;
+import com.almasb.fxgl.physics.BoundingShape;
+import com.almasb.fxgl.physics.HitBox;
+import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
 
 import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
+import static com.almasb.fxgl.dsl.FXGL.texture;
 import static com.almasb.fxglgames.tanks.Config.BULLET_SPEED;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class BattleTanksFactory implements EntityFactory {
+
+    @Spawns("player,playerSpawnPoint")
+    public Entity newPlayer(SpawnData data) {
+        var e = entityBuilder()
+                .from(data)
+                .type(BattleTanksType.PLAYER)
+                .bbox(new HitBox(new Point2D(10, 10), BoundingShape.box(64, 64)))
+                .collidable()
+                .with(new MoveComponent())
+                .with(new TankViewComponent())
+                .with(new PlayerArrowViewComponent())
+                .scale(0.4, 0.4)
+                .build();
+
+        e.getTransformComponent().setScaleOrigin(new Point2D(42, 42));
+
+        return e;
+    }
 
     @Spawns("Bullet")
     public Entity newBullet(SpawnData data) {
@@ -58,12 +79,7 @@ public class BattleTanksFactory implements EntityFactory {
 
     @Spawns("playerFlag")
     public Entity newPlayerFlag(SpawnData data) {
-        return entityBuilder()
-                .from(data)
-                .type(BattleTanksType.FLAG)
-                .viewWithBBox("flag.png")
-                .with(new CollidableComponent(true))
-                .build();
+        return newEnemyFlag(data);
     }
 
     @Spawns("enemyFlag")
@@ -71,7 +87,7 @@ public class BattleTanksFactory implements EntityFactory {
         return entityBuilder()
                 .from(data)
                 .type(BattleTanksType.FLAG)
-                .viewWithBBox("flag.png")
+                .viewWithBBox(texture("flag.png", data.<Integer>get("width"), data.<Integer>get("height")))
                 .with(new CollidableComponent(true))
                 .build();
     }
@@ -83,37 +99,34 @@ public class BattleTanksFactory implements EntityFactory {
                 .type(BattleTanksType.WALL)
                 .viewWithBBox(new Rectangle(data.<Integer>get("width"), data.<Integer>get("height")))
                 .collidable()
-                .with(new PhysicsComponent())
                 .build();
     }
 
-    @Spawns("enemy")
+    @Spawns("brick")
+    public Entity newBrick(SpawnData data) {
+        return entityBuilder()
+                .from(data)
+                .type(BattleTanksType.BRICK)
+                .viewWithBBox(texture("brick.png", data.<Integer>get("width"), data.<Integer>get("height")))
+                .collidable()
+                .build();
+    }
+
+    @Spawns("enemy,enemySpawnPoint")
     public Entity newEnemy(SpawnData data) {
-        return entityBuilder()
+        var e = entityBuilder()
                 .from(data)
                 .type(BattleTanksType.ENEMY)
-                .viewWithBBox("tank_enemy.png")
+                .bbox(new HitBox(new Point2D(10, 10), BoundingShape.box(64, 64)))
                 .collidable()
+                .with(new MoveComponent())
+                .with(new TankViewComponent())
+                .with(new RandomMoveComponent())
+                .scale(0.4, 0.4)
                 .build();
-    }
 
-    @Spawns("enemySpawnPoint")
-    public Entity newEnemySpawnPoint(SpawnData data) {
-        return entityBuilder()
-                .from(data)
-                .type(BattleTanksType.ENEMY)
-                .viewWithBBox("tank_enemy.png")
-                .collidable()
-                .build();
-    }
+        e.getTransformComponent().setScaleOrigin(new Point2D(42, 42));
 
-    @Spawns("playerSpawnPoint")
-    public Entity newPlayerSpawnPoint(SpawnData data) {
-        return entityBuilder()
-                .from(data)
-                .type(BattleTanksType.ENEMY)
-                .viewWithBBox("tank_enemy.png")
-                .collidable()
-                .build();
+        return e;
     }
 }

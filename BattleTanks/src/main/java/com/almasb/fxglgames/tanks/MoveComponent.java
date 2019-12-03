@@ -62,18 +62,22 @@ public class MoveComponent extends Component {
     }
 
     private void up() {
+        getEntity().setRotation(270);
         move(0, -5 * speed);
     }
 
     private void down() {
+        getEntity().setRotation(90);
         move(0, 5 * speed);
     }
 
     private void left() {
+        getEntity().setRotation(180);
         move(-5 * speed, 0);
     }
 
     private void right() {
+        getEntity().setRotation(0);
         move(5 * speed, 0);
     }
 
@@ -85,7 +89,7 @@ public class MoveComponent extends Component {
             return;
 
         if (blocks == null) {
-            blocks = FXGL.getGameWorld().getEntitiesByType(BattleTanksType.WALL);
+            blocks = FXGL.getGameWorld().getEntitiesByType(BattleTanksType.WALL, BattleTanksType.BRICK);
         }
 
         velocity.set((float) dx, (float) dy);
