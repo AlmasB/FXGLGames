@@ -36,6 +36,8 @@ import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
+import com.almasb.fxgl.physics.PhysicsComponent;
+import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 
@@ -105,8 +107,12 @@ public class BattleTanksApp extends GameApplication {
         playerComponent = new PlayerComponent();
 
         Entity player = new Entity();
-        player.getBoundingBoxComponent().addHitBox(new HitBox("BODY", new Point2D(10, 10), BoundingShape.box(54, 54)));
+        player.getBoundingBoxComponent().addHitBox(new HitBox("BODY", new Point2D(10, 10), BoundingShape.box(64, 64)));
+        player.addComponent(new MoveComponent());
         player.addComponent(playerComponent);
+        player.getTransformComponent().setScaleOrigin(new Point2D(42, 42));
+        player.setScaleX(0.3);
+        player.setScaleY(0.3);
 
         getGameWorld().addEntity(player);
     }

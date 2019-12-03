@@ -39,6 +39,7 @@ import javafx.geometry.Rectangle2D;
  */
 public class PlayerComponent extends Component {
 
+    private MoveComponent moveComponent;
     private ViewComponent view;
 
     private Texture texture;
@@ -69,25 +70,25 @@ public class PlayerComponent extends Component {
 
     public void up() {
         getEntity().setRotation(270);
-        getEntity().translateY(-5 * speed);
+        moveComponent.setMoveDirection(MoveDirection.UP);
         frames++;
     }
 
     public void down() {
         getEntity().setRotation(90);
-        getEntity().translateY(5 * speed);
+        moveComponent.setMoveDirection(MoveDirection.DOWN);
         frames++;
     }
 
     public void left() {
         getEntity().setRotation(180);
-        getEntity().translateX(-5 * speed);
+        moveComponent.setMoveDirection(MoveDirection.LEFT);
         frames++;
     }
 
     public void right() {
         getEntity().setRotation(0);
-        getEntity().translateX(5 * speed);
+        moveComponent.setMoveDirection(MoveDirection.RIGHT);
         frames++;
     }
 

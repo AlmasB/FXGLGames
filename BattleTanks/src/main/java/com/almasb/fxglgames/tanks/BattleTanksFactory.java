@@ -33,6 +33,8 @@ import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.physics.PhysicsComponent;
+import javafx.scene.shape.Rectangle;
 
 import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
 import static com.almasb.fxglgames.tanks.Config.BULLET_SPEED;
@@ -79,8 +81,9 @@ public class BattleTanksFactory implements EntityFactory {
         return entityBuilder()
                 .from(data)
                 .type(BattleTanksType.WALL)
-                .viewWithBBox("wall.png")
-                .with(new CollidableComponent(true))
+                .viewWithBBox(new Rectangle(data.<Integer>get("width"), data.<Integer>get("height")))
+                .collidable()
+                .with(new PhysicsComponent())
                 .build();
     }
 
