@@ -1,4 +1,4 @@
-package com.almasb.fxglgames.tanks;
+package com.almasb.fxglgames.tanks.components;
 
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.math.Vec2;
@@ -6,6 +6,7 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.BoundingBoxComponent;
+import com.almasb.fxglgames.tanks.BattleTanksType;
 
 import java.util.List;
 
@@ -19,6 +20,10 @@ public class MoveComponent extends Component {
     private MoveDirection moveDir;
 
     private boolean movedThisFrame = false;
+
+    public MoveDirection getMoveDir() {
+        return moveDir;
+    }
 
     public void setMoveDirection(MoveDirection moveDir) {
         if (movedThisFrame)

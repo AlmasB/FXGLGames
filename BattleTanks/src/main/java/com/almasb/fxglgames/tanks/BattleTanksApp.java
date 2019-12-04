@@ -30,10 +30,14 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
+import com.almasb.fxglgames.tanks.collision.BulletEnemyFlagHandler;
+import com.almasb.fxglgames.tanks.collision.BulletEnemyTankHandler;
+import com.almasb.fxglgames.tanks.components.TankViewComponent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxglgames.tanks.BattleTanksType.*;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -98,18 +102,20 @@ public class BattleTanksApp extends GameApplication {
 
         setLevelFromMap("tmx/level2.tmx");
 
-        tankViewComponent = getGameWorld().getSingleton(BattleTanksType.PLAYER).getComponent(TankViewComponent.class);
+        tankViewComponent = getGameWorld().getSingleton(PLAYER).getComponent(TankViewComponent.class);
     }
 
     @Override
     protected void initPhysics() {
-//        getPhysicsWorld().addCollisionHandler(new CollisionHandler(BattleTanksType.BULLET, BattleTanksType.WALL) {
-//            @Override
-//            protected void onCollisionBegin(Entity bullet, Entity wall) {
-//                bullet.removeFromWorld();
-//                wall.removeFromWorld();
-//            }
-//        });
+        var bulletTankHandler = new BulletEnemyTankHandler();
+
+        getPhysicsWorld().addCollisionHandler(bulletTankHandler);
+        getPhysicsWorld().addCollisionHandler(bulletTankHandler.copyFor(BULLET, PLAYER));
+
+        var bulletFlagHandler = new BulletEnemyFlagHandler();
+
+        getPhysicsWorld().addCollisionHandler(bulletFlagHandler);
+        getPhysicsWorld().addCollisionHandler(bulletFlagHandler.copyFor(BULLET, PLAYER_FLAG));
     }
 
     public static void main(String[] args) {

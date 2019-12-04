@@ -5,5 +5,5 @@ package com.almasb.fxglgames.tanks;
  */
 public enum BattleTanksType {
     PLAYER, ALLY, ENEMY,
-    BULLET, BRICK, WALL, FLAG,
+    BULLET, BRICK, WALL, PLAYER_FLAG, ENEMY_FLAG
 }

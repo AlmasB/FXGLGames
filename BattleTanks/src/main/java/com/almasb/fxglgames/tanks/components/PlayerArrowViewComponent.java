@@ -1,4 +1,4 @@
-package com.almasb.fxglgames.tanks;
+package com.almasb.fxglgames.tanks.components;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.view.ChildViewComponent;

@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-package com.almasb.fxglgames.tanks;
+package com.almasb.fxglgames.tanks.components;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.SpawnData;
@@ -94,7 +94,10 @@ public class TankViewComponent extends Component {
     }
 
     public void shoot() {
-        FXGL.spawn("Bullet", new SpawnData(getEntity().getCenter()).put("direction", angleToVector()));
+        FXGL.spawn("Bullet", new SpawnData(getEntity().getCenter())
+                .put("direction", angleToVector())
+                .put("owner", entity)
+        );
     }
 
     private Point2D angleToVector() {

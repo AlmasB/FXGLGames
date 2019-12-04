@@ -24,13 +24,21 @@
  * SOFTWARE.
  */
 
-package com.almasb.fxglgames.tanks;
+package com.almasb.fxglgames.tanks.components;
+
+import javafx.geometry.Point2D;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public enum MoveDirection {
-    UP, RIGHT, DOWN, LEFT;
+    UP(new Point2D(0, -1)), RIGHT(new Point2D(1, 0)), DOWN(new Point2D(0, 1)), LEFT(new Point2D(-1, 0));
+
+    public Point2D vector;
+
+    MoveDirection(Point2D vector) {
+        this.vector = vector;
+    }
 
     public MoveDirection next() {
         int index = ordinal() + 1;

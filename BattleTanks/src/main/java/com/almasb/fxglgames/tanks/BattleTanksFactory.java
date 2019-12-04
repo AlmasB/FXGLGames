@@ -26,6 +26,7 @@
 
 package com.almasb.fxglgames.tanks;
 
+import com.almasb.fxgl.dsl.EntityBuilder;
 import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
 import com.almasb.fxgl.dsl.components.ProjectileComponent;
 import com.almasb.fxgl.entity.Entity;
@@ -35,11 +36,13 @@ import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
+import com.almasb.fxglgames.tanks.components.*;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
 
 import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
 import static com.almasb.fxgl.dsl.FXGL.texture;
+import static com.almasb.fxglgames.tanks.BattleTanksType.*;
 import static com.almasb.fxglgames.tanks.Config.BULLET_SPEED;
 
 /**
@@ -51,7 +54,7 @@ public class BattleTanksFactory implements EntityFactory {
     public Entity newPlayer(SpawnData data) {
         var e = entityBuilder()
                 .from(data)
-                .type(BattleTanksType.PLAYER)
+                .type(PLAYER)
                 .bbox(new HitBox(new Point2D(10, 10), BoundingShape.box(64, 64)))
                 .collidable()
                 .with(new MoveComponent())
@@ -67,36 +70,48 @@ public class BattleTanksFactory implements EntityFactory {
 
     @Spawns("Bullet")
     public Entity newBullet(SpawnData data) {
+        Entity owner = data.get("owner");
+
+        var collidable = new CollidableComponent(true);
+        collidable.addIgnoredType(owner.getType());
+
         return entityBuilder()
                 .from(data)
-                .type(BattleTanksType.BULLET)
-                //.bbox(new HitBox("BODY", new Point2D(34, 34), BoundingShape.box(16, 16)))
+                .at(data.getX() - 8, data.getY() - 8)
+                .type(BULLET)
                 .viewWithBBox("tank_bullet.png")
-                .with(new CollidableComponent(true))
+                .scale(0.5, 0.5)
+                .with(collidable)
                 .with(new OffscreenCleanComponent(), new ProjectileComponent(data.get("direction"), BULLET_SPEED))
                 .build();
     }
 
     @Spawns("playerFlag")
     public Entity newPlayerFlag(SpawnData data) {
-        return newEnemyFlag(data);
+        return newFlag(data)
+                .type(PLAYER_FLAG)
+                .build();
     }
 
     @Spawns("enemyFlag")
     public Entity newEnemyFlag(SpawnData data) {
+        return newFlag(data)
+                .type(ENEMY_FLAG)
+                .build();
+    }
+
+    private EntityBuilder newFlag(SpawnData data) {
         return entityBuilder()
                 .from(data)
-                .type(BattleTanksType.FLAG)
                 .viewWithBBox(texture("flag.png", data.<Integer>get("width"), data.<Integer>get("height")))
-                .with(new CollidableComponent(true))
-                .build();
+                .collidable();
     }
 
     @Spawns("wall")
     public Entity newWall(SpawnData data) {
         return entityBuilder()
                 .from(data)
-                .type(BattleTanksType.WALL)
+                .type(WALL)
                 .viewWithBBox(new Rectangle(data.<Integer>get("width"), data.<Integer>get("height")))
                 .collidable()
                 .build();
@@ -106,7 +121,7 @@ public class BattleTanksFactory implements EntityFactory {
     public Entity newBrick(SpawnData data) {
         return entityBuilder()
                 .from(data)
-                .type(BattleTanksType.BRICK)
+                .type(BRICK)
                 .viewWithBBox(texture("brick.png", data.<Integer>get("width"), data.<Integer>get("height")))
                 .collidable()
                 .build();
@@ -116,12 +131,13 @@ public class BattleTanksFactory implements EntityFactory {
     public Entity newEnemy(SpawnData data) {
         var e = entityBuilder()
                 .from(data)
-                .type(BattleTanksType.ENEMY)
+                .type(ENEMY)
                 .bbox(new HitBox(new Point2D(10, 10), BoundingShape.box(64, 64)))
                 .collidable()
                 .with(new MoveComponent())
                 .with(new TankViewComponent())
                 .with(new RandomMoveComponent())
+                .with(new RandomAttackComponent())
                 .scale(0.4, 0.4)
                 .build();
 
