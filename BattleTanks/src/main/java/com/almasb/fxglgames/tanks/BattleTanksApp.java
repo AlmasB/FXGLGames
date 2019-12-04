@@ -50,6 +50,7 @@ public class BattleTanksApp extends GameApplication {
         settings.setVersion("0.2");
         settings.setWidth(60 * 21);
         settings.setHeight(60 * 12);
+        settings.setExperimentalNative(true);
     }
 
     private TankViewComponent tankViewComponent;
