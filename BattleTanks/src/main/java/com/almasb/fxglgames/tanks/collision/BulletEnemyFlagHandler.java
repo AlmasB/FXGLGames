@@ -13,6 +13,6 @@ public class BulletEnemyFlagHandler extends CollisionHandler {
 
     @Override
     protected void onCollisionBegin(Entity bullet, Entity flag) {
-
+        System.out.println("Got flag");
     }
 }

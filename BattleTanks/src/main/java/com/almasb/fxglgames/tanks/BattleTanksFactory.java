@@ -74,6 +74,7 @@ public class BattleTanksFactory implements EntityFactory {
 
         var collidable = new CollidableComponent(true);
         collidable.addIgnoredType(owner.getType());
+        collidable.addIgnoredType(owner.getType() == PLAYER ? PLAYER_FLAG : ENEMY_FLAG);
 
         return entityBuilder()
                 .from(data)
