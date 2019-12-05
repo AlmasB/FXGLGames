@@ -28,16 +28,29 @@ package com.almasb.fxglgames.tanks;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
+import com.almasb.fxgl.pathfinding.CellState;
+import com.almasb.fxgl.pathfinding.astar.AStarCell;
+import com.almasb.fxgl.pathfinding.astar.AStarGrid;
+import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
+import com.almasb.fxgl.pathfinding.astar.AStarPathfinder;
 import com.almasb.fxglgames.tanks.collision.BulletEnemyFlagHandler;
 import com.almasb.fxglgames.tanks.collision.BulletEnemyTankHandler;
 import com.almasb.fxglgames.tanks.components.TankViewComponent;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxglgames.tanks.BattleTanksType.*;
+import static com.almasb.fxglgames.tanks.Config.*;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -55,6 +68,8 @@ public class BattleTanksApp extends GameApplication {
     }
 
     private TankViewComponent tankViewComponent;
+
+    private AStarGrid grid;
 
     @Override
     protected void initInput() {
@@ -98,7 +113,10 @@ public class BattleTanksApp extends GameApplication {
         input.addAction(new UserAction("Move To") {
             @Override
             protected void onActionBegin() {
-                tankViewComponent.getEntity().call("moveTo", 2, 3);
+
+                tankViewComponent.getEntity().getComponent(AStarMoveComponent.class)
+                        .moveToCell((int) (getInput().getMouseXWorld() / 30), (int) (getInput().getMouseYWorld() / 30));
+                //tankViewComponent.getEntity().call("moveToCell", 2, 3);
             }
         }, KeyCode.G);
     }
@@ -111,7 +129,17 @@ public class BattleTanksApp extends GameApplication {
 
         setLevelFromMap("tmx/level2.tmx");
 
+        // TODO: careful: the world itself is 21x12 but each block we count as 2
+        grid = makeGridFromWorld(21*2, 12*2, BLOCK_SIZE / 2, BLOCK_SIZE / 2, (type) -> {
+            if (type == WALL || type == BRICK)
+                return CellState.NOT_WALKABLE;
+
+            return CellState.WALKABLE;
+        });
+
         tankViewComponent = getGameWorld().getSingleton(PLAYER).getComponent(TankViewComponent.class);
+
+        tankViewComponent.getEntity().addComponent(new AStarMoveComponent(new AStarPathfinder(grid)));
     }
 
     @Override
@@ -125,6 +153,30 @@ public class BattleTanksApp extends GameApplication {
 
         getPhysicsWorld().addCollisionHandler(bulletFlagHandler);
         getPhysicsWorld().addCollisionHandler(bulletFlagHandler.copyFor(BULLET, PLAYER_FLAG));
+    }
+
+    private AStarGrid makeGridFromWorld(int worldWidth, int worldHeight, int cellWidth, int cellHeight,
+                                        Function<Object, CellState> mapping) {
+
+        var grid = new AStarGrid(worldWidth, worldHeight);
+        grid.populate((x, y) -> {
+
+            int worldX = x * cellWidth + cellWidth / 2;
+            int worldY = y * cellHeight + cellHeight / 2;
+
+            List<Object> collidingTypes = getGameWorld().getEntitiesInRange(new Rectangle2D(worldX-2, worldY-2, 4, 4))
+                    .stream()
+                    .map(Entity::getType)
+                    .collect(Collectors.toList());
+
+            boolean isWalkable = collidingTypes.stream()
+                    .map(mapping)
+                    .noneMatch(state -> state == CellState.NOT_WALKABLE);
+
+            return new AStarCell(x, y, isWalkable ? CellState.WALKABLE : CellState.NOT_WALKABLE);
+        });
+
+        return grid;
     }
 
     public static void main(String[] args) {

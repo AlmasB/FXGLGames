@@ -4,6 +4,7 @@ import com.almasb.fxgl.pathfinding.CellState;
 import com.almasb.fxgl.pathfinding.Pathfinder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,6 +23,12 @@ public final class AStarPathfinder implements Pathfinder<AStarCell> {
 
     @Override
     public List<AStarCell> findPath(int sourceX, int sourceY, int targetX, int targetY) {
+
+        System.out.println(grid.getWidth() + " " + grid.getHeight());
+        System.out.println("" + sourceX + "," + sourceY + " " + targetX +" ," + targetY);
+
+        System.out.println(grid.get(sourceX, sourceY) + " " + grid.get(targetX, targetY));
+
         return findPath(grid.getData(), grid.get(sourceX, sourceY), grid.get(targetX, targetY));
     }
 

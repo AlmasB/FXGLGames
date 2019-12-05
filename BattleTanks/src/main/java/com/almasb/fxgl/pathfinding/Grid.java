@@ -8,6 +8,7 @@ package com.almasb.fxgl.pathfinding;
 
 import com.almasb.fxgl.core.util.Consumer;
 
+import java.lang.reflect.Array;
 import java.util.function.BiFunction;
 
 /**
@@ -23,19 +24,21 @@ public class Grid<T> {
     private int width;
     private int height;
 
-    public Grid(int width, int height) {
-        this(width, height, (x, y) -> null);
+    public Grid(int width, int height, Class<T> type) {
+        this(width, height, type, (x, y) -> null);
     }
 
     @SuppressWarnings("unchecked")
-    public Grid(int width, int height, BiFunction<Integer, Integer, T> initFunction) {
+    public Grid(int width, int height, Class<T> type, BiFunction<Integer, Integer, T> initFunction) {
         if (width <= 0 || height <= 0)
             throw new IllegalArgumentException("Cannot create grid with 0 or negative size");
 
         this.width = width;
         this.height = height;
 
-        data = (T[][]) new Object[width][height];
+        //data = (T[][]) new Object[width][height];
+
+        data = (T[][]) Array.newInstance(type, width, height);
 
         populate(initFunction);
     }

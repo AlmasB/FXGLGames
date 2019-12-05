@@ -19,7 +19,7 @@ public class AStarGrid extends Grid<AStarCell> {
      * All cells are initially {@link CellState#WALKABLE}.
      */
     public AStarGrid(int width, int height) {
-        super(width, height, (x, y) -> new AStarCell(x, y, CellState.WALKABLE));
+        super(width, height, AStarCell.class, (x, y) -> new AStarCell(x, y, CellState.WALKABLE));
     }
 
 

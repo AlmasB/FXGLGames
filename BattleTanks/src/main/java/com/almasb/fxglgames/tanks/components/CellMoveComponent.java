@@ -13,49 +13,35 @@ import java.util.List;
  */
 public class CellMoveComponent extends Component {
 
-    private List<Point2D> path = new ArrayList<>();
+    private Point2D point = new Point2D(0, 0);
 
     private int cellWidth;
     private int cellHeight;
+
+    private boolean isMoving = false;
 
     public CellMoveComponent(int cellWidth, int cellHeight) {
         this.cellWidth = cellWidth;
         this.cellHeight = cellHeight;
     }
 
-    // TODO:
-    public void astar() {
-        //position = getEntity().getPositionComponent();
-//
-//        if (position.getValue().equals(point))
-//            return;
-//
-//        AStarGrid grid = ((PacmanApp) FXGL.getApp()).getGrid();
-//
-//        int startX = (int)(position.getX() / PacmanApp.BLOCK_SIZE);
-//        int startY = (int)(position.getY() / PacmanApp.BLOCK_SIZE);
-//
-//        int targetX = (int)((point.getX() + 20) / PacmanApp.BLOCK_SIZE);
-//        int targetY = (int)((point.getY() + 20) / PacmanApp.BLOCK_SIZE);
-//
-//        path = grid.getPath(startX, startY, targetX, targetY);
-//
-//        // we use A*, so no need for that
-//        getEntity().getComponentOptional(MoveControl.class).ifPresent(c -> c.pause());
+    public boolean isMoving() {
+        return isMoving;
     }
 
     public void moveTo(int cellX, int cellY) {
-        path.add(new Point2D(cellX, cellY));
+        point = new Point2D(cellX, cellY);
+        isMoving = true;
     }
 
     @Override
     public void onUpdate(double tpf) {
-        if (path.isEmpty())
+        if (!isMoving)
             return;
 
         double speed = tpf * 60 * 5;
 
-        var next = path.get(0);
+        var next = point;
 
         int nextX = (int) next.getX() * cellWidth;
         int nextY = (int) next.getY() * cellHeight;
@@ -75,7 +61,7 @@ public class CellMoveComponent extends Component {
             entity.translateY(speed * Math.signum(dy));
 
         if ((int) entity.getX() == nextX + 5 && (int) entity.getY() == nextY + 5) {
-            path.remove(0);
+            isMoving = false;
         }
     }
 }
