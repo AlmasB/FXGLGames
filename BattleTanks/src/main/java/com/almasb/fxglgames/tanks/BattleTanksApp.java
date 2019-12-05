@@ -51,6 +51,7 @@ public class BattleTanksApp extends GameApplication {
         settings.setWidth(60 * 21);
         settings.setHeight(60 * 12);
         settings.setExperimentalNative(true);
+        settings.setDeveloperMenuEnabled(true);
     }
 
     private TankViewComponent tankViewComponent;
@@ -93,6 +94,13 @@ public class BattleTanksApp extends GameApplication {
                 tankViewComponent.shoot();
             }
         }, KeyCode.F);
+
+        input.addAction(new UserAction("Move To") {
+            @Override
+            protected void onActionBegin() {
+                tankViewComponent.getEntity().call("moveTo", 2, 3);
+            }
+        }, KeyCode.G);
     }
 
     @Override

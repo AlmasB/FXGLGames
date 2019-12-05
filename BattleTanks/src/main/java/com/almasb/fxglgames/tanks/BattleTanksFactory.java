@@ -43,6 +43,7 @@ import javafx.scene.shape.Rectangle;
 import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
 import static com.almasb.fxgl.dsl.FXGL.texture;
 import static com.almasb.fxglgames.tanks.BattleTanksType.*;
+import static com.almasb.fxglgames.tanks.Config.BLOCK_SIZE;
 import static com.almasb.fxglgames.tanks.Config.BULLET_SPEED;
 
 /**
@@ -60,6 +61,7 @@ public class BattleTanksFactory implements EntityFactory {
                 .with(new MoveComponent())
                 .with(new TankViewComponent())
                 .with(new PlayerArrowViewComponent())
+                .with(new CellMoveComponent(BLOCK_SIZE / 2, BLOCK_SIZE / 2))
                 .scale(0.4, 0.4)
                 .build();
 

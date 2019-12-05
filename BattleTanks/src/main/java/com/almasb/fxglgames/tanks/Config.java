@@ -32,4 +32,6 @@ package com.almasb.fxglgames.tanks;
 public class Config {
 
     public static final double BULLET_SPEED = 10 * 60;
+
+    public static final int BLOCK_SIZE = 60;
 }

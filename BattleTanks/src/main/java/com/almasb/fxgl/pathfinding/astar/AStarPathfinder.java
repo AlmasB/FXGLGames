@@ -1,21 +1,30 @@
-/*
- * FXGL - JavaFX Game Library. The MIT License (MIT).
- * Copyright (c) AlmasB (almaslvl@gmail.com).
- * See LICENSE for details.
- */
+package com.almasb.fxgl.pathfinding.astar;
 
-package com.almasb.fxgl.ai.pathfinding;
+import com.almasb.fxgl.pathfinding.CellState;
+import com.almasb.fxgl.pathfinding.Pathfinder;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * A* search logic.
+ * TODO: dynamic busy cells
  *
- * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
+ * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class AStarLogic {
+public final class AStarPathfinder implements Pathfinder<AStarCell> {
+
+    private AStarGrid grid;
+
+    public AStarPathfinder(AStarGrid grid) {
+        this.grid = grid;
+    }
+
+    @Override
+    public List<AStarCell> findPath(int sourceX, int sourceY, int targetX, int targetY) {
+        return findPath(grid.getData(), grid.get(sourceX, sourceY), grid.get(targetX, targetY));
+    }
+
 
     /**
      * Since the equality check is based on references,
@@ -25,10 +34,10 @@ public class AStarLogic {
      * @param start     starting node
      * @param target    target node
      * @param busyNodes busy "unwalkable" nodes
-     * @return          path as list of nodes from start to target or empty list if no path found
+     * @return          path as list of nodes from start (excl) to target (incl) or empty list if no path found
      */
-    public final List<AStarNode> getPath(AStarNode[][] grid, AStarNode start, AStarNode target, AStarNode... busyNodes) {
-        if (target.getState() == NodeState.NOT_WALKABLE)
+    private List<AStarCell> findPath(AStarCell[][] grid, AStarCell start, AStarCell target, AStarCell... busyNodes) {
+        if (target.getState() == CellState.NOT_WALKABLE)
             return Collections.emptyList();
 
         for (int y = 0; y < grid[0].length; y++) {
@@ -37,15 +46,15 @@ public class AStarLogic {
             }
         }
 
-        List<AStarNode> open = new ArrayList<>();
-        List<AStarNode> closed = new ArrayList<>();
+        List<AStarCell> open = new ArrayList<>();
+        List<AStarCell> closed = new ArrayList<>();
 
-        AStarNode current = start;
+        AStarCell current = start;
 
         boolean found = false;
 
         while (!found && !closed.contains(target)) {
-            for (AStarNode neighbor : getValidNeighbors(current, grid, busyNodes)) {
+            for (AStarCell neighbor : getValidNeighbors(current, grid, busyNodes)) {
                 if (neighbor == target) {
                     target.setParent(current);
                     found = true;
@@ -76,9 +85,9 @@ public class AStarLogic {
                 if (open.isEmpty())
                     return Collections.emptyList();
 
-                AStarNode acc = open.get(0);
+                AStarCell acc = open.get(0);
 
-                for (AStarNode a : open) {
+                for (AStarCell a : open) {
                     acc = a.getFCost() < acc.getFCost() ? a : acc;
                 }
 
@@ -89,10 +98,10 @@ public class AStarLogic {
         return buildPath(start, target);
     }
 
-    private List<AStarNode> buildPath(AStarNode start, AStarNode target) {
-        List<AStarNode> path = new ArrayList<>();
+    private List<AStarCell> buildPath(AStarCell start, AStarCell target) {
+        List<AStarCell> path = new ArrayList<>();
 
-        AStarNode tmp = target;
+        AStarCell tmp = target;
         do {
             path.add(tmp);
             tmp = tmp.getParent();
@@ -108,17 +117,17 @@ public class AStarLogic {
      * @param busyNodes nodes which are busy, i.e. walkable but have a temporary obstacle
      * @return neighbors of the node
      */
-    protected List<AStarNode> getValidNeighbors(AStarNode node, AStarNode[][] grid, AStarNode... busyNodes) {
+    protected List<AStarCell> getValidNeighbors(AStarCell node, AStarCell[][] grid, AStarCell... busyNodes) {
         int x = node.getX();
         int y = node.getY();
         int[] points = {
-            x - 1, y,
-            x + 1, y,
-            x, y - 1,
-            x, y + 1
+                x - 1, y,
+                x + 1, y,
+                x, y - 1,
+                x, y + 1
         };
 
-        List<AStarNode> result = new ArrayList<>();
+        List<AStarCell> result = new ArrayList<>();
 
         for (int i = 0; i < points.length; i++) {
             int x1 = points[i];
@@ -126,7 +135,7 @@ public class AStarLogic {
 
             if (x1 >= 0 && x1 < grid.length
                     && y1 >= 0 && y1 < grid[0].length
-                    && grid[x1][y1].getState() == NodeState.WALKABLE
+                    && grid[x1][y1].getState() == CellState.WALKABLE
                     && !contains(x1, y1, busyNodes)) {
                 result.add(grid[x1][y1]);
             }
@@ -135,8 +144,8 @@ public class AStarLogic {
         return result;
     }
 
-    private boolean contains(int x, int y, AStarNode... nodes) {
-        for (AStarNode n : nodes)
+    private boolean contains(int x, int y, AStarCell... cells) {
+        for (AStarCell n : cells)
             if (n.getX() == x && n.getY() == y)
                 return true;
 

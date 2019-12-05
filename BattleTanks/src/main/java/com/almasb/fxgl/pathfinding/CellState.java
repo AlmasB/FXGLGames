@@ -4,13 +4,11 @@
  * See LICENSE for details.
  */
 
-package com.almasb.fxgl.ai.pathfinding;
+package com.almasb.fxgl.pathfinding;
 
 /**
- * Node state.
- *
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public enum NodeState {
+public enum CellState {
     WALKABLE, NOT_WALKABLE
 }
