@@ -36,6 +36,8 @@ import com.almasb.fxgl.pathfinding.astar.*;
 import com.almasb.fxglgames.tanks.collision.BulletEnemyFlagHandler;
 import com.almasb.fxglgames.tanks.collision.BulletEnemyTankHandler;
 import com.almasb.fxglgames.tanks.components.TankViewComponent;
+import com.almasb.fxglgames.tanks.components.ai.GuardComponent;
+import com.almasb.fxglgames.tanks.components.ai.ShootPlayerComponent;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -128,7 +130,7 @@ public class BattleTanksApp extends GameApplication {
 
         // TODO: careful: the world itself is 21x12 but each block we count as 2
         grid = makeGridFromWorld(21*2, 12*2, BLOCK_SIZE / 2, BLOCK_SIZE / 2, (type) -> {
-            if (type == WALL || type == BRICK)
+            if (type == WALL || type == BRICK || type == PLAYER_FLAG || type == ENEMY_FLAG)
                 return CellState.NOT_WALKABLE;
 
             return CellState.WALKABLE;
@@ -141,7 +143,10 @@ public class BattleTanksApp extends GameApplication {
 
         tankViewComponent.getEntity().addComponent(new AStarMoveComponent(new AStarPathfinder(grid)));
 
-        //tankViewComponent.getEntity().setPosition(0, 0);
+        byType(ENEMY).forEach(e -> e.addComponent(new AStarMoveComponent(new AStarPathfinder(grid))));
+
+        //getGameWorld().getRandom(ENEMY).ifPresent(e -> e.addComponent(new GuardComponent(grid)));
+        getGameWorld().getRandom(ENEMY).ifPresent(e -> e.addComponent(new ShootPlayerComponent()));
     }
 
     @Override

@@ -68,8 +68,9 @@ public class BattleTanksFactory implements EntityFactory {
     public Entity newEnemy(SpawnData data) {
         var e = newTank(data)
                 .type(ENEMY)
-                .with(new RandomMoveComponent())
-                .with(new RandomAttackComponent())
+                .with(new CellMoveComponent(BLOCK_SIZE / 2, BLOCK_SIZE / 2))
+                //.with(new RandomMoveComponent())
+                //.with(new RandomAttackComponent())
                 .build();
 
         e.getTransformComponent().setRotationOrigin(new Point2D(18, 18));

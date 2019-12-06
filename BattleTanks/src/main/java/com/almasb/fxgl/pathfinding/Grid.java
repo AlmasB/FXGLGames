@@ -7,9 +7,15 @@
 package com.almasb.fxgl.pathfinding;
 
 import com.almasb.fxgl.core.util.Consumer;
+import com.almasb.fxgl.pathfinding.astar.AStarCell;
+import javafx.geometry.Point2D;
+import javafx.util.Pair;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 /**
  * TODO: final methods or not?
@@ -80,6 +86,37 @@ public class Grid<T> {
 
     public T[][] getData() {
         return data;
+    }
+
+    /**
+     * @return a new list with grid cells
+     */
+    public List<T> getCells() {
+        var cells = new ArrayList<T>();
+        forEach(cells::add);
+        return cells;
+    }
+
+    /**
+     * Note: returned cells are in the grid (i.e. bounds are checked).
+     * Diagonal cells are not included.
+     *
+     * @return a new list of neighboring cells to given (x, y)
+     */
+    public List<T> getNeighbors(int x, int y) {
+        // each pair is used as a Point2D (int)
+        // Key = X, Value = Y
+        List<Pair<Integer, Integer>> points = List.of(
+                new Pair<>(x - 1, y),
+                new Pair<>(x + 1, y),
+                new Pair<>(x, y - 1),
+                new Pair<>(x, y + 1)
+        );
+
+        return points.stream()
+                .filter((p) -> isWithin(p.getKey(), p.getValue()))
+                .map((p) -> get(p.getKey(), p.getValue()))
+                .collect(Collectors.toList());
     }
 
     public T get(int x, int y) {
