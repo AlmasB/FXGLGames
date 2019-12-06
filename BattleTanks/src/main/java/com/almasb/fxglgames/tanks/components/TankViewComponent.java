@@ -45,12 +45,17 @@ public class TankViewComponent extends Component {
 
     private Texture texture;
 
+    private double frameWidth;
+    private double frameHeight;
+
     @Override
     public void onAdded() {
-        getEntity().getTransformComponent().setRotationOrigin(new Point2D(42, 42));
-
         texture = FXGL.getAssetLoader().loadTexture("player.png").multiplyColor(Color.LIGHTBLUE);
         view.addChild(texture);
+
+        // there are 8 frames
+        frameWidth = texture.getWidth() / 8;
+        frameHeight = texture.getHeight();
     }
 
     private double speed = 0;
@@ -66,7 +71,7 @@ public class TankViewComponent extends Component {
             frames = 0;
         }
 
-        texture.setViewport(new Rectangle2D(frame * 84, 0, 84, 84));
+        texture.setViewport(new Rectangle2D(frame * frameHeight, 0, frameWidth, frameHeight));
     }
 
     public void up() {

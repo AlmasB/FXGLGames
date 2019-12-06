@@ -46,22 +46,26 @@ public class CellMoveComponent extends Component {
         int nextX = (int) next.getX() * cellWidth;
         int nextY = (int) next.getY() * cellHeight;
 
-        // 5 is offset, TODO: remove
-        double dx = nextX - entity.getX() + 5;
-        double dy = nextY - entity.getY() + 5;
+        // TODO: remove
+        var offset = -3;
+
+        double dx = nextX + offset - entity.getX();
+        double dy = nextY + offset - entity.getY();
 
         if (Math.abs(dx) <= speed)
-            entity.setX(nextX + 5);
+            entity.setX(nextX + offset);
         else
             entity.translateX(speed * Math.signum(dx));
 
         if (Math.abs(dy) <= speed)
-            entity.setY(nextY + 5);
+            entity.setY(nextY + offset);
         else
             entity.translateY(speed * Math.signum(dy));
 
-        if ((int) entity.getX() == nextX + 5 && (int) entity.getY() == nextY + 5) {
+        if ((int) entity.getX() == nextX + offset && (int) entity.getY() == nextY + offset) {
             isMoving = false;
+
+            System.out.println(entity.getTransformComponent());
         }
     }
 }

@@ -53,21 +53,37 @@ public class BattleTanksFactory implements EntityFactory {
 
     @Spawns("player,playerSpawnPoint")
     public Entity newPlayer(SpawnData data) {
-        var e = entityBuilder()
-                .from(data)
+        var e = newTank(data)
                 .type(PLAYER)
-                .bbox(new HitBox(new Point2D(10, 10), BoundingShape.box(64, 64)))
-                .collidable()
-                .with(new MoveComponent())
-                .with(new TankViewComponent())
                 .with(new PlayerArrowViewComponent())
                 .with(new CellMoveComponent(BLOCK_SIZE / 2, BLOCK_SIZE / 2))
-                .scale(0.4, 0.4)
                 .build();
 
-        e.getTransformComponent().setScaleOrigin(new Point2D(42, 42));
+        e.getTransformComponent().setRotationOrigin(new Point2D(18, 18));
 
         return e;
+    }
+
+    @Spawns("enemy,enemySpawnPoint")
+    public Entity newEnemy(SpawnData data) {
+        var e = newTank(data)
+                .type(ENEMY)
+                .with(new RandomMoveComponent())
+                .with(new RandomAttackComponent())
+                .build();
+
+        e.getTransformComponent().setRotationOrigin(new Point2D(18, 18));
+
+        return e;
+    }
+
+    private EntityBuilder newTank(SpawnData data) {
+        return entityBuilder()
+                .from(data)
+                .bbox(new HitBox(new Point2D(5, 5), BoundingShape.box(26, 26)))
+                .collidable()
+                .with(new MoveComponent())
+                .with(new TankViewComponent());
     }
 
     @Spawns("Bullet")
@@ -128,24 +144,5 @@ public class BattleTanksFactory implements EntityFactory {
                 .viewWithBBox(texture("brick.png", data.<Integer>get("width"), data.<Integer>get("height")))
                 .collidable()
                 .build();
-    }
-
-    @Spawns("enemy,enemySpawnPoint")
-    public Entity newEnemy(SpawnData data) {
-        var e = entityBuilder()
-                .from(data)
-                .type(ENEMY)
-                .bbox(new HitBox(new Point2D(10, 10), BoundingShape.box(64, 64)))
-                .collidable()
-                .with(new MoveComponent())
-                .with(new TankViewComponent())
-                .with(new RandomMoveComponent())
-                .with(new RandomAttackComponent())
-                .scale(0.4, 0.4)
-                .build();
-
-        e.getTransformComponent().setScaleOrigin(new Point2D(42, 42));
-
-        return e;
     }
 }

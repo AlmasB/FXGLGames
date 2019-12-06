@@ -32,10 +32,7 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.pathfinding.CellState;
-import com.almasb.fxgl.pathfinding.astar.AStarCell;
-import com.almasb.fxgl.pathfinding.astar.AStarGrid;
-import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
-import com.almasb.fxgl.pathfinding.astar.AStarPathfinder;
+import com.almasb.fxgl.pathfinding.astar.*;
 import com.almasb.fxglgames.tanks.collision.BulletEnemyFlagHandler;
 import com.almasb.fxglgames.tanks.collision.BulletEnemyTankHandler;
 import com.almasb.fxglgames.tanks.components.TankViewComponent;
@@ -137,9 +134,14 @@ public class BattleTanksApp extends GameApplication {
             return CellState.WALKABLE;
         });
 
+        var gridView = new AStarGridView(grid, BLOCK_SIZE / 2, BLOCK_SIZE / 2);
+        getGameScene().addUINode(gridView);
+
         tankViewComponent = getGameWorld().getSingleton(PLAYER).getComponent(TankViewComponent.class);
 
         tankViewComponent.getEntity().addComponent(new AStarMoveComponent(new AStarPathfinder(grid)));
+
+        //tankViewComponent.getEntity().setPosition(0, 0);
     }
 
     @Override

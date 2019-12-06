@@ -27,8 +27,8 @@ public class AStarMoveComponent extends Component {
 
     public void moveToCell(int x, int y) {
         // TODO: block size via ctor
-        int startX = (int)(entity.getX() / 30);
-        int startY = (int)(entity.getY() / 30);
+        int startX = (int)((entity.getX() + 30/2 ) / 30);
+        int startY = (int)((entity.getY() + 30/2 ) / 30);
 
         path = pathfinder.findPath(startX, startY, x, y);
     }
@@ -39,6 +39,8 @@ public class AStarMoveComponent extends Component {
             return;
 
         var next = path.remove(0);
+
+        System.out.println("Next cell: " + next);
 
         moveComponent.moveTo(next.getX(), next.getY());
     }
