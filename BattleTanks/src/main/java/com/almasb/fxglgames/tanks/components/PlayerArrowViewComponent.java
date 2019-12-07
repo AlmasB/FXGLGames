@@ -11,7 +11,7 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 public class PlayerArrowViewComponent extends ChildViewComponent {
 
     public PlayerArrowViewComponent() {
-        super(26, -10, false);
+        super(3, -30, false);
 
         var arrow = texture("ui_arrow.png", 32, 32);
 

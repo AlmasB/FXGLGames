@@ -61,36 +61,7 @@ public class AStarGrid extends Grid<AStarCell> {
 //
 //
 //
-//    /**
-//     * @return a random node from the grid
-//     */
-//    public final AStarCell getRandomNode() {
-//        int x = (int) (Math.random() * getWidth());
-//        int y = (int) (Math.random() * getHeight());
-//
-//        return getNode(x, y);
-//    }
-//
-//    /**
-//     * @param predicate filter condition
-//     * @return a random node that passes the filter or {@link Optional#empty()}
-//     * if no such node exists
-//     */
-//    public final Optional<AStarCell> getRandomNode(Predicate<AStarCell> predicate) {
-//        List<AStarCell> filtered = new ArrayList<>();
-//        for (AStarCell aStarNode : getNodes()) {
-//            if (predicate.test(aStarNode)) {
-//                filtered.add(aStarNode);
-//            }
-//        }
-//
-//        if (filtered.isEmpty())
-//            return Optional.empty();
-//
-//        int index = (int) (Math.random() * filtered.size());
-//
-//        return Optional.of(filtered.get(index));
-//    }
+
 //
 //    /**
 //     * @return all grid nodes

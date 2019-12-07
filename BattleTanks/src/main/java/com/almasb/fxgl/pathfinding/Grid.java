@@ -6,6 +6,7 @@
 
 package com.almasb.fxgl.pathfinding;
 
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.util.Consumer;
 import com.almasb.fxgl.pathfinding.astar.AStarCell;
 import javafx.geometry.Point2D;
@@ -14,7 +15,10 @@ import javafx.util.Pair;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -133,6 +137,50 @@ public class Grid<T> {
                 function.accept(get(x, y));
             }
         }
+    }
+
+    /**
+     * @return a random cell from the grid
+     */
+    public final T getRandomCell() {
+        return getRandomCell(FXGLMath.getRandom());
+    }
+
+    /**
+     * @return a random cell from the grid
+     */
+    public final T getRandomCell(Random random) {
+        int x = random.nextInt(getWidth());
+        int y = random.nextInt(getHeight());
+
+        return get(x, y);
+    }
+
+    /**
+     * @param predicate filter condition
+     * @return a random cell that passes the filter or {@link Optional#empty()}
+     * if no such cell exists
+     */
+    public final Optional<T> getRandomCell(Predicate<T> predicate) {
+        return getRandomCell(FXGLMath.getRandom(), predicate);
+    }
+
+    /**
+     * @param predicate filter condition
+     * @return a random cell that passes the filter or {@link Optional#empty()}
+     * if no such cell exists
+     */
+    public final Optional<T> getRandomCell(Random random, Predicate<T> predicate) {
+        List<T> filtered = getCells().stream()
+                .filter(predicate)
+                .collect(Collectors.toList());
+
+        if (filtered.isEmpty())
+            return Optional.empty();
+
+        int index = random.nextInt(filtered.size());
+
+        return Optional.of(filtered.get(index));
     }
 
 //    public void forEach(TriConsumer<T, Integer, Integer> function) {

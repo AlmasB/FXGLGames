@@ -35,6 +35,7 @@ import com.almasb.fxgl.pathfinding.CellState;
 import com.almasb.fxgl.pathfinding.astar.*;
 import com.almasb.fxglgames.tanks.collision.BulletEnemyFlagHandler;
 import com.almasb.fxglgames.tanks.collision.BulletEnemyTankHandler;
+import com.almasb.fxglgames.tanks.components.RandomAStarMoveComponent;
 import com.almasb.fxglgames.tanks.components.TankViewComponent;
 import com.almasb.fxglgames.tanks.components.ai.GuardComponent;
 import com.almasb.fxglgames.tanks.components.ai.ShootPlayerComponent;
@@ -137,16 +138,19 @@ public class BattleTanksApp extends GameApplication {
         });
 
         var gridView = new AStarGridView(grid, BLOCK_SIZE / 2, BLOCK_SIZE / 2);
-        getGameScene().addUINode(gridView);
+        //getGameScene().addUINode(gridView);
 
         tankViewComponent = getGameWorld().getSingleton(PLAYER).getComponent(TankViewComponent.class);
 
         tankViewComponent.getEntity().addComponent(new AStarMoveComponent(new AStarPathfinder(grid)));
 
-        byType(ENEMY).forEach(e -> e.addComponent(new AStarMoveComponent(new AStarPathfinder(grid))));
+        byType(ENEMY).forEach(e -> {
+            e.addComponent(new AStarMoveComponent(new AStarPathfinder(grid)));
+            e.addComponent(new RandomAStarMoveComponent());
+        });
 
         //getGameWorld().getRandom(ENEMY).ifPresent(e -> e.addComponent(new GuardComponent(grid)));
-        getGameWorld().getRandom(ENEMY).ifPresent(e -> e.addComponent(new ShootPlayerComponent()));
+        //getGameWorld().getRandom(ENEMY).ifPresent(e -> e.addComponent(new ShootPlayerComponent()));
     }
 
     @Override

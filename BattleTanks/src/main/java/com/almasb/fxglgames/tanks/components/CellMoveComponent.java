@@ -6,6 +6,8 @@ import javafx.geometry.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Math.abs;
+
 /**
  * TODO: ctor take in speed
  *
@@ -52,12 +54,22 @@ public class CellMoveComponent extends Component {
         double dx = nextX + offset - entity.getX();
         double dy = nextY + offset - entity.getY();
 
-        if (Math.abs(dx) <= speed)
+        if ((dx) > 0) {
+            entity.setRotation(0);
+        } else if ((dx) < 0) {
+            entity.setRotation(180);
+        } else if ((dy) > 0) {
+            entity.setRotation(90);
+        } else if ((dy) < 0) {
+            entity.setRotation(270);
+        }
+
+        if (abs(dx) <= speed)
             entity.setX(nextX + offset);
         else
             entity.translateX(speed * Math.signum(dx));
 
-        if (Math.abs(dy) <= speed)
+        if (abs(dy) <= speed)
             entity.setY(nextY + offset);
         else
             entity.translateY(speed * Math.signum(dy));
@@ -65,7 +77,7 @@ public class CellMoveComponent extends Component {
         if ((int) entity.getX() == nextX + offset && (int) entity.getY() == nextY + offset) {
             isMoving = false;
 
-            System.out.println(entity.getTransformComponent());
+            //System.out.println(entity.getTransformComponent());
         }
     }
 }

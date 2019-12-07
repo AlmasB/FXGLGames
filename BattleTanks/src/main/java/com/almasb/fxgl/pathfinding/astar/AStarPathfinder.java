@@ -21,13 +21,17 @@ public final class AStarPathfinder implements Pathfinder<AStarCell> {
         this.grid = grid;
     }
 
+    public AStarGrid getGrid() {
+        return grid;
+    }
+
     @Override
     public List<AStarCell> findPath(int sourceX, int sourceY, int targetX, int targetY) {
 
-        System.out.println(grid.getWidth() + " " + grid.getHeight());
-        System.out.println("" + sourceX + "," + sourceY + " " + targetX +" ," + targetY);
-
-        System.out.println(grid.get(sourceX, sourceY) + " " + grid.get(targetX, targetY));
+//        System.out.println(grid.getWidth() + " " + grid.getHeight());
+//        System.out.println("" + sourceX + "," + sourceY + " " + targetX +" ," + targetY);
+//
+//        System.out.println(grid.get(sourceX, sourceY) + " " + grid.get(targetX, targetY));
 
         return findPath(grid.getData(), grid.get(sourceX, sourceY), grid.get(targetX, targetY));
     }

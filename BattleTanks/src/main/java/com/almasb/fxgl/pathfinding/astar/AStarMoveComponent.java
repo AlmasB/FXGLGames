@@ -3,6 +3,7 @@ package com.almasb.fxgl.pathfinding.astar;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.component.Required;
+import com.almasb.fxgl.pathfinding.Grid;
 import com.almasb.fxglgames.tanks.Config;
 import com.almasb.fxglgames.tanks.components.CellMoveComponent;
 
@@ -33,6 +34,14 @@ public class AStarMoveComponent extends Component {
         path = pathfinder.findPath(startX, startY, x, y);
     }
 
+    public boolean isMoving() {
+        return moveComponent.isMoving();
+    }
+
+    public Grid<AStarCell> getGrid() {
+        return pathfinder.getGrid();
+    }
+
     @Override
     public void onUpdate(double tpf) {
         if (path.isEmpty() || moveComponent.isMoving())
@@ -40,7 +49,7 @@ public class AStarMoveComponent extends Component {
 
         var next = path.remove(0);
 
-        System.out.println("Next cell: " + next);
+        //System.out.println("Next cell: " + next);
 
         moveComponent.moveTo(next.getX(), next.getY());
     }
