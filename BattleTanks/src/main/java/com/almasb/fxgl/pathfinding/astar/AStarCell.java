@@ -6,43 +6,24 @@
 
 package com.almasb.fxgl.pathfinding.astar;
 
+import com.almasb.fxgl.pathfinding.Cell;
 import com.almasb.fxgl.pathfinding.CellState;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class AStarCell {
+public class AStarCell extends Cell {
 
     private AStarCell parent;
 
     private CellState state;
 
-    private int x;
-    private int y;
-
     private int gCost;
     private int hCost;
 
-    private Object userData = null;
-
     public AStarCell(int x, int y, CellState state) {
-        this.x = x;
-        this.y = y;
+        super(x, y);
         this.state = state;
-    }
-
-    /**
-     * Set user specific data.
-     */
-    public final void setUserData(Object userData) {
-        this.userData = userData;
-    }
-
-    /**
-     * @return user specific data
-     */
-    public final Object getUserData() {
-        return userData;
     }
 
     public final void setParent(AStarCell parent) {
@@ -69,14 +50,6 @@ public class AStarCell {
         return gCost;
     }
 
-    public final int getX() {
-        return x;
-    }
-
-    public final int getY() {
-        return y;
-    }
-
     public final void setState(CellState state) {
         this.state = state;
     }
@@ -94,6 +67,6 @@ public class AStarCell {
 
     @Override
     public String toString() {
-        return "A* Node[x=" + x + ",y=" + y + "," + state + "]";
+        return "A* Node[x=" + getX() + ",y=" + getY() + "," + state + "]";
     }
 }

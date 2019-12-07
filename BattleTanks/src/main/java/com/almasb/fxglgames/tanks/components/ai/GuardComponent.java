@@ -25,6 +25,8 @@ import static java.lang.Math.min;
 
 public class GuardComponent extends AccumulatedUpdateComponent {
 
+    private boolean isChasingPlayer;
+
     private AStarMoveComponent astar;
     private AStarGrid grid;
 
@@ -33,9 +35,10 @@ public class GuardComponent extends AccumulatedUpdateComponent {
 
     private List<AStarCell> guardCells;
 
-    public GuardComponent(AStarGrid grid) {
+    public GuardComponent(AStarGrid grid, boolean chasePlayer) {
         super(90);
         this.grid = grid;
+        isChasingPlayer = chasePlayer;
     }
 
     @Override
@@ -50,10 +53,10 @@ public class GuardComponent extends AccumulatedUpdateComponent {
                 .limit(20)
                 .collect(Collectors.toList());
 
-        guardCells.forEach(cell -> {
-
-            addUINode(new Rectangle(30, 30, Color.color(0, 0, 0.8, 0.65)), cell.getX() * 30, cell.getY() * 30);
-        });
+//        guardCells.forEach(cell -> {
+//
+//            addUINode(new Rectangle(30, 30, Color.color(0, 0, 0.8, 0.65)), cell.getX() * 30, cell.getY() * 30);
+//        });
     }
 
     private int distanceToFlag(AStarCell cell) {
@@ -71,6 +74,21 @@ public class GuardComponent extends AccumulatedUpdateComponent {
 
     @Override
     public void onAccumulatedUpdate(double tpfSum) {
+        if (isChasingPlayer) {
+            flag = getGameWorld().getSingleton(PLAYER);
+            flagCell = getCellValue(flag);
+
+            guardCells = grid.getCells()
+                    .stream()
+                    .filter(cell -> cell.getState() == CellState.WALKABLE)
+                    .sorted(Comparator.comparingInt(this::distanceToFlag))
+                    .limit(20)
+                    .collect(Collectors.toList());
+        }
+
+        if (astar.isMoving())
+            return;
+
         AStarCell randomCell = FXGLMath.random(guardCells).get();
 
         astar.moveToCell(randomCell.getX(), randomCell.getY());

@@ -28,6 +28,7 @@ package com.almasb.fxglgames.tanks;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
@@ -146,10 +147,11 @@ public class BattleTanksApp extends GameApplication {
 
         byType(ENEMY).forEach(e -> {
             e.addComponent(new AStarMoveComponent(new AStarPathfinder(grid)));
-            e.addComponent(new RandomAStarMoveComponent());
+            e.addComponent(new GuardComponent(grid, FXGLMath.randomBoolean()));
+            //e.addComponent(new RandomAStarMoveComponent());
         });
 
-        //getGameWorld().getRandom(ENEMY).ifPresent(e -> e.addComponent(new GuardComponent(grid)));
+        //getGameWorld().getRandom(ENEMY).ifPresent(e -> e.addComponent(new GuardComponent(grid, FXGLMath.randomBoolean())));
         //getGameWorld().getRandom(ENEMY).ifPresent(e -> e.addComponent(new ShootPlayerComponent()));
     }
 

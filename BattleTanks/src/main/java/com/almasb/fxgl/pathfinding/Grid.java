@@ -8,8 +8,6 @@ package com.almasb.fxgl.pathfinding;
 
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.util.Consumer;
-import com.almasb.fxgl.pathfinding.astar.AStarCell;
-import javafx.geometry.Point2D;
 import javafx.util.Pair;
 
 import java.lang.reflect.Array;
@@ -27,7 +25,7 @@ import java.util.stream.Collectors;
  * @param <T> cell type
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class Grid<T> {
+public class Grid<T extends Cell> {
 
     private T[][] data;
 
@@ -45,8 +43,6 @@ public class Grid<T> {
 
         this.width = width;
         this.height = height;
-
-        //data = (T[][]) new Object[width][height];
 
         data = (T[][]) Array.newInstance(type, width, height);
 
