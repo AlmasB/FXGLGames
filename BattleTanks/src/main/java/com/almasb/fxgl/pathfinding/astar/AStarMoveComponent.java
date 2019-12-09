@@ -3,7 +3,7 @@ package com.almasb.fxgl.pathfinding.astar;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.component.Required;
 import com.almasb.fxgl.pathfinding.Grid;
-import com.almasb.fxglgames.tanks.components.CellMoveComponent;
+import com.almasb.fxgl.pathfinding.CellMoveComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +47,7 @@ public class AStarMoveComponent extends Component {
 
         var next = path.remove(0);
 
-        moveComponent.moveTo(next.getX(), next.getY());
+        moveComponent.moveToCell(next.getX(), next.getY());
     }
 
     //    public void astar() {

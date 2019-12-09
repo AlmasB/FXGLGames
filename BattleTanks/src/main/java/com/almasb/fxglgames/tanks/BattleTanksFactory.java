@@ -34,6 +34,7 @@ import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.pathfinding.CellMoveComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxglgames.tanks.components.*;
@@ -56,7 +57,6 @@ public class BattleTanksFactory implements EntityFactory {
         var e = newTank(data)
                 .type(PLAYER)
                 .with(new PlayerArrowViewComponent())
-                .with(new CellMoveComponent(BLOCK_SIZE / 2, BLOCK_SIZE / 2))
                 .build();
 
         e.getTransformComponent().setRotationOrigin(new Point2D(18, 18));
@@ -68,7 +68,6 @@ public class BattleTanksFactory implements EntityFactory {
     public Entity newEnemy(SpawnData data) {
         var e = newTank(data)
                 .type(ENEMY)
-                .with(new CellMoveComponent(BLOCK_SIZE / 2, BLOCK_SIZE / 2))
                 //.with(new RandomMoveComponent())
                 //.with(new RandomAttackComponent())
                 .build();
@@ -84,7 +83,8 @@ public class BattleTanksFactory implements EntityFactory {
                 .bbox(new HitBox(new Point2D(5, 5), BoundingShape.box(26, 26)))
                 .collidable()
                 .with(new MoveComponent())
-                .with(new TankViewComponent());
+                .with(new TankViewComponent())
+                .with(new CellMoveComponent(BLOCK_SIZE / 2, BLOCK_SIZE / 2, 300).allowRotation(true));
     }
 
     @Spawns("Bullet")
