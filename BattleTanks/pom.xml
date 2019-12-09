@@ -25,12 +25,23 @@
             <artifactId>fxgl</artifactId>
             <version>${fxgl.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.WilliamAHartman</groupId>
+            <artifactId>Jamepad</artifactId>
+            <version>1.3.2</version>
+        </dependency>
     </dependencies>
 
     <repositories>
         <repository>
             <id>oss.sonatype.org-snapshot</id>
             <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 

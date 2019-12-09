@@ -32,6 +32,7 @@ import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
+import com.almasb.fxgl.input.virtual.VirtualButton;
 import com.almasb.fxgl.pathfinding.CellState;
 import com.almasb.fxgl.pathfinding.astar.*;
 import com.almasb.fxglgames.tanks.collision.BulletEnemyFlagHandler;
@@ -81,28 +82,28 @@ public class BattleTanksApp extends GameApplication {
             protected void onAction() {
                 tankViewComponent.left();
             }
-        }, KeyCode.A);
+        }, KeyCode.A, VirtualButton.LEFT);
 
         input.addAction(new UserAction("Move Right") {
             @Override
             protected void onAction() {
                 tankViewComponent.right();
             }
-        }, KeyCode.D);
+        }, KeyCode.D, VirtualButton.RIGHT);
 
         input.addAction(new UserAction("Move Up") {
             @Override
             protected void onAction() {
                 tankViewComponent.up();
             }
-        }, KeyCode.W);
+        }, KeyCode.W, VirtualButton.UP);
 
         input.addAction(new UserAction("Move Down") {
             @Override
             protected void onAction() {
                 tankViewComponent.down();
             }
-        }, KeyCode.S);
+        }, KeyCode.S, VirtualButton.DOWN);
 
         input.addAction(new UserAction("Shoot") {
             @Override
@@ -124,6 +125,7 @@ public class BattleTanksApp extends GameApplication {
 
     @Override
     protected void initGame() {
+        ControllerApp.init();
         getGameScene().setBackgroundColor(Color.LIGHTGRAY);
 
         getGameWorld().addEntityFactory(new BattleTanksFactory());
@@ -166,6 +168,11 @@ public class BattleTanksApp extends GameApplication {
 
         getPhysicsWorld().addCollisionHandler(bulletFlagHandler);
         getPhysicsWorld().addCollisionHandler(bulletFlagHandler.copyFor(BULLET, PLAYER_FLAG));
+    }
+
+    @Override
+    protected void onUpdate(double tpf) {
+        ControllerApp.onUpdate(tpf);
     }
 
     private AStarGrid makeGridFromWorld(int worldWidth, int worldHeight, int cellWidth, int cellHeight,
