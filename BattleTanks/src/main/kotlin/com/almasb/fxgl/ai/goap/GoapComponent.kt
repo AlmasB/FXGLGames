@@ -7,10 +7,10 @@
 package com.almasb.fxgl.ai.goap
 
 import com.almasb.fxgl.core.collection.PropertyMap
-import com.almasb.fxgl.dsl.FXGL
 import com.almasb.fxgl.entity.Entity
 import com.almasb.fxgl.entity.component.Component
 import java.util.*
+import kotlin.collections.LinkedHashSet
 
 /**
  * Adapted from https://github.com/sploreg/goap
@@ -33,7 +33,7 @@ class GoapComponent(
 
     var listener: GoapListener = NoopListener
 
-    private val availableActions = HashSet(actions)
+    private val availableActions = LinkedHashSet(actions)
     private var currentActions: Queue<GoapAction> = ArrayDeque<GoapAction>()
 
     // TODO: add IdleAction?
@@ -71,8 +71,6 @@ class GoapComponent(
             worldState.add(it, entity.properties.getValue(it))
         }
 
-        println("Planning with cur state: " + worldState)
-
         val plan = GoapPlanner.plan(availableActions, worldState, goal)
 
         if (!plan.isEmpty()) {
@@ -101,7 +99,7 @@ class GoapComponent(
             currentActions.remove()
 
             // re-run planning in case the world state has changed
-            makePlan()
+            //makePlan()
         }
 
         if (hasActionPlan()) {
@@ -110,15 +108,39 @@ class GoapComponent(
 
             currentAction = action
 
-            println("performing: " + currentAction)
+            if (action is MoveGoapAction) {
 
-            // perform the action
-            val success = action.perform()
+                if (action.isInRange) {
+                    // perform the action
+                    val success = action.perform()
 
-            if (!success) {
-                // action failed, we need to plan again
-                isIdle = true
-                listener.planAborted(entity, action)
+                    if (!success) {
+                        // action failed, we need to plan again
+                        isIdle = true
+                        listener.planAborted(entity, action)
+                    }
+                } else {
+                    // move
+                    val success = action.move()
+
+                    if (!success) {
+                        // action failed, we need to plan again
+                        isIdle = true
+                        listener.planAborted(entity, action)
+                    }
+                }
+
+
+
+            } else {
+                // perform the action
+                val success = action.perform()
+
+                if (!success) {
+                    // action failed, we need to plan again
+                    isIdle = true
+                    listener.planAborted(entity, action)
+                }
             }
 
         } else {

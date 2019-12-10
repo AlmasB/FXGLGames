@@ -30,7 +30,7 @@ abstract class GoapAction {
      * The cost of performing the action.
      * Actions with total lowest cost are chosen during planning.
      */
-    var cost = 1f
+    open var cost = 1f
 
     /**
      * The entity performing this action.
@@ -56,6 +56,7 @@ abstract class GoapAction {
 
     /**
      * Check if this action can run.
+     * TODO: is available, rather than can run.
      */
     open fun canRun() = true
 

@@ -71,8 +71,11 @@ internal object GoapPlanner {
     private fun buildGraph(parent: Node, leaves: MutableList<Node>, usableActions: Set<GoapAction>, goal: WorldState): Boolean {
         var foundOne = false
 
+        // prefer low cost actions over high cost
+        val sortedActions = usableActions.sortedBy { it.cost }
+
         // go through each action available at this node and see if we can use it here
-        for (action in usableActions) {
+        for (action in sortedActions) {
 
             // if the parent state has the conditions for this action's preconditions, we can use it here
             if (action.preconditions.isIn(parent.state)) {
@@ -88,7 +91,7 @@ internal object GoapPlanner {
                     foundOne = true
                 } else {
                     // not at a solution yet, so test all the remaining actions and branch out the tree
-                    val subset = usableActions.minus(action)
+                    val subset = usableActions - (action)
 
                     val found = buildGraph(node, leaves, subset, goal)
                     if (found)

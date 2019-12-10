@@ -7,18 +7,13 @@
 package com.almasb.fxglgames.tanks;
 
 import com.almasb.fxgl.ai.AIDebugViewComponent;
-import com.almasb.fxgl.ai.goap.GoapAction;
-import com.almasb.fxgl.ai.goap.GoapListener;
-import com.almasb.fxgl.ai.goap.GoapComponent;
-import com.almasb.fxgl.ai.goap.WorldState;
+import com.almasb.fxgl.ai.goap.*;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.entity.Entity;
 import javafx.scene.text.Text;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxglgames.tanks.GoapSample.Type.*;
@@ -59,6 +54,8 @@ public class GoapSample extends GameApplication {
 
         WorldState goalGuard = new WorldState();
         goalGuard.add("wait", true);
+
+        // addPrecondition("closeTo" + player.getType(), true);
 
 //        if (!getGameState().getBoolean("playerAlive")) {
 //            goalGuard.add("playerAlive", true);
@@ -117,13 +114,13 @@ public class GoapSample extends GameApplication {
                 .buildAndAttach();
     }
 
-    private HashSet<GoapAction> initActions() {
-        HashSet<GoapAction> actions = new HashSet<>();
+    private Set<GoapAction> initActions() {
+        Set<GoapAction> actions = new LinkedHashSet<>();
         actions.add(new PickupWeapon());
         actions.add(new KillPlayer());
         actions.add(new PickupCoin());
-        actions.add(new ReviveAction());
-        actions.add(new BlowUpAction());
+//        actions.add(new ReviveAction());
+//        actions.add(new BlowUpAction());
         actions.add(new WaitAction());
         actions.add(new MoveAction(player));
         actions.add(new MoveAction(coin));
@@ -158,24 +155,25 @@ public class GoapSample extends GameApplication {
             setTarget(target);
         }
 
+
+
         @Override
         public boolean perform() {
             if (getEntity().distance(getTarget()) > 5) {
                 getEntity().translate(getTarget().getPosition().subtract(getEntity().getPosition()).normalize().multiply(5));
             } else {
                 done = true;
-                this.entity.setProperty("closeTo" + getTarget().getType(), true);
+                //this.entity.setProperty("closeTo" + getTarget().getType(), true);
             }
 
             return true;
         }
     }
 
-    private static class KillPlayer extends BaseGoapAction {
+    private static class KillPlayer extends MoveGoapAction {
         public KillPlayer() {
             addPrecondition("playerInvincible", false);
             addPrecondition("playerAlive", true);
-            addPrecondition("closeTo" + player.getType(), true);
             addPrecondition("hasWeapon", true);
 
             addEffect("playerAlive", false);
@@ -184,19 +182,42 @@ public class GoapSample extends GameApplication {
         }
 
         @Override
-        public boolean perform() {
-            if (this.entity.distance(getTarget()) > 10)
-                return false;
+        public float getCost() {
+            return (float) this.entity.distance(getTarget());
+        }
 
+        @Override
+        public boolean isInRange() {
+            return (this.entity.distance(getTarget()) < 5);
+        }
+
+        @Override
+        public boolean move() {
+            if (getEntity().distance(getTarget()) > 5) {
+                getEntity().translate(getTarget().getPosition().subtract(getEntity().getPosition()).normalize().multiply(5));
+            } else {
+
+            }
+
+            return true;
+        }
+
+        @Override
+        public boolean isDone() {
+            return !getb("playerAlive");
+        }
+
+        @Override
+        public boolean perform() {
             getGameState().setValue("playerAlive", false);
-            return super.perform();
+
+            return true;
         }
     }
 
-    private static class PickupWeapon extends BaseGoapAction {
+    private static class PickupWeapon extends MoveGoapAction {
         public PickupWeapon() {
             addPrecondition("hasWeapon", false);
-            addPrecondition("closeTo" + weapon.getType(), true);
 
             addEffect("hasWeapon", true);
 
@@ -204,16 +225,41 @@ public class GoapSample extends GameApplication {
         }
 
         @Override
+        public float getCost() {
+            return (float) this.entity.distance(getTarget());
+        }
+
+        @Override
+        public boolean isInRange() {
+            return (this.entity.distance(getTarget()) < 5);
+        }
+
+        @Override
+        public boolean move() {
+            if (getEntity().distance(getTarget()) > 5) {
+                getEntity().translate(getTarget().getPosition().subtract(getEntity().getPosition()).normalize().multiply(5));
+            } else {
+
+            }
+
+            return true;
+        }
+
+        @Override
+        public boolean isDone() {
+            return agent.getBoolean("hasWeapon");
+        }
+
+        @Override
         public boolean perform() {
             agent.setProperty("hasWeapon", true);
-            return super.perform();
+            return true;
         }
     }
 
-    private static class PickupCoin extends BaseGoapAction {
+    private static class PickupCoin extends MoveGoapAction {
         public PickupCoin() {
             addPrecondition("hasCoin", false);
-            addPrecondition("closeTo" + coin.getType(), true);
 
             addEffect("hasCoin", true);
             addEffect("playerInvincible", false);
@@ -222,10 +268,36 @@ public class GoapSample extends GameApplication {
         }
 
         @Override
+        public float getCost() {
+            return (float) this.entity.distance(getTarget());
+        }
+
+        @Override
+        public boolean isInRange() {
+            return (this.entity.distance(getTarget()) < 5);
+        }
+
+        @Override
+        public boolean move() {
+            if (getEntity().distance(getTarget()) > 5) {
+                getEntity().translate(getTarget().getPosition().subtract(getEntity().getPosition()).normalize().multiply(5));
+            } else {
+
+            }
+
+            return true;
+        }
+
+        @Override
+        public boolean isDone() {
+            return agent.getBoolean("hasCoin");
+        }
+
+        @Override
         public boolean perform() {
             agent.setProperty("hasCoin", true);
             getGameState().setValue("playerInvincible", false);
-            return super.perform();
+            return true;
         }
     }
 
@@ -247,7 +319,7 @@ public class GoapSample extends GameApplication {
 
     private static class WaitAction extends BaseGoapAction {
         public WaitAction() {
-            addPrecondition("wait", false);
+            //addPrecondition("wait", false);
 
             addEffect("wait", true);
         }
