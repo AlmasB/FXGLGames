@@ -71,17 +71,7 @@ abstract class GoapAction {
 
 
 
-    /**
-     * Are we in range of the target?
-     * The MoveTo state will set this and it gets reset each time this action is performed.
-     */
-    var isInRange = false
 
-    /**
-     * Does this action need to be within range of a target game object?
-     * If not then the moveTo state will not need to run for this action.
-     */
-    abstract fun requiresInRange(): Boolean
 
 
 
@@ -114,4 +104,16 @@ abstract class GoapAction {
 //        target = null
 //        reset()
 //    }
+
+//    /**
+//     * Are we in range of the target?
+//     * The MoveTo state will set this and it gets reset each time this action is performed.
+//     */
+//    var isInRange = false
+//
+//    /**
+//     * Does this action need to be within range of a target game object?
+//     * If not then the moveTo state will not need to run for this action.
+//     */
+//    abstract fun requiresInRange(): Boolean
 }

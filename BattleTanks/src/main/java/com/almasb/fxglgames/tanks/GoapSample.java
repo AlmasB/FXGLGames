@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Queue;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxglgames.tanks.GoapSample.Type.*;
 
 /**
  *
@@ -37,6 +38,10 @@ public class GoapSample extends GameApplication {
 
     private static Entity player, coin, weapon, agent, guard;
 
+    public enum Type {
+        PLAYER, COIN, WEAPON
+    }
+
     @Override
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("playerInvincible", true);
@@ -49,25 +54,28 @@ public class GoapSample extends GameApplication {
         initObjects();
         HashSet<GoapAction> actions = initActions();
 
-        GoapComponent GoapComponent = new GoapComponent(new KillerAgent(), 100, actions);
+        GoapComponent GoapComponent = new GoapComponent(new KillerAgent(), actions);
         agent.addComponent(GoapComponent);
 
-        guard.addComponent(new GoapComponent(new GuardAgent(), 125, actions));
+        guard.addComponent(new GoapComponent(new GuardAgent(), actions));
     }
 
     private void initObjects() {
         player = entityBuilder()
                 .at(300, 300)
+                .type(PLAYER)
                 .view(new Text("PLAYER"))
                 .buildAndAttach();
 
         coin = entityBuilder()
                 .at(500, 100)
+                .type(COIN)
                 .view(new Text("COIN"))
                 .buildAndAttach();
 
         weapon = entityBuilder()
                 .at(30, 500)
+                .type(WEAPON)
                 .view(new Text("WEAPON"))
                 .buildAndAttach();
 
@@ -93,6 +101,9 @@ public class GoapSample extends GameApplication {
         actions.add(new ReviveAction());
         actions.add(new BlowUpAction());
         actions.add(new WaitAction());
+        actions.add(new MoveAction(player));
+        actions.add(new MoveAction(coin));
+        actions.add(new MoveAction(weapon));
         return actions;
     }
 
@@ -105,6 +116,10 @@ public class GoapSample extends GameApplication {
             worldState.add("playerAlive", getGameState().getBoolean("playerAlive"));
             worldState.add("hasWeapon", entity.getBoolean("hasWeapon"));
             worldState.add("hasCoin", entity.getBoolean("hasCoin"));
+
+
+            worldState.add("closeTo" + coin.getType(), entity.distance(coin) < 10);
+            worldState.add("closeTo" + weapon.getType(), entity.distance(weapon) < 10);
 
             return worldState;
         }
@@ -182,7 +197,7 @@ public class GoapSample extends GameApplication {
 
     private static class BaseGoapAction extends GoapAction {
 
-        private boolean done = false;
+        protected boolean done = false;
 
         @Override
         public void reset() {
@@ -199,9 +214,26 @@ public class GoapSample extends GameApplication {
             // pickup / kill instantly
             return true;
         }
+    }
+
+    private static class MoveAction extends BaseGoapAction {
+
+        public MoveAction(Entity target) {
+            addPrecondition("closeTo" + target.getType(), false);
+
+            addEffect("closeTo" + target.getType(), true);
+
+            setTarget(target);
+        }
 
         @Override
-        public boolean requiresInRange() {
+        public boolean perform() {
+            if (getEntity().distance(getTarget()) > 5) {
+                getEntity().translate(getTarget().getPosition().subtract(getEntity().getPosition()).normalize().multiply(5));
+            } else {
+                done = true;
+            }
+
             return true;
         }
     }
@@ -226,6 +258,7 @@ public class GoapSample extends GameApplication {
     private static class PickupWeapon extends BaseGoapAction {
         public PickupWeapon() {
             addPrecondition("hasWeapon", false);
+            addPrecondition("closeTo" + weapon.getType(), true);
             addEffect("hasWeapon", true);
 
             setTarget(weapon);
@@ -241,6 +274,8 @@ public class GoapSample extends GameApplication {
     private static class PickupCoin extends BaseGoapAction {
         public PickupCoin() {
             addPrecondition("hasCoin", false);
+            addPrecondition("closeTo" + coin.getType(), true);
+
             addEffect("hasCoin", true);
             addEffect("playerInvincible", false);
 
