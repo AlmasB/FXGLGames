@@ -44,6 +44,12 @@ abstract class GoapAction {
     var target: Entity? = null
 
     /**
+     * An action is bound if it was assigned to a GoapComponent.
+     */
+    internal val isBound: Boolean
+        get() = this::entity.isInitialized
+
+    /**
      * Is the action done?
      */
     abstract val isDone: Boolean
@@ -65,19 +71,6 @@ abstract class GoapAction {
      * Reset any variables that need to be reset before planning happens again.
      */
     open fun reset() { }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     fun addPrecondition(key: String, value: Any) {
         preconditions.add(key, value)
@@ -104,16 +97,4 @@ abstract class GoapAction {
 //        target = null
 //        reset()
 //    }
-
-//    /**
-//     * Are we in range of the target?
-//     * The MoveTo state will set this and it gets reset each time this action is performed.
-//     */
-//    var isInRange = false
-//
-//    /**
-//     * Does this action need to be within range of a target game object?
-//     * If not then the moveTo state will not need to run for this action.
-//     */
-//    abstract fun requiresInRange(): Boolean
 }

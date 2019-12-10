@@ -6,6 +6,8 @@
 
 package com.almasb.fxgl.ai.goap
 
+import com.almasb.fxgl.core.collection.PropertyMap
+
 /**
  * A lightweight version of GameState.
  *
@@ -16,6 +18,12 @@ class WorldState(initialData: Map<String, Any> = emptyMap()) {
     private val data = HashMap<String, Any>()
 
     constructor(copy: WorldState) : this(copy.data)
+
+    constructor(map: PropertyMap) : this() {
+        map.keys()
+                .map { it to map.getValue<Any>(it) }
+                .forEach { (key, value) -> data[key] = value }
+    }
 
     init {
         data.putAll(initialData)
@@ -52,5 +60,9 @@ class WorldState(initialData: Map<String, Any> = emptyMap()) {
         for ((k, v) in other.data) {
             data[k] = v
         }
+    }
+
+    override fun toString(): String {
+        return data.toString()
     }
 }

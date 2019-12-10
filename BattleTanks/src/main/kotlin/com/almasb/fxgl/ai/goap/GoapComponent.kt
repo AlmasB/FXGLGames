@@ -6,6 +6,9 @@
 
 package com.almasb.fxgl.ai.goap
 
+import com.almasb.fxgl.core.collection.PropertyMap
+import com.almasb.fxgl.dsl.FXGL
+import com.almasb.fxgl.entity.Entity
 import com.almasb.fxgl.entity.component.Component
 import java.util.*
 
@@ -18,7 +21,8 @@ import java.util.*
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 class GoapComponent(
-        private val agent: GoapAgent,
+        private val worldProperties: PropertyMap,
+        var goal: WorldState,
         actions: Set<GoapAction>) : Component() {
 
     /**
@@ -27,13 +31,24 @@ class GoapComponent(
     var isIdle = true
         private set
 
+    var listener: GoapListener = NoopListener
+
     private val availableActions = HashSet(actions)
     private var currentActions: Queue<GoapAction> = ArrayDeque<GoapAction>()
+
+    // TODO: add IdleAction?
+    var currentAction: GoapAction? = null
 
     private fun hasActionPlan() = currentActions.isNotEmpty()
 
     override fun onAdded() {
-        availableActions.forEach { it.entity = entity }
+        availableActions.forEach {
+            if (it.isBound) {
+                throw IllegalStateException("Action $it already bound to ${it.entity}")
+            }
+
+            it.entity = entity
+        }
     }
 
     override fun onUpdate(tpf: Double) {
@@ -46,18 +61,28 @@ class GoapComponent(
 
     private fun makePlan() {
         // get the world state and the goal we want to plan for
-        val worldState = agent.obtainWorldState(entity)
-        val goal = agent.createGoalState(entity)
+//        val worldState = listener.obtainWorldState(entity)
+//        val goal = listener.createGoalState(entity)
+
+        val worldState = WorldState(worldProperties)
+
+        // add local state
+        entity.properties.keys().forEach {
+            worldState.add(it, entity.properties.getValue(it))
+        }
+
+        println("Planning with cur state: " + worldState)
 
         val plan = GoapPlanner.plan(availableActions, worldState, goal)
+
         if (!plan.isEmpty()) {
             currentActions = plan
-            agent.planFound(entity, goal, plan)
+            listener.planFound(entity, goal, plan)
 
             isIdle = false
 
         } else {
-            agent.planFailed(entity, goal)
+            listener.planFailed(entity, goal)
 
             isIdle = true
         }
@@ -66,7 +91,7 @@ class GoapComponent(
     private fun executePlan() {
         if (!hasActionPlan()) {
             isIdle = true
-            agent.actionsFinished(entity)
+            listener.actionsFinished(entity)
             return
         }
 
@@ -74,11 +99,18 @@ class GoapComponent(
         if (action.isDone) {
             // the action is done. Remove it so we can perform the next one
             currentActions.remove()
+
+            // re-run planning in case the world state has changed
+            makePlan()
         }
 
         if (hasActionPlan()) {
             // get the next action
             action = currentActions.peek()
+
+            currentAction = action
+
+            println("performing: " + currentAction)
 
             // perform the action
             val success = action.perform()
@@ -86,12 +118,12 @@ class GoapComponent(
             if (!success) {
                 // action failed, we need to plan again
                 isIdle = true
-                agent.planAborted(entity, action)
+                listener.planAborted(entity, action)
             }
 
         } else {
             isIdle = true
-            agent.actionsFinished(entity)
+            listener.actionsFinished(entity)
         }
     }
 
@@ -101,5 +133,19 @@ class GoapComponent(
 
     fun removeAction(action: GoapAction) {
         availableActions.remove(action)
+    }
+
+    private object NoopListener : GoapListener {
+        override fun planFound(entity: Entity, goal: WorldState, actions: Queue<GoapAction>) {
+        }
+
+        override fun planFailed(entity: Entity, failedGoal: WorldState) {
+        }
+
+        override fun actionsFinished(entity: Entity) {
+        }
+
+        override fun planAborted(entity: Entity, aborter: GoapAction) {
+        }
     }
 }

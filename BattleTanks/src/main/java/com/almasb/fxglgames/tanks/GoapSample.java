@@ -6,8 +6,9 @@
 
 package com.almasb.fxglgames.tanks;
 
+import com.almasb.fxgl.ai.AIDebugViewComponent;
 import com.almasb.fxgl.ai.goap.GoapAction;
-import com.almasb.fxgl.ai.goap.GoapAgent;
+import com.almasb.fxgl.ai.goap.GoapListener;
 import com.almasb.fxgl.ai.goap.GoapComponent;
 import com.almasb.fxgl.ai.goap.WorldState;
 import com.almasb.fxgl.app.GameApplication;
@@ -39,7 +40,7 @@ public class GoapSample extends GameApplication {
     private static Entity player, coin, weapon, agent, guard;
 
     public enum Type {
-        PLAYER, COIN, WEAPON
+        PLAYER, COIN, WEAPON, AGENT, GUARD
     }
 
     @Override
@@ -52,12 +53,36 @@ public class GoapSample extends GameApplication {
     protected void initGame() {
 
         initObjects();
-        HashSet<GoapAction> actions = initActions();
 
-        GoapComponent GoapComponent = new GoapComponent(new KillerAgent(), actions);
-        agent.addComponent(GoapComponent);
+        WorldState goalKiller = new WorldState();
+        goalKiller.add("playerAlive", false);
 
-        guard.addComponent(new GoapComponent(new GuardAgent(), actions));
+        WorldState goalGuard = new WorldState();
+        goalGuard.add("wait", true);
+
+//        if (!getGameState().getBoolean("playerAlive")) {
+//            goalGuard.add("playerAlive", true);
+//        } else {
+//            goalGuard.add("wait", true);
+//        }
+
+        agent.addComponent(new GoapComponent(getGameState().getProperties(), goalKiller, initActions()));
+        //guard.addComponent(new GoapComponent(getGameState().getProperties(), goalGuard, initActions()));
+
+        agent.addComponent(new AIDebugViewComponent());
+        //guard.addComponent(new AIDebugViewComponent());
+
+        agent.setProperty("hasWeapon", false);
+        agent.setProperty("hasCoin", false);
+
+        guard.setProperty("wait", false);
+    }
+
+    @Override
+    protected void onUpdate(double tpf) {
+        agent.setProperty("closeTo" + coin.getType(), agent.distance(coin) < 10);
+        agent.setProperty("closeTo" + weapon.getType(), agent.distance(weapon) < 10);
+        agent.setProperty("closeTo" + player.getType(), agent.distance(player) < 10);
     }
 
     private void initObjects() {
@@ -81,16 +106,15 @@ public class GoapSample extends GameApplication {
 
         agent = entityBuilder()
                 .at(400, 400)
+                .type(AGENT)
                 .view(new Text("AGENT"))
                 .buildAndAttach();
 
         guard = entityBuilder()
                 .at(600, 50)
+                .type(GUARD)
                 .view(new Text("GUARD"))
                 .buildAndAttach();
-
-        agent.setProperty("hasWeapon", false);
-        agent.setProperty("hasCoin", false);
     }
 
     private HashSet<GoapAction> initActions() {
@@ -107,101 +131,9 @@ public class GoapSample extends GameApplication {
         return actions;
     }
 
-    private class KillerAgent implements GoapAgent {
-
-        @Override
-        public WorldState obtainWorldState(Entity entity) {
-            WorldState worldState = new WorldState();
-            worldState.add("playerInvincible", getGameState().getBoolean("playerInvincible"));
-            worldState.add("playerAlive", getGameState().getBoolean("playerAlive"));
-            worldState.add("hasWeapon", entity.getBoolean("hasWeapon"));
-            worldState.add("hasCoin", entity.getBoolean("hasCoin"));
-
-
-            worldState.add("closeTo" + coin.getType(), entity.distance(coin) < 10);
-            worldState.add("closeTo" + weapon.getType(), entity.distance(weapon) < 10);
-
-            return worldState;
-        }
-
-        @Override
-        public WorldState createGoalState(Entity entity) {
-            WorldState goal = new WorldState();
-            goal.add("playerAlive", false);
-            return goal;
-        }
-
-        @Override
-        public void planFailed(Entity entity, WorldState failedGoal) {}
-
-        @Override
-        public void planFound(Entity entity, WorldState goal, Queue<GoapAction> actions) {
-            System.out.println("Plan found!");
-            for (GoapAction action : actions) {
-                System.out.println(action);
-            }
-        }
-
-        @Override
-        public void actionsFinished(Entity entity) {
-            //entity.removeComponent(GoapComponent.class);
-        }
-
-        @Override
-        public void planAborted(Entity entity, GoapAction aborter) {}
-    }
-
-    private class GuardAgent implements GoapAgent {
-
-        @Override
-        public WorldState obtainWorldState(Entity entity) {
-            WorldState worldState = new WorldState();
-            worldState.add("playerInvincible", getGameState().getBoolean("playerInvincible"));
-            worldState.add("playerAlive", getGameState().getBoolean("playerAlive"));
-
-            return worldState;
-        }
-
-        @Override
-        public WorldState createGoalState(Entity entity) {
-            WorldState goal = new WorldState();
-
-            if (!getGameState().getBoolean("playerAlive")) {
-                goal.add("playerAlive", true);
-            } else {
-                goal.add("wait", true);
-            }
-
-            return goal;
-        }
-
-        @Override
-        public void planFailed(Entity entity, WorldState failedGoal) {}
-
-        @Override
-        public void planFound(Entity entity, WorldState goal, Queue<GoapAction> actions) {
-            System.out.println("Plan found! Guard");
-            for (GoapAction action : actions) {
-                System.out.println(action);
-            }
-        }
-
-        @Override
-        public void actionsFinished(Entity entity) {
-            //entity.removeComponent(GoapComponent.class);
-        }
-
-        @Override
-        public void planAborted(Entity entity, GoapAction aborter) {}
-    }
-
     private static class BaseGoapAction extends GoapAction {
 
         protected boolean done = false;
-
-        @Override
-        public void reset() {
-        }
 
         @Override
         public boolean isDone() {
@@ -232,6 +164,7 @@ public class GoapSample extends GameApplication {
                 getEntity().translate(getTarget().getPosition().subtract(getEntity().getPosition()).normalize().multiply(5));
             } else {
                 done = true;
+                this.entity.setProperty("closeTo" + getTarget().getType(), true);
             }
 
             return true;
@@ -242,7 +175,9 @@ public class GoapSample extends GameApplication {
         public KillPlayer() {
             addPrecondition("playerInvincible", false);
             addPrecondition("playerAlive", true);
+            addPrecondition("closeTo" + player.getType(), true);
             addPrecondition("hasWeapon", true);
+
             addEffect("playerAlive", false);
 
             setTarget(player);
@@ -250,6 +185,9 @@ public class GoapSample extends GameApplication {
 
         @Override
         public boolean perform() {
+            if (this.entity.distance(getTarget()) > 10)
+                return false;
+
             getGameState().setValue("playerAlive", false);
             return super.perform();
         }
@@ -259,6 +197,7 @@ public class GoapSample extends GameApplication {
         public PickupWeapon() {
             addPrecondition("hasWeapon", false);
             addPrecondition("closeTo" + weapon.getType(), true);
+
             addEffect("hasWeapon", true);
 
             setTarget(weapon);
@@ -293,6 +232,7 @@ public class GoapSample extends GameApplication {
     private static class ReviveAction extends BaseGoapAction {
         public ReviveAction() {
             addPrecondition("playerAlive", false);
+
             addEffect("playerAlive", true);
 
             setTarget(player);
@@ -307,7 +247,20 @@ public class GoapSample extends GameApplication {
 
     private static class WaitAction extends BaseGoapAction {
         public WaitAction() {
+            addPrecondition("wait", false);
+
             addEffect("wait", true);
+        }
+
+        @Override
+        public boolean perform() {
+            done = false;
+
+            //System.out.println(this.entity.getType() + ": Performing wait");
+
+            this.entity.setProperty("wait", true);
+
+            return true;
         }
     }
 
