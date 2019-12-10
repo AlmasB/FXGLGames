@@ -173,7 +173,7 @@ public class GoapSample extends GameApplication {
 
         @Override
         public void actionsFinished(Entity entity) {
-            entity.removeComponent(GoapComponent.class);
+            //entity.removeComponent(GoapComponent.class);
         }
 
         @Override
@@ -194,12 +194,7 @@ public class GoapSample extends GameApplication {
         }
 
         @Override
-        public boolean checkProceduralPrecondition(Entity agent) {
-            return true;
-        }
-
-        @Override
-        public boolean perform(Entity agent) {
+        public boolean perform() {
             done = true;
             // pickup / kill instantly
             return true;
@@ -217,18 +212,14 @@ public class GoapSample extends GameApplication {
             addPrecondition("playerAlive", true);
             addPrecondition("hasWeapon", true);
             addEffect("playerAlive", false);
-        }
 
-        @Override
-        public boolean checkProceduralPrecondition(Entity agent) {
             setTarget(player);
-            return true;
         }
 
         @Override
-        public boolean perform(Entity agent) {
+        public boolean perform() {
             getGameState().setValue("playerAlive", false);
-            return super.perform(agent);
+            return super.perform();
         }
     }
 
@@ -236,18 +227,14 @@ public class GoapSample extends GameApplication {
         public PickupWeapon() {
             addPrecondition("hasWeapon", false);
             addEffect("hasWeapon", true);
-        }
 
-        @Override
-        public boolean checkProceduralPrecondition(Entity agent) {
             setTarget(weapon);
-            return true;
         }
 
         @Override
-        public boolean perform(Entity agent) {
+        public boolean perform() {
             agent.setProperty("hasWeapon", true);
-            return super.perform(agent);
+            return super.perform();
         }
     }
 
@@ -256,19 +243,15 @@ public class GoapSample extends GameApplication {
             addPrecondition("hasCoin", false);
             addEffect("hasCoin", true);
             addEffect("playerInvincible", false);
-        }
 
-        @Override
-        public boolean checkProceduralPrecondition(Entity agent) {
             setTarget(coin);
-            return true;
         }
 
         @Override
-        public boolean perform(Entity agent) {
+        public boolean perform() {
             agent.setProperty("hasCoin", true);
             getGameState().setValue("playerInvincible", false);
-            return super.perform(agent);
+            return super.perform();
         }
     }
 
@@ -276,12 +259,8 @@ public class GoapSample extends GameApplication {
         public ReviveAction() {
             addPrecondition("playerAlive", false);
             addEffect("playerAlive", true);
-        }
 
-        @Override
-        public boolean checkProceduralPrecondition(Entity agent) {
             setTarget(player);
-            return true;
         }
     }
 

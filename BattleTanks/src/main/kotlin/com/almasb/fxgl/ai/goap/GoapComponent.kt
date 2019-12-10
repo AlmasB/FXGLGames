@@ -6,11 +6,8 @@
 
 package com.almasb.fxgl.ai.goap
 
-import com.almasb.fxgl.ai.goap.GoapAction
-import com.almasb.fxgl.core.fsm.StateMachine
 import com.almasb.fxgl.entity.Entity
 import com.almasb.fxgl.entity.component.Component
-import com.almasb.fxgl.entity.component.Required
 import java.util.*
 
 /**
@@ -54,6 +51,10 @@ class GoapComponent(
         stateMachine.pushState(idleState)
     }
 
+    override fun onAdded() {
+        availableActions.forEach { it.entity = entity }
+    }
+
     private var tpf: Double = 0.0
 
     override fun onUpdate(tpf: Double) {
@@ -79,7 +80,7 @@ class GoapComponent(
      * False if it is not there yet.
      */
     private fun moveAgent(nextAction: GoapAction): Boolean {
-        requireNotNull(nextAction.target){ "GoapAction: $nextAction has no target" }
+        requireNotNull(nextAction.target) { "GoapAction: $nextAction has no target" }
 
         val targetPosition = nextAction.target!!.position
 
@@ -97,16 +98,12 @@ class GoapComponent(
     private fun createIdleState(): FSMState {
         return object : FSMState {
             override fun update(fsm: FSM, entity: Entity) {
-                // GOAP planning
-
                 // get the world state and the goal we want to plan for
                 val worldState = agent.obtainWorldState(entity)
                 val goal = agent.createGoalState(entity)
 
-                // Plan
-                val plan = GoapPlanner.plan(entity, availableActions, worldState, goal)
+                val plan = GoapPlanner.plan(availableActions, worldState, goal)
                 if (!plan.isEmpty()) {
-                    // we have a plan, hooray!
                     currentActions = plan
                     agent.planFound(entity, goal, plan)
 
@@ -114,7 +111,6 @@ class GoapComponent(
                     fsm.pushState(performActionState)
 
                 } else {
-                    // ugh, we couldn't get a plan
                     agent.planFailed(entity, goal)
                     fsm.popState() // move back to IdleAction state
                     fsm.pushState(idleState)
@@ -167,7 +163,7 @@ class GoapComponent(
 
                     if (inRange) {
                         // we are in range, so perform the action
-                        val success = action.perform(entity)
+                        val success = action.perform()
 
                         if (!success) {
                             // action failed, we need to plan again

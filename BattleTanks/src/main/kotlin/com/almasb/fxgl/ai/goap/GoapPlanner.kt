@@ -6,8 +6,6 @@
 
 package com.almasb.fxgl.ai.goap
 
-import com.almasb.fxgl.entity.Entity
-
 import java.util.*
 
 /**
@@ -18,7 +16,7 @@ import java.util.*
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-object GoapPlanner {
+internal object GoapPlanner {
 
     /**
      * Plan what sequence of actions can fulfill the goal.
@@ -26,13 +24,13 @@ object GoapPlanner {
      * or a list of the actions
      * that must be performed, in order, to fulfill the goal.
      */
-    fun plan(agent: Entity, availableActions: Set<GoapAction>, worldState: WorldState, goal: WorldState): Queue<GoapAction> {
+    fun plan(availableActions: Set<GoapAction>, worldState: WorldState, goal: WorldState): Queue<GoapAction> {
 
         // reset the actions so we can start fresh with them
         availableActions.forEach { it.reset() }
 
-        // check what actions can run using their checkProceduralPrecondition
-        val usableActions = availableActions.filter { it.checkProceduralPrecondition(agent) }.toSet()
+        // check what actions can run
+        val usableActions = availableActions.filter { it.canRun() }.toSet()
 
         // we now have all actions that can run, stored in usableActions
 
@@ -61,8 +59,6 @@ object GoapPlanner {
         }
 
         // we now have this action list in correct order
-
-        // hooray we have a plan!
         return ArrayDeque(result.reversed())
     }
 
