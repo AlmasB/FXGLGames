@@ -7,6 +7,7 @@ import com.almasb.fxgl.ai.goap.WorldState
 import com.almasb.fxgl.dsl.FXGL
 import com.almasb.fxgl.dsl.components.view.ChildViewComponent
 import com.almasb.fxgl.entity.Entity
+import com.almasb.fxgl.entity.action.ActionComponent
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
 import javafx.scene.text.Font
@@ -22,6 +23,7 @@ class AIDebugViewComponent : ChildViewComponent(0.0, -30.0, isTransformApplied =
     private val text = Text("DEBUG_TEXT")
 
     private lateinit var goap: GoapComponent
+    private lateinit var actionComponent: ActionComponent
 
     init {
         text.fill = Color.BLUE
@@ -55,7 +57,7 @@ class AIDebugViewComponent : ChildViewComponent(0.0, -30.0, isTransformApplied =
     }
 
     override fun onUpdate(tpf: Double) {
-        goap.currentAction?.let {
+        actionComponent.currentAction.let {
             text.text = it.toString().removeSuffix("Action")
         }
     }

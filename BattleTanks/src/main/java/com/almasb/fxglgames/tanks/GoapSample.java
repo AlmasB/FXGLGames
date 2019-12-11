@@ -11,6 +11,7 @@ import com.almasb.fxgl.ai.goap.*;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.action.ActionComponent;
 import javafx.scene.text.Text;
 
 import java.util.*;
@@ -105,12 +106,14 @@ public class GoapSample extends GameApplication {
                 .at(400, 400)
                 .type(AGENT)
                 .view(new Text("AGENT"))
+                .with(new ActionComponent())
                 .buildAndAttach();
 
         guard = entityBuilder()
                 .at(600, 50)
                 .type(GUARD)
                 .view(new Text("GUARD"))
+                //.with(new ActionComponent())
                 .buildAndAttach();
     }
 
@@ -121,53 +124,8 @@ public class GoapSample extends GameApplication {
         actions.add(new PickupCoin());
 //        actions.add(new ReviveAction());
 //        actions.add(new BlowUpAction());
-        actions.add(new WaitAction());
-        actions.add(new MoveAction(player));
-        actions.add(new MoveAction(coin));
-        actions.add(new MoveAction(weapon));
+//        actions.add(new WaitAction());
         return actions;
-    }
-
-    private static class BaseGoapAction extends GoapAction {
-
-        protected boolean done = false;
-
-        @Override
-        public boolean isDone() {
-            return done;
-        }
-
-        @Override
-        public boolean perform() {
-            done = true;
-            // pickup / kill instantly
-            return true;
-        }
-    }
-
-    private static class MoveAction extends BaseGoapAction {
-
-        public MoveAction(Entity target) {
-            addPrecondition("closeTo" + target.getType(), false);
-
-            addEffect("closeTo" + target.getType(), true);
-
-            setTarget(target);
-        }
-
-
-
-        @Override
-        public boolean perform() {
-            if (getEntity().distance(getTarget()) > 5) {
-                getEntity().translate(getTarget().getPosition().subtract(getEntity().getPosition()).normalize().multiply(5));
-            } else {
-                done = true;
-                //this.entity.setProperty("closeTo" + getTarget().getType(), true);
-            }
-
-            return true;
-        }
     }
 
     private static class KillPlayer extends MoveGoapAction {
@@ -192,26 +150,20 @@ public class GoapSample extends GameApplication {
         }
 
         @Override
-        public boolean move() {
+        public void move() {
             if (getEntity().distance(getTarget()) > 5) {
                 getEntity().translate(getTarget().getPosition().subtract(getEntity().getPosition()).normalize().multiply(5));
-            } else {
-
             }
-
-            return true;
         }
 
         @Override
-        public boolean isDone() {
+        public boolean isComplete() {
             return !getb("playerAlive");
         }
 
         @Override
-        public boolean perform() {
+        public void perform() {
             getGameState().setValue("playerAlive", false);
-
-            return true;
         }
     }
 
@@ -235,25 +187,20 @@ public class GoapSample extends GameApplication {
         }
 
         @Override
-        public boolean move() {
+        public void move() {
             if (getEntity().distance(getTarget()) > 5) {
                 getEntity().translate(getTarget().getPosition().subtract(getEntity().getPosition()).normalize().multiply(5));
-            } else {
-
             }
-
-            return true;
         }
 
         @Override
-        public boolean isDone() {
+        public boolean isComplete() {
             return agent.getBoolean("hasWeapon");
         }
 
         @Override
-        public boolean perform() {
+        public void perform() {
             agent.setProperty("hasWeapon", true);
-            return true;
         }
     }
 
@@ -278,63 +225,58 @@ public class GoapSample extends GameApplication {
         }
 
         @Override
-        public boolean move() {
+        public void move() {
             if (getEntity().distance(getTarget()) > 5) {
                 getEntity().translate(getTarget().getPosition().subtract(getEntity().getPosition()).normalize().multiply(5));
-            } else {
-
             }
-
-            return true;
         }
 
         @Override
-        public boolean isDone() {
+        public boolean isComplete() {
             return agent.getBoolean("hasCoin");
         }
 
         @Override
-        public boolean perform() {
+        public void perform() {
             agent.setProperty("hasCoin", true);
             getGameState().setValue("playerInvincible", false);
-            return true;
         }
     }
 
-    private static class ReviveAction extends BaseGoapAction {
-        public ReviveAction() {
-            addPrecondition("playerAlive", false);
-
-            addEffect("playerAlive", true);
-
-            setTarget(player);
-        }
-    }
-
-    private static class BlowUpAction extends BaseGoapAction {
-        public BlowUpAction() {
-            setCost(10.0f);
-        }
-    }
-
-    private static class WaitAction extends BaseGoapAction {
-        public WaitAction() {
-            //addPrecondition("wait", false);
-
-            addEffect("wait", true);
-        }
-
-        @Override
-        public boolean perform() {
-            done = false;
-
-            //System.out.println(this.entity.getType() + ": Performing wait");
-
-            this.entity.setProperty("wait", true);
-
-            return true;
-        }
-    }
+//    private static class ReviveAction extends BaseGoapAction {
+//        public ReviveAction() {
+//            addPrecondition("playerAlive", false);
+//
+//            addEffect("playerAlive", true);
+//
+//            setTarget(player);
+//        }
+//    }
+//
+//    private static class BlowUpAction extends BaseGoapAction {
+//        public BlowUpAction() {
+//            setCost(10.0f);
+//        }
+//    }
+//
+//    private static class WaitAction extends BaseGoapAction {
+//        public WaitAction() {
+//            //addPrecondition("wait", false);
+//
+//            addEffect("wait", true);
+//        }
+//
+//        @Override
+//        public boolean perform() {
+//            done = false;
+//
+//            //System.out.println(this.entity.getType() + ": Performing wait");
+//
+//            this.entity.setProperty("wait", true);
+//
+//            return true;
+//        }
+//    }
 
     public static void main(String[] args) {
         launch(args);

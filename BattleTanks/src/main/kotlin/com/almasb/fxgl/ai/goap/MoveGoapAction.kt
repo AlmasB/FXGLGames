@@ -10,5 +10,13 @@ abstract class MoveGoapAction : GoapAction() {
 
     abstract val isInRange: Boolean
 
-    abstract fun move(): Boolean
+    abstract fun move()
+
+    override fun onUpdate(tpf: Double) {
+        if (isInRange) {
+            perform()
+        } else {
+            move()
+        }
+    }
 }

@@ -7,14 +7,12 @@
 package com.almasb.fxgl.ai.goap
 
 import com.almasb.fxgl.entity.Entity
+import com.almasb.fxgl.entity.action.Action
 
 /**
- * Adapted from https://github.com/sploreg/goap
- * Original source: C#, author: Brent Anthony Owens.
- *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-abstract class GoapAction {
+abstract class GoapAction : Action() {
 
     /**
      * Predicates that need to be true for this action to run.
@@ -33,26 +31,10 @@ abstract class GoapAction {
     open var cost = 1f
 
     /**
-     * The entity performing this action.
-     */
-    lateinit var entity: Entity
-
-    /**
      * An action often has to perform on an object.
      * This is that object. Can be null.
      */
     var target: Entity? = null
-
-    /**
-     * An action is bound if it was assigned to a GoapComponent.
-     */
-    internal val isBound: Boolean
-        get() = this::entity.isInitialized
-
-    /**
-     * Is the action done?
-     */
-    abstract val isDone: Boolean
 
     /**
      * Check if this action can run.
@@ -60,18 +42,15 @@ abstract class GoapAction {
      */
     open fun canRun() = true
 
-    /**
-     * Run the action.
-     * Returns True if the action performed successfully or false
-     * if something happened and it can no longer perform. In this case
-     * the action queue should clear out and the goal cannot be reached.
-     */
-    abstract fun perform(): Boolean
+    override fun onUpdate(tpf: Double) {
+        // TODO: perform(tpf)
+        perform()
+    }
 
     /**
-     * Reset any variables that need to be reset before planning happens again.
+     * Perform the action.
      */
-    open fun reset() { }
+    abstract fun perform()
 
     fun addPrecondition(key: String, value: Any) {
         preconditions.add(key, value)
@@ -88,14 +67,4 @@ abstract class GoapAction {
     fun removeEffect(key: String) {
         effects.remove(key)
     }
-
-    override fun toString(): String {
-        return javaClass.simpleName
-    }
-
-//    fun doReset() {
-//        isInRange = false
-//        target = null
-//        reset()
-//    }
 }
