@@ -15,7 +15,7 @@ import javafx.collections.ObservableList;
  */
 public final class ActionComponent extends Component {
 
-    private static final Action IDLE = new IdleAction();
+    private final Action IDLE = new IdleAction();
 
     private ObservableList<Action> actions = FXCollections.observableArrayList();
 
