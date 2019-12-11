@@ -55,7 +55,7 @@ public final class ActionComponent extends Component {
     }
 
     /**
-     * @return true if there are more actions in the queue
+     * @return true if there are more actions (apart from Idle) in the queue
      */
     public boolean hasNextActions() {
         return !actions.isEmpty();
@@ -77,7 +77,7 @@ public final class ActionComponent extends Component {
      *
      * @param action next action to execute
      */
-    public void addAction(Action action) {
+    public void pushAction(Action action) {
         action.setEntity(entity);
         actions.add(action);
     }
@@ -96,6 +96,6 @@ public final class ActionComponent extends Component {
     }
 
     public Action getNextAction() {
-        return actions.size() > 0 ? actions.get(0) : IDLE;
+        return hasNextActions() ? actions.get(0) : IDLE;
     }
 }

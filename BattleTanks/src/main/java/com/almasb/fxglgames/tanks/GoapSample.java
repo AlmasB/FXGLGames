@@ -12,6 +12,9 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.action.ActionComponent;
+import com.almasb.fxgl.entity.action.ContinuousAction;
+import javafx.geometry.Point2D;
+import javafx.scene.input.MouseButton;
 import javafx.scene.text.Text;
 
 import java.util.*;
@@ -37,6 +40,25 @@ public class GoapSample extends GameApplication {
 
     public enum Type {
         PLAYER, COIN, WEAPON, AGENT, GUARD
+    }
+
+    @Override
+    protected void initInput() {
+        onBtnDown(MouseButton.PRIMARY, "move", () -> {
+            player.getComponent(ActionComponent.class).pushAction(new ContinuousAction() {
+                Point2D p = new Point2D(getInput().getMouseXWorld(), getInput().getMouseYWorld());
+
+                @Override
+                protected void perform(double tpf) {
+
+                    if (player.getPosition().distance(p) > 10) {
+                        player.getTransformComponent().translateTowards(p, 5);
+                    } else {
+                        isCompleted = true;
+                    }
+                }
+            });
+        });
     }
 
     @Override
@@ -88,6 +110,7 @@ public class GoapSample extends GameApplication {
                 .at(300, 300)
                 .type(PLAYER)
                 .view(new Text("PLAYER"))
+                .with(new ActionComponent())
                 .buildAndAttach();
 
         coin = entityBuilder()
