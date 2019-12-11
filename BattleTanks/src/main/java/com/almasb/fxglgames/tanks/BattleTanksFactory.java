@@ -42,6 +42,9 @@ import com.almasb.fxgl.pathfinding.CellMoveComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxglgames.tanks.actions.DoNothingAction;
+import com.almasb.fxglgames.tanks.actions.GoalSelectorComponent;
+import com.almasb.fxglgames.tanks.actions.GuardAction;
+import com.almasb.fxglgames.tanks.actions.ShootPlayerAction;
 import com.almasb.fxglgames.tanks.components.*;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
@@ -73,12 +76,19 @@ public class BattleTanksFactory implements EntityFactory {
     @Spawns("enemy,enemySpawnPoint")
     public Entity newEnemy(SpawnData data) {
         WorldState goal = new WorldState();
-        goal.add("goal", true);
 
         var e = newTank(data)
                 .type(ENEMY)
-                .with("goal", false)
-                .with(new GoapComponent(getGameState().getProperties(), goal, Set.of(new DoNothingAction())))
+                .with("playerAlive", true)
+                .with("guard", false)
+                .with(new GoapComponent(getGameState().getProperties(), goal,
+                        Set.of(
+                                new DoNothingAction(),
+                                new ShootPlayerAction(),
+                                new GuardAction()
+                        )
+                ))
+                .with(new GoalSelectorComponent())
                 .with(new AIDebugViewComponent())
                 .build();
 

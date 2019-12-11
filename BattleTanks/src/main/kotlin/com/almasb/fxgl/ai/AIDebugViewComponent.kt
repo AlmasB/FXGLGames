@@ -26,10 +26,13 @@ class AIDebugViewComponent : ChildViewComponent(0.0, -30.0, isTransformApplied =
     private lateinit var actionComponent: ActionComponent
 
     init {
+        val bg = Rectangle(100.0, 20.0, Color.color(0.9, 0.9, 0.9, 0.65))
+
         text.fill = Color.BLUE
         text.font = Font.font(18.0)
+        text.translateY = 15.0
 
-        viewRoot.children.add(text)
+        viewRoot.children.addAll(bg, text)
     }
 
     override fun onAdded() {
@@ -37,23 +40,23 @@ class AIDebugViewComponent : ChildViewComponent(0.0, -30.0, isTransformApplied =
         // TODO: not clear immediately that this needs to be called ...
         super.onAdded()
 
-        goap.listener = object : GoapListener {
-            override fun planFound(entity: Entity, goal: WorldState, actions: Queue<GoapAction>) {
-                FXGL.debug("Plan found: " + goal + ", " + actions)
-            }
-
-            override fun planFailed(entity: Entity, failedGoal: WorldState) {
-                FXGL.debug("Plan failed: " + failedGoal)
-            }
-
-            override fun actionsFinished(entity: Entity) {
-                FXGL.debug("actions finished")
-            }
-
-            override fun planAborted(entity: Entity, aborter: GoapAction) {
-                FXGL.debug("Plan aborted because of " + aborter)
-            }
-        }
+//        goap.listener = object : GoapListener {
+//            override fun planFound(entity: Entity, goal: WorldState, actions: Queue<GoapAction>) {
+//                FXGL.debug("Plan found: " + goal + ", " + actions)
+//            }
+//
+//            override fun planFailed(entity: Entity, failedGoal: WorldState) {
+//                FXGL.debug("Plan failed: " + failedGoal)
+//            }
+//
+//            override fun actionsFinished(entity: Entity) {
+//                FXGL.debug("actions finished")
+//            }
+//
+//            override fun planAborted(entity: Entity, aborter: GoapAction) {
+//                FXGL.debug("Plan aborted because of " + aborter)
+//            }
+//        }
     }
 
     override fun onUpdate(tpf: Double) {

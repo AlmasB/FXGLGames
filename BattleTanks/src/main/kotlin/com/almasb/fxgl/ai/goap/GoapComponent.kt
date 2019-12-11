@@ -40,14 +40,18 @@ class GoapComponent(
 
     override fun onUpdate(tpf: Double) {
         if (actionComponent.isIdle) {
-
-            println("Making plan:" + entity)
-
             updatePlan()
         }
     }
 
     fun updatePlan() {
+        // TODO: check if goal already met and if so, switch to Idle action
+
+        println("Making a new plan!")
+
+        // TODO: why does this not work?
+        //actionComponent.clearActions()
+
         // get the world state and the goal we want to plan for
         val worldState = WorldState(worldProperties)
 

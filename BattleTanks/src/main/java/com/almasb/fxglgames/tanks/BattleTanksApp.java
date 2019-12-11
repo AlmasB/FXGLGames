@@ -164,11 +164,11 @@ public class BattleTanksApp extends GameApplication {
 
         tankViewComponent.getEntity().addComponent(new AStarMoveComponent(new AStarPathfinder(grid)));
 
-//        byType(ENEMY).forEach(e -> {
-//            e.addComponent(new AStarMoveComponent(new AStarPathfinder(grid)));
-//            e.addComponent(new GuardComponent(grid, FXGLMath.randomBoolean()));
-//            //e.addComponent(new RandomAStarMoveComponent());
-//        });
+        byType(ENEMY).forEach(e -> {
+            e.addComponent(new AStarMoveComponent(new AStarPathfinder(grid)));
+            //e.addComponent(new GuardComponent(grid, FXGLMath.randomBoolean()));
+            //e.addComponent(new RandomAStarMoveComponent());
+        });
 
         //getGameWorld().getRandom(ENEMY).ifPresent(e -> e.addComponent(new GuardComponent(grid, FXGLMath.randomBoolean())));
         //getGameWorld().getRandom(ENEMY).ifPresent(e -> e.addComponent(new ShootPlayerComponent()));

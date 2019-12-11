@@ -9,6 +9,9 @@ package com.almasb.fxgl.pathfinding.astar;
 import com.almasb.fxgl.pathfinding.CellState;
 import com.almasb.fxgl.pathfinding.Grid;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
@@ -20,5 +23,12 @@ public class AStarGrid extends Grid<AStarCell> {
      */
     public AStarGrid(int width, int height) {
         super(width, height, AStarCell.class, (x, y) -> new AStarCell(x, y, CellState.WALKABLE));
+    }
+
+    public List<AStarCell> getWalkableCells() {
+        return getCells()
+                .stream()
+                .filter(c -> c.getState().isWalkable())
+                .collect(Collectors.toList());
     }
 }

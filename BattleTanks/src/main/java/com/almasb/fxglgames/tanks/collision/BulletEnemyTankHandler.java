@@ -13,6 +13,6 @@ public class BulletEnemyTankHandler extends CollisionHandler {
 
     @Override
     protected void onCollisionBegin(Entity bullet, Entity tank) {
-        System.out.println("bullet to: " + tank.getType());
+
     }
 }

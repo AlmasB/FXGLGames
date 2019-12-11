@@ -36,6 +36,10 @@ public class AStarMoveComponent extends Component {
         return moveComponent.isMoving();
     }
 
+    public boolean isFinishedMoving() {
+        return path.isEmpty();
+    }
+
     public Grid<AStarCell> getGrid() {
         return pathfinder.getGrid();
     }
