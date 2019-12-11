@@ -30,6 +30,8 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.action.ActionComponent;
+import com.almasb.fxgl.entity.action.InstantAction;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.virtual.VirtualButton;
@@ -43,6 +45,7 @@ import com.almasb.fxglgames.tanks.components.ai.GuardComponent;
 import com.almasb.fxglgames.tanks.components.ai.ShootPlayerComponent;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
@@ -121,6 +124,20 @@ public class BattleTanksApp extends GameApplication {
                 //tankViewComponent.getEntity().call("moveToCell", 2, 3);
             }
         }, KeyCode.G);
+
+        input.addAction(new UserAction("Move To Action") {
+            @Override
+            protected void onActionBegin() {
+                tankViewComponent.getEntity().getComponent(ActionComponent.class)
+                        .pushAction(new InstantAction() {
+                            @Override
+                            protected void performOnce(double tpf) {
+                                tankViewComponent.getEntity().getComponent(AStarMoveComponent.class)
+                                        .moveToCell((int) (getInput().getMouseXWorld() / 30), (int) (getInput().getMouseYWorld() / 30));
+                            }
+                        });
+            }
+        }, MouseButton.PRIMARY);
     }
 
     @Override
@@ -147,11 +164,11 @@ public class BattleTanksApp extends GameApplication {
 
         tankViewComponent.getEntity().addComponent(new AStarMoveComponent(new AStarPathfinder(grid)));
 
-        byType(ENEMY).forEach(e -> {
-            e.addComponent(new AStarMoveComponent(new AStarPathfinder(grid)));
-            e.addComponent(new GuardComponent(grid, FXGLMath.randomBoolean()));
-            //e.addComponent(new RandomAStarMoveComponent());
-        });
+//        byType(ENEMY).forEach(e -> {
+//            e.addComponent(new AStarMoveComponent(new AStarPathfinder(grid)));
+//            e.addComponent(new GuardComponent(grid, FXGLMath.randomBoolean()));
+//            //e.addComponent(new RandomAStarMoveComponent());
+//        });
 
         //getGameWorld().getRandom(ENEMY).ifPresent(e -> e.addComponent(new GuardComponent(grid, FXGLMath.randomBoolean())));
         //getGameWorld().getRandom(ENEMY).ifPresent(e -> e.addComponent(new ShootPlayerComponent()));

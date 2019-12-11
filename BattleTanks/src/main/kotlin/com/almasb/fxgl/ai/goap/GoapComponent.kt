@@ -40,11 +40,14 @@ class GoapComponent(
 
     override fun onUpdate(tpf: Double) {
         if (actionComponent.isIdle) {
-            makePlan()
+
+            println("Making plan:" + entity)
+
+            updatePlan()
         }
     }
 
-    private fun makePlan() {
+    fun updatePlan() {
         // get the world state and the goal we want to plan for
         val worldState = WorldState(worldProperties)
 
