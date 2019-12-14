@@ -54,7 +54,7 @@ public class GuardAction extends MoveGoapAction {
 
         AStarMoveComponent astar = entity.getComponent(AStarMoveComponent.class);
 
-        if (!astar.isFinishedMoving())
+        if (!astar.isPathEmpty())
             return;
 
         var validCells = astar.getGrid()

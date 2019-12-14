@@ -59,7 +59,7 @@ public class ShootPlayerAction extends MoveGoapAction {
 
         AStarMoveComponent astar = entity.getComponent(AStarMoveComponent.class);
 
-        if (!astar.isFinishedMoving() && !moveTimer.elapsed(moveInterval))
+        if (!astar.isPathEmpty() && !moveTimer.elapsed(moveInterval))
             return;
 
         List<AStarCell> validCells = astar.getGrid()
