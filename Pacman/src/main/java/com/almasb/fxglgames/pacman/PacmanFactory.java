@@ -26,17 +26,12 @@
 
 package com.almasb.fxglgames.pacman;
 
-import com.almasb.fxgl.ai.AIControl;
 import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.components.CollidableComponent;
-import com.almasb.fxgl.entity.view.EntityView;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.texture.Texture;
-import com.almasb.fxglgames.pacman.control.AStarMoveControl;
-import com.almasb.fxglgames.pacman.control.MoveControl;
-import com.almasb.fxglgames.pacman.control.PaletteChangingControl;
-import com.almasb.fxglgames.pacman.control.PlayerControl;
+import com.almasb.fxglgames.pacman.control.PlayerComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
@@ -45,51 +40,51 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
-import static com.almasb.fxgl.app.DSLKt.texture;
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * Factory for creating in-game entities.
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class PacmanFactory implements TextEntityFactory {
+public class PacmanFactory implements EntityFactory {
 
-    @SpawnSymbol('1')
+    @Spawns("1")
     public Entity newBlock(SpawnData data) {
-        return Entities.builder()
+        return entityBuilder()
                 .from(data)
                 .type(PacmanType.BLOCK)
-                .viewFromNodeWithBBox(new EntityView(new Rectangle(40, 40)))
-                .renderLayer(RenderLayer.BACKGROUND)
+                .viewWithBBox(new Rectangle(40, 40))
+                .zIndex(-1)
                 .build();
     }
 
-    @SpawnSymbol('0')
+    @Spawns("0")
     public Entity newCoin(SpawnData data) {
-        EntityView view = new EntityView(texture("coin.png"));
+        var view = texture("coin.png");
         view.setTranslateX(2.5);
 
-        return Entities.builder()
+        return entityBuilder()
                 .from(data)
                 .type(PacmanType.COIN)
                 .bbox(new HitBox("Main", BoundingShape.box(40, 40)))
-                .viewFromNodeWithBBox(view)
-                .renderLayer(RenderLayer.BACKGROUND)
+                .viewWithBBox(view)
+                .zIndex(-1)
                 .with(new CollidableComponent(true))
                 .build();
     }
 
-    @SpawnSymbol('P')
+    @Spawns("P")
     public Entity newPlayer(SpawnData data) {
         Texture view = texture("player.png").toAnimatedTexture(2, Duration.seconds(0.33));
 
-        return Entities.builder()
+        return entityBuilder()
                 .from(data)
                 .type(PacmanType.PLAYER)
-                .bbox(new HitBox("PLAYER_BODY", new Point2D(2, 2), BoundingShape.box(36, 36)))
-                .viewFromNode(view)
+                .bbox(new HitBox(new Point2D(2, 2), BoundingShape.box(36, 36)))
+                .view(view)
                 .with(new CollidableComponent(true))
-                .with(new PlayerControl())
+                .with(new PlayerComponent())
                 .build();
     }
 
@@ -108,37 +103,22 @@ public class PacmanFactory implements TextEntityFactory {
         }
     };
 
-    @SpawnSymbol('E')
+    @Spawns("E")
     public Entity newEnemy(SpawnData data) {
         String aiName = trees.get();
 
-        Entity enemy = Entities.builder()
+        Entity enemy = entityBuilder()
                 .from(data)
                 .type(PacmanType.ENEMY)
-                .bbox(new HitBox("ENEMY_BODY", new Point2D(2, 2), BoundingShape.box(36, 36)))
+                .bbox(new HitBox(new Point2D(2, 2), BoundingShape.box(36, 36)))
                 .with(new CollidableComponent(true))
-                .with(new AIControl(aiName), new MoveControl(), new AStarMoveControl(), new PaletteChangingControl(texture("spritesheet.png")))
+                //.with(new AIControl(aiName), new MoveControl(), new AStarMoveControl(), new PaletteChangingControl(texture("spritesheet.png")))
                 .build();
 
         if (aiName.equals("guard.tree")) {
-            enemy.removeComponent(MoveControl.class);
+            //enemy.removeComponent(MoveControl.class);
         }
 
         return enemy;
-    }
-
-    @Override
-    public char emptyChar() {
-        return ' ';
-    }
-
-    @Override
-    public int blockWidth() {
-        return 40;
-    }
-
-    @Override
-    public int blockHeight() {
-        return 40;
     }
 }

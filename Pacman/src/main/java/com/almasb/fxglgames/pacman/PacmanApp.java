@@ -27,24 +27,22 @@ package com.almasb.fxglgames.pacman;
 
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.Level;
-import com.almasb.fxgl.extra.ai.pathfinding.AStarGrid;
-import com.almasb.fxgl.extra.ai.pathfinding.NodeState;
+import com.almasb.fxgl.entity.level.Level;
+import com.almasb.fxgl.entity.level.text.TextLevelLoader;
 import com.almasb.fxgl.input.UserAction;
-import com.almasb.fxgl.parser.text.TextLevelParser;
-import com.almasb.fxgl.settings.GameSettings;
+import com.almasb.fxgl.pathfinding.CellState;
+import com.almasb.fxgl.pathfinding.astar.AStarGrid;
 import com.almasb.fxgl.ui.UI;
-import com.almasb.fxglgames.pacman.collision.PlayerCoinHandler;
-import com.almasb.fxglgames.pacman.collision.PlayerEnemyHandler;
-import com.almasb.fxglgames.pacman.control.PlayerControl;
+import com.almasb.fxglgames.pacman.control.PlayerComponent;
 import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
 
 import java.util.Map;
 
-import static com.almasb.fxgl.app.DSLKt.geti;
-import static com.almasb.fxgl.app.DSLKt.inc;
+import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxglgames.pacman.PacmanType.*;
 
 /**
  * This is a basic demo of Pacman.
@@ -66,11 +64,11 @@ public class PacmanApp extends GameApplication {
     public static final int TIME_PER_LEVEL = 100;
 
     public Entity getPlayer() {
-        return getGameWorld().getSingleton(PacmanType.PLAYER).get();
+        return getGameWorld().getSingleton(PLAYER);
     }
 
-    public PlayerControl getPlayerControl() {
-        return getPlayer().getComponent(PlayerControl.class);
+    public PlayerComponent getPlayerControl() {
+        return getPlayer().getComponent(PlayerComponent.class);
     }
 
     private AStarGrid grid;
@@ -84,51 +82,49 @@ public class PacmanApp extends GameApplication {
         settings.setWidth(MAP_SIZE * BLOCK_SIZE + UI_SIZE);
         settings.setHeight(MAP_SIZE * BLOCK_SIZE);
         settings.setTitle("Reverse Pac-man");
-        settings.setVersion("0.4");
-        settings.setProfilingEnabled(false);
-        settings.setApplicationMode(ApplicationMode.DEVELOPER);
+        settings.setVersion("1.0");
     }
 
     @Override
     protected void initInput() {
-        getInput().addAction(new UserAction("Up") {
-            @Override
-            protected void onAction() {
-                getPlayerControl().up();
-            }
-        }, KeyCode.W);
-
-        getInput().addAction(new UserAction("Down") {
-            @Override
-            protected void onAction() {
-                getPlayerControl().down();
-            }
-        }, KeyCode.S);
-
-        getInput().addAction(new UserAction("Left") {
-            @Override
-            protected void onAction() {
-                getPlayerControl().left();
-            }
-        }, KeyCode.A);
-
-        getInput().addAction(new UserAction("Right") {
-            @Override
-            protected void onAction() {
-                getPlayerControl().right();
-            }
-        }, KeyCode.D);
-
-        getInput().addAction(new UserAction("Teleport") {
-            @Override
-            protected void onActionBegin() {
-
-                if (getGameState().getInt("teleport") > 0) {
-                    getGameState().increment("teleport", -1);
-                    getPlayerControl().teleport();
-                }
-            }
-        }, KeyCode.F);
+//        getInput().addAction(new UserAction("Up") {
+//            @Override
+//            protected void onAction() {
+//                getPlayerControl().up();
+//            }
+//        }, KeyCode.W);
+//
+//        getInput().addAction(new UserAction("Down") {
+//            @Override
+//            protected void onAction() {
+//                getPlayerControl().down();
+//            }
+//        }, KeyCode.S);
+//
+//        getInput().addAction(new UserAction("Left") {
+//            @Override
+//            protected void onAction() {
+//                getPlayerControl().left();
+//            }
+//        }, KeyCode.A);
+//
+//        getInput().addAction(new UserAction("Right") {
+//            @Override
+//            protected void onAction() {
+//                getPlayerControl().right();
+//            }
+//        }, KeyCode.D);
+//
+//        getInput().addAction(new UserAction("Teleport") {
+//            @Override
+//            protected void onActionBegin() {
+//
+//                if (geti("teleport") > 0) {
+//                    inc("teleport", -1);
+//                    getPlayerControl().teleport();
+//                }
+//            }
+//        }, KeyCode.F);
     }
 
     @Override
@@ -145,30 +141,25 @@ public class PacmanApp extends GameApplication {
 
         getGameWorld().addEntityFactory(factory);
 
-        TextLevelParser parser = new TextLevelParser(factory);
-
-        Level level = parser.parse("pacman_level0.txt");
+        Level level = getAssetLoader().loadLevel("pacman_level0.txt", new TextLevelLoader(40, 40, ' '));
         getGameWorld().setLevel(level);
 
         // init the A* underlying grid and mark nodes where blocks are as not walkable
         grid = new AStarGrid(MAP_SIZE, MAP_SIZE);
-        getGameWorld().getEntitiesByType(PacmanType.BLOCK)
+        getGameWorld().getEntitiesByType(BLOCK)
                 .stream()
                 .map(Entity::getPosition)
                 .forEach(point -> {
                     int x = (int) point.getX() / BLOCK_SIZE;
                     int y = (int) point.getY() / BLOCK_SIZE;
 
-                    grid.setNodeState(x, y, NodeState.NOT_WALKABLE);
+                    grid.get(x, y).setState(CellState.NOT_WALKABLE);
                 });
 
         // find out number of coins
-        getGameState().setValue("coins", getGameWorld().getEntitiesByType(PacmanType.COIN).size());
+        getGameState().setValue("coins", getGameWorld().getEntitiesByType(COIN).size());
 
-        getMasterTimer().runAtInterval(
-                () -> inc("time", -1),
-                Duration.seconds(1)
-        );
+        run(() -> inc("time", -1), Duration.seconds(1));
 
         getGameState().<Integer>addListener("time", (old, now) -> {
             if (now == 0) {
@@ -179,32 +170,29 @@ public class PacmanApp extends GameApplication {
 
     @Override
     protected void initPhysics() {
-        getPhysicsWorld().addCollisionHandler(new PlayerCoinHandler());
-        getPhysicsWorld().addCollisionHandler(new PlayerEnemyHandler());
-    }
+        onCollisionBegin(PLAYER, ENEMY, (p, e) -> onPlayerKilled());
 
-    private PacmanUIController uiController;
+        onCollisionCollectible(PLAYER, COIN, coin -> onCoinPickup());
+    }
 
     @Override
     protected void initUI() {
-        uiController = new PacmanUIController();
-        getStateMachine().getPlayState().addStateListener(uiController);
+        PacmanUIController uiController = new PacmanUIController();
 
         UI ui = getAssetLoader().loadUI("pacman_ui.fxml", uiController);
         ui.getRoot().setTranslateX(MAP_SIZE * BLOCK_SIZE);
 
-        uiController.getLabelScore().textProperty().bind(getGameState().intProperty("score").asString("Score:\n[%d]"));
-        uiController.getLabelTeleport().textProperty().bind(getGameState().intProperty("teleport").asString("Teleports:\n[%d]"));
+        uiController.getLabelScore().textProperty().bind(getip("score").asString("Score:\n[%d]"));
+        uiController.getLabelTeleport().textProperty().bind(getip("teleport").asString("Teleports:\n[%d]"));
 
         getGameScene().addUI(ui);
     }
 
     @Override
-    protected void onPostUpdate(double tpf) {
+    protected void onUpdate(double tpf) {
         if (requestNewGame) {
             requestNewGame = false;
-            getStateMachine().getPlayState().removeStateListener(uiController);
-            startNewGame();
+            getGameController().startNewGame();
         }
     }
 
@@ -228,7 +216,7 @@ public class PacmanApp extends GameApplication {
     }
 
     private void gameOver() {
-        getDisplay().showMessageBox("Demo Over. Press OK to exit", this::exit);
+        getDisplay().showMessageBox("Demo Over. Press OK to exit", getGameController()::exit);
     }
 
     public static void main(String[] args) {

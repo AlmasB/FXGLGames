@@ -26,8 +26,6 @@
 
 package com.almasb.fxglgames.pacman;
 
-import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.app.listener.StateListener;
 import com.almasb.fxgl.ui.ProgressBar;
 import com.almasb.fxgl.ui.UIController;
 import javafx.fxml.FXML;
@@ -35,10 +33,12 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
+import static com.almasb.fxgl.dsl.FXGL.*;
+
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class PacmanUIController implements UIController, StateListener {
+public class PacmanUIController implements UIController {
 
     @FXML
     private Pane root;
@@ -71,16 +71,11 @@ public class PacmanUIController implements UIController, StateListener {
         timeBar.setMaxValue(PacmanApp.TIME_PER_LEVEL);
         timeBar.setMinValue(0);
         timeBar.setCurrentValue(PacmanApp.TIME_PER_LEVEL);
-        timeBar.currentValueProperty().bind(FXGL.getApp().getGameState().intProperty("time"));
+        timeBar.currentValueProperty().bind(getip("time"));
 
         root.getChildren().addAll(timeBar);
 
-        labelScore.setFont(FXGL.getUIFactory().newFont(24));
-        labelTeleport.setFont(FXGL.getUIFactory().newFont(24));
-    }
-
-    @Override
-    public void onUpdate(double tpf) {
-
+        labelScore.setFont(getUIFactory().newFont(24));
+        labelTeleport.setFont(getUIFactory().newFont(24));
     }
 }
