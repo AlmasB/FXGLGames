@@ -3,7 +3,7 @@ package com.almasb.fxglgames.spaceinvaders.components;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxglgames.spaceinvaders.Config;
 
-import static com.almasb.fxgl.app.DSLKt.*;
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)

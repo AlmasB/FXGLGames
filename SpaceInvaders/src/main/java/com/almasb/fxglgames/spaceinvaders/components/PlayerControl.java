@@ -26,22 +26,19 @@
 
 package com.almasb.fxglgames.spaceinvaders.components;
 
-import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.RenderLayer;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.component.Required;
-import com.almasb.fxgl.entity.view.EntityView;
-import com.almasb.fxgl.extra.entity.components.ExpireCleanComponent;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxglgames.spaceinvaders.Config;
 import com.almasb.fxglgames.spaceinvaders.component.InvincibleComponent;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 
-import static com.almasb.fxgl.app.DSLKt.*;
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -62,7 +59,7 @@ public class PlayerControl extends Component {
         dx = Config.PLAYER_MOVE_SPEED * tpf;
 
         if (!canShoot) {
-            if ((FXGL.getMasterTimer().getNow() - lastTimeShot) >= 1.0 / attackSpeed) {
+            if ((getGameTimer().getNow() - lastTimeShot) >= 1.0 / attackSpeed) {
                 canShoot = true;
             }
         }
@@ -87,7 +84,7 @@ public class PlayerControl extends Component {
             return;
 
         canShoot = false;
-        lastTimeShot = FXGL.getMasterTimer().getNow();
+        lastTimeShot = getGameTimer().getNow();
 
         spawn("Laser", new SpawnData(0, 0).put("owner", getEntity()));
 
@@ -125,27 +122,15 @@ public class PlayerControl extends Component {
 
     private Image particle;
 
-    private RenderLayer particleLayer = new RenderLayer() {
-        @Override
-        public String name() {
-            return "PARTICLES";
-        }
-
-        @Override
-        public int index() {
-            return 5000;
-        }
-    };
-
     private void spawnParticles() {
         if (particle == null) {
             particle = texture("player2.png", 40, 30).getImage();
         }
 
-        Entities.builder()
+        entityBuilder()
                 .at(getEntity().getCenter().subtract(particle.getWidth() / 2, particle.getHeight() / 2))
-                .viewFromNode(new EntityView(new Texture(particle)))
-                .renderLayer(particleLayer)
+                .view(new Texture(particle))
+                .zIndex(5000)
                 .with(new ExpireCleanComponent(Duration.seconds(0.33)).animateOpacity())
                 .buildAndAttach();
     }

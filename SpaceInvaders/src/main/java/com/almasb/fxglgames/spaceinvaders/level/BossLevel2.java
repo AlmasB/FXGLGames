@@ -1,6 +1,6 @@
 package com.almasb.fxglgames.spaceinvaders.level;
 
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.GameWorld;
 import com.almasb.fxgl.entity.SpawnData;
@@ -10,8 +10,8 @@ import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.spaceinvaders.Config;
 import javafx.util.Duration;
 
-import static com.almasb.fxgl.app.DSLKt.play;
-import static com.almasb.fxgl.app.DSLKt.runOnce;
+import static com.almasb.fxgl.dsl.FXGL.play;
+import static com.almasb.fxgl.dsl.FXGL.runOnce;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -35,17 +35,17 @@ public class BossLevel2 extends BossLevel {
 
             if (invisTimer.elapsed(Duration.seconds(5))) {
                 entity.getComponent(CollidableComponent.class).setValue(false);
-                entity.getView().setVisible(false);
+                entity.getViewComponent().setOpacity(0);
 
                 runOnce(() -> {
                     entity.getComponent(CollidableComponent.class).setValue(true);
-                    entity.getView().setVisible(true);
+                    entity.getViewComponent().setOpacity(1);
                 }, Duration.seconds(2));
 
                 invisTimer.capture();
             }
 
-            if (entity.getView().isVisible()) {
+            if (entity.getViewComponent().getOpacity() == 0.0) {
                 if (attackTimer.elapsed(nextAttack)) {
                     shoot();
 

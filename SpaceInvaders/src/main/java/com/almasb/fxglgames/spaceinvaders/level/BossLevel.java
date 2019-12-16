@@ -1,19 +1,18 @@
 package com.almasb.fxglgames.spaceinvaders.level;
 
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.extra.entity.components.HealthComponent;
 import com.almasb.fxgl.ui.ProgressBar;
+import com.almasb.fxglgames.spaceinvaders.components.HealthComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-import static com.almasb.fxgl.app.DSLKt.*;
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -31,9 +30,9 @@ abstract class BossLevel extends SpaceLevel {
 
         addEnemy(boss);
 
-        Entities.animationBuilder()
+        animationBuilder()
                 .interpolator(Interpolators.ELASTIC.EASE_OUT())
-                .duration(Duration.seconds(FXGLMath.random() * 2))
+                .duration(Duration.seconds(FXGLMath.random(0.0, 1.0) * 2))
                 .scale(boss)
                 .from(new Point2D(0, 0))
                 .to(new Point2D(1, 1))
@@ -56,19 +55,21 @@ abstract class BossLevel extends SpaceLevel {
         bossBar.setMaxValue(hpComponent.getValue());
         bossBar.currentValueProperty().bind(hpComponent.valueProperty());
 
-        FXGL.getApp().getGameScene().addUINode(bossBar);
+        FXGL.getGameScene().addUINode(bossBar);
 
         // text fight
 
-        Text text = FXGL.getUIFactory().newText("Boss Fight!", Color.WHITE, 24.0);
-
-        FXGL.getApp().getGameScene().addUINode(text);
-
-        centerText(text);
-
-        scale(text, new Point2D(2, 2), Point2D.ZERO, Duration.ZERO, Duration.seconds(1), () -> {
-            FXGL.getApp().getGameScene().removeUINode(text);
-        }).startInPlayState();
+//        Text text = FXGL.getUIFactory().newText("Boss Fight!", Color.WHITE, 24.0);
+//
+//        FXGL.getGameScene().addUINode(text);
+//
+//        centerText(text);
+//
+//
+//
+//        scale(text, new Point2D(2, 2), Point2D.ZERO, Duration.ZERO, Duration.seconds(1), () -> {
+//            FXGL.getGameScene().removeUINode(text);
+//        }).startInPlayState();
 
 
         return boss;
@@ -76,6 +77,6 @@ abstract class BossLevel extends SpaceLevel {
 
     @Override
     public void destroy() {
-        FXGL.getApp().getGameScene().removeUINode(bossBar);
+        FXGL.getGameScene().removeUINode(bossBar);
     }
 }

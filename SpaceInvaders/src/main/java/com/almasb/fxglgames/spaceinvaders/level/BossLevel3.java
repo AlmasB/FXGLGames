@@ -1,21 +1,20 @@
 package com.almasb.fxglgames.spaceinvaders.level;
 
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.GameWorld;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
-import com.almasb.fxgl.extra.entity.components.HealthComponent;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.spaceinvaders.Config;
-import com.almasb.fxglgames.spaceinvaders.components.EnemyControl;
+import com.almasb.fxglgames.spaceinvaders.components.HealthComponent;
 import javafx.util.Duration;
 
-import static com.almasb.fxgl.app.DSLKt.play;
-import static com.almasb.fxgl.app.DSLKt.runOnce;
-import static com.almasb.fxgl.app.DSLKt.spawn;
+import static com.almasb.fxgl.dsl.FXGL.play;
+import static com.almasb.fxgl.dsl.FXGL.runOnce;
+import static com.almasb.fxgl.dsl.FXGL.spawn;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -81,29 +80,29 @@ public class BossLevel3 extends BossLevel {
                 movingRight = false;
             }
 
-            if (invisTimer.elapsed(Duration.seconds(25))) {
-                if (entity.getView().isVisible()) {
-                    entity.getComponent(CollidableComponent.class).setValue(false);
-                    entity.getView().setVisible(false);
-
-                    Entity e = spawn("Boss", new SpawnData(FXGLMath.random(0, FXGL.getAppWidth() - 202), 50).put("hp", 20).put("textureName", "boss_final.png"));
-                    e.setOnNotActive(() -> {
-                        entity.getComponent(CollidableComponent.class).setValue(true);
-                        entity.getView().setVisible(true);
-                    });
-                }
-
-                invisTimer.capture();
-            }
-
-            if (entity.getView().isVisible()) {
-                if (attackTimer.elapsed(nextAttack)) {
-                    shoot();
-
-                    nextAttack = Duration.seconds(0.25);
-                    attackTimer.capture();
-                }
-            }
+//            if (invisTimer.elapsed(Duration.seconds(25))) {
+//                if (entity.getView().isVisible()) {
+//                    entity.getComponent(CollidableComponent.class).setValue(false);
+//                    entity.getView().setVisible(false);
+//
+//                    Entity e = spawn("Boss", new SpawnData(FXGLMath.random(0, FXGL.getAppWidth() - 202), 50).put("hp", 20).put("textureName", "boss_final.png"));
+//                    e.setOnNotActive(() -> {
+//                        entity.getComponent(CollidableComponent.class).setValue(true);
+//                        entity.getView().setVisible(true);
+//                    });
+//                }
+//
+//                invisTimer.capture();
+//            }
+//
+//            if (entity.getView().isVisible()) {
+//                if (attackTimer.elapsed(nextAttack)) {
+//                    shoot();
+//
+//                    nextAttack = Duration.seconds(0.25);
+//                    attackTimer.capture();
+//                }
+//            }
 
             if (hpTimer.elapsed(Duration.seconds(2))) {
                 HealthComponent hp = entity.getComponent(HealthComponent.class);

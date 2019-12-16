@@ -26,7 +26,7 @@
 
 package com.almasb.fxglgames.spaceinvaders.components;
 
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.component.Component;
 import javafx.geometry.Point2D;

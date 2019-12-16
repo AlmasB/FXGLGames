@@ -1,6 +1,6 @@
 package com.almasb.fxglgames.spaceinvaders.level;
 
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import javafx.geometry.Point2D;
@@ -22,7 +22,7 @@ public class Level3 extends SpaceLevel {
         for (int y = 0; y < ENEMY_ROWS; y++) {
             for (int x = 0; x < ENEMIES_PER_ROW; x++) {
 
-                FXGL.getMasterTimer().runOnceAfter(() -> {
+                FXGL.getGameTimer().runOnceAfter(() -> {
 
                     Entity enemy = spawnEnemy(50, 50);
 

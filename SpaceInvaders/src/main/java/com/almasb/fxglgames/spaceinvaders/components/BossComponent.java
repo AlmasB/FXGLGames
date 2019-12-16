@@ -1,13 +1,14 @@
 package com.almasb.fxglgames.spaceinvaders.components;
 
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
 import javafx.util.Duration;
 
-import static com.almasb.fxgl.app.DSLKt.spawn;
+import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxgl.dsl.FXGL.spawn;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -43,14 +44,14 @@ public class BossComponent extends EnemyControl {
         enemy.setUpdateEnabled(false);
 
         for (int i = 0; i < 5; i++) {
-            FXGL.getMasterTimer().runOnceAfter(() -> {
+            runOnce(() -> {
                 spawn("Explosion", enemy.getCenter().add(FXGLMath.randomPoint2D().multiply(70)));
             }, Duration.seconds(0.25 * i));
         }
 
-        FXGL.getMasterTimer().runOnceAfter(() -> {
+        runOnce(() -> {
             enemy.removeFromWorld();
-            FXGL.getEventBus().fireEvent(new GameEvent(GameEvent.ENEMY_KILLED));
+            getEventBus().fireEvent(new GameEvent(GameEvent.ENEMY_KILLED));
         }, Duration.seconds(1.8));
     }
 }

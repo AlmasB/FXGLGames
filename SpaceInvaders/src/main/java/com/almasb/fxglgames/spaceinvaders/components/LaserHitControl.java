@@ -27,25 +27,17 @@
 package com.almasb.fxglgames.spaceinvaders.components;
 
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.entity.view.EntityView;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class LaserHitControl extends Component {
 
-    private EntityView view;
-
-    @Override
-    public void onAdded() {
-        view = entity.getView();
-    }
-
     @Override
     public void onUpdate(double tpf) {
-        view.setOpacity(view.getOpacity() - tpf);
+        entity.getViewComponent().setOpacity(entity.getViewComponent().getOpacity() - tpf);
 
-        if (view.getOpacity() <= 0) {
+        if (entity.getViewComponent().getOpacity() <= 0) {
             entity.removeFromWorld();
         }
     }

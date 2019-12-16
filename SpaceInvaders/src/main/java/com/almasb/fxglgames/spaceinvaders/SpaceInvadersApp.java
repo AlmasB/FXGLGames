@@ -28,13 +28,12 @@ package com.almasb.fxglgames.spaceinvaders;
 
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.event.Handles;
 import com.almasb.fxgl.input.*;
 import com.almasb.fxgl.io.FS;
-import com.almasb.fxgl.settings.GameSettings;
 import com.almasb.fxgl.ui.UI;
 import com.almasb.fxglgames.spaceinvaders.collision.*;
 import com.almasb.fxglgames.spaceinvaders.components.EnemyControl;
@@ -51,7 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-import static com.almasb.fxgl.app.DSLKt.*;
+import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxglgames.spaceinvaders.Config.*;
 
 /**
@@ -76,10 +75,10 @@ public class SpaceInvadersApp extends GameApplication {
     protected void initInput() {
         Input input = getInput();
 
-        input.addInputMapping(new InputMapping("Move Left", KeyCode.A));
-        input.addInputMapping(new InputMapping("Move Right", KeyCode.D));
-        input.addInputMapping(new InputMapping("Shoot", MouseButton.PRIMARY));
-        input.addInputMapping(new InputMapping("Laser Beam", MouseButton.SECONDARY));
+//        input.addInputMapping(new InputMapping("Move Left", KeyCode.A));
+//        input.addInputMapping(new InputMapping("Move Right", KeyCode.D));
+//        input.addInputMapping(new InputMapping("Shoot", MouseButton.PRIMARY));
+//        input.addInputMapping(new InputMapping("Laser Beam", MouseButton.SECONDARY));
 
         // developer cheats
         if (getSettings().getApplicationMode() != ApplicationMode.RELEASE) {
@@ -92,22 +91,18 @@ public class SpaceInvadersApp extends GameApplication {
         }
     }
 
-    @OnUserAction(name = "Move Left")
     public void moveLeft() {
         playerControl.left();
     }
 
-    @OnUserAction(name = "Move Right")
     public void moveRight() {
         playerControl.right();
     }
 
-    @OnUserAction(name = "Shoot")
     public void shoot() {
         playerControl.shoot();
     }
 
-    @OnUserAction(name = "Laser Beam", type = ActionType.ON_ACTION_BEGIN)
     public void laserBeam() {
         playerControl.shootLaser();
     }
@@ -123,9 +118,9 @@ public class SpaceInvadersApp extends GameApplication {
     private List<SpaceLevel> levels;
 
     @Override
-    protected void preInit() {
-        getAudioPlayer().setGlobalSoundVolume(0.2);
-        getAudioPlayer().setGlobalMusicVolume(0.2);
+    protected void onPreInit() {
+        getSettings().setGlobalSoundVolume(0.2);
+        getSettings().setGlobalMusicVolume(0.2);
 
         loopBGM("bgm.mp3");
     }
@@ -146,7 +141,7 @@ public class SpaceInvadersApp extends GameApplication {
         getGameWorld().addEntityFactory(new SpaceInvadersFactory());
 
         // we have to use file system directly, since we are running without menus
-        FS.<SaveData>readDataTask(SAVE_DATA_NAME)
+        getFS().<SaveData>readDataTask(SAVE_DATA_NAME)
                 .onSuccess(data -> savedData = data)
                 .onFailure(ignore -> {})
                 .run();
@@ -197,11 +192,11 @@ public class SpaceInvadersApp extends GameApplication {
 
         spawn("Stars");
         
-        getMasterTimer().runAtInterval(() -> spawn("Meteor"), Duration.seconds(3));
+        run(() -> spawn("Meteor"), Duration.seconds(3));
     }
 
     private void spawnPlayer() {
-        player = spawn("Player", getWidth() / 2 - 20, getHeight() - 40);
+        player = spawn("Player", getAppWidth() / 2 - 20, getAppHeight() - 40);
         playerControl = player.getComponent(PlayerControl.class);
     }
 
@@ -214,8 +209,8 @@ public class SpaceInvadersApp extends GameApplication {
     }
 
     private void spawnBonus(BonusType type) {
-        double x = FXGLMath.random(getWidth() - 50);
-        double y = FXGLMath.random(getHeight() / 3);
+        double x = FXGLMath.random(0, getAppWidth() - 50);
+        double y = FXGLMath.random(0, getAppHeight() / 3);
 
         getGameWorld().spawn("Bonus", new SpawnData(x, y).put("type", type));
     }
@@ -238,7 +233,7 @@ public class SpaceInvadersApp extends GameApplication {
         playInCutscene(() -> {
             spawn("LevelInfo");
 
-            getMasterTimer().runOnceAfter(this::initLevel, Duration.seconds(LEVEL_START_DELAY));
+            runOnce(this::initLevel, Duration.seconds(LEVEL_START_DELAY));
 
             play(Asset.SOUND_NEW_LEVEL);
         });
@@ -248,11 +243,11 @@ public class SpaceInvadersApp extends GameApplication {
         getCurrentLevel().init();
 
         // TODO: move wall init to level so we can have walls in different places
-        spawnWall(40, getHeight() - 100);
-        spawnWall(120, getHeight() - 100);
+        spawnWall(40, getAppHeight() - 100);
+        spawnWall(120, getAppHeight() - 100);
 
-        spawnWall(getWidth() - 160 - 40, getHeight() - 100);
-        spawnWall(getWidth() - 80 - 40, getHeight() - 100);
+        spawnWall(getAppWidth() - 160 - 40, getAppHeight() - 100);
+        spawnWall(getAppWidth() - 80 - 40, getAppHeight() - 100);
 
         getInput().setProcessInput(true);
     }
@@ -309,7 +304,7 @@ public class SpaceInvadersApp extends GameApplication {
         }
     }
 
-    @Handles(eventType = "PLAYER_GOT_HIT")
+    // TODO: @Handles(eventType = "PLAYER_GOT_HIT")
     public void onPlayerGotHit(GameEvent event) {
         getGameScene().getViewport().shake(14, 0.35);
 
@@ -318,7 +313,7 @@ public class SpaceInvadersApp extends GameApplication {
 
         playerControl.enableInvincibility();
 
-        getMasterTimer().runOnceAfter(playerControl::disableInvincibility, Duration.seconds(INVINCIBILITY_TIME));
+        runOnce(playerControl::disableInvincibility, Duration.seconds(INVINCIBILITY_TIME));
 
         play(Asset.SOUND_LOSE_LIFE);
 
@@ -330,7 +325,7 @@ public class SpaceInvadersApp extends GameApplication {
         return SCORE_ENEMY_KILL * (getGameState().getGameDifficulty().ordinal() + SCORE_DIFFICULTY_MODIFIER);
     }
 
-    @Handles(eventType = "ENEMY_KILLED")
+    // TODO: @Handles(eventType = "ENEMY_KILLED")
     public void onEnemyKilled(GameEvent event) {
         inc("enemiesKilled", +1);
         inc("score", scoreForKill());
@@ -351,7 +346,7 @@ public class SpaceInvadersApp extends GameApplication {
         }
     }
 
-    @Handles(eventType = "ENEMY_REACHED_END")
+    // TODO: @Handles(eventType = "ENEMY_REACHED_END")
     public void onEnemyReachedEnd(GameEvent event) {
         inc("enemiesKilled", +1);
 
@@ -365,7 +360,7 @@ public class SpaceInvadersApp extends GameApplication {
             nextLevel();
     }
 
-    @Handles(eventType = "ANY")
+    // TODO: @Handles(eventType = "ANY")
     public void onBonusPickup(BonusPickupEvent event) {
         switch (event.getType()) {
             case ATTACK_RATE:
@@ -391,7 +386,7 @@ public class SpaceInvadersApp extends GameApplication {
         getDisplay().showConfirmationBox("Demo Over. Play Again?", yes -> {
             if (yes) {
                 getGameWorld().getEntitiesCopy().forEach(Entity::removeFromWorld);
-                startNewGame();
+                getGameController().startNewGame();
             } else {
 
                 int score = getGameState().getInt("score");
@@ -400,12 +395,12 @@ public class SpaceInvadersApp extends GameApplication {
                     getDisplay().showInputBox("High Score! Enter your name", playerName -> {
 
                         // we have to use file system directly, since we are running without menus
-                        FS.writeDataTask(new SaveData(playerName, score), SAVE_DATA_NAME).run();
+                        getFS().writeDataTask(new SaveData(playerName, score), SAVE_DATA_NAME).run();
 
-                        exit();
+                        getGameController().exit();
                     });
                 } else {
-                    exit();
+                    getGameController().exit();
                 }
             }
         });

@@ -1,7 +1,6 @@
 package com.almasb.fxglgames.spaceinvaders.components;
 
-import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.ViewComponent;
 import com.almasb.fxglgames.spaceinvaders.Config;
@@ -11,6 +10,8 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.almasb.fxgl.core.math.FXGLMath.random;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -22,7 +23,7 @@ public class StarsControl extends Component {
 
     @Override
     public void onAdded() {
-        starParticles = ((Group) view.getView().getNodes().get(0))
+        starParticles = ((Group) view.getChildren().get(0))
                 .getChildren()
                 .stream()
                 .map(n -> (Rectangle) n)
@@ -31,7 +32,7 @@ public class StarsControl extends Component {
         starParticles.forEach(this::respawn);
 
         // we only do this once when the stars are added
-        starParticles.forEach(star -> star.setTranslateY(FXGLMath.random(10, FXGL.getAppHeight())));
+        starParticles.forEach(star -> star.setTranslateY(random(10, FXGL.getAppHeight())));
     }
 
     @Override
@@ -46,19 +47,19 @@ public class StarsControl extends Component {
     }
 
     private void respawn(Rectangle star) {
-        star.setWidth(FXGLMath.random(0.5f, 2.5f));
-        star.setHeight(FXGLMath.random(0.5f, 2.5f));
-        star.setArcWidth(FXGLMath.random(0.5f, 2.5f));
-        star.setArcHeight(FXGLMath.random(0.5f, 2.5f));
+        star.setWidth(random(0.5f, 2.5f));
+        star.setHeight(random(0.5f, 2.5f));
+        star.setArcWidth(random(0.5f, 2.5f));
+        star.setArcHeight(random(0.5f, 2.5f));
 
         star.setFill(Color.color(
-                FXGLMath.randomTriangular(0.75f, 1.0f, 0.85f),
-                FXGLMath.randomTriangular(0.75f, 1.0f, 0.85f),
-                FXGLMath.randomTriangular(0.75f, 1.0f, 0.85f),
-                FXGLMath.random(0.5f, 1.0f)
+                random(0.75, 1.0),
+                random(0.75, 1.0),
+                random(0.75, 1.0),
+                random(0.5f, 1.0f)
         ));
 
-        star.setTranslateX(FXGLMath.random(0, FXGL.getAppWidth()));
-        star.setTranslateY(-FXGLMath.random(10, FXGL.getAppHeight()));
+        star.setTranslateX(random(0, FXGL.getAppWidth()));
+        star.setTranslateY(-random(10, FXGL.getAppHeight()));
     }
 }

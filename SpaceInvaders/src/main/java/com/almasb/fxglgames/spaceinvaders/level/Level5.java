@@ -2,9 +2,8 @@ package com.almasb.fxglgames.spaceinvaders.level;
 
 import com.almasb.fxgl.animation.Animation;
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxglgames.spaceinvaders.Config;
 import javafx.geometry.Point2D;
@@ -32,22 +31,22 @@ public class Level5 extends SpaceLevel {
 
                 final int finalY = y;
 
-                FXGL.getMasterTimer().runOnceAfter(() -> {
+                FXGL.getGameTimer().runOnceAfter(() -> {
                     boolean toRight = FXGLMath.randomBoolean();
 
                     Entity enemy = spawnEnemy(toRight ? 50 : Config.WIDTH - 50 - 40, 50 + finalY*75);
 
-                    Animation<?> anim = Entities.animationBuilder()
-                            .autoReverse(true)
-                            .interpolator(Interpolators.CIRCULAR.EASE_IN_OUT())
-                            .duration(Duration.seconds(3))
-                            .repeat(Integer.MAX_VALUE)
-                            .translate(enemy)
-                            .from(enemy.getPosition())
-                            .to(new Point2D(toRight ? Config.WIDTH - 50 - 40 : 50, FXGLMath.random(50, Config.HEIGHT / 2)))
-                            .buildAndPlay();
-
-                    animations.add(anim);
+//                    Animation<?> anim = Entities.animationBuilder()
+//                            .autoReverse(true)
+//                            .interpolator(Interpolators.CIRCULAR.EASE_IN_OUT())
+//                            .duration(Duration.seconds(3))
+//                            .repeat(Integer.MAX_VALUE)
+//                            .translate(enemy)
+//                            .from(enemy.getPosition())
+//                            .to(new Point2D(toRight ? Config.WIDTH - 50 - 40 : 50, FXGLMath.random(50, Config.HEIGHT / 2)))
+//                            .buildAndPlay();
+//
+//                    animations.add(anim);
 
                 }, Duration.seconds(t));
 

@@ -26,9 +26,9 @@
 
 package com.almasb.fxglgames.spaceinvaders;
 
-import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.scene.GameScene;
-import com.almasb.fxgl.scene.Viewport;
+import com.almasb.fxgl.app.GameScene;
+import com.almasb.fxgl.app.Viewport;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxgl.ui.FXGLTextFlow;
 import com.almasb.fxgl.ui.ProgressBar;
@@ -48,6 +48,8 @@ import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -82,8 +84,8 @@ public class GameController implements UIController {
 
     @Override
     public void init() {
-        labelScore.setFont(FXGL.getUIFactory().newFont(18));
-        labelHighScore.setFont(FXGL.getUIFactory().newFont(18));
+        labelScore.setFont(getUIFactory().newFont(18));
+        labelHighScore.setFont(getUIFactory().newFont(18));
 
         labelHighScore.setVisible(false);
 
@@ -98,7 +100,7 @@ public class GameController implements UIController {
 
         FXGLTextFlow flow = new FXGLTextFlow();
         // TODO: bind dynamically to trigger
-        flow.append("Press ", Color.WHITE).append(MouseButton.SECONDARY, Color.BLUE);
+        //flow.append("Press ", Color.WHITE).append(MouseButton.SECONDARY, Color.BLUE);
 
         paneLaserReady.getChildren().add(flow);
 
@@ -120,7 +122,7 @@ public class GameController implements UIController {
     public void addLife() {
         int numLives = lives.size();
 
-        Texture texture = FXGL.getAssetLoader().loadTexture("life.png", 16, 16);
+        Texture texture = getAssetLoader().loadTexture("life.png", 16, 16);
         texture.setTranslateX(livesX + 32 * numLives);
         texture.setTranslateY(livesY);
 
@@ -143,7 +145,7 @@ public class GameController implements UIController {
 
         gameScene.addUINode(flash);
 
-        FXGL.getMasterTimer().runOnceAfter(() -> gameScene.removeUINode(flash), Duration.seconds(1));
+        runOnce(() -> gameScene.removeUINode(flash), Duration.seconds(1));
     }
 
     private Animation getAnimationLoseLife(Texture texture) {

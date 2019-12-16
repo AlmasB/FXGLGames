@@ -1,9 +1,8 @@
 package com.almasb.fxglgames.spaceinvaders.level;
 
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
@@ -18,8 +17,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.almasb.fxgl.app.DSLKt.spawn;
-import static com.almasb.fxgl.app.DSLKt.translate;
+import static com.almasb.fxgl.dsl.FXGL.animationBuilder;
+import static com.almasb.fxgl.dsl.FXGL.spawn;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -61,11 +60,11 @@ public abstract class SpaceLevel {
     }
 
     void showStoryPane() {
-        FXGL.getApp().getGameScene().addUINode(rootPane);
+        FXGL.getGameScene().addUINode(rootPane);
     }
 
     void hideStoryPane() {
-        FXGL.getApp().getGameScene().removeUINode(rootPane);
+        FXGL.getGameScene().removeUINode(rootPane);
     }
 
     void updateStoryText(Node node) {
@@ -106,7 +105,13 @@ public abstract class SpaceLevel {
 
             Point2D p = (Point2D) t.getUserData();
 
-            translate(t, new Point2D(t.getTranslateX(), t.getTranslateY()), p, Duration.seconds(2), Duration.seconds(1)).startInPlayState();
+            animationBuilder()
+                    .duration(Duration.seconds(2))
+                    .delay(Duration.seconds(1))
+                    .translate(t)
+                    .from(new Point2D(t.getTranslateX(), t.getTranslateY()))
+                    .to(p)
+                    .buildAndPlay();
         }
 
         storyPane.getChildren().setAll(texts);
@@ -125,9 +130,9 @@ public abstract class SpaceLevel {
 
         addEnemy(enemy);
 
-        Entities.animationBuilder()
+        animationBuilder()
                 .interpolator(Interpolators.ELASTIC.EASE_OUT())
-                .duration(Duration.seconds(FXGLMath.random() * 2))
+                .duration(Duration.seconds(FXGLMath.random(0.0, 1.0) * 2))
                 .scale(enemy)
                 .from(new Point2D(0, 0))
                 .to(new Point2D(1, 1))

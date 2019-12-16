@@ -1,9 +1,7 @@
 package com.almasb.fxglgames.spaceinvaders.level;
 
 import com.almasb.fxgl.animation.Animation;
-import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.app.FXGL;
-import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxglgames.spaceinvaders.Config;
 import javafx.scene.shape.QuadCurve;
@@ -31,21 +29,21 @@ public class Level8 extends SpaceLevel {
 
                 final int finalY = y;
 
-                FXGL.getMasterTimer().runOnceAfter(() -> {
+                FXGL.getGameTimer().runOnceAfter(() -> {
                     Entity enemy = spawnEnemy(50, 50 + finalY*50);
 
                     QuadCurve path = new QuadCurve(50, 50 + finalY*50, 250, 200 + finalY * 20, Config.WIDTH - 50 - 40, 50 + finalY*50);
 
-                    Animation<?> anim = Entities.animationBuilder()
-                            .autoReverse(true)
-                            .interpolator(Interpolators.BACK.EASE_IN_OUT())
-                            .duration(Duration.seconds(3))
-                            .repeat(Integer.MAX_VALUE)
-                            .translate(enemy)
-                            .alongPath(path)
-                            .buildAndPlay();
-
-                    animations.add(anim);
+//                    Animation<?> anim = Entities.animationBuilder()
+//                            .autoReverse(true)
+//                            .interpolator(Interpolators.BACK.EASE_IN_OUT())
+//                            .duration(Duration.seconds(3))
+//                            .repeat(Integer.MAX_VALUE)
+//                            .translate(enemy)
+//                            .alongPath(path)
+//                            .buildAndPlay();
+//
+//                    animations.add(anim);
 
                 }, Duration.seconds(t));
 

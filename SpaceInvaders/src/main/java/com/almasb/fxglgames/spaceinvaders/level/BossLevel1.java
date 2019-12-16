@@ -1,17 +1,16 @@
 package com.almasb.fxglgames.spaceinvaders.level;
 
-import com.almasb.fxgl.app.FXGL;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.GameWorld;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.extra.entity.components.CircularMovementComponent;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.spaceinvaders.Config;
 import javafx.util.Duration;
 
-import static com.almasb.fxgl.app.DSLKt.play;
-import static com.almasb.fxgl.app.DSLKt.runOnce;
+import static com.almasb.fxgl.dsl.FXGL.play;
+import static com.almasb.fxgl.dsl.FXGL.runOnce;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -36,7 +35,7 @@ public class BossLevel1 extends BossLevel {
 
     @Override
     public void init() {
-        boss.addComponent(new CircularMovementComponent(2, 200));
+        //boss.addComponent(new CircularMovementComponent(2, 200));
         boss.addComponent(new Level1BossComponent());
     }
 
