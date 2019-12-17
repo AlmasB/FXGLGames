@@ -28,11 +28,15 @@ package com.almasb.fxglgames.pacman;
 
 import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.pathfinding.CellMoveComponent;
+import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
+import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxglgames.pacman.control.PlayerComponent;
 import javafx.geometry.Point2D;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
@@ -41,6 +45,8 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxglgames.pacman.PacmanApp.*;
+import static com.almasb.fxglgames.pacman.PacmanType.*;
 
 /**
  * Factory for creating in-game entities.
@@ -51,10 +57,16 @@ public class PacmanFactory implements EntityFactory {
 
     @Spawns("1")
     public Entity newBlock(SpawnData data) {
+        var rect = new Rectangle(38, 38, Color.BLACK);
+        rect.setArcWidth(25);
+        rect.setArcHeight(25);
+        rect.setStrokeWidth(1);
+        rect.setStroke(Color.BLUE);
+
         return entityBuilder()
                 .from(data)
-                .type(PacmanType.BLOCK)
-                .viewWithBBox(new Rectangle(40, 40))
+                .type(BLOCK)
+                .viewWithBBox(rect)
                 .zIndex(-1)
                 .build();
     }
@@ -62,30 +74,37 @@ public class PacmanFactory implements EntityFactory {
     @Spawns("0")
     public Entity newCoin(SpawnData data) {
         var view = texture("coin.png");
-        view.setTranslateX(2.5);
+        view.setTranslateX(5);
+        view.setTranslateY(5);
 
         return entityBuilder()
                 .from(data)
-                .type(PacmanType.COIN)
-                .bbox(new HitBox("Main", BoundingShape.box(40, 40)))
-                .viewWithBBox(view)
+                .type(COIN)
+                .bbox(new HitBox(new Point2D(5, 5), BoundingShape.box(30, 30)))
+                .view(view)
                 .zIndex(-1)
                 .with(new CollidableComponent(true))
+                .scale(0.5, 0.5)
                 .build();
     }
 
     @Spawns("P")
     public Entity newPlayer(SpawnData data) {
-        Texture view = texture("player.png").toAnimatedTexture(2, Duration.seconds(0.33));
+        AnimatedTexture view = texture("player.png").toAnimatedTexture(2, Duration.seconds(0.33));
 
-        return entityBuilder()
+        var e = entityBuilder()
                 .from(data)
-                .type(PacmanType.PLAYER)
-                .bbox(new HitBox(new Point2D(2, 2), BoundingShape.box(36, 36)))
-                .view(view)
+                .type(PLAYER)
+                .bbox(new HitBox(new Point2D(4, 4), BoundingShape.box(32, 32)))
+                .view(view.loop())
                 .with(new CollidableComponent(true))
+                .with(new CellMoveComponent(BLOCK_SIZE, BLOCK_SIZE, 200).allowRotation(true))
                 .with(new PlayerComponent())
                 .build();
+
+        e.getTransformComponent().setRotationOrigin(new Point2D(35 / 2.0, 40 / 2.0));
+
+        return e;
     }
 
     private Supplier<String> trees = new Supplier<String>() {
@@ -109,7 +128,7 @@ public class PacmanFactory implements EntityFactory {
 
         Entity enemy = entityBuilder()
                 .from(data)
-                .type(PacmanType.ENEMY)
+                .type(ENEMY)
                 .bbox(new HitBox(new Point2D(2, 2), BoundingShape.box(36, 36)))
                 .with(new CollidableComponent(true))
                 //.with(new AIControl(aiName), new MoveControl(), new AStarMoveControl(), new PaletteChangingControl(texture("spritesheet.png")))

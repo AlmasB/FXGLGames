@@ -51,14 +51,6 @@ public class PacmanUIController implements UIController {
     @FXML
     private Label labelTeleport;
 
-    public Label getLabelScore() {
-        return labelScore;
-    }
-
-    public Label getLabelTeleport() {
-        return labelTeleport;
-    }
-
     @Override
     public void init() {
         timeBar = new ProgressBar(false);
@@ -77,5 +69,8 @@ public class PacmanUIController implements UIController {
 
         labelScore.setFont(getUIFactory().newFont(24));
         labelTeleport.setFont(getUIFactory().newFont(24));
+
+        labelScore.textProperty().bind(getip("score").asString("Score:\n[%d]"));
+        labelTeleport.textProperty().bind(getip("teleport").asString("Teleports:\n[%d]"));
     }
 }

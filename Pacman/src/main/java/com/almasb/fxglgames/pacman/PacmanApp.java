@@ -25,7 +25,6 @@
  */
 package com.almasb.fxglgames.pacman;
 
-import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.entity.Entity;
@@ -34,9 +33,12 @@ import com.almasb.fxgl.entity.level.text.TextLevelLoader;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.pathfinding.CellState;
 import com.almasb.fxgl.pathfinding.astar.AStarGrid;
+import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
+import com.almasb.fxgl.pathfinding.astar.AStarPathfinder;
 import com.almasb.fxgl.ui.UI;
 import com.almasb.fxglgames.pacman.control.PlayerComponent;
 import javafx.scene.input.KeyCode;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 import java.util.Map;
@@ -67,7 +69,7 @@ public class PacmanApp extends GameApplication {
         return getGameWorld().getSingleton(PLAYER);
     }
 
-    public PlayerComponent getPlayerControl() {
+    public PlayerComponent getPlayerComponent() {
         return getPlayer().getComponent(PlayerComponent.class);
     }
 
@@ -87,33 +89,33 @@ public class PacmanApp extends GameApplication {
 
     @Override
     protected void initInput() {
-//        getInput().addAction(new UserAction("Up") {
-//            @Override
-//            protected void onAction() {
-//                getPlayerControl().up();
-//            }
-//        }, KeyCode.W);
-//
-//        getInput().addAction(new UserAction("Down") {
-//            @Override
-//            protected void onAction() {
-//                getPlayerControl().down();
-//            }
-//        }, KeyCode.S);
-//
-//        getInput().addAction(new UserAction("Left") {
-//            @Override
-//            protected void onAction() {
-//                getPlayerControl().left();
-//            }
-//        }, KeyCode.A);
-//
-//        getInput().addAction(new UserAction("Right") {
-//            @Override
-//            protected void onAction() {
-//                getPlayerControl().right();
-//            }
-//        }, KeyCode.D);
+        getInput().addAction(new UserAction("Up") {
+            @Override
+            protected void onAction() {
+                getPlayerComponent().up();
+            }
+        }, KeyCode.W);
+
+        getInput().addAction(new UserAction("Down") {
+            @Override
+            protected void onAction() {
+                getPlayerComponent().down();
+            }
+        }, KeyCode.S);
+
+        getInput().addAction(new UserAction("Left") {
+            @Override
+            protected void onAction() {
+                getPlayerComponent().left();
+            }
+        }, KeyCode.A);
+
+        getInput().addAction(new UserAction("Right") {
+            @Override
+            protected void onAction() {
+                getPlayerComponent().right();
+            }
+        }, KeyCode.D);
 //
 //        getInput().addAction(new UserAction("Teleport") {
 //            @Override
@@ -137,14 +139,14 @@ public class PacmanApp extends GameApplication {
 
     @Override
     protected void initGame() {
-        PacmanFactory factory = new PacmanFactory();
+        getGameScene().setBackgroundColor(Color.DARKSLATEGREY);
 
-        getGameWorld().addEntityFactory(factory);
+        getGameWorld().addEntityFactory(new PacmanFactory());
 
         Level level = getAssetLoader().loadLevel("pacman_level0.txt", new TextLevelLoader(40, 40, ' '));
         getGameWorld().setLevel(level);
 
-        // init the A* underlying grid and mark nodes where blocks are as not walkable
+        // init the A* underlying grid and mark cells where blocks are as not walkable
         grid = new AStarGrid(MAP_SIZE, MAP_SIZE);
         getGameWorld().getEntitiesByType(BLOCK)
                 .stream()
@@ -156,8 +158,11 @@ public class PacmanApp extends GameApplication {
                     grid.get(x, y).setState(CellState.NOT_WALKABLE);
                 });
 
+        // TODO: how can we set this in Factory where we don't yet have grid generated ...
+        getPlayer().addComponent(new AStarMoveComponent(new AStarPathfinder(grid)));
+
         // find out number of coins
-        getGameState().setValue("coins", getGameWorld().getEntitiesByType(COIN).size());
+        set("coins", getGameWorld().getEntitiesByType(COIN).size());
 
         run(() -> inc("time", -1), Duration.seconds(1));
 
@@ -172,18 +177,13 @@ public class PacmanApp extends GameApplication {
     protected void initPhysics() {
         onCollisionBegin(PLAYER, ENEMY, (p, e) -> onPlayerKilled());
 
-        onCollisionCollectible(PLAYER, COIN, coin -> onCoinPickup());
+        onCollisionCollectible(PLAYER, COIN, c -> onCoinPickup());
     }
 
     @Override
     protected void initUI() {
-        PacmanUIController uiController = new PacmanUIController();
-
-        UI ui = getAssetLoader().loadUI("pacman_ui.fxml", uiController);
+        UI ui = getAssetLoader().loadUI("pacman_ui.fxml", new PacmanUIController());
         ui.getRoot().setTranslateX(MAP_SIZE * BLOCK_SIZE);
-
-        uiController.getLabelScore().textProperty().bind(getip("score").asString("Score:\n[%d]"));
-        uiController.getLabelTeleport().textProperty().bind(getip("teleport").asString("Teleports:\n[%d]"));
 
         getGameScene().addUI(ui);
     }

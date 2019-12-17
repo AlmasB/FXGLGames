@@ -26,34 +26,90 @@
 
 package com.almasb.fxglgames.pacman.control;
 
-import com.almasb.fxgl.dsl.FXGL;
-import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.core.util.LazyValue;
 
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.entity.components.BoundingBoxComponent;
-import com.almasb.fxgl.entity.components.ViewComponent;
-import com.almasb.fxgl.pathfinding.astar.AStarGrid;
-import com.almasb.fxglgames.pacman.PacmanApp;
-import com.almasb.fxglgames.pacman.PacmanType;
-import javafx.animation.FadeTransition;
-import javafx.util.Duration;
-
-import java.util.List;
-import java.util.Random;
+import com.almasb.fxgl.pathfinding.CellMoveComponent;
+import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class PlayerComponent extends Component {
 
-//    private BoundingBoxComponent bbox;
+    private CellMoveComponent moveComponent;
+
+    private LazyValue<AStarMoveComponent> astar = new LazyValue<>(() -> {
+        return entity.getComponent(AStarMoveComponent.class);
+    });
+
+    private MoveDirection currentMoveDir = MoveDirection.RIGHT;
+    private MoveDirection nextMoveDir = MoveDirection.RIGHT;
+
+    public void up() {
+        nextMoveDir = MoveDirection.UP;
+    }
+
+    public void down() {
+        nextMoveDir = MoveDirection.DOWN;
+    }
+
+    public void left() {
+        nextMoveDir = MoveDirection.LEFT;
+    }
+
+    public void right() {
+        nextMoveDir = MoveDirection.RIGHT;
+    }
+
+    @Override
+    public void onUpdate(double tpf) {
+        if (astar.get().isMoving())
+            return;
+
+        var x = moveComponent.getCellX();
+        var y = moveComponent.getCellY();
+
+        switch (nextMoveDir) {
+            case UP:
+                if (astar.get().getGrid().getUp(x, y).filter(c -> c.getState().isWalkable()).isPresent())
+                    currentMoveDir = nextMoveDir;
+                break;
+            case RIGHT:
+                if (astar.get().getGrid().getRight(x, y).filter(c -> c.getState().isWalkable()).isPresent())
+                    currentMoveDir = nextMoveDir;
+                break;
+            case DOWN:
+                if (astar.get().getGrid().getDown(x, y).filter(c -> c.getState().isWalkable()).isPresent())
+                    currentMoveDir = nextMoveDir;
+                break;
+            case LEFT:
+                if (astar.get().getGrid().getLeft(x, y).filter(c -> c.getState().isWalkable()).isPresent())
+                    currentMoveDir = nextMoveDir;
+                break;
+        }
+
+        switch (currentMoveDir) {
+            case UP:
+                astar.get().moveToUpCell();
+                break;
+            case RIGHT:
+                astar.get().moveToRightCell();
+                break;
+            case DOWN:
+                astar.get().moveToDownCell();
+                break;
+            case LEFT:
+                astar.get().moveToLeftCell();
+                break;
+        }
+    }
+
+
+    //    private BoundingBoxComponent bbox;
 //    private ViewComponent view;
 //
-//    private MoveDirection moveDir = MoveDirection.UP;
-//
-//    public MoveDirection getMoveDirection() {
-//        return moveDir;
-//    }
+
 //
 //    private double speed = 0;
 //
