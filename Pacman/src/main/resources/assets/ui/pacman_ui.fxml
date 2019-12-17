@@ -33,14 +33,14 @@
 <?import javafx.scene.canvas.Canvas?>
 <?import com.almasb.fxgl.ui.ProgressBar?>
 
-<Pane fx:id="root" prefWidth="200" prefHeight="840"
+<Pane fx:id="root" prefWidth="80" prefHeight="840"
       xmlns="http://javafx.com/javafx/8.0.60"
       xmlns:fx="http://javafx.com/fxml/1">
 
-    <Rectangle fill="darkgray" width="200" height="840" />
+    <Rectangle fill="black" width="80" height="840" />
 
-    <Label fx:id="labelScore" translateX="20" translateY="400" textFill="white" />
+    <Label fx:id="labelScore" translateX="10" translateY="790" textFill="white" />
 
-    <Label fx:id="labelTeleport" translateX="20" translateY="500" textFill="white" />
+    <Label fx:id="labelTeleport" translateX="10" translateY="500" textFill="white" />
 
 </Pane>

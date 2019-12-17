@@ -60,7 +60,7 @@ public class PacmanApp extends GameApplication {
 
     public static final int MAP_SIZE = 21;
 
-    private static final int UI_SIZE = 200;
+    private static final int UI_SIZE = 80;
 
     // seconds
     public static final int TIME_PER_LEVEL = 100;
@@ -140,6 +140,7 @@ public class PacmanApp extends GameApplication {
     @Override
     protected void initGame() {
         getGameScene().setBackgroundColor(Color.DARKSLATEGREY);
+        //getGameScene().setCursorInvisible();
 
         getGameWorld().addEntityFactory(new PacmanFactory());
 

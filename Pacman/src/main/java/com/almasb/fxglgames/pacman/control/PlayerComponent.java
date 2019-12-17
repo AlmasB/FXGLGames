@@ -31,6 +31,10 @@ import com.almasb.fxgl.core.util.LazyValue;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.pathfinding.CellMoveComponent;
 import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
+import com.almasb.fxglgames.pacman.PacmanApp;
+
+import static com.almasb.fxglgames.pacman.PacmanApp.*;
+import static com.almasb.fxglgames.pacman.control.MoveDirection.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -43,32 +47,44 @@ public class PlayerComponent extends Component {
         return entity.getComponent(AStarMoveComponent.class);
     });
 
-    private MoveDirection currentMoveDir = MoveDirection.RIGHT;
-    private MoveDirection nextMoveDir = MoveDirection.RIGHT;
+    private MoveDirection currentMoveDir = RIGHT;
+    private MoveDirection nextMoveDir = RIGHT;
 
     public void up() {
-        nextMoveDir = MoveDirection.UP;
+        nextMoveDir = UP;
     }
 
     public void down() {
-        nextMoveDir = MoveDirection.DOWN;
+        nextMoveDir = DOWN;
     }
 
     public void left() {
-        nextMoveDir = MoveDirection.LEFT;
+        nextMoveDir = LEFT;
     }
 
     public void right() {
-        nextMoveDir = MoveDirection.RIGHT;
+        nextMoveDir = RIGHT;
     }
 
     @Override
     public void onUpdate(double tpf) {
-        if (astar.get().isMoving())
-            return;
-
         var x = moveComponent.getCellX();
         var y = moveComponent.getCellY();
+
+//        if (x == 0 && currentMoveDir == LEFT) {
+//
+//            // TODO: moveComponent set to cell?
+//            // TODO: astar cancel movement
+//            entity.setX((astar.get().getGrid().getWidth() - 1) * BLOCK_SIZE);
+//            return;
+//
+//        } else if (x == astar.get().getGrid().getWidth() - 1 && currentMoveDir == RIGHT) {
+//            entity.setX(0);
+//            return;
+//        }
+
+        if (astar.get().isMoving())
+            return;
 
         switch (nextMoveDir) {
             case UP:
@@ -117,13 +133,7 @@ public class PlayerComponent extends Component {
 //    public void onUpdate(double tpf) {
 //        speed = tpf * 60;
 //
-//        if (position.getX() < 0) {
-//            position.setX(PacmanApp.BLOCK_SIZE * PacmanApp.MAP_SIZE - bbox.getWidth() - 5);
-//        }
-//
-//        if (bbox.getMaxXWorld() > PacmanApp.BLOCK_SIZE * PacmanApp.MAP_SIZE) {
-//            position.setX(0);
-//        }
+
 //    }
 //
 //    public void up() {

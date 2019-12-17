@@ -55,7 +55,7 @@ public class PacmanUIController implements UIController {
     public void init() {
         timeBar = new ProgressBar(false);
         timeBar.setHeight(50);
-        timeBar.setTranslateX(0);
+        timeBar.setTranslateX(-60);
         timeBar.setTranslateY(100);
         timeBar.setRotate(-90);
         timeBar.setFill(Color.GREEN);
@@ -67,10 +67,10 @@ public class PacmanUIController implements UIController {
 
         root.getChildren().addAll(timeBar);
 
-        labelScore.setFont(getUIFactory().newFont(24));
+        labelScore.setFont(getUIFactory().newFont(18));
         labelTeleport.setFont(getUIFactory().newFont(24));
 
-        labelScore.textProperty().bind(getip("score").asString("Score:\n[%d]"));
-        labelTeleport.textProperty().bind(getip("teleport").asString("Teleports:\n[%d]"));
+        labelScore.textProperty().bind(getip("score").asString("Score:\n%d"));
+        //labelTeleport.textProperty().bind(getip("teleport").asString("Teleports:\n[%d]"));
     }
 }
