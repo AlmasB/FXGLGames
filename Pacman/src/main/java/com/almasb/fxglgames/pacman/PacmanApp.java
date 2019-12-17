@@ -36,7 +36,8 @@ import com.almasb.fxgl.pathfinding.astar.AStarGrid;
 import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
 import com.almasb.fxgl.pathfinding.astar.AStarPathfinder;
 import com.almasb.fxgl.ui.UI;
-import com.almasb.fxglgames.pacman.control.PlayerComponent;
+import com.almasb.fxglgames.pacman.components.PlayerComponent;
+import com.almasb.fxglgames.pacman.components.RandomAStarMoveComponent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
@@ -85,6 +86,8 @@ public class PacmanApp extends GameApplication {
         settings.setHeight(MAP_SIZE * BLOCK_SIZE);
         settings.setTitle("Reverse Pac-man");
         settings.setVersion("1.0");
+        settings.setManualResizeEnabled(true);
+        settings.setPreserveResizeRatio(true);
     }
 
     @Override
@@ -161,6 +164,11 @@ public class PacmanApp extends GameApplication {
 
         // TODO: how can we set this in Factory where we don't yet have grid generated ...
         getPlayer().addComponent(new AStarMoveComponent(new AStarPathfinder(grid)));
+
+        byType(ENEMY).forEach(e -> {
+            e.addComponent(new AStarMoveComponent(new AStarPathfinder(grid)));
+            e.addComponent(new RandomAStarMoveComponent(Duration.seconds(0.25), Duration.seconds(2)));
+        });
 
         // find out number of coins
         set("coins", getGameWorld().getEntitiesByType(COIN).size());

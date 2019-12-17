@@ -24,17 +24,15 @@
  * SOFTWARE.
  */
 
-package com.almasb.fxglgames.pacman.control;
+package com.almasb.fxglgames.pacman.components;
 
 import com.almasb.fxgl.core.util.LazyValue;
 
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.pathfinding.CellMoveComponent;
 import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
-import com.almasb.fxglgames.pacman.PacmanApp;
 
-import static com.almasb.fxglgames.pacman.PacmanApp.*;
-import static com.almasb.fxglgames.pacman.control.MoveDirection.*;
+import static com.almasb.fxglgames.pacman.components.MoveDirection.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -122,55 +120,6 @@ public class PlayerComponent extends Component {
     }
 
 
-    //    private BoundingBoxComponent bbox;
-//    private ViewComponent view;
-//
-
-//
-//    private double speed = 0;
-//
-//    @Override
-//    public void onUpdate(double tpf) {
-//        speed = tpf * 60;
-//
-
-//    }
-//
-//    public void up() {
-//        moveDir = MoveDirection.UP;
-//
-//        move(0, -5*speed);
-//
-//        rotation.setValue(270);
-//        view.getView().setScaleX(1);
-//    }
-//
-//    public void down() {
-//        moveDir = MoveDirection.DOWN;
-//
-//        move(0, 5*speed);
-//
-//        rotation.setValue(90);
-//        view.getView().setScaleX(1);
-//    }
-//
-//    public void left() {
-//        moveDir = MoveDirection.LEFT;
-//
-//        move(-5*speed, 0);
-//
-//        view.getView().setScaleX(-1);
-//        rotation.setValue(0);
-//    }
-//
-//    public void right() {
-//        moveDir = MoveDirection.RIGHT;
-//
-//        move(5*speed, 0);
-//
-//        view.getView().setScaleX(1);
-//        rotation.setValue(0);
-//    }
 //
 //    public void teleport() {
 //        Random random = new Random();

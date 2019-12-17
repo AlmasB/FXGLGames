@@ -29,12 +29,11 @@ package com.almasb.fxglgames.pacman;
 import com.almasb.fxgl.entity.*;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.pathfinding.CellMoveComponent;
-import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.texture.AnimatedTexture;
-import com.almasb.fxgl.texture.Texture;
-import com.almasb.fxglgames.pacman.control.PlayerComponent;
+import com.almasb.fxglgames.pacman.components.PaletteChangingComponent;
+import com.almasb.fxglgames.pacman.components.PlayerComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -131,8 +130,13 @@ public class PacmanFactory implements EntityFactory {
                 .type(ENEMY)
                 .bbox(new HitBox(new Point2D(2, 2), BoundingShape.box(36, 36)))
                 .with(new CollidableComponent(true))
-                //.with(new AIControl(aiName), new MoveControl(), new AStarMoveControl(), new PaletteChangingControl(texture("spritesheet.png")))
+                //.with(new AIControl(aiName), new MoveControl(), new AStarMoveControl(), ))
+                .with(new PaletteChangingComponent(texture("spritesheet.png")))
+                .with(new CellMoveComponent(BLOCK_SIZE, BLOCK_SIZE, 125))
+                .scale(0.24, 0.24)
                 .build();
+
+        enemy.getTransformComponent().setScaleOrigin(new Point2D(0, 0));
 
         if (aiName.equals("guard.tree")) {
             //enemy.removeComponent(MoveControl.class);

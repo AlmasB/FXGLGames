@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-package com.almasb.fxglgames.pacman.control;
+package com.almasb.fxglgames.pacman.components;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
