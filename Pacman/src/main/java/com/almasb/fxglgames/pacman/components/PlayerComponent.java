@@ -26,9 +26,8 @@
 
 package com.almasb.fxglgames.pacman.components;
 
-import com.almasb.fxgl.core.util.LazyValue;
-
 import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.entity.component.Required;
 import com.almasb.fxgl.pathfinding.CellMoveComponent;
 import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
 
@@ -37,13 +36,12 @@ import static com.almasb.fxglgames.pacman.components.MoveDirection.*;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
+@Required(AStarMoveComponent.class)
 public class PlayerComponent extends Component {
 
     private CellMoveComponent moveComponent;
 
-    private LazyValue<AStarMoveComponent> astar = new LazyValue<>(() -> {
-        return entity.getComponent(AStarMoveComponent.class);
-    });
+    private AStarMoveComponent astar;
 
     private MoveDirection currentMoveDir = RIGHT;
     private MoveDirection nextMoveDir = RIGHT;
@@ -73,48 +71,48 @@ public class PlayerComponent extends Component {
 //
 //            // TODO: moveComponent set to cell?
 //            // TODO: astar cancel movement
-//            entity.setX((astar.get().getGrid().getWidth() - 1) * BLOCK_SIZE);
+//            entity.setX((astar.getGrid().getWidth() - 1) * BLOCK_SIZE);
 //            return;
 //
-//        } else if (x == astar.get().getGrid().getWidth() - 1 && currentMoveDir == RIGHT) {
+//        } else if (x == astar.getGrid().getWidth() - 1 && currentMoveDir == RIGHT) {
 //            entity.setX(0);
 //            return;
 //        }
 
-        if (astar.get().isMoving())
+        if (astar.isMoving())
             return;
 
         switch (nextMoveDir) {
             case UP:
-                if (astar.get().getGrid().getUp(x, y).filter(c -> c.getState().isWalkable()).isPresent())
+                if (astar.getGrid().getUp(x, y).filter(c -> c.getState().isWalkable()).isPresent())
                     currentMoveDir = nextMoveDir;
                 break;
             case RIGHT:
-                if (astar.get().getGrid().getRight(x, y).filter(c -> c.getState().isWalkable()).isPresent())
+                if (astar.getGrid().getRight(x, y).filter(c -> c.getState().isWalkable()).isPresent())
                     currentMoveDir = nextMoveDir;
                 break;
             case DOWN:
-                if (astar.get().getGrid().getDown(x, y).filter(c -> c.getState().isWalkable()).isPresent())
+                if (astar.getGrid().getDown(x, y).filter(c -> c.getState().isWalkable()).isPresent())
                     currentMoveDir = nextMoveDir;
                 break;
             case LEFT:
-                if (astar.get().getGrid().getLeft(x, y).filter(c -> c.getState().isWalkable()).isPresent())
+                if (astar.getGrid().getLeft(x, y).filter(c -> c.getState().isWalkable()).isPresent())
                     currentMoveDir = nextMoveDir;
                 break;
         }
 
         switch (currentMoveDir) {
             case UP:
-                astar.get().moveToUpCell();
+                astar.moveToUpCell();
                 break;
             case RIGHT:
-                astar.get().moveToRightCell();
+                astar.moveToRightCell();
                 break;
             case DOWN:
-                astar.get().moveToDownCell();
+                astar.moveToDownCell();
                 break;
             case LEFT:
-                astar.get().moveToLeftCell();
+                astar.moveToLeftCell();
                 break;
         }
     }

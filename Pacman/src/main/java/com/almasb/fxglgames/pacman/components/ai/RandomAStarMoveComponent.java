@@ -1,4 +1,4 @@
-package com.almasb.fxglgames.pacman.components;
+package com.almasb.fxglgames.pacman.components.ai;
 
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
@@ -12,6 +12,7 @@ import java.util.function.Supplier;
 
 /**
  * TODO: add to FXGL
+ * TODO: move to cell avoiding busy cells
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
@@ -23,6 +24,10 @@ public class RandomAStarMoveComponent extends Component {
     private LocalTimer moveTimer;
     private Duration moveInterval;
     private Supplier<Duration> moveIntervalSupplier;
+
+    public RandomAStarMoveComponent() {
+        this(Duration.seconds(0.2), Duration.seconds(1));
+    }
 
     public RandomAStarMoveComponent(Duration minInterval, Duration maxInterval) {
         moveIntervalSupplier = () -> Duration.seconds(FXGLMath.random(minInterval.toSeconds(), maxInterval.toSeconds()));
@@ -38,7 +43,7 @@ public class RandomAStarMoveComponent extends Component {
     @Override
     public void onUpdate(double tpf) {
         if (moveTimer.elapsed(moveInterval)) {
-            if (astar.isPathEmpty()) {
+            if (astar.isPathEmpty() && !astar.isMoving()) {
                 astar.getGrid()
                         .getRandomCell(c -> c.getState().isWalkable())
                         .ifPresent(astar::moveToCell);

@@ -33,11 +33,8 @@ import com.almasb.fxgl.entity.level.text.TextLevelLoader;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.pathfinding.CellState;
 import com.almasb.fxgl.pathfinding.astar.AStarGrid;
-import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
-import com.almasb.fxgl.pathfinding.astar.AStarPathfinder;
 import com.almasb.fxgl.ui.UI;
 import com.almasb.fxglgames.pacman.components.PlayerComponent;
-import com.almasb.fxglgames.pacman.components.RandomAStarMoveComponent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
@@ -74,17 +71,11 @@ public class PacmanApp extends GameApplication {
         return getPlayer().getComponent(PlayerComponent.class);
     }
 
-    private AStarGrid grid;
-
-    public AStarGrid getGrid() {
-        return grid;
-    }
-
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(MAP_SIZE * BLOCK_SIZE + UI_SIZE);
         settings.setHeight(MAP_SIZE * BLOCK_SIZE);
-        settings.setTitle("Reverse Pac-man");
+        settings.setTitle("FXGL Pac-man");
         settings.setVersion("1.0");
         settings.setManualResizeEnabled(true);
         settings.setPreserveResizeRatio(true);
@@ -143,7 +134,6 @@ public class PacmanApp extends GameApplication {
     @Override
     protected void initGame() {
         getGameScene().setBackgroundColor(Color.DARKSLATEGREY);
-        //getGameScene().setCursorInvisible();
 
         getGameWorld().addEntityFactory(new PacmanFactory());
 
@@ -151,24 +141,14 @@ public class PacmanApp extends GameApplication {
         getGameWorld().setLevel(level);
 
         // init the A* underlying grid and mark cells where blocks are as not walkable
-        grid = new AStarGrid(MAP_SIZE, MAP_SIZE);
-        getGameWorld().getEntitiesByType(BLOCK)
-                .stream()
-                .map(Entity::getPosition)
-                .forEach(point -> {
-                    int x = (int) point.getX() / BLOCK_SIZE;
-                    int y = (int) point.getY() / BLOCK_SIZE;
+        AStarGrid grid = AStarGrid.fromWorld(getGameWorld(), MAP_SIZE, MAP_SIZE, BLOCK_SIZE, BLOCK_SIZE, (type) -> {
+            if (type == BLOCK)
+                return CellState.NOT_WALKABLE;
 
-                    grid.get(x, y).setState(CellState.NOT_WALKABLE);
-                });
-
-        // TODO: how can we set this in Factory where we don't yet have grid generated ...
-        getPlayer().addComponent(new AStarMoveComponent(new AStarPathfinder(grid)));
-
-        byType(ENEMY).forEach(e -> {
-            e.addComponent(new AStarMoveComponent(new AStarPathfinder(grid)));
-            e.addComponent(new RandomAStarMoveComponent(Duration.seconds(0.25), Duration.seconds(2)));
+            return CellState.WALKABLE;
         });
+
+        set("grid", grid);
 
         // find out number of coins
         set("coins", getGameWorld().getEntitiesByType(COIN).size());

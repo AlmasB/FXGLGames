@@ -26,25 +26,34 @@
 
 package com.almasb.fxglgames.pacman;
 
-import com.almasb.fxgl.entity.*;
+import com.almasb.fxgl.core.util.LazyValue;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.EntityFactory;
+import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.entity.Spawns;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.pathfinding.CellMoveComponent;
+import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxglgames.pacman.components.PaletteChangingComponent;
 import com.almasb.fxglgames.pacman.components.PlayerComponent;
+import com.almasb.fxglgames.pacman.components.ai.ChasePlayerComponent;
+import com.almasb.fxglgames.pacman.components.ai.DelayedChasePlayerComponent;
+import com.almasb.fxglgames.pacman.components.ai.GuardCoinComponent;
+import com.almasb.fxglgames.pacman.components.ai.RandomAStarMoveComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
-import static com.almasb.fxglgames.pacman.PacmanApp.*;
+import static com.almasb.fxglgames.pacman.PacmanApp.BLOCK_SIZE;
 import static com.almasb.fxglgames.pacman.PacmanType.*;
 
 /**
@@ -83,6 +92,7 @@ public class PacmanFactory implements EntityFactory {
                 .view(view)
                 .zIndex(-1)
                 .with(new CollidableComponent(true))
+                .with(new CellMoveComponent(BLOCK_SIZE, BLOCK_SIZE, 50))
                 .scale(0.5, 0.5)
                 .build();
     }
@@ -98,6 +108,8 @@ public class PacmanFactory implements EntityFactory {
                 .view(view.loop())
                 .with(new CollidableComponent(true))
                 .with(new CellMoveComponent(BLOCK_SIZE, BLOCK_SIZE, 200).allowRotation(true))
+                // there is no grid constructed yet, so pass lazily
+                .with(new AStarMoveComponent(new LazyValue<>(() -> geto("grid"))))
                 .with(new PlayerComponent())
                 .build();
 
@@ -106,41 +118,44 @@ public class PacmanFactory implements EntityFactory {
         return e;
     }
 
-    private Supplier<String> trees = new Supplier<String>() {
+    private Supplier<Component> aiComponents = new Supplier<>() {
+        private Map<Integer, Supplier<Component>> components = Map.of(
+                0, DelayedChasePlayerComponent::new,
+                1, GuardCoinComponent::new,
+                2, RandomAStarMoveComponent::new,
+                3, ChasePlayerComponent::new
+        );
+
         private int index = 0;
 
-        private List<String> names = Arrays.asList("guard.tree", "astar.tree", "chaser.tree", "random.tree");
-
         @Override
-        public String get() {
-            if (index == names.size()) {
+        public Component get() {
+            // there are 4 enemies
+            if (index == 4) {
                 index = 0;
             }
 
-            return names.get(index++);
+            return components.get(index++).get();
         }
     };
 
     @Spawns("E")
     public Entity newEnemy(SpawnData data) {
-        String aiName = trees.get();
-
         Entity enemy = entityBuilder()
                 .from(data)
                 .type(ENEMY)
                 .bbox(new HitBox(new Point2D(2, 2), BoundingShape.box(36, 36)))
                 .with(new CollidableComponent(true))
-                //.with(new AIControl(aiName), new MoveControl(), new AStarMoveControl(), ))
                 .with(new PaletteChangingComponent(texture("spritesheet.png")))
                 .with(new CellMoveComponent(BLOCK_SIZE, BLOCK_SIZE, 125))
+                // there is no grid constructed yet, so pass lazily
+                .with(new AStarMoveComponent(new LazyValue<>(() -> geto("grid"))))
+                .with(aiComponents.get())
                 .scale(0.24, 0.24)
                 .build();
 
+        // TODO: scale origin + rotation origin via entity builder
         enemy.getTransformComponent().setScaleOrigin(new Point2D(0, 0));
-
-        if (aiName.equals("guard.tree")) {
-            //enemy.removeComponent(MoveControl.class);
-        }
 
         return enemy;
     }
