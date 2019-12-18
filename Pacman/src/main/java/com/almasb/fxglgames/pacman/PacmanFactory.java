@@ -154,7 +154,6 @@ public class PacmanFactory implements EntityFactory {
                 .scale(0.24, 0.24)
                 .build();
 
-        // TODO: scale origin + rotation origin via entity builder
         enemy.getTransformComponent().setScaleOrigin(new Point2D(0, 0));
 
         return enemy;

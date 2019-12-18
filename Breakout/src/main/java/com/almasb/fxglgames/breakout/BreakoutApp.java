@@ -144,21 +144,13 @@ public class BreakoutApp extends GameApplication {
     private Animation<Double> cameraAnimation;
 
     private void animateCamera(Runnable onAnimationFinished) {
-        // TODO: add to FXGL, generic animationBuilder().onProgress(value -> {});
-        // TODO: is getViewport().getCamera() functional?
-
         AnimatedValue<Double> value = new AnimatedValue<>(getAppHeight() * 1.0, 0.0);
-        var builder = new AnimationBuilder()
+        cameraAnimation = new AnimationBuilder()
                 .duration(Duration.seconds(0.5))
                 .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
-                .onFinished(onAnimationFinished::run);
+                .onFinished(onAnimationFinished::run)
+                .build(value, y -> getGameScene().getViewport().setY(y));
 
-        cameraAnimation = new Animation<>(builder, value) {
-            @Override
-            public void onProgress(Double y) {
-                getGameScene().getViewport().setY(y);
-            }
-        };
         cameraAnimation.start();
     }
 

@@ -24,8 +24,6 @@ public class BouncerComponent extends Component {
     public void onAdded() {
         double seconds = (FXGL.getAppWidth() - entity.getWidth()) / moveSpeed;
 
-        // TODO: double check animations stop if entity is no longer active?
-
         animation = FXGL.animationBuilder()
                 .duration(Duration.seconds(seconds))
                 .repeatInfinitely()

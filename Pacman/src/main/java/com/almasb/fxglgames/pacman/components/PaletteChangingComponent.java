@@ -62,7 +62,7 @@ public class PaletteChangingComponent extends Component {
         timeToSwitch += tpf;
 
         if (timeToSwitch >= 5.0) {
-            spriteColor = 160 * random.nextInt(6);
+            spriteColor = 160 * random.nextInt(3);
             timeToSwitch = 0;
         }
 

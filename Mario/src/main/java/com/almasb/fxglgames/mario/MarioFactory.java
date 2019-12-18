@@ -465,7 +465,6 @@ public class MarioFactory implements EntityFactory {
     }
 
     // TODO: subtypes, e.g. enemy projectile?
-    // TODO: fix particles removeGameView() crash
 
     @Spawns("enemyMissileTurretProjectile")
     public Entity newEnemyMissileTurretProjectile(SpawnData data) {

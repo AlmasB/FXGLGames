@@ -127,7 +127,7 @@ public class GeoWarsFactory implements EntityFactory {
     public Entity spawnBouncer(SpawnData data) {
         double y = FXGLMath.random(0, getAppHeight() - 40);
 
-        Circle view = new Circle(20, Color.color(0.4, 0.7, 0.3, 0.3));
+        Circle view = new Circle(20, 20, 20, Color.color(0.4, 0.7, 0.3, 0.3));
         view.setStrokeWidth(2.5);
         view.setStroke(Color.color(0.4, 0.7, 0.3, 0.8));
 

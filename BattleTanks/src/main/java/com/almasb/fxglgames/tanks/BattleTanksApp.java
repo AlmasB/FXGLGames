@@ -162,10 +162,10 @@ public class BattleTanksApp extends GameApplication {
 
         tankViewComponent = getGameWorld().getSingleton(PLAYER).getComponent(TankViewComponent.class);
 
-        tankViewComponent.getEntity().addComponent(new AStarMoveComponent(new AStarPathfinder(grid), BLOCK_SIZE / 2, BLOCK_SIZE / 2));
+        tankViewComponent.getEntity().addComponent(new AStarMoveComponent(grid));
 
         byType(ENEMY).forEach(e -> {
-            e.addComponent(new AStarMoveComponent(new AStarPathfinder(grid), BLOCK_SIZE / 2, BLOCK_SIZE / 2));
+            e.addComponent(new AStarMoveComponent(grid));
             //e.addComponent(new GuardComponent(grid, FXGLMath.randomBoolean()));
             //e.addComponent(new RandomAStarMoveComponent());
         });

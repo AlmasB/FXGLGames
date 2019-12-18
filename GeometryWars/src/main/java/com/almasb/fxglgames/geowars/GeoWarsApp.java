@@ -206,7 +206,6 @@ public class GeoWarsApp extends GameApplication {
             @Override
             protected void onCollisionBegin(Entity a, Entity b) {
 
-                // TODO: offset does not return to 0?
                 getGameScene().getViewport().shakeTranslational(8);
 
                 a.setPosition(getRandomPoint());

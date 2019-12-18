@@ -19,7 +19,6 @@ public class BulletAIPointHandler extends CollisionHandler {
     }
 
 
-    // TODO: on collision end should be notified, even if became inactive
     @Override
     protected void onCollisionEnd(Entity a, Entity point) {
         SquadAI.INSTANCE.collisionWithBulletEnd(a, point);

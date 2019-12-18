@@ -41,7 +41,6 @@ public class SeekerComponent extends Component {
     // in seconds
     private static double seekerAdjustDelay = 5;
 
-    // TODO: use Vec2 to avoid GC
     private Point2D velocity = Point2D.ZERO;
     private Entity player;
     private Entity seeker;
