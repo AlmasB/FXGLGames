@@ -69,7 +69,6 @@ public class PlayerComponent extends Component {
 
 //        if (x == 0 && currentMoveDir == LEFT) {
 //
-//            // TODO: moveComponent set to cell?
 //            // TODO: astar cancel movement
 //            entity.setX((astar.getGrid().getWidth() - 1) * BLOCK_SIZE);
 //            return;
