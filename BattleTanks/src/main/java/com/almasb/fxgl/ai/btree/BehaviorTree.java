@@ -18,7 +18,7 @@ import com.almasb.fxgl.core.collection.Array;
 public class BehaviorTree<E> extends Task<E> {
 
     private Task<E> rootTask;
-    private E object;
+    private E entity;
     GuardEvaluator<E> guardEvaluator;
 
     private final Array<Listener<E>> listeners = new Array<>();
@@ -51,11 +51,11 @@ public class BehaviorTree<E> extends Task<E> {
      * respectively.
      *
      * @param rootTask the root task of this tree. It can be {@code null}.
-     * @param object   the blackboard. It can be {@code null}.
+     * @param entity   the blackboard. It can be {@code null}.
      */
-    public BehaviorTree(Task<E> rootTask, E object) {
+    public BehaviorTree(Task<E> rootTask, E entity) {
         this.rootTask = rootTask;
-        this.object = object;
+        this.entity = entity;
         this.tree = this;
         this.guardEvaluator = new GuardEvaluator<E>(this);
     }
@@ -65,7 +65,7 @@ public class BehaviorTree<E> extends Task<E> {
      */
     @Override
     public E getEntity() {
-        return object;
+        return entity;
     }
 
     /**
@@ -74,7 +74,7 @@ public class BehaviorTree<E> extends Task<E> {
      * @param object the new blackboard
      */
     public void setEntity(E object) {
-        this.object = object;
+        this.entity = object;
     }
 
     /**
