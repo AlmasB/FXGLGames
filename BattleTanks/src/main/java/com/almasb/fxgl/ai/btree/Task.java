@@ -72,7 +72,7 @@ public abstract class Task<E> {
      */
     public final int addChild(Task<E> child) {
         int index = addChildToTask(child);
-        if (tree != null && tree.listeners != null)
+        if (tree != null)
             tree.notifyChildAdded(this, index);
         return index;
     }
@@ -201,8 +201,7 @@ public abstract class Task<E> {
         Status previousStatus = status;
         status = Status.RUNNING;
 
-        if (tree.listeners != null && tree.listeners.size() > 0)
-            tree.notifyStatusUpdated(this, previousStatus);
+        tree.notifyStatusUpdated(this, previousStatus);
 
         if (control != null)
             control.childRunning(this, this);
@@ -215,8 +214,7 @@ public abstract class Task<E> {
         Status previousStatus = status;
         status = Status.SUCCEEDED;
 
-        if (tree.listeners != null && tree.listeners.size() > 0)
-            tree.notifyStatusUpdated(this, previousStatus);
+        tree.notifyStatusUpdated(this, previousStatus);
 
         end();
 
@@ -231,8 +229,7 @@ public abstract class Task<E> {
         Status previousStatus = status;
         status = Status.FAILED;
 
-        if (tree.listeners != null && tree.listeners.size() > 0)
-            tree.notifyStatusUpdated(this, previousStatus);
+        tree.notifyStatusUpdated(this, previousStatus);
 
         end();
 
@@ -271,8 +268,7 @@ public abstract class Task<E> {
         Status previousStatus = status;
         status = Status.CANCELLED;
 
-        if (tree.listeners != null && tree.listeners.size() > 0)
-            tree.notifyStatusUpdated(this, previousStatus);
+        tree.notifyStatusUpdated(this, previousStatus);
 
         end();
     }

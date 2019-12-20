@@ -93,16 +93,6 @@ public class BehaviorTreeParser<E> {
         return createBehaviorTree(btReader.root, object);
     }
 
-//	/** Parses the given file.
-//	 * @param file the file to parse
-//	 * @param object the blackboard object. It can be {@code null}.
-//	 * @return the behavior tree
-//	 * @throws RuntimeException if the file cannot be successfully parsed. */
-//	public BehaviorTree<E> parse (FileHandle file, E object) {
-//		btReader.parse(file);
-//		return createBehaviorTree(btReader.root, object);
-//	}
-
     /**
      * Parses the given reader.
      *

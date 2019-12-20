@@ -21,9 +21,11 @@ public class BehaviorTree<E> extends Task<E> {
     private E object;
     GuardEvaluator<E> guardEvaluator;
 
-    public Array<Listener<E>> listeners;
+    private final Array<Listener<E>> listeners = new Array<>();
 
     /**
+     * Note: this is needed for no-arg constructions.
+     *
      * Creates a {@code BehaviorTree} with no root task and no blackboard object. Both the root task and the blackboard object must
      * be set before running this behavior tree, see {@link #addChild(Task) addChild()} and {@link #setEntity(Object) setObject()}
      * respectively.
@@ -86,6 +88,7 @@ public class BehaviorTree<E> extends Task<E> {
     protected int addChildToTask(Task<E> child) {
         if (this.rootTask != null)
             throw new IllegalStateException("A behavior tree cannot have more than one root task");
+
         this.rootTask = child;
         return 0;
     }
@@ -154,19 +157,15 @@ public class BehaviorTree<E> extends Task<E> {
     }
 
     public void addListener(Listener<E> listener) {
-        if (listeners == null)
-            listeners = new Array<>();
         listeners.add(listener);
     }
 
     public void removeListener(Listener<E> listener) {
-        if (listeners != null)
-            listeners.removeValueByIdentity(listener);
+        listeners.removeValueByIdentity(listener);
     }
 
     public void removeListeners() {
-        if (listeners != null)
-            listeners.clear();
+        listeners.clear();
     }
 
     public void notifyStatusUpdated(Task<E> task, Status previousStatus) {
