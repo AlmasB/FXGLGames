@@ -26,7 +26,7 @@
 
 package com.almasb.fxglgames.tanks;
 
-import com.almasb.fxgl.ai.AIDebugViewComponent;
+import com.almasb.fxgl.entity.action.ActionDebugViewComponent;
 import com.almasb.fxgl.ai.goap.GoapComponent;
 import com.almasb.fxgl.ai.goap.WorldState;
 import com.almasb.fxgl.dsl.EntityBuilder;
@@ -91,7 +91,7 @@ public class BattleTanksFactory implements EntityFactory {
                         )
                 ))
                 .with(new GoalSelectorComponent())
-                .with(new AIDebugViewComponent())
+                .with(new ActionDebugViewComponent())
                 .build();
 
         e.getTransformComponent().setRotationOrigin(new Point2D(18, 18));

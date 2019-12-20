@@ -18,7 +18,6 @@ package com.almasb.fxgl.ai.btree.decorator;
 
 import com.almasb.fxgl.ai.btree.LoopDecorator;
 import com.almasb.fxgl.ai.btree.Task;
-import com.almasb.fxgl.ai.btree.annotation.TaskAttribute;
 
 /**
  * A {@code Repeat} decorator will repeat the wrapped task a certain number of times, possibly infinite. This task always succeeds

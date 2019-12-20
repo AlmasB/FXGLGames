@@ -6,15 +6,12 @@
 
 package com.almasb.s08ai;
 
-import com.almasb.fxgl.ai.DeveloperWASDControl;
-import com.almasb.fxgl.ai.btree.AIControl;
+import com.almasb.fxgl.sandbox.DeveloperWASDControl;
+import com.almasb.fxgl.ai.btree.BehaviorTreeComponent;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.Input;
-import com.almasb.fxgl.input.UserAction;
-import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -81,13 +78,13 @@ public class BehaviorSample extends GameApplication {
         entityBuilder()
                 .at(400, 100)
                 .view(new Rectangle(40, 40, Color.RED))
-                .with(new AIControl("patrol.tree"))
+                .with(new BehaviorTreeComponent("patrol.tree"))
                 .buildAndAttach();
 
         entityBuilder()
                 .at(600, 100)
                 .view(new Rectangle(40, 40, Color.LIGHTGOLDENRODYELLOW))
-                .with(new AIControl("patrol.tree"))
+                .with(new BehaviorTreeComponent("patrol.tree"))
                 .buildAndAttach();
     }
 

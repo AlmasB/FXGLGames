@@ -4,7 +4,7 @@
  * See LICENSE for details.
  */
 
-package com.almasb.fxgl.ai
+package com.almasb.fxgl.sandbox
 
 import com.almasb.fxgl.dsl.FXGL
 import com.almasb.fxgl.entity.component.Component

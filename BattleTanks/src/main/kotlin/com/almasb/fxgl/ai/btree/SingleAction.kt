@@ -6,9 +6,6 @@
 
 package com.almasb.fxgl.ai.btree
 
-import com.almasb.fxgl.ai.btree.AIControl
-import com.almasb.fxgl.ai.btree.LeafTask
-import com.almasb.fxgl.ai.btree.Task
 import com.almasb.fxgl.dsl.FXGL
 import com.almasb.fxgl.entity.Entity
 
@@ -26,7 +23,6 @@ abstract class SingleAction
     abstract fun onUpdate(tpf: Double)
     
     override final fun execute(): Status {
-        entity.getComponent(AIControl::class.java).setBubbleMessage(if (name.isNotEmpty()) name else javaClass.simpleName)
         // TODO:
         onUpdate(FXGL.tpf())
 

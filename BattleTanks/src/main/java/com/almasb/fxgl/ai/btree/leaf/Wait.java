@@ -18,7 +18,6 @@ package com.almasb.fxgl.ai.btree.leaf;
 
 import com.almasb.fxgl.ai.btree.LeafTask;
 import com.almasb.fxgl.ai.btree.Task;
-import com.almasb.fxgl.ai.btree.annotation.TaskAttribute;
 
 /**
  * {@code Wait} is a leaf that keeps running for the specified amount of time then succeeds.

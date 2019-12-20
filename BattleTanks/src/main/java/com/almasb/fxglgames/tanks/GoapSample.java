@@ -6,7 +6,7 @@
 
 package com.almasb.fxglgames.tanks;
 
-import com.almasb.fxgl.ai.AIDebugViewComponent;
+import com.almasb.fxgl.entity.action.ActionDebugViewComponent;
 import com.almasb.fxgl.ai.goap.GoapAction;
 import com.almasb.fxgl.ai.goap.GoapComponent;
 import com.almasb.fxgl.ai.goap.MoveGoapAction;
@@ -92,7 +92,7 @@ public class GoapSample extends GameApplication {
         agent.addComponent(new GoapComponent(getGameState().getProperties(), goalKiller, initActions()));
         //guard.addComponent(new GoapComponent(getGameState().getProperties(), goalGuard, initActions()));
 
-        agent.addComponent(new AIDebugViewComponent());
+        agent.addComponent(new ActionDebugViewComponent());
         //guard.addComponent(new AIDebugViewComponent());
 
         agent.setProperty("hasWeapon", false);

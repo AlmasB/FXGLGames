@@ -16,12 +16,14 @@ import com.almasb.fxgl.entity.component.Component
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-class AIControl
+class BehaviorTreeComponent
 private constructor() : Component() {
 
-    private lateinit var behaviorTree: BehaviorTree<Entity>
+    companion object {
+        private val parsedTreesCache = hashMapOf<String, BehaviorTree<Entity> >()
+    }
 
-    //val bubble = AIBubble()
+    private lateinit var behaviorTree: BehaviorTree<Entity>
 
     /**
      * Constructs AI control with given [behaviorTree].
@@ -47,20 +49,8 @@ private constructor() : Component() {
         this.behaviorTree = tree!!.cloneTask() as BehaviorTree<Entity>
     }
 
-    companion object {
-
-        private val parsedTreesCache = hashMapOf<String, BehaviorTree<Entity> >()
-    }
-
-    fun setBubbleMessage(message: String) {
-        //bubble.setMessage(message)
-    }
-
     override fun onAdded() {
         behaviorTree.entity = entity
-
-//        if (FXGL.getSettings().applicationMode != ApplicationMode.RELEASE)
-//            entity.viewComponent.view.addNode(bubble)
     }
 
     override fun onUpdate(tpf: Double) {
