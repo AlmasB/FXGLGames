@@ -7,7 +7,10 @@
 package com.almasb.fxglgames.tanks;
 
 import com.almasb.fxgl.ai.AIDebugViewComponent;
-import com.almasb.fxgl.ai.goap.*;
+import com.almasb.fxgl.ai.goap.GoapAction;
+import com.almasb.fxgl.ai.goap.GoapComponent;
+import com.almasb.fxgl.ai.goap.MoveGoapAction;
+import com.almasb.fxgl.ai.goap.WorldState;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.entity.Entity;
@@ -17,14 +20,14 @@ import javafx.geometry.Point2D;
 import javafx.scene.input.MouseButton;
 import javafx.scene.text.Text;
 
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxglgames.tanks.GoapSample.Type.*;
 
 /**
- *
- *
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class GoapSample extends GameApplication {

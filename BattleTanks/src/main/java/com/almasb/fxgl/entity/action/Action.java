@@ -62,7 +62,8 @@ public abstract class Action {
         onReset();
     }
 
-    protected void onReset() { }
+    protected void onReset() {
+    }
 
     /**
      * Called on entity world update tick.

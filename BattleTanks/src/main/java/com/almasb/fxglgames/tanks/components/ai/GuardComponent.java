@@ -1,25 +1,20 @@
 package com.almasb.fxglgames.tanks.components.ai;
 
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.AccumulatedUpdateComponent;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.pathfinding.CellState;
 import com.almasb.fxgl.pathfinding.astar.AStarCell;
 import com.almasb.fxgl.pathfinding.astar.AStarGrid;
 import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
-import com.almasb.fxglgames.tanks.BattleTanksType;
-import javafx.geometry.Point2D;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.almasb.fxgl.dsl.FXGL.*;
-import static com.almasb.fxglgames.tanks.BattleTanksType.*;
+import static com.almasb.fxgl.dsl.FXGL.getGameWorld;
+import static com.almasb.fxglgames.tanks.BattleTanksType.PLAYER;
+import static com.almasb.fxglgames.tanks.BattleTanksType.PLAYER_FLAG;
 import static java.lang.Math.abs;
 import static java.lang.Math.min;
 
@@ -96,8 +91,8 @@ public class GuardComponent extends AccumulatedUpdateComponent {
 
     private AStarCell getCellValue(Entity entity) {
         // TODO: generalize magic numbers
-        int x = (int)((entity.getX() + 30/2 ) / 30);
-        int y = (int)((entity.getY() + 30/2 ) / 30);
+        int x = (int) ((entity.getX() + 30 / 2) / 30);
+        int y = (int) ((entity.getY() + 30 / 2) / 30);
 
         return grid.get(x, y);
     }

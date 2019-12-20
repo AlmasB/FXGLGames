@@ -28,7 +28,6 @@ package com.almasb.fxglgames.tanks;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
-import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.action.ActionComponent;
 import com.almasb.fxgl.entity.action.InstantAction;
@@ -36,26 +35,25 @@ import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.virtual.VirtualButton;
 import com.almasb.fxgl.pathfinding.CellState;
-import com.almasb.fxgl.pathfinding.astar.*;
+import com.almasb.fxgl.pathfinding.astar.AStarCell;
+import com.almasb.fxgl.pathfinding.astar.AStarGrid;
+import com.almasb.fxgl.pathfinding.astar.AStarGridView;
+import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
 import com.almasb.fxglgames.tanks.collision.BulletEnemyFlagHandler;
 import com.almasb.fxglgames.tanks.collision.BulletEnemyTankHandler;
-import com.almasb.fxglgames.tanks.components.RandomAStarMoveComponent;
 import com.almasb.fxglgames.tanks.components.TankViewComponent;
-import com.almasb.fxglgames.tanks.components.ai.GuardComponent;
-import com.almasb.fxglgames.tanks.components.ai.ShootPlayerComponent;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxglgames.tanks.BattleTanksType.*;
-import static com.almasb.fxglgames.tanks.Config.*;
+import static com.almasb.fxglgames.tanks.Config.BLOCK_SIZE;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -150,7 +148,7 @@ public class BattleTanksApp extends GameApplication {
         setLevelFromMap("tmx/level2.tmx");
 
         // TODO: careful: the world itself is 21x12 but each block we count as 2
-        grid = makeGridFromWorld(21*2, 12*2, BLOCK_SIZE / 2, BLOCK_SIZE / 2, (type) -> {
+        grid = makeGridFromWorld(21 * 2, 12 * 2, BLOCK_SIZE / 2, BLOCK_SIZE / 2, (type) -> {
             if (type == WALL || type == BRICK || type == PLAYER_FLAG || type == ENEMY_FLAG)
                 return CellState.NOT_WALKABLE;
 
@@ -201,7 +199,7 @@ public class BattleTanksApp extends GameApplication {
             int worldX = x * cellWidth + cellWidth / 2;
             int worldY = y * cellHeight + cellHeight / 2;
 
-            List<Object> collidingTypes = getGameWorld().getEntitiesInRange(new Rectangle2D(worldX-2, worldY-2, 4, 4))
+            List<Object> collidingTypes = getGameWorld().getEntitiesInRange(new Rectangle2D(worldX - 2, worldY - 2, 4, 4))
                     .stream()
                     .map(Entity::getType)
                     .collect(Collectors.toList());

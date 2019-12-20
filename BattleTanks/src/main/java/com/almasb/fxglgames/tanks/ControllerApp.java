@@ -6,20 +6,8 @@
 
 package com.almasb.fxglgames.tanks;
 
-import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.app.GameSettings;
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.input.UserAction;
-import com.almasb.fxgl.input.virtual.VirtualButton;
 import com.almasb.fxgl.input.virtual.VirtualController;
 import com.studiohartman.jamepad.ControllerManager;
-import com.studiohartman.jamepad.ControllerState;
-import javafx.scene.input.KeyCode;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
-
-import static com.almasb.fxgl.dsl.FXGL.*;
 
 
 public class ControllerApp {

@@ -3,8 +3,6 @@ package com.almasb.fxglgames.tanks.components;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.pathfinding.Grid;
-import com.almasb.fxgl.pathfinding.astar.AStarCell;
 import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
 import com.almasb.fxgl.time.LocalTimer;
 import javafx.util.Duration;

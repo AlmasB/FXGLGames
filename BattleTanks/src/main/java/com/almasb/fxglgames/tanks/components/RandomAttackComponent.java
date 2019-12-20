@@ -6,7 +6,8 @@ import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.time.LocalTimer;
 import javafx.util.Duration;
 
-import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxgl.dsl.FXGL.newLocalTimer;
+import static com.almasb.fxgl.dsl.FXGL.spawn;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)

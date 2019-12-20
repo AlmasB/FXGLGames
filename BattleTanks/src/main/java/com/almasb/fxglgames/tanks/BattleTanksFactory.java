@@ -45,7 +45,9 @@ import com.almasb.fxglgames.tanks.actions.DoNothingAction;
 import com.almasb.fxglgames.tanks.actions.GoalSelectorComponent;
 import com.almasb.fxglgames.tanks.actions.GuardAction;
 import com.almasb.fxglgames.tanks.actions.ShootPlayerAction;
-import com.almasb.fxglgames.tanks.components.*;
+import com.almasb.fxglgames.tanks.components.MoveComponent;
+import com.almasb.fxglgames.tanks.components.PlayerArrowViewComponent;
+import com.almasb.fxglgames.tanks.components.TankViewComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
 

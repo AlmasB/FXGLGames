@@ -1,7 +1,6 @@
 package com.almasb.fxglgames.tanks.actions;
 
 import com.almasb.fxgl.ai.goap.MoveGoapAction;
-import javafx.geometry.Point2D;
 
 public class DoNothingAction extends MoveGoapAction {
 

@@ -5,7 +5,6 @@ import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.util.LazyValue;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.pathfinding.astar.AStarCell;
 import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
 import com.almasb.fxglgames.tanks.BattleTanksType;
 
@@ -31,11 +30,11 @@ public class GuardAction extends MoveGoapAction {
     @Override
     public boolean isInRange() {
         // TODO: generalize magic numbers
-        int x = (int)((entity.getX() + 30/2 ) / 30);
-        int y = (int)((entity.getY() + 30/2 ) / 30);
+        int x = (int) ((entity.getX() + 30 / 2) / 30);
+        int y = (int) ((entity.getY() + 30 / 2) / 30);
 
-        int px = (int)((flag.get().getX() + 30/2 ) / 30);
-        int py = (int)((flag.get().getY() + 30/2 ) / 30);
+        int px = (int) ((flag.get().getX() + 30 / 2) / 30);
+        int py = (int) ((flag.get().getY() + 30 / 2) / 30);
 
         return distance(x, y, px, py) < 6;
     }
@@ -46,11 +45,11 @@ public class GuardAction extends MoveGoapAction {
 
     @Override
     public void move() {
-        int x = (int)((entity.getX() + 30/2 ) / 30);
-        int y = (int)((entity.getY() + 30/2 ) / 30);
+        int x = (int) ((entity.getX() + 30 / 2) / 30);
+        int y = (int) ((entity.getY() + 30 / 2) / 30);
 
-        int px = (int)((flag.get().getX() + 30/2 ) / 30);
-        int py = (int)((flag.get().getY() + 30/2 ) / 30);
+        int px = (int) ((flag.get().getX() + 30 / 2) / 30);
+        int py = (int) ((flag.get().getY() + 30 / 2) / 30);
 
         AStarMoveComponent astar = entity.getComponent(AStarMoveComponent.class);
 

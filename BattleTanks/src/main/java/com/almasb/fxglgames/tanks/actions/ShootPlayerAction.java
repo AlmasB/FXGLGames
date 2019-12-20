@@ -12,7 +12,6 @@ import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.tanks.BattleTanksType;
 import javafx.util.Duration;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,22 +39,22 @@ public class ShootPlayerAction extends MoveGoapAction {
     @Override
     public boolean isInRange() {
         // TODO: generalize magic numbers
-        int x = (int)((entity.getX() + 30/2 ) / 30);
-        int y = (int)((entity.getY() + 30/2 ) / 30);
+        int x = (int) ((entity.getX() + 30 / 2) / 30);
+        int y = (int) ((entity.getY() + 30 / 2) / 30);
 
-        int px = (int)((player.get().getX() + 30/2 ) / 30);
-        int py = (int)((player.get().getY() + 30/2 ) / 30);
+        int px = (int) ((player.get().getX() + 30 / 2) / 30);
+        int py = (int) ((player.get().getY() + 30 / 2) / 30);
 
         return x == px || y == py;
     }
 
     @Override
     public void move() {
-        int x = (int)((entity.getX() + 30/2 ) / 30);
-        int y = (int)((entity.getY() + 30/2 ) / 30);
+        int x = (int) ((entity.getX() + 30 / 2) / 30);
+        int y = (int) ((entity.getY() + 30 / 2) / 30);
 
-        int px = (int)((player.get().getX() + 30/2 ) / 30);
-        int py = (int)((player.get().getY() + 30/2 ) / 30);
+        int px = (int) ((player.get().getX() + 30 / 2) / 30);
+        int py = (int) ((player.get().getY() + 30 / 2) / 30);
 
         AStarMoveComponent astar = entity.getComponent(AStarMoveComponent.class);
 
