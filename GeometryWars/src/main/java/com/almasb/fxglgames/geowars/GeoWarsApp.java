@@ -79,7 +79,8 @@ public class GeoWarsApp extends GameApplication {
         settings.setVersion("0.7.5");
         settings.setConfigClass(GeoWarsConfig.class);
         settings.setProfilingEnabled(true);
-        settings.setFontUI("game_font_7.ttf");
+        //settings.setFontUI("game_font_7.ttf");
+        settings.setExperimentalNative(true);
     }
 
     @Override
