@@ -30,24 +30,17 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.Input;
-import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxglgames.geowars.collision.BulletPortalHandler;
 import com.almasb.fxglgames.geowars.collision.PlayerCrystalHandler;
-import com.almasb.fxglgames.geowars.component.GraphicsUpdateComponent;
 import com.almasb.fxglgames.geowars.component.HealthComponent;
-import com.almasb.fxglgames.geowars.component.OldPositionComponent;
 import com.almasb.fxglgames.geowars.component.PlayerComponent;
-import com.almasb.fxglgames.geowars.event.DeathEvent;
-import com.almasb.fxglgames.geowars.grid.Grid;
 import javafx.geometry.Point2D;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -55,6 +48,7 @@ import java.util.Map;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getInput;
+import static com.almasb.fxglgames.geowars.GeoWarsType.*;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -64,14 +58,8 @@ public class GeoWarsApp extends GameApplication {
     private Entity player;
     private PlayerComponent playerComponent;
 
-    private Grid grid;
-
     public Entity getPlayer() {
         return player;
-    }
-
-    public Grid getGrid() {
-        return grid;
     }
 
     @Override
@@ -103,47 +91,15 @@ public class GeoWarsApp extends GameApplication {
     protected void initInput() {
         Input input = getInput();
 
-        input.addAction(new UserAction("Move Left") {
-            @Override
-            protected void onAction() {
-                playerComponent.left();
-            }
-        }, KeyCode.A);
+        onKey(KeyCode.W, () -> playerComponent.up());
+        onKey(KeyCode.A, () -> playerComponent.left());
+        onKey(KeyCode.S, () -> playerComponent.down());
+        onKey(KeyCode.D, () -> playerComponent.right());
 
-        input.addAction(new UserAction("Move Right") {
-            @Override
-            protected void onAction() {
-                playerComponent.right();
-            }
-        }, KeyCode.D);
+        // TODO: add the same API as above
+        //onKeyDown(KeyCode.E, "", Runnable { });
 
-        input.addAction(new UserAction("Move Up") {
-            @Override
-            protected void onAction() {
-                playerComponent.up();
-            }
-        }, KeyCode.W);
-
-        input.addAction(new UserAction("Move Down") {
-            @Override
-            protected void onAction() {
-                playerComponent.down();
-            }
-        }, KeyCode.S);
-
-        input.addAction(new UserAction("Shockwave") {
-            @Override
-            protected void onActionBegin() {
-                playerComponent.releaseShockwave();
-            }
-        }, KeyCode.E);
-
-        input.addAction(new UserAction("Shoot") {
-            @Override
-            protected void onAction() {
-                playerComponent.shoot(input.getMousePositionWorld());
-            }
-        }, MouseButton.PRIMARY);
+        onBtn(MouseButton.PRIMARY, "Shoot", () -> playerComponent.shoot(input.getMousePositionWorld()));
     }
 
     @Override
@@ -159,7 +115,9 @@ public class GeoWarsApp extends GameApplication {
     protected void initGame() {
         getGameWorld().addEntityFactory(new GeoWarsFactory());
 
-        initBackground();
+        getGameScene().setBackgroundColor(Color.BLACK);
+
+        spawn("Background");
         player = spawn("Player");
         playerComponent = player.getComponent(PlayerComponent.class);
 
@@ -172,21 +130,24 @@ public class GeoWarsApp extends GameApplication {
             }
         });
 
+        getGameState().<Integer>addListener("time", (prev, now) -> {
+            if (now == 0)
+                getDisplay().showMessageBox("Demo Over. Your score: " + getGameState().getInt("score"), getGameController()::exit);
+        });
+
         getGameTimer().runAtInterval(() -> spawn("Wanderer"), Duration.seconds(1.5));
         getGameTimer().runAtInterval(() -> spawn("Seeker"), Duration.seconds(3));
         getGameTimer().runAtInterval(() -> spawn("Runner"), Duration.seconds(5));
         getGameTimer().runAtInterval(() -> spawn("Bouncer"), Duration.seconds(5));
         getGameTimer().runAtInterval(() -> spawn("Portal", getRandomPoint()), Duration.seconds(5));
         getGameTimer().runAtInterval(() -> inc("time", -1), Duration.seconds(1));
-
-        getEventBus().addEventHandler(DeathEvent.ANY, this::onDeath);
     }
 
     @Override
     protected void initPhysics() {
         PhysicsWorld physics = getPhysicsWorld();
 
-        CollisionHandler bulletEnemy = new CollisionHandler(GeoWarsType.BULLET, GeoWarsType.WANDERER) {
+        CollisionHandler bulletEnemy = new CollisionHandler(BULLET, WANDERER) {
             @Override
             protected void onCollisionBegin(Entity bullet, Entity enemy) {
                 bullet.removeFromWorld();
@@ -195,20 +156,20 @@ public class GeoWarsApp extends GameApplication {
                 hp.setValue(hp.getValue() - 1);
 
                 if (hp.getValue() == 0) {
-                    getEventBus().fireEvent(new DeathEvent(enemy));
+                    onDeath(enemy);
                     enemy.removeFromWorld();
                 }
             }
         };
 
         physics.addCollisionHandler(bulletEnemy);
-        physics.addCollisionHandler(bulletEnemy.copyFor(GeoWarsType.BULLET, GeoWarsType.SEEKER));
-        physics.addCollisionHandler(bulletEnemy.copyFor(GeoWarsType.BULLET, GeoWarsType.RUNNER));
-        physics.addCollisionHandler(bulletEnemy.copyFor(GeoWarsType.BULLET, GeoWarsType.BOUNCER));
+        physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, SEEKER));
+        physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, RUNNER));
+        physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, BOUNCER));
         physics.addCollisionHandler(new BulletPortalHandler());
         physics.addCollisionHandler(new PlayerCrystalHandler());
 
-        CollisionHandler playerEnemy = new CollisionHandler(GeoWarsType.PLAYER, GeoWarsType.WANDERER) {
+        CollisionHandler playerEnemy = new CollisionHandler(PLAYER, WANDERER) {
             @Override
             protected void onCollisionBegin(Entity a, Entity b) {
 
@@ -221,9 +182,9 @@ public class GeoWarsApp extends GameApplication {
         };
 
         physics.addCollisionHandler(playerEnemy);
-        physics.addCollisionHandler(playerEnemy.copyFor(GeoWarsType.PLAYER, GeoWarsType.SEEKER));
-        physics.addCollisionHandler(playerEnemy.copyFor(GeoWarsType.PLAYER, GeoWarsType.RUNNER));
-        physics.addCollisionHandler(playerEnemy.copyFor(GeoWarsType.PLAYER, GeoWarsType.BOUNCER));
+        physics.addCollisionHandler(playerEnemy.copyFor(PLAYER, SEEKER));
+        physics.addCollisionHandler(playerEnemy.copyFor(PLAYER, RUNNER));
+        physics.addCollisionHandler(playerEnemy.copyFor(PLAYER, BOUNCER));
     }
 
     @Override
@@ -268,34 +229,6 @@ public class GeoWarsApp extends GameApplication {
                 .repeat(2)
                 .fadeIn(beware)
                 .buildAndPlay();
-    }
-
-    @Override
-    protected void onUpdate(double tpf) {
-        player.getComponent(OldPositionComponent.class).setValue(player.getPosition());
-
-        grid.update();
-
-        if (geti("time") == 0) {
-            getDisplay().showMessageBox("Demo Over. Your score: " + getGameState().getInt("score"), getGameController()::exit);
-        }
-    }
-
-    private void initBackground() {
-        getGameScene().setBackgroundColor(Color.BLACK);
-
-        Canvas canvas = new Canvas(getAppWidth(), getAppHeight());
-        canvas.getGraphicsContext2D().setStroke(new Color(0.138, 0.138, 0.375, 0.3));
-
-        entityBuilder()
-                .view(canvas)
-                .with(new GraphicsUpdateComponent(canvas.getGraphicsContext2D()))
-                .buildAndAttach();
-
-        Rectangle size = new Rectangle(0, 0, getAppWidth(), getAppHeight());
-        Point2D spacing = new Point2D(38.8, 40);
-
-        grid = new Grid(size, spacing, getGameWorld(), canvas.getGraphicsContext2D());
     }
 
     private Point2D getRandomPoint() {
@@ -349,15 +282,11 @@ public class GeoWarsApp extends GameApplication {
                 .buildAndPlay();
     }
 
-    public void onDeath(DeathEvent event) {
-        Entity entity = event.getEntity();
+    public void onDeath(Entity entity) {
+        spawn("Explosion", entity.getCenter());
+        spawn("Crystal", entity.getCenter());
 
-        if (event.isEnemy()) {
-            spawn("Explosion", entity.getCenter());
-            spawn("Crystal", entity.getCenter());
-
-            addScoreKill(entity.getCenter());
-        }
+        addScoreKill(entity.getCenter());
     }
 
     public static void main(String[] args) {

@@ -4,8 +4,10 @@ import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.components.ProjectileComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.fxglgames.geowars.GeoWarsType;
 import com.almasb.fxglgames.geowars.component.BulletComponent;
+
+import static com.almasb.fxglgames.geowars.GeoWarsType.BULLET;
+import static com.almasb.fxglgames.geowars.GeoWarsType.PORTAL;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -13,7 +15,7 @@ import com.almasb.fxglgames.geowars.component.BulletComponent;
 public class BulletPortalHandler extends CollisionHandler {
 
     public BulletPortalHandler() {
-        super(GeoWarsType.BULLET, GeoWarsType.PORTAL);
+        super(BULLET, PORTAL);
     }
 
     @Override
@@ -22,7 +24,7 @@ public class BulletPortalHandler extends CollisionHandler {
 
         if (component.getLastPortal() != portal) {
             bullet.getWorld()
-                    .getEntitiesByType(GeoWarsType.PORTAL)
+                    .getEntitiesByType(PORTAL)
                     .stream()
                     .filter(e -> e != portal)
                     .findAny()

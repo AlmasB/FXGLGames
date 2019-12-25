@@ -3,7 +3,6 @@ package com.almasb.fxglgames.geowars.component;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.core.pool.Pools;
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
@@ -18,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.geto;
 
 /**
@@ -27,20 +27,32 @@ public class PlayerComponent extends Component {
 
     private static final Duration WEAPON_DELAY = Duration.seconds(0.17);
 
+    private Point2D oldPosition;
+
     private int playerSpeed;
     private double speed;
 
     private long spawnTime = System.currentTimeMillis();
 
-    private LocalTimer weaponTimer = FXGL.newLocalTimer();
+    private LocalTimer weaponTimer = newLocalTimer();
 
     public PlayerComponent(int playerSpeed) {
         this.playerSpeed = playerSpeed;
     }
 
     @Override
+    public void onAdded() {
+        oldPosition = entity.getPosition();
+    }
+
+    @Override
     public void onUpdate(double tpf) {
         speed = tpf * playerSpeed;
+
+        if (!entity.getPosition().equals(oldPosition))
+            entity.rotateToVector(entity.getPosition().subtract(oldPosition));
+
+        oldPosition = entity.getPosition();
     }
 
     public void shoot(Point2D shootPoint) {
@@ -104,14 +116,14 @@ public class PlayerComponent extends Component {
     }
 
     private Entity spawnBullet(Point2D position, Point2D direction) {
-        return FXGL.getGameWorld().spawn("Bullet",
+        return spawn("Bullet",
                 new SpawnData(position.getX(), position.getY())
                         .put("direction", direction)
         );
     }
 
     public void releaseShockwave() {
-        FXGL.spawn("Shockwave", entity.getCenter());
+        spawn("Shockwave", entity.getCenter());
     }
 
     public void left() {
@@ -155,7 +167,7 @@ public class PlayerComponent extends Component {
         Vec2 randVec = Vec2.fromAngle(FXGLMath.toDegrees(FXGLMath.random(0.0, 1.0) * FXGLMath.PI2));
         Vec2 velMid = baseVel.add(randVec.mul(7.5f));
 
-        FXGL.entityBuilder()
+        entityBuilder()
                 .at(pos.x, pos.y)
                 .with(new ExhaustParticleComponent(velMid, 800, midColor))
                 .buildAndAttach();
@@ -167,12 +179,12 @@ public class PlayerComponent extends Component {
         Vec2 velSide1 = baseVel.add(randVec1.mulLocal(2.4f)).addLocal(perpVel);
         Vec2 velSide2 = baseVel.add(randVec2.mulLocal(2.4f)).subLocal(perpVel);
 
-        FXGL.entityBuilder()
+        entityBuilder()
                 .at(pos.x, pos.y)
                 .with(new ExhaustParticleComponent(velSide1, 800, sideColor))
                 .buildAndAttach();
 
-        FXGL.entityBuilder()
+        entityBuilder()
                 .at(pos.x, pos.y)
                 .with(new ExhaustParticleComponent(velSide2, 800, sideColor))
                 .buildAndAttach();

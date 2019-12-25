@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-package com.almasb.fxglgames.geowars.component;
+package com.almasb.fxglgames.geowars.component.enemy;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;

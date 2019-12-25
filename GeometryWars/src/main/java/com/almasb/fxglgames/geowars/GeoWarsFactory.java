@@ -9,13 +9,20 @@ import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxglgames.geowars.component.*;
+import com.almasb.fxglgames.geowars.component.enemy.BouncerComponent;
+import com.almasb.fxglgames.geowars.component.enemy.RunnerComponent;
+import com.almasb.fxglgames.geowars.component.enemy.SeekerComponent;
+import com.almasb.fxglgames.geowars.component.enemy.WandererComponent;
+import com.almasb.fxglgames.geowars.component.GridComponent;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxglgames.geowars.GeoWarsType.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -44,19 +51,27 @@ public class GeoWarsFactory implements EntityFactory {
         return spawnPoints[FXGLMath.random(0, 3)];
     }
 
-    @Spawns("Player")
-    public Entity spawnPlayer(SpawnData data) {
-        // TODO: move this to proper PlayerComponent
-        OldPositionComponent oldPosition = new OldPositionComponent();
-        oldPosition.valueProperty().addListener((obs, old, newPos) -> {
-            oldPosition.getEntity().rotateToVector(newPos.subtract(old));
-        });
+    @Spawns("Background")
+    public Entity spawnBackground(SpawnData data) {
+        Canvas canvas = new Canvas(getAppWidth(), getAppHeight());
+        canvas.getGraphicsContext2D().setStroke(new Color(0.138, 0.138, 0.375, 0.56));
 
         return entityBuilder()
-                .type(GeoWarsType.PLAYER)
+                .type(GRID)
+                .from(data)
+                .view(canvas)
+                .with(new GraphicsUpdateComponent(canvas.getGraphicsContext2D()))
+                .with(new GridComponent(canvas.getGraphicsContext2D()))
+                .build();
+    }
+
+    @Spawns("Player")
+    public Entity spawnPlayer(SpawnData data) {
+        return entityBuilder()
+                .type(PLAYER)
                 .at(getAppWidth() / 2, getAppHeight() / 2)
                 .viewWithBBox("Player.png")
-                .with(new CollidableComponent(true), oldPosition)
+                .collidable()
                 .with(new PlayerComponent(config.getPlayerSpeed()), new KeepOnScreenComponent().bothAxes())
                 .build();
     }
@@ -66,12 +81,12 @@ public class GeoWarsFactory implements EntityFactory {
         play("shoot" + (int) (Math.random() * 8 + 1) + ".wav");
 
         return entityBuilder()
-                .type(GeoWarsType.BULLET)
+                .type(BULLET)
                 .from(data)
                 .viewWithBBox("Bullet.png")
                 .with(new CollidableComponent(true))
                 .with(new ProjectileComponent(data.get("direction"), 800))
-                .with(new BulletComponent(FXGL.<GeoWarsApp>getAppCast().getGrid()))
+                .with(new BulletComponent())
                 .with(new OffscreenCleanComponent())
                 .build();
     }
@@ -84,7 +99,7 @@ public class GeoWarsFactory implements EntityFactory {
                 : FXGLMath.random(100, config.getWandererMaxMoveSpeed());
 
         return entityBuilder()
-                .type(GeoWarsType.WANDERER)
+                .type(WANDERER)
                 .at(getRandomSpawnPoint())
                 .viewWithBBox(red ? "RedWanderer.png" : "Wanderer.png")
                 .with(new HealthComponent(red ? config.getRedEnemyHealth() : config.getEnemyHealth()))
@@ -101,7 +116,7 @@ public class GeoWarsFactory implements EntityFactory {
                 : FXGLMath.random(150, config.getSeekerMaxMoveSpeed());
 
         return entityBuilder()
-                .type(GeoWarsType.SEEKER)
+                .type(SEEKER)
                 .at(getRandomSpawnPoint())
                 .viewWithBBox(red ? "RedSeeker.png" : "Seeker.png")
                 .with(new HealthComponent(red ? config.getRedEnemyHealth() : config.getEnemyHealth()))
@@ -113,7 +128,7 @@ public class GeoWarsFactory implements EntityFactory {
     @Spawns("Runner")
     public Entity spawnRunner(SpawnData data) {
         return entityBuilder()
-                .type(GeoWarsType.RUNNER)
+                .type(RUNNER)
                 .at(getRandomSpawnPoint())
                 .viewWithBBox("Runner.png")
                 .with(new HealthComponent(config.getEnemyHealth()))
@@ -132,7 +147,7 @@ public class GeoWarsFactory implements EntityFactory {
         view.setStroke(Color.color(0.4, 0.7, 0.3, 0.8));
 
         return entityBuilder()
-                .type(GeoWarsType.BOUNCER)
+                .type(BOUNCER)
                 .at(0, y)
                 .viewWithBBox(view)
                 .with(new HealthComponent(config.getEnemyHealth()))
@@ -152,23 +167,10 @@ public class GeoWarsFactory implements EntityFactory {
                 .build();
     }
 
-    @Spawns("Shockwave")
-    public Entity spawnShockwave(SpawnData data) {
-        Circle circle = new Circle(10, null);
-        circle.setStroke(Color.DARKGOLDENROD);
-        circle.setStrokeWidth(2);
-
-        return entityBuilder()
-                .from(data)
-                .view(circle)
-                .with(new ShockwaveControl())
-                .build();
-    }
-
     @Spawns("Portal")
     public Entity spawnPortal(SpawnData data) {
         return entityBuilder()
-                .type(GeoWarsType.PORTAL)
+                .type(PORTAL)
                 .from(data)
                 .viewWithBBox("Portal.png")
                 .with(new CollidableComponent(true))
@@ -179,7 +181,7 @@ public class GeoWarsFactory implements EntityFactory {
     @Spawns("Crystal")
     public Entity spawnCrystal(SpawnData data) {
         return entityBuilder()
-                .type(GeoWarsType.CRYSTAL)
+                .type(CRYSTAL)
                 .from(data)
                 .scale(0.65, 0.65)
                 .viewWithBBox(texture("YellowCrystal.png").toAnimatedTexture(8, Duration.seconds(1)))
