@@ -13,14 +13,41 @@ import javafx.beans.property.StringProperty;
  */
 public class CardComponent extends Component {
 
-    private IntegerProperty hp = new SimpleIntegerProperty(60);
-    private IntegerProperty sp = new SimpleIntegerProperty(0);
+    private StringProperty name = new SimpleStringProperty("Card Name");
+    private StringProperty description = new SimpleStringProperty("Card description card description");
 
-    private IntegerProperty level = new SimpleIntegerProperty(1);
+    private IntegerProperty hp = new SimpleIntegerProperty(FXGLMath.random(50, 60));
+    private IntegerProperty sp = new SimpleIntegerProperty(FXGLMath.random(5, 20));
+
+    private IntegerProperty level = new SimpleIntegerProperty(FXGLMath.random(1, 5));
     private IntegerProperty atk = new SimpleIntegerProperty(FXGLMath.random(10, 20));
     private IntegerProperty def = new SimpleIntegerProperty(FXGLMath.random(5, 10));
 
     private BooleanBinding alive = hp.greaterThan(0);
+
+    public String getName() {
+        return name.get();
+    }
+
+    public StringProperty nameProperty() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name.set(name);
+    }
+
+    public String getDescription() {
+        return description.get();
+    }
+
+    public StringProperty descriptionProperty() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description.set(description);
+    }
 
     public int getHp() {
         return hp.get();

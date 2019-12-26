@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 import java.util.List;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxglgames.ncc.Config.*;
 import static com.almasb.fxglgames.ncc.NCCType.ENEMY_CARD;
 import static com.almasb.fxglgames.ncc.NCCType.PLAYER_CARD;
 
@@ -21,10 +22,10 @@ public class NCCApp extends GameApplication {
 
     @Override
     protected void initSettings(GameSettings settings) {
-        settings.setTitle("Ninja Card Combat");
+        settings.setTitle("FXGL Ninja Card Combat");
         settings.setVersion("0.1");
-        settings.setWidth(1280);
-        settings.setHeight(720);
+        settings.setWidth(APP_WIDTH);
+        settings.setHeight(APP_HEIGHT);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
@@ -40,9 +41,21 @@ public class NCCApp extends GameApplication {
         getGameWorld().addEntityFactory(new NCCFactory());
 
         for (int i = 0; i < 5; i++) {
-            spawn("card", new SpawnData(100 + i*250, 50).put("type", ENEMY_CARD));
-            spawn("card", new SpawnData(100 + i*250, 450).put("type", PLAYER_CARD));
+            spawn("card", new SpawnData(50 + i*(CARD_WIDTH + 25), 20).put("type", ENEMY_CARD));
+            spawn("card", new SpawnData(50 + i*(CARD_WIDTH + 25), 400).put("type", PLAYER_CARD));
         }
+    }
+
+    @Override
+    protected void initUI() {
+        var text = getUIFactory().newText("PROOF OF CONCEPT", Color.BLACK, 44.0);
+
+        addUINode(text, getAppWidth() / 2.0, getAppHeight() - 30);
+
+        var btnNext = getUIFactory().newButton("Next Turn");
+        btnNext.setOnAction(e -> nextTurn());
+
+        addUINode(btnNext, getAppWidth() - 250, getAppHeight() - 60);
     }
 
     private void nextTurn() {

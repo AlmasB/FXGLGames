@@ -4,11 +4,18 @@ import com.almasb.fxgl.dsl.components.view.ChildViewComponent;
 import com.almasb.fxgl.entity.component.Required;
 import com.almasb.fxgl.ui.ProgressBar;
 import javafx.beans.binding.Bindings;
+import javafx.geometry.Pos;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
 import static com.almasb.fxgl.dsl.FXGL.getUIFactory;
+import static com.almasb.fxgl.dsl.FXGL.texture;
+import static com.almasb.fxglgames.ncc.Config.*;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -24,51 +31,117 @@ public class CardViewComponent extends ChildViewComponent {
     public void onAdded() {
         super.onAdded();
 
-        border = new Rectangle(150, 220);
-        border.setStroke(Color.BLUE);
+        border = new Rectangle(CARD_WIDTH, CARD_HEIGHT);
+        border.setFill(Color.BLUE);
+        border.setStroke(Color.BLACK);
         border.setStrokeWidth(2);
+        border.setArcWidth(10);
+        border.setArcHeight(10);
 
-        border.fillProperty().bind(
-                Bindings.when(card.aliveProperty()).then(Color.AQUA).otherwise(Color.RED)
-        );
+        var innerBorder = new Rectangle(CARD_WIDTH - 12, CARD_HEIGHT - 12);
+        innerBorder.setFill(Color.color(0.0, 0.9, 0.9, 0.8));
+        innerBorder.setStroke(Color.RED);
+        innerBorder.setStrokeWidth(2);
+        innerBorder.setArcWidth(15);
+        innerBorder.setArcHeight(15);
 
-        Text textLevel = getUIFactory().newText("", Color.DARKGREY, 18.0);
-        textLevel.textProperty().bind(card.levelProperty().asString("Lvl: %d"));
-        textLevel.setTranslateX(5);
-        textLevel.setTranslateY(50);
+        innerBorder.setTranslateX(6);
+        innerBorder.setTranslateY(6);
 
-        Text textAtk = getUIFactory().newText("", Color.BLACK, 24);
-        textAtk.textProperty().bind(card.atkProperty().asString("ATK: %d"));
-        textAtk.setTranslateX(5);
-        textAtk.setTranslateY(100);
 
-        Text textDef = getUIFactory().newText("", Color.BLACK, 24);
-        textDef.textProperty().bind(card.defProperty().asString("DEF: %d"));
-        textDef.setTranslateX(5);
-        textDef.setTranslateY(130);
+
+        var imageRect = new Rectangle(CARD_IMAGE_WIDTH, CARD_IMAGE_HEIGHT, null);
+        imageRect.setStroke(Color.WHITE);
+        imageRect.setTranslateX((CARD_WIDTH - CARD_IMAGE_WIDTH) / 2.0);
+        imageRect.setTranslateY(45);
+
+
+        var title = new Title(card.getName(), card.getLevel());
+        title.setTranslateX(imageRect.getTranslateX());
+        title.setTranslateY(7.5);
+
+
+        var iconAtk = texture("icon_atk.png", 512 / 16.0, 512 / 16.0).brighter().saturate();
+
+        Text textAtk = getUIFactory().newText("", Color.BLACK, 18);
+        textAtk.textProperty().bind(card.atkProperty().asString("%d"));
+
+        var boxAtk = new HBox(0, iconAtk, textAtk);
+        boxAtk.setAlignment(Pos.CENTER_LEFT);
+        boxAtk.setTranslateX(17.5);
+        boxAtk.setTranslateY(CARD_HEIGHT - 70);
+
+        var iconDef = texture("icon_def.png", 512 / 16.0, 512 / 16.0);
+
+        Text textDef = getUIFactory().newText("", Color.BLACK, 18);
+        textDef.textProperty().bind(card.defProperty().asString("%d"));
+
+        var boxDef = new HBox(0, iconDef, textDef);
+        boxDef.setAlignment(Pos.CENTER_LEFT);
+        boxDef.setTranslateX(17.5);
+        boxDef.setTranslateY(CARD_HEIGHT - 40);
+
 
         ProgressBar barHP = new ProgressBar(false);
         barHP.setMaxValue(card.getHp());
         barHP.currentValueProperty().bind(card.hpProperty());
         barHP.setFill(Color.LIGHTGREEN);
-        barHP.setWidth(90);
-        barHP.setHeight(10);
-        barHP.setTranslateX(5);
-        barHP.setTranslateY(150);
+        barHP.setWidth(CARD_WIDTH / 3.2);
+        barHP.setHeight(12.5);
+
+        Text textHP = getUIFactory().newText("", Color.BLACK, 18);
+        textHP.textProperty().bind(card.hpProperty().asString("%d"));
+
+        var boxHP = new HBox(-10, barHP, textHP);
+        boxHP.setAlignment(Pos.CENTER_LEFT);
+        boxHP.setTranslateX(CARD_WIDTH / 3.0);
+        boxHP.setTranslateY(CARD_HEIGHT - 65);
 
         ProgressBar barSP = new ProgressBar(false);
         barSP.setMaxValue(card.getSp());
         barSP.currentValueProperty().bind(card.spProperty());
         barSP.setFill(Color.BLUE);
-        barSP.setWidth(90);
-        barSP.setHeight(10);
-        barSP.setTranslateX(5);
-        barSP.setTranslateY(165);
+        barSP.setWidth(CARD_WIDTH / 3.2);
+        barSP.setHeight(12.5);
 
-        getViewRoot().getChildren().addAll(border, textLevel, textAtk, textDef, barHP, barSP);
+        Text textSP = getUIFactory().newText("", Color.BLACK, 18);
+        textSP.textProperty().bind(card.spProperty().asString("%d"));
+
+        var boxSP = new HBox(-10, barSP, textSP);
+        boxSP.setAlignment(Pos.CENTER_LEFT);
+        boxSP.setTranslateX(CARD_WIDTH / 3.0);
+        boxSP.setTranslateY(CARD_HEIGHT - 40);
+
+        getViewRoot().getChildren().addAll(border, innerBorder, imageRect, title, boxAtk, boxDef, boxHP, boxSP);
+
+        getViewRoot().setEffect(new DropShadow(10, -3.5, 10, Color.BLACK));
+
+        getViewRoot().opacityProperty().bind(
+                Bindings.when(card.aliveProperty()).then(1.0).otherwise(0.25)
+        );
     }
 
     public void setActive(boolean active) {
         border.setStroke(active ? Color.GOLD : Color.BLUE);
+    }
+
+    private static class Title extends HBox {
+
+        Title(String name, int level) {
+            super(-15);
+
+            Circle circle = new Circle(20, 20, 20, Color.WHITE);
+            circle.setStrokeWidth(2.0);
+            circle.setStroke(Color.BLUE);
+
+            var stack = new StackPane(circle, getUIFactory().newText("" + level, Color.BLACK, 30.0));
+
+            Rectangle rect = new Rectangle(180, 30, Color.color(1, 1, 1, 0.8));
+            rect.setStroke(Color.BLACK);
+
+            getChildren().addAll(stack, new StackPane(rect, getUIFactory().newText(name, Color.BLACK, 16.0)));
+
+            stack.toFront();
+        }
     }
 }

@@ -14,11 +14,8 @@ public class NCCFactory implements EntityFactory {
 
     @Spawns("card")
     public Entity newCard(SpawnData data) {
-        Enum<?> type = data.get("type");
-
         return entityBuilder()
                 .from(data)
-                .type(type)
                 .with(new CardComponent())
                 .with(new CardViewComponent())
                 .build();
