@@ -6,7 +6,7 @@
 <?import javafx.scene.shape.Rectangle?>
 
 <?import javafx.scene.control.Label?>
-<?import com.almasb.fxglgames.ncc.CardFrame?>
+<?import com.almasb.fxglgames.ncc.CardViewComponent?>
 <BorderPane prefWidth="1280" prefHeight="720"
             xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1">
 
@@ -30,20 +30,20 @@
                 </VBox>
                 <VBox spacing="10">
                     <HBox fx:id="hboxEnemyCards" spacing="20">
-                        <CardFrame />
-                        <CardFrame />
-                        <CardFrame />
-                        <CardFrame />
-                        <CardFrame />
-                        <CardFrame />
+                        <CardViewComponent />
+                        <CardViewComponent />
+                        <CardViewComponent />
+                        <CardViewComponent />
+                        <CardViewComponent />
+                        <CardViewComponent />
                     </HBox>
                     <HBox fx:id="hboxPlayerCards" spacing="20">
-                        <CardFrame />
-                        <CardFrame />
-                        <CardFrame />
-                        <CardFrame />
-                        <CardFrame />
-                        <CardFrame />
+                        <CardViewComponent />
+                        <CardViewComponent />
+                        <CardViewComponent />
+                        <CardViewComponent />
+                        <CardViewComponent />
+                        <CardViewComponent />
                     </HBox>
                 </VBox>
             </HBox>
