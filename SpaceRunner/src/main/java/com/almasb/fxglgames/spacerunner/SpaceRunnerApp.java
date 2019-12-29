@@ -111,6 +111,7 @@ public class SpaceRunnerApp extends GameApplication {
     @Override
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("score", 0);
+        vars.put("level", 0);
         vars.put("bullets", 999);
         vars.put("laser", 50);
         vars.put("rockets", 10);
@@ -180,6 +181,8 @@ public class SpaceRunnerApp extends GameApplication {
         run(() -> {
             spawnPowerup(FXGLMath.random(PowerupType.values()).get());
         }, Duration.seconds(3));
+
+        uiTextLevel = getUIFactory().newText("", Color.WHITE, 22);
 
         nextLevel();
     }
@@ -295,10 +298,9 @@ public class SpaceRunnerApp extends GameApplication {
                 }, textScore.textProperty())
         );
 
-        uiTextLevel = getUIFactory().newText("Level 1", Color.WHITE, 22);
-        uiTextLevel.setEffect(new DropShadow(7, Color.BLACK));
 
-        uiTextLevel.setVisible(false);
+        uiTextLevel.setEffect(new DropShadow(7, Color.BLACK));
+        uiTextLevel.textProperty().bind(getip("level").asString("Level %d"));
 
         Rectangle map = new Rectangle(450, 120, Color.color(0, 0, 0, 0.8));
         map.setStrokeWidth(12);
@@ -319,19 +321,21 @@ public class SpaceRunnerApp extends GameApplication {
     }
 
     private void nextLevel() {
-        level = new Level();
+        uiTextLevel.setVisible(false);
 
+        inc("level", +1);
+
+        level = new Level();
         level.spawnNewWave();
 
-        // TODO: update level number
-        Text textLevel = getUIFactory().newText("Level 1", Color.WHITE, 22);
+        Text textLevel = getUIFactory().newText("Level " + geti("level"), Color.WHITE, 22);
         textLevel.setEffect(new DropShadow(7, Color.BLACK));
         textLevel.setOpacity(0);
 
         centerText(textLevel);
         textLevel.setTranslateY(250);
 
-        getGameScene().addUINode(textLevel);
+        addUINode(textLevel);
 
         animationBuilder()
                 .interpolator(Interpolators.SMOOTH.EASE_OUT())
@@ -346,7 +350,7 @@ public class SpaceRunnerApp extends GameApplication {
                             })
                             .translate(textLevel)
                             .from(new Point2D(textLevel.getTranslateX(), textLevel.getTranslateY()))
-                            .to(new Point2D(350, 540))
+                            .to(new Point2D(330, 540))
                             .buildAndPlay();
                 })
                 .fadeIn(textLevel)
@@ -354,7 +358,7 @@ public class SpaceRunnerApp extends GameApplication {
     }
 
     private void spawnWaveIfNeeded() {
-        if (!getGameWorld().getEntitiesByType(SpaceRunnerType.ENEMY).isEmpty())
+        if (!byType(SpaceRunnerType.ENEMY).isEmpty())
             return;
 
         if (level.isDone()) {
