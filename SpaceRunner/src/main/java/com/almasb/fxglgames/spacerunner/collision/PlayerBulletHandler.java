@@ -1,5 +1,6 @@
 package com.almasb.fxglgames.spacerunner.collision;
 
+import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.spacerunner.SpaceRunnerType;
@@ -24,12 +25,12 @@ public class PlayerBulletHandler extends CollisionHandler {
             return;
         }
 
-//        HealthComponent health = player.getComponent(HealthComponent.class);
-//
-//        health.setValue(health.getValue() - 5);
-//
-//        if (health.getValue() <= 0) {
-//            // TODO: kill player
-//        }
+        HealthIntComponent health = player.getComponent(HealthIntComponent.class);
+
+        health.setValue(health.getValue() - 1);
+
+        if (health.getValue() <= 0) {
+            // TODO: kill player
+        }
     }
 }

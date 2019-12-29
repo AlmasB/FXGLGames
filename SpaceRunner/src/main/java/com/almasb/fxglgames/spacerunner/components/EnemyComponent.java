@@ -27,10 +27,11 @@
 package com.almasb.fxglgames.spacerunner.components;
 
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.time.LocalTimer;
 import javafx.util.Duration;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 
 /**
@@ -43,7 +44,7 @@ public class EnemyComponent extends Component {
 
     @Override
     public void onAdded() {
-        attackTimer = FXGL.newLocalTimer();
+        attackTimer = newLocalTimer();
         attackTimer.capture();
     }
 
@@ -66,11 +67,11 @@ public class EnemyComponent extends Component {
     }
 
     private void shoot() {
-        FXGL.spawn("EnemyBullet", entity.getPosition().subtract(15, 0));
+        spawn("EnemyBullet", entity.getPosition().subtract(15, 0));
     }
 
     public void die() {
-        FXGL.spawn("Explosion", entity.getCenter());
+        spawn("Explosion", entity.getCenter());
 
         entity.removeFromWorld();
     }

@@ -26,9 +26,11 @@
 
 package com.almasb.fxglgames.spacerunner;
 
+import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.dsl.views.ScrollingBackgroundView;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
@@ -45,6 +47,7 @@ import com.almasb.fxglgames.spacerunner.level.Level;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.HorizontalDirection;
 import javafx.geometry.Orientation;
+import javafx.geometry.Point2D;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -77,26 +80,15 @@ public class SpaceRunnerApp extends GameApplication {
         settings.setConfigClass(GameConfig.class);
     }
 
-//    @Override
-//    protected void preInit() {
-//        loopBGM("bgm.mp3");
-//    }
+    @Override
+    protected void onPreInit() {
+        loopBGM("bgm.mp3");
+    }
 
     @Override
     protected void initInput() {
-        getInput().addAction(new UserAction("Move Up") {
-            @Override
-            protected void onAction() {
-                playerComponent.up();
-            }
-        }, KeyCode.W);
-
-        getInput().addAction(new UserAction("Move Down") {
-            @Override
-            protected void onAction() {
-                playerComponent.down();
-            }
-        }, KeyCode.S);
+        onKey(KeyCode.W, () -> playerComponent.up());
+        onKey(KeyCode.S, () -> playerComponent.down());
 
         getInput().addAction(new UserAction("Change Weapon") {
             @Override
@@ -169,27 +161,27 @@ public class SpaceRunnerApp extends GameApplication {
 
         getbp("hasShield").bind(getip("shield").isEqualTo(100));
 
-//        run(this::spawnWaveIfNeeded, Duration.seconds(1));
-//
-//        run(() -> {
-//            if (geti("heat") > 0)
-//                inc("heat", -5);
-//
-//            if (geti("bullets") < 999)
-//                inc("bullets", +1);
-//
-//        }, Duration.seconds(0.25));
-//
-//        run(() -> {
-//            if (geti("shield") < 100)
-//                inc("shield", +4);
-//        }, Duration.seconds(0.5));
-//
-//        run(() -> {
-//            spawnPowerup(FXGLMath.random(PowerupType.values()).get());
-//        }, Duration.seconds(3));
-//
-//        nextLevel();
+        run(this::spawnWaveIfNeeded, Duration.seconds(1));
+
+        run(() -> {
+            if (geti("heat") > 0)
+                inc("heat", -5);
+
+            if (geti("bullets") < 999)
+                inc("bullets", +1);
+
+        }, Duration.seconds(0.25));
+
+        run(() -> {
+            if (geti("shield") < 100)
+                inc("shield", +4);
+        }, Duration.seconds(0.5));
+
+        run(() -> {
+            spawnPowerup(FXGLMath.random(PowerupType.values()).get());
+        }, Duration.seconds(3));
+
+        nextLevel();
     }
 
     @Override
@@ -246,12 +238,11 @@ public class SpaceRunnerApp extends GameApplication {
         ProgressBar barHP = new ProgressBar(false);
         barHP.setHeight(30.0);
         barHP.setLabelVisible(false);
-
-
         barHP.setFill(Color.GREEN);
         barHP.setBackgroundFill(Color.DARKGREY);
         barHP.setTraceFill(Color.LIGHTGREEN);
-        //barHP.currentValueProperty().bind(playerComponent.getEntity().getComponent(HealthComponent.class).valueProperty());
+        barHP.setMaxValue(playerComponent.getEntity().getComponent(HealthIntComponent.class).getMaxValue());
+        barHP.currentValueProperty().bind(playerComponent.getEntity().getComponent(HealthIntComponent.class).valueProperty());
 
         // heat
 
@@ -342,25 +333,24 @@ public class SpaceRunnerApp extends GameApplication {
 
         getGameScene().addUINode(textLevel);
 
-        // TODO:
-//        Animation<?> anim = animationBuilder().fadeIn(textLevel, Duration.seconds(1.66), () -> {
-//            Animation<?> anim2 = translate(textLevel,
-//                    new Point2D(textLevel.getTranslateX(), textLevel.getTranslateY()),
-//                    new Point2D(350, 540),
-//                    Duration.ZERO,
-//                    Duration.seconds(1.66),
-//                    () -> {
-//                        getGameScene().removeUINode(textLevel);
-//                        uiTextLevel.setVisible(true);
-//                    });
-//
-//            anim2.getAnimatedValue().setInterpolator(Interpolators.EXPONENTIAL.EASE_IN());
-//            anim2.startInPlayState();
-//        });
-//
-//        anim.getAnimatedValue().setInterpolator(Interpolators.SMOOTH.EASE_OUT());
-//
-//        anim.startInPlayState();
+        animationBuilder()
+                .interpolator(Interpolators.SMOOTH.EASE_OUT())
+                .duration(Duration.seconds(1.66))
+                .onFinished(() -> {
+                    animationBuilder()
+                            .duration(Duration.seconds(1.66))
+                            .interpolator(Interpolators.EXPONENTIAL.EASE_IN())
+                            .onFinished(() -> {
+                                removeUINode(textLevel);
+                                uiTextLevel.setVisible(true);
+                            })
+                            .translate(textLevel)
+                            .from(new Point2D(textLevel.getTranslateX(), textLevel.getTranslateY()))
+                            .to(new Point2D(350, 540))
+                            .buildAndPlay();
+                })
+                .fadeIn(textLevel)
+                .buildAndPlay();
     }
 
     private void spawnWaveIfNeeded() {

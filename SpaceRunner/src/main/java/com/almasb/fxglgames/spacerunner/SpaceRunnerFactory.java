@@ -27,9 +27,11 @@
 package com.almasb.fxglgames.spacerunner;
 
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.*;
-import com.almasb.fxgl.entity.*;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.EntityFactory;
+import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.particle.ParticleComponent;
 import com.almasb.fxgl.particle.ParticleEmitter;
@@ -49,7 +51,6 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
-
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
@@ -75,8 +76,9 @@ public class SpaceRunnerFactory implements EntityFactory {
         return entityBuilder()
                 .type(SpaceRunnerType.PLAYER)
                 .from(data)
-                .viewWithBBox(FXGL.getAssetLoader().loadTexture("sprite_player.png", 40, 40))
+                .viewWithBBox(texture("sprite_player.png", 40, 40))
                 .with(new CollidableComponent(true), new ParticleComponent(emitter))
+                .with(new HealthIntComponent(20))
                 .with(new PlayerComponent(), new EffectComponent(), new KeepOnScreenComponent().onlyVertically())
                 .build();
     }
@@ -88,7 +90,7 @@ public class SpaceRunnerFactory implements EntityFactory {
         return entityBuilder()
                 .type(SpaceRunnerType.ENEMY_BULLET)
                 .from(data)
-                .viewWithBBox(FXGL.getAssetLoader().loadTexture("sprite_bullet.png", 22, 11))
+                .viewWithBBox(texture("sprite_bullet.png", 22, 11))
                 .with(new CollidableComponent(true))
                 .with(new ProjectileComponent(new Point2D(-1, 0), 350),
                         new OffscreenCleanComponent())
@@ -102,7 +104,7 @@ public class SpaceRunnerFactory implements EntityFactory {
         return entityBuilder()
                 .type(SpaceRunnerType.BULLET)
                 .from(data)
-                .viewWithBBox(FXGL.getAssetLoader().loadTexture("sprite_bullet.png", 22, 11))
+                .viewWithBBox(texture("sprite_bullet.png", 22, 11))
                 .with(new CollidableComponent(true))
                 .with(new ProjectileComponent(new Point2D(1, 0), 1550),
                         new OffscreenCleanComponent())
@@ -116,7 +118,7 @@ public class SpaceRunnerFactory implements EntityFactory {
         return entityBuilder()
                 .type(SpaceRunnerType.BULLET)
                 .from(data)
-                .viewWithBBox(FXGL.getAssetLoader().loadTexture("sprite_laser.png"))
+                .viewWithBBox(texture("sprite_laser.png"))
                 .with(new CollidableComponent(true))
                 .with(new ProjectileComponent(new Point2D(1, 0), 850),
                         new OffscreenCleanComponent())
@@ -130,7 +132,7 @@ public class SpaceRunnerFactory implements EntityFactory {
         return entityBuilder()
                 .type(SpaceRunnerType.BULLET)
                 .from(data)
-                .viewWithBBox(FXGL.getAssetLoader().loadTexture("rocket.png", 30, 8))
+                .viewWithBBox(texture("rocket.png", 30, 8))
                 .with(new CollidableComponent(true))
                 .with(new ProjectileComponent(new Point2D(1, 0), 750),
                         new OffscreenCleanComponent())
@@ -142,8 +144,9 @@ public class SpaceRunnerFactory implements EntityFactory {
         return entityBuilder()
                 .type(SpaceRunnerType.ENEMY)
                 .from(data)
-                .viewWithBBox(FXGL.getAssetLoader().loadTexture("sprite_enemy_1.png", 27, 33))
+                .viewWithBBox(texture("sprite_enemy_1.png", 27, 33))
                 .with(new CollidableComponent(true), new MoveComponent())
+                .with(new HealthIntComponent(10))
                 .with(new EnemyComponent(), new KeepOnScreenComponent().onlyVertically())
                 .with(new SquadAIComponent())
                 .build();
@@ -154,14 +157,12 @@ public class SpaceRunnerFactory implements EntityFactory {
         play("explosion.wav");
 
         return entityBuilder()
+                .at(data.getX() - 40, data.getY() - 40)
+                // we want a smaller texture, 80x80
+                // it has 16 frames, hence 80 * 16
+                .view(texture("explosion.png", 80 * 16, 80).toAnimatedTexture(16, Duration.seconds(0.5)).play())
+                .with(new ExpireCleanComponent(Duration.seconds(1)))
                 .build();
-
-//        return entityBuilder()
-//                .at(data.getX() - 40, data.getY() - 40)
-//                // we want a smaller texture, 80x80
-//                // it has 16 frames, hence 80 * 16
-//                .viewFromAnimatedTexture(texture("explosion.png", 80 * 16, 80).toAnimatedTexture(16, Duration.seconds(0.5)), false, true)
-//                .build();
     }
 
     @Spawns("powerup")
