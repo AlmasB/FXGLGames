@@ -84,6 +84,8 @@ public class NCCApp extends GameApplication {
                 // TODO: animations are delayed and start when targetEntity is alive
                 // we still need to check targetEntity's hp during animation
 
+                // TODO: add next turn button and disable while turn is being executed
+
                 if (targetEntity != null) {
                     animationBuilder()
                             .delay(Duration.seconds(i))
