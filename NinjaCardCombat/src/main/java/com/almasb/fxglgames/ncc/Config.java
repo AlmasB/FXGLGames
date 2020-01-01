@@ -13,4 +13,7 @@ public final class Config {
 
     public static final int CARD_IMAGE_WIDTH = 200;
     public static final int CARD_IMAGE_HEIGHT = 200;
+
+    public static final int SKILL_IMAGE_WIDTH = 64;
+    public static final int SKILL_IMAGE_HEIGHT = 64;
 }

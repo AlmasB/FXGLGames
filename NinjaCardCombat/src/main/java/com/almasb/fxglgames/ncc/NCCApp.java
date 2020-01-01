@@ -70,40 +70,44 @@ public class NCCApp extends GameApplication {
                 Entity cardEntity2 = enemyCards.get(i);
                 var card2 = cardEntity2.getComponent(CardComponent.class);
 
-                Runnable attackAction = () -> { };
+                Entity targetEntity;
 
                 if (card2.isAlive()) {
-                    attackAction = () -> { attack(cardEntity, cardEntity2); };
+                    targetEntity = cardEntity2;
                 } else {
-                    attackAction = enemyCards.stream()
+                    targetEntity = enemyCards.stream()
                             .filter(e -> e.getComponent(CardComponent.class).isAlive())
                             .findAny()
-                            .map(e -> (Runnable) () -> attack(cardEntity, e))
-                            .orElse(attackAction);
+                            .orElse(null);
                 }
 
-                animationBuilder()
-                        .delay(Duration.seconds(i))
-                        .duration(Duration.seconds(0.5))
-                        .interpolator(Interpolators.EXPONENTIAL.EASE_IN())
-                        .repeat(2)
-                        .autoReverse(true)
-                        .translate(cardEntity)
-                        .from(cardEntity.getPosition())
-                        .to(cardEntity2.getPosition().add(0, CARD_HEIGHT / 2.0))
-                        .buildAndPlay();
+                // TODO: animations are delayed and start when targetEntity is alive
+                // we still need to check targetEntity's hp during animation
 
-                animationBuilder()
-                        .delay(Duration.seconds(0.5 + i))
-                        .duration(Duration.seconds(0.1))
-                        .interpolator(Interpolators.ELASTIC.EASE_OUT())
-                        .repeat(4)
-                        .autoReverse(true)
-                        .onFinished(attackAction)
-                        .translate(cardEntity2)
-                        .from(cardEntity2.getPosition())
-                        .to(cardEntity2.getPosition().add(2.5, 0))
-                        .buildAndPlay();
+                if (targetEntity != null) {
+                    animationBuilder()
+                            .delay(Duration.seconds(i))
+                            .duration(Duration.seconds(0.5))
+                            .interpolator(Interpolators.EXPONENTIAL.EASE_IN())
+                            .repeat(2)
+                            .autoReverse(true)
+                            .translate(cardEntity)
+                            .from(cardEntity.getPosition())
+                            .to(cardEntity2.getPosition().add(0, CARD_HEIGHT / 2.0))
+                            .buildAndPlay();
+
+                    animationBuilder()
+                            .delay(Duration.seconds(0.5 + i))
+                            .duration(Duration.seconds(0.1))
+                            .interpolator(Interpolators.ELASTIC.EASE_OUT())
+                            .repeat(4)
+                            .autoReverse(true)
+                            .onFinished(() -> attack(cardEntity, targetEntity))
+                            .translate(targetEntity)
+                            .from(targetEntity.getPosition())
+                            .to(targetEntity.getPosition().add(2.5, 0))
+                            .buildAndPlay();
+                }
             }
         }
 

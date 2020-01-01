@@ -1,9 +1,28 @@
 package com.almasb.fxglgames.ncc
 
+import com.almasb.fxgl.dsl.getAssetLoader
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+
 /**
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
+
+private val jsonMapper = jacksonObjectMapper().also {
+    it.enable(SerializationFeature.INDENT_OUTPUT)
+}
+
+fun loadDecks(): List<Deck> {
+    val deckNames = listOf(
+            "earth_deck.json",
+            "water_deck.json"
+    )
+
+    return deckNames
+            .onEach { println("Loading deck: $it") }
+            .map { jsonMapper.readValue(getAssetLoader().getStream("/assets/decks/$it"), Deck::class.java) }
+}
 
 data class Deck(val cards: List<Card>)
 

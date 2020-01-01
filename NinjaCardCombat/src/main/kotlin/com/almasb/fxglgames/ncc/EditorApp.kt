@@ -16,40 +16,42 @@ class EditorApp : GameApplication() {
     }
 }
 
+/**
+ *                     Skill(
+"Lightning Strike",
+"Description ...",
+"imageName",
+TargetType.ENEMY,
+0,
+3,
+0,
+0,
+15, 0, 0, 0
+),
+
+Skill(
+"Lightning Strike",
+"Description ...",
+"imageName",
+TargetType.ENEMY,
+0,
+3,
+0,
+0,
+15, 0, 0, 0
+)
+ */
+
 fun main() {
     val card = Card(
-            "Name",
-            "Description",
+            "Orc Warrior",
+            "A basic attack grunt",
             "imageName",
             Rarity.COMMON,
             CardType.WARRIOR,
             Element.EARTH,
 
-            arrayListOf(
-                    Skill(
-                            "Lightning Strike",
-                            "Description ...",
-                            "imageName",
-                            TargetType.ENEMY,
-                            0,
-                            3,
-                            0,
-                            0,
-                            15, 0, 0, 0
-                    ),
-
-                    Skill(
-                            "Lightning Strike",
-                            "Description ...",
-                            "imageName",
-                            TargetType.ENEMY,
-                            0,
-                            3,
-                            0,
-                            0,
-                            15, 0, 0, 0
-                    )
-            ),
+            arrayListOf(),
 
             1,
             10,
@@ -58,16 +60,25 @@ fun main() {
             2
     )
 
+
+    val deck = Deck(
+            listOf(
+                    card
+            )
+    )
+
+
+
     val mapper = jacksonObjectMapper()
     mapper.enable(SerializationFeature.INDENT_OUTPUT)
 
-    val json = mapper.writeValueAsString(card)
+    val json = mapper.writeValueAsString(deck)
 
     println("JSON card:\n" + json)
 
-    val card2 = mapper.readValue(json, Card::class.java)
+    val deck2 = mapper.readValue(json, Deck::class.java)
 
-    println("JVM card:\n" + card2)
+    println("JVM card:\n" + deck2)
 
     //GameApplication.launch(EditorApp::class.java, emptyArray())
 }

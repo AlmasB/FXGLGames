@@ -1,0 +1,16 @@
+{
+  "cards" : [ {
+    "name" : "Orc Warrior",
+    "description" : "A basic attack grunt",
+    "imageName" : "imageName",
+    "rarity" : "COMMON",
+    "type" : "WARRIOR",
+    "element" : "EARTH",
+    "skills" : [ ],
+    "level" : 1,
+    "hp" : 10,
+    "sp" : 3,
+    "atk" : 4,
+    "def" : 2
+  } ]
+}

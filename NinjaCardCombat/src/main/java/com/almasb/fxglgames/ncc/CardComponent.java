@@ -1,6 +1,5 @@
 package com.almasb.fxglgames.ncc;
 
-import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.component.Component;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.IntegerProperty;
@@ -8,22 +7,45 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import java.util.List;
+
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class CardComponent extends Component {
 
-    private StringProperty name = new SimpleStringProperty("Card Name");
-    private StringProperty description = new SimpleStringProperty("Card description card description");
+    private StringProperty name = new SimpleStringProperty();
+    private StringProperty description = new SimpleStringProperty();
 
-    private IntegerProperty hp = new SimpleIntegerProperty(FXGLMath.random(50, 60));
-    private IntegerProperty sp = new SimpleIntegerProperty(FXGLMath.random(5, 20));
-
-    private IntegerProperty level = new SimpleIntegerProperty(FXGLMath.random(1, 5));
-    private IntegerProperty atk = new SimpleIntegerProperty(FXGLMath.random(10, 20));
-    private IntegerProperty def = new SimpleIntegerProperty(FXGLMath.random(5, 10));
+    private IntegerProperty level = new SimpleIntegerProperty();
+    private IntegerProperty hp = new SimpleIntegerProperty();
+    private IntegerProperty sp = new SimpleIntegerProperty();
+    private IntegerProperty atk = new SimpleIntegerProperty();
+    private IntegerProperty def = new SimpleIntegerProperty();
 
     private BooleanBinding alive = hp.greaterThan(0);
+
+    private CardType type;
+    private Rarity rarity;
+    private Element element;
+
+    private List<Skill> skills;
+
+    public CardComponent(Card card) {
+        name.set(card.getName());
+        description.set(card.getDescription());
+
+        level.set(card.getLevel());
+        hp.set(card.getHp());
+        sp.set(card.getSp());
+        atk.set(card.getAtk());
+        def.set(card.getDef());
+
+        type = card.getType();
+        rarity = card.getRarity();
+        element = card.getElement();
+        skills = card.getSkills();
+    }
 
     public String getName() {
         return name.get();
@@ -33,20 +55,12 @@ public class CardComponent extends Component {
         return name;
     }
 
-    public void setName(String name) {
-        this.name.set(name);
-    }
-
     public String getDescription() {
         return description.get();
     }
 
     public StringProperty descriptionProperty() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description.set(description);
     }
 
     public int getHp() {
@@ -119,6 +133,18 @@ public class CardComponent extends Component {
 
     public boolean isKO() {
         return !isAlive();
+    }
+
+    public CardType getType() {
+        return type;
+    }
+
+    public Rarity getRarity() {
+        return rarity;
+    }
+
+    public Element getElement() {
+        return element;
     }
 
     public StringProperty toStringProperty() {

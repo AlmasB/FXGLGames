@@ -1,0 +1,16 @@
+{
+  "cards" : [ {
+    "name" : "Merman",
+    "description" : "A strong water creature",
+    "imageName" : "imageName",
+    "rarity" : "COMMON",
+    "type" : "WARRIOR",
+    "element" : "WATER",
+    "skills" : [ ],
+    "level" : 1,
+    "hp" : 13,
+    "sp" : 5,
+    "atk" : 6,
+    "def" : 2
+  } ]
+}
