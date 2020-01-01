@@ -1,12 +1,13 @@
 package com.almasb.fxglgames.ncc;
 
-import com.almasb.fxgl.app.ApplicationMode;
+import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
 import java.util.List;
 
@@ -26,7 +27,6 @@ public class NCCApp extends GameApplication {
         settings.setVersion("0.1");
         settings.setWidth(APP_WIDTH);
         settings.setHeight(APP_HEIGHT);
-        settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class NCCApp extends GameApplication {
         var btnNext = getUIFactory().newButton("Next Turn");
         btnNext.setOnAction(e -> nextTurn());
 
-        addUINode(btnNext, getAppWidth() - 250, getAppHeight() - 60);
+        //addUINode(btnNext, getAppWidth() - 250, getAppHeight() - 60);
     }
 
     private void nextTurn() {
@@ -70,41 +70,68 @@ public class NCCApp extends GameApplication {
                 Entity cardEntity2 = enemyCards.get(i);
                 var card2 = cardEntity2.getComponent(CardComponent.class);
 
+                Runnable attackAction = () -> { };
+
                 if (card2.isAlive()) {
-                    attack(cardEntity, cardEntity2);
+                    attackAction = () -> { attack(cardEntity, cardEntity2); };
                 } else {
-                    enemyCards.stream().filter(e -> e.getComponent(CardComponent.class).isAlive()).findAny().ifPresent(c -> {
-                        attack(cardEntity, c);
-                    });
+                    attackAction = enemyCards.stream()
+                            .filter(e -> e.getComponent(CardComponent.class).isAlive())
+                            .findAny()
+                            .map(e -> (Runnable) () -> attack(cardEntity, e))
+                            .orElse(attackAction);
                 }
+
+                animationBuilder()
+                        .delay(Duration.seconds(i))
+                        .duration(Duration.seconds(0.5))
+                        .interpolator(Interpolators.EXPONENTIAL.EASE_IN())
+                        .repeat(2)
+                        .autoReverse(true)
+                        .translate(cardEntity)
+                        .from(cardEntity.getPosition())
+                        .to(cardEntity2.getPosition().add(0, CARD_HEIGHT / 2.0))
+                        .buildAndPlay();
+
+                animationBuilder()
+                        .delay(Duration.seconds(0.5 + i))
+                        .duration(Duration.seconds(0.1))
+                        .interpolator(Interpolators.ELASTIC.EASE_OUT())
+                        .repeat(4)
+                        .autoReverse(true)
+                        .onFinished(attackAction)
+                        .translate(cardEntity2)
+                        .from(cardEntity2.getPosition())
+                        .to(cardEntity2.getPosition().add(2.5, 0))
+                        .buildAndPlay();
             }
         }
 
         // TODO: remove duplicate
 
-        for (int i = 0; i < 5; i++) {
-            Entity cardEntity = enemyCards.get(i);
-            var card = cardEntity.getComponent(CardComponent.class);
-
-            if (card.isAlive()) {
-                Entity cardEntity2 = playerCards.get(i);
-                var card2 = cardEntity2.getComponent(CardComponent.class);
-
-                if (card2.isAlive()) {
-                    attack(cardEntity, cardEntity2);
-                } else {
-                    playerCards.stream().filter(e -> e.getComponent(CardComponent.class).isAlive()).findAny().ifPresent(c -> {
-                        attack(cardEntity, c);
-                    });
-                }
-            }
-        }
-
-        if (!isAlive(playerCards)) {
-            gameOver("You lose");
-        } else if (!isAlive(enemyCards)) {
-            gameOver("You win");
-        }
+//        for (int i = 0; i < 5; i++) {
+//            Entity cardEntity = enemyCards.get(i);
+//            var card = cardEntity.getComponent(CardComponent.class);
+//
+//            if (card.isAlive()) {
+//                Entity cardEntity2 = playerCards.get(i);
+//                var card2 = cardEntity2.getComponent(CardComponent.class);
+//
+//                if (card2.isAlive()) {
+//                    attack(cardEntity, cardEntity2);
+//                } else {
+//                    playerCards.stream().filter(e -> e.getComponent(CardComponent.class).isAlive()).findAny().ifPresent(c -> {
+//                        attack(cardEntity, c);
+//                    });
+//                }
+//            }
+//        }
+//
+//        if (!isAlive(playerCards)) {
+//            gameOver("You lose");
+//        } else if (!isAlive(enemyCards)) {
+//            gameOver("You win");
+//        }
     }
 
     private void attack(Entity e1, Entity e2) {
@@ -119,6 +146,10 @@ public class NCCApp extends GameApplication {
         return cards.stream()
                 .map(e -> e.getComponent(CardComponent.class))
                 .anyMatch(CardComponent::isAlive);
+    }
+
+    private void onSkill(Entity user, Skill skill, List<Entity> targets) {
+
     }
 
     private void gameOver(String message) {
