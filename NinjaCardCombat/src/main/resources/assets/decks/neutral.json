@@ -1,0 +1,16 @@
+{
+  "cards" : [ {
+    "name" : "Neutral Unit",
+    "description" : "A strong neutral creature",
+    "imageName" : "merman.png",
+    "rarity" : "RARE",
+    "type" : "WARRIOR",
+    "element" : "NEUTRAL",
+    "skills" : [ ],
+    "level" : 1,
+    "hp" : 9,
+    "sp" : 2,
+    "atk" : 8,
+    "def" : 1
+  } ]
+}

@@ -12,5 +12,18 @@
     "sp" : 3,
     "atk" : 4,
     "def" : 2
+  }, {
+    "name" : "Artemis",
+    "description" : "None",
+    "imageName" : "merman.png",
+    "rarity" : "LEGENDARY",
+    "type" : "MAGE",
+    "element" : "EARTH",
+    "skills" : [ ],
+    "level" : 1,
+    "hp" : 65,
+    "sp" : 97,
+    "atk" : 55,
+    "def" : 48
   } ]
 }

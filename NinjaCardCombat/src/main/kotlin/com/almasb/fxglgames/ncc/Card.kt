@@ -15,8 +15,11 @@ private val jsonMapper = jacksonObjectMapper().also {
 
 fun loadDecks(): List<Deck> {
     val deckNames = listOf(
-            "earth_deck.json",
-            "water_deck.json"
+            "neutral.json",
+            "fire.json",
+            "water.json",
+            "earth.json",
+            "air.json"
     )
 
     return deckNames

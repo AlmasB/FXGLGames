@@ -1,0 +1,16 @@
+{
+  "cards" : [ {
+    "name" : "Pegasus",
+    "description" : "A mythical winged divine horse",
+    "imageName" : "pegasus.png",
+    "rarity" : "LEGENDARY",
+    "type" : "SUPPORT",
+    "element" : "AIR",
+    "skills" : [ ],
+    "level" : 1,
+    "hp" : 43,
+    "sp" : 15,
+    "atk" : 10,
+    "def" : 5
+  } ]
+}

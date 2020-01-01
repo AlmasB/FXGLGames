@@ -1,0 +1,16 @@
+{
+  "cards" : [ {
+    "name" : "Fire Unit",
+    "description" : "A strong fire creature",
+    "imageName" : "merman.png",
+    "rarity" : "COMMON",
+    "type" : "WARRIOR",
+    "element" : "FIRE",
+    "skills" : [ ],
+    "level" : 1,
+    "hp" : 13,
+    "sp" : 5,
+    "atk" : 6,
+    "def" : 2
+  } ]
+}

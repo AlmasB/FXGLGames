@@ -41,8 +41,8 @@ public class NCCApp extends GameApplication {
         getGameWorld().addEntityFactory(new NCCFactory());
 
         for (int i = 0; i < 5; i++) {
-            spawn("card", new SpawnData(50 + i*(CARD_WIDTH + 25), 20).put("type", ENEMY_CARD));
-            spawn("card", new SpawnData(50 + i*(CARD_WIDTH + 25), 400).put("type", PLAYER_CARD));
+            spawn("card", new SpawnData(50 + i*(CARD_WIDTH + 25), 40).put("type", ENEMY_CARD));
+            spawn("card", new SpawnData(50 + i*(CARD_WIDTH + 25), 420).put("type", PLAYER_CARD));
         }
     }
 
@@ -50,12 +50,12 @@ public class NCCApp extends GameApplication {
     protected void initUI() {
         var text = getUIFactory().newText("PROOF OF CONCEPT", Color.BLACK, 44.0);
 
-        addUINode(text, getAppWidth() / 2.0, getAppHeight() - 30);
+        addUINode(text, getAppWidth() / 2.0, getAppHeight() - 10);
 
         var btnNext = getUIFactory().newButton("Next Turn");
         btnNext.setOnAction(e -> nextTurn());
 
-        addUINode(btnNext, getAppWidth() - 250, getAppHeight() - 60);
+        addUINode(btnNext, getAppWidth() - 250, getAppHeight() - 40);
     }
 
     private void nextTurn() {
