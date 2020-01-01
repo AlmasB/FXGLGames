@@ -50,10 +50,14 @@ public class CardViewComponent extends ChildViewComponent {
 
 
 
-        var imageRect = new Rectangle(CARD_IMAGE_WIDTH, CARD_IMAGE_HEIGHT, null);
-        imageRect.setStroke(Color.WHITE);
+        var imageRect = texture("cards/" + card.getData().getImageName());
         imageRect.setTranslateX((CARD_WIDTH - CARD_IMAGE_WIDTH) / 2.0);
         imageRect.setTranslateY(45);
+
+        var imageBorderRect = new Rectangle(CARD_IMAGE_WIDTH, CARD_IMAGE_HEIGHT, null);
+        imageBorderRect.setStroke(Color.BLACK);
+        imageBorderRect.setTranslateX(imageRect.getTranslateX());
+        imageBorderRect.setTranslateY(imageRect.getTranslateY());
 
 
         var title = new Title(card.getName(), card.getLevel());
@@ -112,7 +116,7 @@ public class CardViewComponent extends ChildViewComponent {
         boxSP.setTranslateX(CARD_WIDTH / 3.0);
         boxSP.setTranslateY(CARD_HEIGHT - 40);
 
-        getViewRoot().getChildren().addAll(border, innerBorder, imageRect, title, boxAtk, boxDef, boxHP, boxSP);
+        getViewRoot().getChildren().addAll(border, innerBorder, imageRect, imageBorderRect, title, boxAtk, boxDef, boxHP, boxSP);
 
         getViewRoot().setEffect(new DropShadow(10, -3.5, 10, Color.BLACK));
 

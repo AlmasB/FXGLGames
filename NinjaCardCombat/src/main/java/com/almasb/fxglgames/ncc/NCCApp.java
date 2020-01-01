@@ -55,7 +55,7 @@ public class NCCApp extends GameApplication {
         var btnNext = getUIFactory().newButton("Next Turn");
         btnNext.setOnAction(e -> nextTurn());
 
-        //addUINode(btnNext, getAppWidth() - 250, getAppHeight() - 60);
+        addUINode(btnNext, getAppWidth() - 250, getAppHeight() - 60);
     }
 
     private void nextTurn() {

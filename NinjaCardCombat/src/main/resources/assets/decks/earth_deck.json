@@ -2,7 +2,7 @@
   "cards" : [ {
     "name" : "Orc Warrior",
     "description" : "A basic attack grunt",
-    "imageName" : "imageName",
+    "imageName" : "orc_warrior.png",
     "rarity" : "COMMON",
     "type" : "WARRIOR",
     "element" : "EARTH",

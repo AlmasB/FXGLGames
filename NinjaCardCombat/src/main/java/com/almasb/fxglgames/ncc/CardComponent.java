@@ -31,6 +31,8 @@ public class CardComponent extends Component {
 
     private List<Skill> skills;
 
+    private Card data;
+
     public CardComponent(Card card) {
         name.set(card.getName());
         description.set(card.getDescription());
@@ -45,6 +47,12 @@ public class CardComponent extends Component {
         rarity = card.getRarity();
         element = card.getElement();
         skills = card.getSkills();
+
+        data = card;
+    }
+
+    public Card getData() {
+        return data;
     }
 
     public String getName() {

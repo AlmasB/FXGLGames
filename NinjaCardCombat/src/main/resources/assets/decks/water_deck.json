@@ -2,7 +2,7 @@
   "cards" : [ {
     "name" : "Merman",
     "description" : "A strong water creature",
-    "imageName" : "imageName",
+    "imageName" : "merman.png",
     "rarity" : "COMMON",
     "type" : "WARRIOR",
     "element" : "WATER",

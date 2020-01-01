@@ -10,3 +10,8 @@ Before the combat both players choose their 5 cards. One of the players is rando
 ### Assets
 
 - Atk / Def icons: https://kvsr.itch.io/pixel-war-set
+
+### Cards
+
+- [Merman](https://commons.wikimedia.org/wiki/File:Merman_(Edqvist).jpg)
+- [Orc Warrior](https://pixabay.com/illustrations/orc-ogre-troll-warrior-monster-4400046/)
