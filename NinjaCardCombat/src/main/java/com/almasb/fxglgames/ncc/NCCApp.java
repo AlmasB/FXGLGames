@@ -3,16 +3,26 @@ package com.almasb.fxglgames.ncc;
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.ui.FXGLButton;
+import com.almasb.fxgl.ui.FXGLScrollPane;
+import javafx.scene.Node;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxglgames.ncc.Config.*;
+import static com.almasb.fxglgames.ncc.NCCFactory.DECKS;
 import static com.almasb.fxglgames.ncc.NCCType.ENEMY_CARD;
 import static com.almasb.fxglgames.ncc.NCCType.PLAYER_CARD;
 
@@ -34,24 +44,88 @@ public class NCCApp extends GameApplication {
         onKeyDown(KeyCode.ENTER, "Next Turn", this::nextTurn);
     }
 
+    private Entity selectedCard;
+
+    private Rectangle highlightRect;
+
     @Override
     protected void initGame() {
+        highlightRect = new Rectangle(CARD_WIDTH, CARD_HEIGHT, Color.color(0.7, 0.9, 0.8, 0.5));
+
         getGameScene().setBackgroundColor(Color.LIGHTGRAY);
 
         getGameWorld().addEntityFactory(new NCCFactory());
 
+
+
+
+        var box = new HBox(25,
+                DECKS.stream()
+                        .flatMap(d -> d.getCards().stream())
+                        .map(c -> getGameWorld().create("card", new SpawnData(0, 0).put("card", c)))
+                        .map(e -> {
+                            var view = e.getViewComponent().getParent();
+
+                            view.setOnMouseClicked(event -> {
+                                selectCard(e);
+                            });
+
+                            return view;
+                        })
+                        .collect(Collectors.toList())
+                        .toArray(Node[]::new)
+        );
+
+        var deckView = new FXGLScrollPane(box);
+        deckView.setMaxSize(APP_WIDTH * 0.75, CARD_HEIGHT + 50);
+        deckView.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+
+
+
+
+
         for (int i = 0; i < 5; i++) {
-            spawn("card", new SpawnData(50 + i*(CARD_WIDTH + 25), 40).put("type", ENEMY_CARD));
-            spawn("card", new SpawnData(50 + i*(CARD_WIDTH + 25), 420).put("type", PLAYER_CARD));
+            spawn("cardPlaceholder", new SpawnData(50 + i*(CARD_WIDTH + 25), 40 + 30));
+            var playerPlaceholder = spawn("cardPlaceholder", new SpawnData(50 + i*(CARD_WIDTH + 25), 420 + 30).put("isPlayer", true));
+
+            playerPlaceholder.getViewComponent().addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+                var btn = new FXGLButton("SELECT");
+                btn.setOnAction(event -> {
+                    selectedCard.getViewComponent().removeChild(highlightRect);
+                    box.getChildren().remove(selectedCard.getViewComponent().getParent());
+
+                    selectedCard.getViewComponent().getParent().setLayoutX(0);
+                    selectedCard.getViewComponent().getParent().setLayoutY(0);
+                    selectedCard.getViewComponent().getParent().setOnMouseClicked(null);
+
+                    selectedCard.setPosition(playerPlaceholder.getPosition().subtract(0, 0));
+                    selectedCard.setType(PLAYER_CARD);
+
+                    getGameWorld().addEntity(selectedCard);
+
+                    playerPlaceholder.removeFromWorld();
+                });
+
+                getDisplay().showBox("Card Select", deckView, btn);
+            });
+
+//            spawn("card", new SpawnData(50 + i*(CARD_WIDTH + 25), 40).put("type", ENEMY_CARD).put("card", getRandomCard()));
+//            spawn("card", new SpawnData(50 + i*(CARD_WIDTH + 25), 420).put("type", PLAYER_CARD).put("card", getRandomCard()));
         }
+    }
+
+    private void selectCard(Entity card) {
+        if (selectedCard != null) {
+            selectedCard.getViewComponent().removeChild(highlightRect);
+        }
+
+        selectedCard = card;
+        selectedCard.getViewComponent().addChild(highlightRect);
     }
 
     @Override
     protected void initUI() {
-        var text = getUIFactory().newText("PROOF OF CONCEPT", Color.BLACK, 44.0);
-
-        addUINode(text, getAppWidth() / 2.0, getAppHeight() - 10);
-
         var btnNext = getUIFactory().newButton("Next Turn");
         btnNext.setOnAction(e -> nextTurn());
 
@@ -160,6 +234,13 @@ public class NCCApp extends GameApplication {
 
     private void gameOver(String message) {
         getDisplay().showMessageBox(message, getGameController()::startNewGame);
+    }
+
+    private Card getRandomCard() {
+        return FXGLMath.random(DECKS)
+                .map(Deck::getCards)
+                .flatMap(FXGLMath::random)
+                .get();
     }
 
     public static void main(String[] args) {
