@@ -17,17 +17,7 @@ class EditorApp : GameApplication() {
 }
 
 /**
- *                     Skill(
-"Lightning Strike",
-"Description ...",
-"imageName",
-TargetType.ENEMY,
-0,
-3,
-0,
-0,
-15, 0, 0, 0
-),
+ *                     ,
 
 Skill(
 "Lightning Strike",
@@ -51,7 +41,19 @@ fun main() {
             CardType.WARRIOR,
             Element.EARTH,
 
-            arrayListOf(),
+            arrayListOf(
+                    Skill(
+                            "Lightning Bolt",
+                            "Description ...",
+                            "imageName",
+                            TargetType.ENEMY,
+                            0,
+                            3,
+                            0,
+                            0,
+                            15, 0, 0, 0
+                    )
+            ),
 
             1,
             10,

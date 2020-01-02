@@ -86,7 +86,7 @@ public class NCCApp extends GameApplication {
 
 
 
-
+        // TODO: cleanup
 
         for (int i = 0; i < 5; i++) {
             spawn("cardPlaceholder", new SpawnData(50 + i*(CARD_WIDTH + 25), 40 + 30).put("isPlayer", false));
@@ -107,6 +107,25 @@ public class NCCApp extends GameApplication {
 
                     selectedCard.setPosition(playerPlaceholder.getPosition().subtract(0, 0));
                     selectedCard.setType(PLAYER_CARD);
+
+                    // TODO: apply costs e.g. sp hp
+                    // add skill click handlers
+                    selectedCard.getComponent(CardViewComponent.class).getSkillView1().ifPresent(skillView -> {
+                        skillView.setOnMouseClicked(ev -> {
+                            //SkillHandlers.handle(selectedCard, skillView.getSkill());
+                        });
+                    });
+
+                    selectedCard.getComponent(CardViewComponent.class).getSkillView2().ifPresent(skillView -> {
+                        var skill = skillView.getSkill();
+
+                        skillView.setOnMouseClicked(ev -> {
+                            if (skill.getTargetType() == TargetType.ALL_ALLIES) {
+                                // TODO: generalize depending on who cast: player or enemy
+                                SkillHandlers.handle(selectedCard, skill, byType(PLAYER_CARD));
+                            }
+                        });
+                    });
 
                     getGameWorld().addEntity(selectedCard);
 
@@ -235,18 +254,15 @@ public class NCCApp extends GameApplication {
         int atk = e1.getComponent(CardComponent.class).getAtk();
         int def = e2.getComponent(CardComponent.class).getDef();
 
-        int hp = e2.getComponent(CardComponent.class).getHp() - (atk - def);
-        e2.getComponent(CardComponent.class).setHp(hp);
+        var damage = Math.max(0, atk - def);
+
+        e2.getComponent(CardComponent.class).getHp().damage(damage);
     }
 
     private boolean isAlive(List<Entity> cards) {
         return cards.stream()
                 .map(e -> e.getComponent(CardComponent.class))
                 .anyMatch(CardComponent::isAlive);
-    }
-
-    private void onSkill(Entity user, Skill skill, List<Entity> targets) {
-
     }
 
     private void gameOver(String message) {

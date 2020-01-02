@@ -2,11 +2,13 @@ package com.almasb.fxglgames.ncc;
 
 import com.almasb.fxgl.dsl.components.view.ChildViewComponent;
 import com.almasb.fxgl.entity.component.Required;
+import com.almasb.fxgl.ui.FontType;
 import com.almasb.fxgl.ui.ProgressBar;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -15,6 +17,7 @@ import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxglgames.ncc.Config.*;
@@ -42,6 +45,9 @@ public class CardViewComponent extends ChildViewComponent {
     );
 
     private CardComponent card;
+
+    private SkillView skillView1;
+    private SkillView skillView2;
 
     @Override
     public void onAdded() {
@@ -104,14 +110,14 @@ public class CardViewComponent extends ChildViewComponent {
 
 
         ProgressBar barHP = new ProgressBar(false);
-        barHP.setMaxValue(card.getHp());
-        barHP.currentValueProperty().bind(card.hpProperty());
+        barHP.setMaxValue(card.getHp().getMaxValue());
+        barHP.currentValueProperty().bind(card.getHp().valueProperty());
         barHP.setFill(Color.LIGHTGREEN);
         barHP.setWidth(CARD_WIDTH / 3.2);
         barHP.setHeight(12.5);
 
         Text textHP = getUIFactory().newText("", Color.BLACK, 18);
-        textHP.textProperty().bind(card.hpProperty().asString("%d"));
+        textHP.textProperty().bind(card.getHp().valueProperty().asString("%d"));
 
         var boxHP = new HBox(-10, barHP, textHP);
         boxHP.setAlignment(Pos.CENTER_LEFT);
@@ -119,14 +125,14 @@ public class CardViewComponent extends ChildViewComponent {
         boxHP.setTranslateY(CARD_HEIGHT - 65);
 
         ProgressBar barSP = new ProgressBar(false);
-        barSP.setMaxValue(card.getSp());
-        barSP.currentValueProperty().bind(card.spProperty());
+        barSP.setMaxValue(card.getSp().getMaxValue());
+        barSP.currentValueProperty().bind(card.getSp().valueProperty());
         barSP.setFill(Color.BLUE);
         barSP.setWidth(CARD_WIDTH / 3.2);
         barSP.setHeight(12.5);
 
         Text textSP = getUIFactory().newText("", Color.BLACK, 18);
-        textSP.textProperty().bind(card.spProperty().asString("%d"));
+        textSP.textProperty().bind(card.getSp().valueProperty().asString("%d"));
 
         var boxSP = new HBox(-10, barSP, textSP);
         boxSP.setAlignment(Pos.CENTER_LEFT);
@@ -140,6 +146,26 @@ public class CardViewComponent extends ChildViewComponent {
 
         getViewRoot().getChildren().addAll(borderShape, innerBorder, imageRect, imageBorderRect, textRarity, title, boxAtk, boxDef, boxHP, boxSP);
 
+        // skill 1
+        if (card.getSkills().size() >= 1) {
+            var view = new SkillView(card.getSkills().get(0));
+            view.setTranslateX(imageBorderRect.getTranslateX());
+            view.setTranslateY(imageBorderRect.getTranslateY() + CARD_IMAGE_HEIGHT - SKILL_IMAGE_HEIGHT);
+            getViewRoot().getChildren().add(view);
+
+            skillView1 = view;
+        }
+
+        // skill 2
+        if (card.getSkills().size() == 2) {
+            var view = new SkillView(card.getSkills().get(1));
+            view.setTranslateX(imageBorderRect.getTranslateX() + CARD_IMAGE_WIDTH - SKILL_IMAGE_WIDTH);
+            view.setTranslateY(imageBorderRect.getTranslateY() + CARD_IMAGE_HEIGHT - SKILL_IMAGE_HEIGHT);
+            getViewRoot().getChildren().add(view);
+
+            skillView2 = view;
+        }
+
         getViewRoot().setEffect(new DropShadow(10, -3.5, 10, Color.BLACK));
 
         getViewRoot().opacityProperty().bind(
@@ -147,9 +173,13 @@ public class CardViewComponent extends ChildViewComponent {
         );
     }
 
-//    public void setActive(boolean active) {
-//        border.setStroke(active ? Color.GOLD : Color.BLUE);
-//    }
+    public Optional<SkillView> getSkillView1() {
+        return Optional.ofNullable(skillView1);
+    }
+
+    public Optional<SkillView> getSkillView2() {
+        return Optional.ofNullable(skillView2);
+    }
 
     private static class Title extends HBox {
 
@@ -168,6 +198,50 @@ public class CardViewComponent extends ChildViewComponent {
             getChildren().addAll(stack, new StackPane(rect, getUIFactory().newText(name, Color.BLACK, 16.0)));
 
             stack.toFront();
+        }
+    }
+
+    public static class SkillView extends Region {
+        private Skill skill;
+
+        SkillView(Skill skill) {
+            this.skill = skill;
+
+            var texture = texture("skills/" + skill.getImageName(), SKILL_IMAGE_WIDTH, SKILL_IMAGE_HEIGHT);
+
+            var rect = new Rectangle(SKILL_IMAGE_WIDTH, SKILL_IMAGE_HEIGHT, null);
+            rect.setStroke(Color.DARKBLUE);
+
+            String tooltipMessage = skill.getName() + "\n" + skill.getDescription();
+
+            Text text = getUIFactory().newText(tooltipMessage, Color.WHITE, 14);
+            text.setFont(getUIFactory().newFont(FontType.TEXT, 14));
+            text.setWrappingWidth(CARD_WIDTH * 0.7);
+
+            var bg = new Rectangle(CARD_WIDTH * 0.8, text.getLayoutBounds().getHeight() * 1.2, Color.color(0, 0, 0, 0.85));
+            bg.setStroke(Color.WHITE);
+
+            var imageStack = new StackPane(texture, rect);
+
+            imageStack.scaleXProperty().bind(
+                    Bindings.when(imageStack.hoverProperty()).then(1.2).otherwise(1.0)
+            );
+
+            imageStack.scaleYProperty().bind(
+                    Bindings.when(imageStack.hoverProperty()).then(1.2).otherwise(1.0)
+            );
+
+            var tooltipStack = new StackPane(bg, text);
+            tooltipStack.setTranslateX(-10);
+            tooltipStack.setTranslateY(-SKILL_IMAGE_HEIGHT * 2);
+
+            tooltipStack.visibleProperty().bind(imageStack.hoverProperty());
+
+            getChildren().addAll(imageStack, tooltipStack);
+        }
+
+        public Skill getSkill() {
+            return skill;
         }
     }
 }

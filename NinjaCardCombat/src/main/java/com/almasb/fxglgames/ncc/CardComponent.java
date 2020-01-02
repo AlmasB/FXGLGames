@@ -1,6 +1,9 @@
 package com.almasb.fxglgames.ncc;
 
+import com.almasb.fxgl.dsl.components.HealthIntComponent;
+import com.almasb.fxgl.dsl.components.ManaIntComponent;
 import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.entity.component.Required;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -12,18 +15,22 @@ import java.util.List;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
+@Required(HealthIntComponent.class)
+//@Required(ManaIntComponent.class)
 public class CardComponent extends Component {
+
+    private HealthIntComponent hp;
+    private ManaIntComponent sp;
 
     private StringProperty name = new SimpleStringProperty();
     private StringProperty description = new SimpleStringProperty();
 
     private IntegerProperty level = new SimpleIntegerProperty();
-    private IntegerProperty hp = new SimpleIntegerProperty();
-    private IntegerProperty sp = new SimpleIntegerProperty();
+
     private IntegerProperty atk = new SimpleIntegerProperty();
     private IntegerProperty def = new SimpleIntegerProperty();
 
-    private BooleanBinding alive = hp.greaterThan(0);
+    private BooleanBinding alive;
 
     private CardType type;
     private Rarity rarity;
@@ -38,8 +45,6 @@ public class CardComponent extends Component {
         description.set(card.getDescription());
 
         level.set(card.getLevel());
-        hp.set(card.getHp());
-        sp.set(card.getSp());
         atk.set(card.getAtk());
         def.set(card.getDef());
 
@@ -51,8 +56,17 @@ public class CardComponent extends Component {
         data = card;
     }
 
+    @Override
+    public void onAdded() {
+        alive = hp.zeroProperty().not();
+    }
+
     public Card getData() {
         return data;
+    }
+
+    public List<Skill> getSkills() {
+        return skills;
     }
 
     public String getName() {
@@ -71,28 +85,12 @@ public class CardComponent extends Component {
         return description;
     }
 
-    public int getHp() {
-        return hp.get();
-    }
-
-    public IntegerProperty hpProperty() {
+    public HealthIntComponent getHp() {
         return hp;
     }
 
-    public void setHp(int hp) {
-        this.hp.set(hp);
-    }
-
-    public int getSp() {
-        return sp.get();
-    }
-
-    public IntegerProperty spProperty() {
+    public ManaIntComponent getSp() {
         return sp;
-    }
-
-    public void setSp(int sp) {
-        this.sp.set(sp);
     }
 
     public int getLevel() {
@@ -158,7 +156,7 @@ public class CardComponent extends Component {
     public StringProperty toStringProperty() {
         StringProperty prop = new SimpleStringProperty();
 
-        prop.bind(hp.asString().concat(",").concat(sp).concat(",").concat(level).concat(",").concat(atk).concat(",").concat(def));
+        prop.bind(hp.valueProperty().asString().concat(",").concat(sp.valueProperty().asString()).concat(",").concat(level).concat(",").concat(atk).concat(",").concat(def));
 
         return prop;
     }

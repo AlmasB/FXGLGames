@@ -1,5 +1,7 @@
 package com.almasb.fxglgames.ncc;
 
+import com.almasb.fxgl.dsl.components.HealthIntComponent;
+import com.almasb.fxgl.dsl.components.ManaIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
@@ -32,6 +34,8 @@ public class NCCFactory implements EntityFactory {
 
         return entityBuilder()
                 .from(data)
+                .with(new HealthIntComponent(card.getHp()))
+                .with(new ManaIntComponent(card.getSp()))
                 .with(new CardComponent(card))
                 .with(new CardViewComponent())
                 .build();
