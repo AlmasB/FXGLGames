@@ -48,7 +48,7 @@ public class NCCFactory implements EntityFactory {
                 "-fx-border-style: segments(10, 15, 15, 15)  line-cap round;"
         );
 
-        var text = getUIFactory().newText(data.hasKey("isPlayer") ? "+" : "?", Color.WHITE, 76);
+        var text = getUIFactory().newText(data.get("isPlayer") ? "+" : "?", Color.WHITE, 76);
         text.setStroke(Color.BLACK);
         text.setStrokeWidth(2);
 

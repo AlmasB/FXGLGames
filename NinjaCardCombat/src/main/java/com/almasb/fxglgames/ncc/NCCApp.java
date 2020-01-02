@@ -48,9 +48,12 @@ public class NCCApp extends GameApplication {
 
     private Rectangle highlightRect;
 
+    private int playerCardsSelected;
+
     @Override
     protected void initGame() {
         highlightRect = new Rectangle(CARD_WIDTH, CARD_HEIGHT, Color.color(0.7, 0.9, 0.8, 0.5));
+        playerCardsSelected = 0;
 
         getGameScene().setBackgroundColor(Color.LIGHTGRAY);
 
@@ -86,12 +89,14 @@ public class NCCApp extends GameApplication {
 
 
         for (int i = 0; i < 5; i++) {
-            spawn("cardPlaceholder", new SpawnData(50 + i*(CARD_WIDTH + 25), 40 + 30));
+            spawn("cardPlaceholder", new SpawnData(50 + i*(CARD_WIDTH + 25), 40 + 30).put("isPlayer", false));
+
             var playerPlaceholder = spawn("cardPlaceholder", new SpawnData(50 + i*(CARD_WIDTH + 25), 420 + 30).put("isPlayer", true));
 
             playerPlaceholder.getViewComponent().addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
                 var btn = new FXGLButton("SELECT");
                 btn.setOnAction(event -> {
+                    // done selecting card from dialog
                     selectedCard.getViewComponent().removeChild(highlightRect);
                     box.getChildren().remove(selectedCard.getViewComponent().getParent());
 
@@ -105,13 +110,14 @@ public class NCCApp extends GameApplication {
                     getGameWorld().addEntity(selectedCard);
 
                     playerPlaceholder.removeFromWorld();
+
+                    playerCardsSelected++;
+
+                    selectCardAI();
                 });
 
                 getDisplay().showBox("Card Select", deckView, btn);
             });
-
-//            spawn("card", new SpawnData(50 + i*(CARD_WIDTH + 25), 40).put("type", ENEMY_CARD).put("card", getRandomCard()));
-//            spawn("card", new SpawnData(50 + i*(CARD_WIDTH + 25), 420).put("type", PLAYER_CARD).put("card", getRandomCard()));
         }
     }
 
@@ -122,6 +128,30 @@ public class NCCApp extends GameApplication {
 
         selectedCard = card;
         selectedCard.getViewComponent().addChild(highlightRect);
+    }
+
+    private void selectCardAI() {
+        if (playerCardsSelected == 1) {
+            placeEnemyCards(2);
+
+        } else if (playerCardsSelected == 3) {
+            placeEnemyCards(2);
+
+        } else if (playerCardsSelected == 5) {
+            placeEnemyCards(1);
+        }
+    }
+
+    private void placeEnemyCards(int num) {
+        getGameWorld().getEntitiesFiltered(e -> e.getPropertyOptional("isPlayer").isPresent() && !e.getBoolean("isPlayer"))
+                .stream()
+                .limit(num)
+                .forEach(e -> {
+                    // this is where AI picks the cards based on player cards
+                    spawn("card", new SpawnData(e.getPosition()).put("type", ENEMY_CARD).put("card", getRandomCard()));
+
+                    e.removeFromWorld();
+                });
     }
 
     @Override
