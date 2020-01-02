@@ -103,6 +103,7 @@ public class NCCApp extends GameApplication {
                     selectedCard.getViewComponent().getParent().setLayoutX(0);
                     selectedCard.getViewComponent().getParent().setLayoutY(0);
                     selectedCard.getViewComponent().getParent().setOnMouseClicked(null);
+                    selectedCard.getTransformComponent().setZ(100);
 
                     selectedCard.setPosition(playerPlaceholder.getPosition().subtract(0, 0));
                     selectedCard.setType(PLAYER_CARD);
@@ -166,12 +167,24 @@ public class NCCApp extends GameApplication {
         var playerCards = byType(PLAYER_CARD);
         var enemyCards = byType(ENEMY_CARD);
 
+        runTurn(playerCards, enemyCards);
+
+        runOnce(() -> runTurn(enemyCards, playerCards), Duration.seconds(7));
+
+//        if (!isAlive(playerCards)) {
+//            gameOver("You lose");
+//        } else if (!isAlive(enemyCards)) {
+//            gameOver("You win");
+//        }
+    }
+
+    private void runTurn(List<Entity> atkCards, List<Entity> defCards) {
         for (int i = 0; i < 5; i++) {
-            Entity cardEntity = playerCards.get(i);
+            Entity cardEntity = atkCards.get(i);
             var card = cardEntity.getComponent(CardComponent.class);
 
             if (card.isAlive()) {
-                Entity cardEntity2 = enemyCards.get(i);
+                Entity cardEntity2 = defCards.get(i);
                 var card2 = cardEntity2.getComponent(CardComponent.class);
 
                 Entity targetEntity;
@@ -179,7 +192,7 @@ public class NCCApp extends GameApplication {
                 if (card2.isAlive()) {
                     targetEntity = cardEntity2;
                 } else {
-                    targetEntity = enemyCards.stream()
+                    targetEntity = defCards.stream()
                             .filter(e -> e.getComponent(CardComponent.class).isAlive())
                             .findAny()
                             .orElse(null);
@@ -216,32 +229,6 @@ public class NCCApp extends GameApplication {
                 }
             }
         }
-
-        // TODO: remove duplicate
-
-//        for (int i = 0; i < 5; i++) {
-//            Entity cardEntity = enemyCards.get(i);
-//            var card = cardEntity.getComponent(CardComponent.class);
-//
-//            if (card.isAlive()) {
-//                Entity cardEntity2 = playerCards.get(i);
-//                var card2 = cardEntity2.getComponent(CardComponent.class);
-//
-//                if (card2.isAlive()) {
-//                    attack(cardEntity, cardEntity2);
-//                } else {
-//                    playerCards.stream().filter(e -> e.getComponent(CardComponent.class).isAlive()).findAny().ifPresent(c -> {
-//                        attack(cardEntity, c);
-//                    });
-//                }
-//            }
-//        }
-//
-//        if (!isAlive(playerCards)) {
-//            gameOver("You lose");
-//        } else if (!isAlive(enemyCards)) {
-//            gameOver("You win");
-//        }
     }
 
     private void attack(Entity e1, Entity e2) {
