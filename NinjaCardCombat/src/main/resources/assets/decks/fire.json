@@ -1,16 +1,29 @@
 {
   "cards" : [ {
-    "name" : "Fire Unit",
-    "description" : "A strong fire creature",
-    "imageName" : "merman.png",
+    "name" : "Witch",
+    "description" : "None",
+    "imageName" : "witch.png",
     "rarity" : "COMMON",
-    "type" : "WARRIOR",
+    "type" : "MAGE",
     "element" : "FIRE",
     "skills" : [ ],
     "level" : 1,
-    "hp" : 13,
-    "sp" : 5,
-    "atk" : 6,
-    "def" : 2
+    "hp" : 25,
+    "sp" : 25,
+    "atk" : 12,
+    "def" : 6
+  }, {
+    "name" : "Fire Bird",
+    "description" : "None",
+    "imageName" : "fire_bird.png",
+    "rarity" : "COMMON",
+    "type" : "SUPPORT",
+    "element" : "FIRE",
+    "skills" : [ ],
+    "level" : 1,
+    "hp" : 20,
+    "sp" : 35,
+    "atk" : 5,
+    "def" : 8
   } ]
 }

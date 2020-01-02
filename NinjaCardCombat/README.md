@@ -16,3 +16,4 @@ Before the combat both players choose their 5 cards. One of the players is rando
 - [Merman](https://commons.wikimedia.org/wiki/File:Merman_(Edqvist).jpg)
 - [Orc Warrior](https://pixabay.com/illustrations/orc-ogre-troll-warrior-monster-4400046/)
 - [Pegasus](https://www.publicdomainpictures.net/en/view-image.php?image=254804&picture=pegasus-winged-horse-clipart)
+- [Others](https://www.needpix.com/search/archer)

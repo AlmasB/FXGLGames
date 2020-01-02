@@ -1,16 +1,29 @@
 {
   "cards" : [ {
-    "name" : "Neutral Unit",
-    "description" : "A strong neutral creature",
-    "imageName" : "merman.png",
+    "name" : "Bruz the Chopper",
+    "description" : "None",
+    "imageName" : "bruz.png",
     "rarity" : "RARE",
     "type" : "WARRIOR",
     "element" : "NEUTRAL",
     "skills" : [ ],
     "level" : 1,
-    "hp" : 9,
-    "sp" : 2,
-    "atk" : 8,
-    "def" : 1
+    "hp" : 73,
+    "sp" : 25,
+    "atk" : 59,
+    "def" : 43
+  }, {
+    "name" : "Human Archer",
+    "description" : "None",
+    "imageName" : "human_archer.png",
+    "rarity" : "COMMON",
+    "type" : "ROGUE",
+    "element" : "NEUTRAL",
+    "skills" : [ ],
+    "level" : 1,
+    "hp" : 25,
+    "sp" : 11,
+    "atk" : 9,
+    "def" : 3
   } ]
 }

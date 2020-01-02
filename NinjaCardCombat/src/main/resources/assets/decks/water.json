@@ -12,5 +12,18 @@
     "sp" : 5,
     "atk" : 6,
     "def" : 2
+  }, {
+    "name" : "Water Horse",
+    "description" : "None",
+    "imageName" : "water_horse.png",
+    "rarity" : "COMMON",
+    "type" : "SUPPORT",
+    "element" : "WATER",
+    "skills" : [ ],
+    "level" : 1,
+    "hp" : 9,
+    "sp" : 9,
+    "atk" : 5,
+    "def" : 4
   } ]
 }

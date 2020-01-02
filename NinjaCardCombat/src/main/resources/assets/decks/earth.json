@@ -25,5 +25,18 @@
     "sp" : 97,
     "atk" : 55,
     "def" : 48
+  }, {
+    "name" : "Gargoyle",
+    "description" : "None",
+    "imageName" : "gargoyle.png",
+    "rarity" : "RARE",
+    "type" : "MAGE",
+    "element" : "EARTH",
+    "skills" : [ ],
+    "level" : 1,
+    "hp" : 33,
+    "sp" : 44,
+    "atk" : 5,
+    "def" : 30
   } ]
 }
