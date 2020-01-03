@@ -16,7 +16,7 @@ import java.util.List;
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 @Required(HealthIntComponent.class)
-//@Required(ManaIntComponent.class)
+@Required(ManaIntComponent.class)
 public class CardComponent extends Component {
 
     private HealthIntComponent hp;
