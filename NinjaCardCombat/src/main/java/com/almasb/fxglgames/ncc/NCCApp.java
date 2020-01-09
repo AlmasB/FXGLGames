@@ -59,9 +59,6 @@ public class NCCApp extends GameApplication {
 
         getGameWorld().addEntityFactory(new NCCFactory());
 
-
-
-
         var box = new HBox(25,
                 DECKS.stream()
                         .flatMap(d -> d.getCards().stream())

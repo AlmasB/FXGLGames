@@ -36,6 +36,7 @@ import javafx.scene.text.Text;
 import java.util.Map;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxglgames.cannon.EntityType.*;
 
 /**
  * A basic FXGL game demo.
@@ -60,7 +61,7 @@ public class CannonApp extends GameApplication {
 
     @Override
     protected void initInput() {
-        onBtnDown(MouseButton.PRIMARY, "Shoot", () -> shoot());
+        onBtnDown(MouseButton.PRIMARY, () -> shoot());
     }
 
     @Override
@@ -82,7 +83,7 @@ public class CannonApp extends GameApplication {
     }
 
     private void initCannon() {
-        cannon = getGameWorld().spawn("cannon", 50, getAppHeight() - 300);
+        cannon = spawn("cannon", 50, getAppHeight() - 300);
     }
 
     private void initBasket() {
@@ -97,7 +98,7 @@ public class CannonApp extends GameApplication {
 
     @Override
     protected void initPhysics() {
-        onCollisionBegin(CannonType.BULLET, CannonType.BASKET, (bullet, basket) -> {
+        onCollisionBegin(BULLET, BASKET, (bullet, basket) -> {
             bullet.removeFromWorld();
             inc("score", +1000);
         });
@@ -108,7 +109,7 @@ public class CannonApp extends GameApplication {
         Text scoreText = getUIFactory().newText("", Color.BLACK, 24);
         scoreText.setTranslateX(550);
         scoreText.setTranslateY(100);
-        scoreText.textProperty().bind(getGameState().intProperty("score").asString("Score: [%d]"));
+        scoreText.textProperty().bind(getip("score").asString("Score: [%d]"));
 
         addUINode(scoreText);
     }

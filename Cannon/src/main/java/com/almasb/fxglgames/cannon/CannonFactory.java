@@ -13,6 +13,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxglgames.cannon.EntityType.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -22,7 +23,7 @@ public class CannonFactory implements EntityFactory {
     @Spawns("cannon")
     public Entity newCannon(SpawnData data) {
         return entityBuilder()
-                .type(CannonType.CANNON)
+                .type(CANNON)
                 .from(data)
                 .view(new Rectangle(70, 30, Color.BROWN))
                 .with(new LiftComponent().yAxisSpeedDuration(150, Duration.seconds(1)))
@@ -42,7 +43,7 @@ public class CannonFactory implements EntityFactory {
         });
 
         return entityBuilder()
-                .type(CannonType.BULLET)
+                .type(BULLET)
                 .from(data)
                 .viewWithBBox(new Rectangle(25, 25, Color.BLUE))
                 .collidable()
@@ -54,7 +55,7 @@ public class CannonFactory implements EntityFactory {
     @Spawns("basketBarrier")
     public Entity newBasketBarrier(SpawnData data) {
         return entityBuilder()
-                .type(CannonType.BASKET)
+                .type(BASKET)
                 .from(data)
                 .viewWithBBox(new Rectangle(100, 300, Color.RED))
                 .with(new PhysicsComponent())
@@ -64,7 +65,7 @@ public class CannonFactory implements EntityFactory {
     @Spawns("basketGround")
     public Entity newBasketGround(SpawnData data) {
         return entityBuilder()
-                .type(CannonType.BASKET)
+                .type(BASKET)
                 .from(data)
                 .viewWithBBox(new Rectangle(300, 5, Color.TRANSPARENT))
                 .collidable()

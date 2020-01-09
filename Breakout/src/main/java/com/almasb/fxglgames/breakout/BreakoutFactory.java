@@ -28,15 +28,15 @@ package com.almasb.fxglgames.breakout;
 
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.util.LazyValue;
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.EffectComponent;
 import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
 import com.almasb.fxgl.dsl.components.ProjectileComponent;
-import com.almasb.fxgl.entity.*;
-import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.EntityFactory;
+import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.TimeComponent;
 import com.almasb.fxgl.particle.ParticleComponent;
-import com.almasb.fxgl.particle.ParticleEmitter;
 import com.almasb.fxgl.particle.ParticleEmitters;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
@@ -55,9 +55,7 @@ import com.almasb.fxglgames.breakout.components.MoveDownComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
 import java.util.stream.Collectors;
@@ -215,15 +213,12 @@ public class BreakoutFactory implements EntityFactory {
     public Entity newZombie(SpawnData data) {
         var channel = new AnimationChannel(image.get(), Duration.seconds(1), 8);
 
-        var e = entityBuilder()
+        return entityBuilder()
                 .from(data)
                 .view(new AnimatedTexture(channel).play())
                 .with(new ExpireCleanComponent(Duration.seconds(1)))
                 .scale(0.2, 0.2)
+                .scaleOrigin(0, 0)
                 .build();
-
-        e.getTransformComponent().setScaleOrigin(new Point2D(0, 0));
-
-        return e;
     }
 }

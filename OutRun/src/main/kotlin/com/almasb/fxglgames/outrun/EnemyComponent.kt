@@ -26,11 +26,9 @@
 
 package com.almasb.fxglgames.outrun
 
-import com.almasb.fxgl.animation.Interpolators
-import com.almasb.fxgl.core.math.FXGLMath
 import com.almasb.fxgl.entity.component.Component
 import javafx.beans.property.SimpleDoubleProperty
-import javafx.util.Duration
+import java.lang.Math.min
 
 /**
  *
@@ -57,7 +55,7 @@ class EnemyComponent : Component() {
 
         entity.y -= dy
 
-        boost.set(FXGLMath.min(boost.get() + tpf * 5, 100.0))
+        boost.set(min(boost.get() + tpf * 5, 100.0))
     }
 
     fun getSpeed() = dy
