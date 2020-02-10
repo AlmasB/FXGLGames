@@ -1,13 +1,18 @@
 package com.almasb.fxglgames.bomberman;
 
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.EntityFactory;
+import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxglgames.bomberman.components.BombComponent;
 import com.almasb.fxglgames.bomberman.components.PlayerComponent;
-import com.almasb.fxgl.entity.*;
+import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+
+import static com.almasb.fxglgames.bomberman.BombermanApp.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -46,7 +51,7 @@ public class BombermanFactory implements EntityFactory {
         return FXGL.entityBuilder()
                 .type(BombermanType.PLAYER)
                 .from(data)
-                .viewWithBBox(new Rectangle(BombermanApp.TILE_SIZE, BombermanApp.TILE_SIZE, Color.BLUE))
+                .viewWithBBox(new Rectangle(TILE_SIZE, TILE_SIZE, Color.BLUE))
                 .with(new CollidableComponent(true))
                 .with(new PlayerComponent())
                 .build();
@@ -57,8 +62,9 @@ public class BombermanFactory implements EntityFactory {
         return FXGL.entityBuilder()
                 .type(BombermanType.BOMB)
                 .from(data)
-                .viewWithBBox(new Circle(BombermanApp.TILE_SIZE / 2, BombermanApp.TILE_SIZE / 2, BombermanApp.TILE_SIZE / 2, Color.BLACK))
+                .viewWithBBox("bomb.png")
                 .with(new BombComponent(data.get("radius")))
+                .atAnchored(new Point2D(13, 11), new Point2D(data.getX() + TILE_SIZE / 2, data.getY() + TILE_SIZE / 2))
                 .build();
     }
 
@@ -67,7 +73,7 @@ public class BombermanFactory implements EntityFactory {
         return FXGL.entityBuilder()
                 .type(BombermanType.POWERUP)
                 .from(data)
-                .viewWithBBox(new Rectangle(BombermanApp.TILE_SIZE, BombermanApp.TILE_SIZE, Color.YELLOW))
+                .viewWithBBox(new Rectangle(TILE_SIZE, TILE_SIZE, Color.YELLOW))
                 .with(new CollidableComponent(true))
                 .build();
     }
