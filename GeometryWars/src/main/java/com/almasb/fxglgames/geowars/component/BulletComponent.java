@@ -32,7 +32,6 @@ import com.almasb.fxgl.dsl.components.ProjectileComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.BoundingBoxComponent;
-import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxglgames.geowars.GeoWarsType;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
@@ -49,7 +48,7 @@ public class BulletComponent extends Component {
     private static final Duration PARTICLE_DURATION = Duration.seconds(1.2);
 
     static {
-        ExhaustParticleComponent.colorImage(PARTICLE_COLOR);
+        //ExhaustParticleComponent.colorImage(PARTICLE_COLOR);
     }
 
     private BoundingBoxComponent bbox;
@@ -95,7 +94,7 @@ public class BulletComponent extends Component {
     private void spawnParticles(double x, double y, double dirX, double dirY) {
         entityBuilder()
                 .at(x, y)
-                .view(new Texture(ExhaustParticleComponent.coloredImages.get(PARTICLE_COLOR)))
+                //.view(new Texture(ExhaustParticleComponent.coloredImages.get(PARTICLE_COLOR)))
                 .with(new ProjectileComponent(new Point2D(dirX, dirY), FXGLMath.random(150, 280)))
                 .with(new ExpireCleanComponent(PARTICLE_DURATION))
                 .with(new ParticleControl())

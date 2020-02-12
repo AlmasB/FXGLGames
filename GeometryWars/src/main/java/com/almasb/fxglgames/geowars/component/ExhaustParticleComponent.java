@@ -26,94 +26,91 @@
 
 package com.almasb.fxglgames.geowars.component;
 
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.dsl.FXGL;
-import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.texture.Texture;
-import javafx.scene.image.Image;
+import com.almasb.fxgl.particle.ParticleComponent;
+import com.almasb.fxgl.particle.ParticleEmitter;
+import javafx.geometry.Point2D;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.almasb.fxgl.core.pool.Pools.free;
-import static com.almasb.fxgl.core.pool.Pools.obtain;
-import static java.lang.Math.min;
+import static com.almasb.fxgl.dsl.FXGL.random;
+import static com.almasb.fxgl.dsl.FXGL.texture;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class ExhaustParticleComponent extends Component {
+public class ExhaustParticleComponent extends ParticleComponent {
 
-    private static final Image PARTICLE_IMAGE;
-    public static final Map<Color, Image> coloredImages = new HashMap<>();
+    private PlayerComponent playerComponent;
 
-    static {
-        PARTICLE_IMAGE = FXGL.getAssetLoader().loadTexture("Glow.png").getImage();
-    }
+    private double t = 0.0;
+    private boolean up = true;
 
-    private Vec2 velocity;
-    private float lifespan;
-    private long spawnTime;
-    private Color color;
-
-    public ExhaustParticleComponent(Vec2 velocity, float lifespan, Color color) {
-        this.velocity = obtain(Vec2.class);
-        this.velocity.set(velocity);
-
-        this.lifespan = lifespan;
-        spawnTime = System.currentTimeMillis();
-        this.color = color;
-
-        if (!coloredImages.containsKey(color)) {
-            colorImage(color);
-        }
-    }
-
-    public static void colorImage(Color color) {
-        coloredImages.put(color, new Texture(PARTICLE_IMAGE).toColor(color).getImage());
+    public ExhaustParticleComponent(ParticleEmitter emitter) {
+        super(emitter);
     }
 
     @Override
     public void onAdded() {
-        entity.getViewComponent().addChild(new Texture(coloredImages.get(color)));
-    }
+        var emitter = getEmitter();
+        emitter.setMaxEmissions(Integer.MAX_VALUE);
+        emitter.setNumParticles(2);
+        emitter.setEmissionRate(1);
+        emitter.setBlendMode(BlendMode.ADD);
+        emitter.setSourceImage(texture("particles/spark_04.png", 32, 32).multiplyColor(Color.BLUEVIOLET));
+        emitter.setAllowParticleRotation(true);
+        emitter.setSize(2, 24);
+        emitter.setScaleFunction(i -> FXGLMath.randomPoint2D().multiply(0.01));
+        emitter.setExpireFunction(i -> Duration.seconds(random(0.25, 1.25)));
+        emitter.setAccelerationFunction(() -> Point2D.ZERO);
 
-    @Override
-    public void onRemoved() {
-        free(velocity);
+        emitter.setSpawnPointFunction(i -> {
+            Vec2 offset = Vec2.fromAngle(playerComponent.getEntity().getRotation());
+
+            return offset.mulLocal(-15).toPoint2D();
+        });
+        emitter.setVelocityFunction(i -> {
+            var direction = Vec2.fromAngle(playerComponent.getEntity().getRotation());
+            return direction.normalizeLocal().negateLocal().toPoint2D().multiply(10);
+        });
+
+        emitter.setControl(p -> {
+            var x = p.position.x;
+            var y = p.position.y;
+
+            var noiseValue = FXGLMath.noise2D(x * 0.02 * t, y * 0.02 * t);
+            var angle = FXGLMath.toDegrees((noiseValue + 1) * Math.PI * 1.5);
+
+            angle %= 360.0;
+
+            var v = Vec2.fromAngle(angle).normalizeLocal().mulLocal(FXGLMath.random(1.0, 15));
+
+            var vx = p.velocity.x * 0.9f + v.x * 0.1f;
+            var vy = p.velocity.y * 0.9f + v.y * 0.1f;
+
+            p.velocity.x = vx;
+            p.velocity.y = vy;
+        });
     }
 
     @Override
     public void onUpdate(double tpf) {
+        super.onUpdate(tpf);
 
-        // movement
-        entity.translateX(velocity.x * 3 * tpf);
-        entity.translateY(velocity.y * 3 * tpf);
-
-        velocity.mulLocal(1 - 3f * (float) tpf);
-        if (Math.abs(velocity.x) + Math.abs(velocity.y) < 0.001f) {
-            velocity.setZero();
+        if (up) {
+            t += tpf;
+        } else {
+            t -= tpf;
         }
 
-        // rotation and scale
-        if (velocity.x != 0 && velocity.y != 0) {
-            entity.setRotation(velocity.angle());
+        if (t > 7) {
+            up = false;
         }
 
-        // alpha
-        double speed = velocity.length();
-        long difTime = System.currentTimeMillis() - spawnTime;
-        float percentLife = 1 - difTime / lifespan;
-
-        double opacity = min(1.5f, min(percentLife * 2, speed));
-        opacity *= opacity;
-
-        entity.getViewComponent().setOpacity(opacity);
-
-        // is particle expired?
-        if (difTime > lifespan) {
-            entity.removeFromWorld();
+        if (t < 1) {
+            up = true;
         }
     }
 }

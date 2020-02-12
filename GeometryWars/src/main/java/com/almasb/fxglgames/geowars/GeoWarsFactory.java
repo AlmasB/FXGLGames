@@ -8,15 +8,16 @@ import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.particle.ParticleEmitters;
 import com.almasb.fxglgames.geowars.component.*;
 import com.almasb.fxglgames.geowars.component.enemy.BouncerComponent;
 import com.almasb.fxglgames.geowars.component.enemy.RunnerComponent;
 import com.almasb.fxglgames.geowars.component.enemy.SeekerComponent;
 import com.almasb.fxglgames.geowars.component.enemy.WandererComponent;
-import com.almasb.fxglgames.geowars.component.GridComponent;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.effect.Bloom;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
@@ -67,12 +68,19 @@ public class GeoWarsFactory implements EntityFactory {
 
     @Spawns("Player")
     public Entity spawnPlayer(SpawnData data) {
+        var emitter = ParticleEmitters.newExplosionEmitter(1);
+
+        var t = texture("Player.png");
+        t.setEffect(new Bloom());
+
         return entityBuilder()
                 .type(PLAYER)
                 .at(getAppWidth() / 2, getAppHeight() / 2)
-                .viewWithBBox("Player.png")
+                .viewWithBBox(t)
                 .collidable()
-                .with(new PlayerComponent(config.getPlayerSpeed()), new KeepOnScreenComponent().bothAxes())
+                .with(new KeepOnScreenComponent().bothAxes())
+                .with(new PlayerComponent(config.getPlayerSpeed()))
+                .with(new ExhaustParticleComponent(emitter))
                 .build();
     }
 

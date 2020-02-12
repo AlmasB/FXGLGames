@@ -69,7 +69,6 @@ public class GeoWarsApp extends GameApplication {
         settings.setTitle("FXGL Geometry Wars");
         settings.setVersion("1.0");
         settings.setConfigClass(GeoWarsConfig.class);
-        settings.setExperimentalNative(true);
 
         if (!settings.isExperimentalNative()) {
             settings.setFontUI("game_font_7.ttf");
@@ -117,11 +116,11 @@ public class GeoWarsApp extends GameApplication {
 
         getGameScene().setBackgroundColor(Color.BLACK);
 
-        spawn("Background");
+        //spawn("Background");
         player = spawn("Player");
         playerComponent = player.getComponent(PlayerComponent.class);
 
-        getGameState().<Integer>addListener("multiplier", (prev, now) -> {
+        getWorldProperties().<Integer>addListener("multiplier", (prev, now) -> {
             WeaponType current = geto("weaponType");
             WeaponType newType = WeaponType.fromMultiplier(geti("multiplier"));
 
@@ -130,9 +129,9 @@ public class GeoWarsApp extends GameApplication {
             }
         });
 
-        getGameState().<Integer>addListener("time", (prev, now) -> {
+        getWorldProperties().<Integer>addListener("time", (prev, now) -> {
             if (now == 0)
-                getDisplay().showMessageBox("Demo Over. Your score: " + getGameState().getInt("score"), getGameController()::exit);
+                getDialogService().showMessageBox("Demo Over. Your score: " + geti("score"), getGameController()::exit);
         });
 
         getGameTimer().runAtInterval(() -> spawn("Wanderer"), Duration.seconds(1.5));
@@ -189,17 +188,17 @@ public class GeoWarsApp extends GameApplication {
 
     @Override
     protected void initUI() {
-        Text scoreText = getUIFactory().newText("", Color.WHITE, 28);
-        scoreText.setTranslateX(1100);
+        Text scoreText = getUIFactoryService().newText("", Color.WHITE, 28);
+        scoreText.setTranslateX(60);
         scoreText.setTranslateY(70);
         scoreText.textProperty().bind(getip("score").asString());
 
-        Text multText = getUIFactory().newText("", Color.WHITE, 28);
+        Text multText = getUIFactoryService().newText("", Color.WHITE, 28);
         multText.setTranslateX(60);
-        multText.setTranslateY(70);
+        multText.setTranslateY(90);
         multText.textProperty().bind(getip("multiplier").asString("x %d"));
 
-        Text timerText = getUIFactory().newText("", Color.WHITE, 28);
+        Text timerText = getUIFactoryService().newText("", Color.WHITE, 28);
         timerText.layoutBoundsProperty().addListener((o, old, bounds) -> {
             timerText.setTranslateX(getAppWidth() / 2 - bounds.getWidth() / 2);
         });
@@ -216,7 +215,7 @@ public class GeoWarsApp extends GameApplication {
 
         getGameScene().addUINodes(multText, scoreText, timerText, timerCircle);
 
-        Text beware = getUIFactory().newText("Beware! Seekers get smarter every spawn!", Color.AQUA, 38);
+        Text beware = getUIFactoryService().newText("Beware! Seekers get smarter every spawn!", Color.AQUA, 38);
         beware.setOpacity(0);
 
         addUINode(beware);
@@ -228,6 +227,15 @@ public class GeoWarsApp extends GameApplication {
                 .autoReverse(true)
                 .repeat(2)
                 .fadeIn(beware)
+                .buildAndPlay();
+
+        animationBuilder()
+                .duration(Duration.seconds(0.35))
+                .autoReverse(true)
+                .repeatInfinitely()
+                .scale(timerCircle)
+                .from(new Point2D(1, 1))
+                .to(new Point2D(1.1, 1.1))
                 .buildAndPlay();
     }
 
@@ -245,7 +253,7 @@ public class GeoWarsApp extends GameApplication {
 
         final int multiplier = geti("multiplier");
 
-        Text bonusText = getUIFactory().newText("+100" + (multiplier == 1 ? "" : "x" + multiplier), Color.color(1, 1, 1, 0.8), 24);
+        Text bonusText = getUIFactoryService().newText("+100" + (multiplier == 1 ? "" : "x" + multiplier), Color.color(1, 1, 1, 0.8), 24);
 
         addUINode(bonusText, enemyPosition.getX(), enemyPosition.getY());
 
@@ -266,7 +274,7 @@ public class GeoWarsApp extends GameApplication {
         set("kills", 0);
         set("multiplier", 1);
 
-        Text bonusText = getUIFactory().newText("-1000", Color.WHITE, 20);
+        Text bonusText = getUIFactoryService().newText("-1000", Color.WHITE, 20);
 
         addUINode(bonusText, 1100, 70);
 

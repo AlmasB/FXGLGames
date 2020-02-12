@@ -1,8 +1,5 @@
 package com.almasb.fxglgames.geowars.component;
 
-import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.core.pool.Pools;
 import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
@@ -10,14 +7,14 @@ import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.geowars.WeaponType;
 import javafx.geometry.Point2D;
-import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxgl.dsl.FXGL.newLocalTimer;
+import static com.almasb.fxgl.dsl.FXGL.spawn;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.geto;
 
 /**
@@ -31,8 +28,6 @@ public class PlayerComponent extends Component {
 
     private int playerSpeed;
     private double speed;
-
-    private long spawnTime = System.currentTimeMillis();
 
     private LocalTimer weaponTimer = newLocalTimer();
 
@@ -128,78 +123,17 @@ public class PlayerComponent extends Component {
 
     public void left() {
         entity.translateX(-speed);
-        makeExhaustFire();
     }
 
     public void right() {
         entity.translateX(speed);
-        makeExhaustFire();
     }
 
     public void up() {
         entity.translateY(-speed);
-        makeExhaustFire();
     }
 
     public void down() {
         entity.translateY(speed);
-        makeExhaustFire();
-    }
-
-    private void makeExhaustFire() {
-        Vec2 position = new Vec2(entity.getCenter().getX(), entity.getCenter().getY());
-        double rotation = entity.getRotation();
-
-        Color midColor = Color.BLUE;
-        Color sideColor = Color.MEDIUMVIOLETRED.brighter();
-
-        Vec2 direction = Vec2.fromAngle(rotation);
-
-        float t = (System.currentTimeMillis() - spawnTime) / 1000f;
-
-        Vec2 baseVel = direction.mul(-45f);
-        Vec2 perpVel = new Vec2(baseVel.y, -baseVel.x).mulLocal(2f * FXGLMath.sin(t * 10f));
-
-        // subtract half extent x, y of Glow.png                                            mul half extent entity
-        Vec2 pos = position.sub(new Vec2(17.5, 10)).addLocal(direction.negate().normalizeLocal().mulLocal(20));
-
-        // middle stream
-        Vec2 randVec = Vec2.fromAngle(FXGLMath.toDegrees(FXGLMath.random(0.0, 1.0) * FXGLMath.PI2));
-        Vec2 velMid = baseVel.add(randVec.mul(7.5f));
-
-        entityBuilder()
-                .at(pos.x, pos.y)
-                .with(new ExhaustParticleComponent(velMid, 800, midColor))
-                .buildAndAttach();
-
-        // side streams
-        Vec2 randVec1 = Vec2.fromAngle(FXGLMath.toDegrees(FXGLMath.random(0.0, 1.0) * FXGLMath.PI2));
-        Vec2 randVec2 = Vec2.fromAngle(FXGLMath.toDegrees(FXGLMath.random(0.0, 1.0) * FXGLMath.PI2));
-
-        Vec2 velSide1 = baseVel.add(randVec1.mulLocal(2.4f)).addLocal(perpVel);
-        Vec2 velSide2 = baseVel.add(randVec2.mulLocal(2.4f)).subLocal(perpVel);
-
-        entityBuilder()
-                .at(pos.x, pos.y)
-                .with(new ExhaustParticleComponent(velSide1, 800, sideColor))
-                .buildAndAttach();
-
-        entityBuilder()
-                .at(pos.x, pos.y)
-                .with(new ExhaustParticleComponent(velSide2, 800, sideColor))
-                .buildAndAttach();
-
-        // TODO: this is useless because vectors above created with "new"
-        Pools.free(direction);
-        Pools.free(position);
-        Pools.free(baseVel);
-        Pools.free(perpVel);
-        Pools.free(pos);
-        Pools.free(randVec);
-        Pools.free(velMid);
-        Pools.free(randVec1);
-        Pools.free(randVec2);
-        Pools.free(velSide1);
-        Pools.free(velSide2);
     }
 }
