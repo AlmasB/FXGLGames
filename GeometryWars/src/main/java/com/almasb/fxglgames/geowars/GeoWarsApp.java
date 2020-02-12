@@ -116,7 +116,7 @@ public class GeoWarsApp extends GameApplication {
 
         getGameScene().setBackgroundColor(Color.BLACK);
 
-        //spawn("Background");
+        spawn("Background");
         player = spawn("Player");
         playerComponent = player.getComponent(PlayerComponent.class);
 

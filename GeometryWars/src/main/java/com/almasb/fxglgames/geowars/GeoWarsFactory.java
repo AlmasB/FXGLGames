@@ -171,7 +171,8 @@ public class GeoWarsFactory implements EntityFactory {
         return entityBuilder()
                 .at(data.getX() - 40, data.getY() - 40)
                 .view(texture("explosion.png", 80 * 48, 80).toAnimatedTexture(48, Duration.seconds(0.75)).play())
-                .with(new ExpireCleanComponent(Duration.seconds(0.9)))
+                .with(new ExplosionParticleComponent())
+                .with(new ExpireCleanComponent(Duration.seconds(1.6)))
                 .build();
     }
 
