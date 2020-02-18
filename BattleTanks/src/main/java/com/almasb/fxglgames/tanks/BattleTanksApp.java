@@ -37,6 +37,7 @@ import com.almasb.fxgl.pathfinding.CellState;
 import com.almasb.fxgl.pathfinding.astar.AStarGrid;
 import com.almasb.fxgl.pathfinding.astar.AStarGridView;
 import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
+import com.almasb.fxglgames.tanks.collision.BulletBrickHandler;
 import com.almasb.fxglgames.tanks.collision.BulletEnemyFlagHandler;
 import com.almasb.fxglgames.tanks.collision.BulletEnemyTankHandler;
 import com.almasb.fxglgames.tanks.components.TankViewComponent;
@@ -176,6 +177,8 @@ public class BattleTanksApp extends GameApplication {
 
         getPhysicsWorld().addCollisionHandler(bulletFlagHandler);
         getPhysicsWorld().addCollisionHandler(bulletFlagHandler.copyFor(BULLET, PLAYER_FLAG));
+
+        getPhysicsWorld().addCollisionHandler(new BulletBrickHandler());
     }
 
     @Override

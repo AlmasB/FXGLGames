@@ -45,6 +45,7 @@ import com.almasb.fxglgames.tanks.actions.DoNothingAction;
 import com.almasb.fxglgames.tanks.actions.GoalSelectorComponent;
 import com.almasb.fxglgames.tanks.actions.GuardAction;
 import com.almasb.fxglgames.tanks.actions.ShootPlayerAction;
+import com.almasb.fxglgames.tanks.components.BrickComponent;
 import com.almasb.fxglgames.tanks.components.MoveComponent;
 import com.almasb.fxglgames.tanks.components.PlayerArrowViewComponent;
 import com.almasb.fxglgames.tanks.components.TankViewComponent;
@@ -167,6 +168,7 @@ public class BattleTanksFactory implements EntityFactory {
                 .type(BRICK)
                 .viewWithBBox(texture("brick.png", data.<Integer>get("width"), data.<Integer>get("height")))
                 .collidable()
+                .with(new BrickComponent())
                 .build();
     }
 }
