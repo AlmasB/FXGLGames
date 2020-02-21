@@ -38,7 +38,7 @@ import com.almasb.fxgl.pathfinding.astar.AStarGrid;
 import com.almasb.fxgl.pathfinding.astar.AStarGridView;
 import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
 import com.almasb.fxglgames.tanks.collision.BulletBrickHandler;
-import com.almasb.fxglgames.tanks.collision.BulletEnemyFlagHandler;
+import com.almasb.fxglgames.tanks.collision.BulletFlagHandler;
 import com.almasb.fxglgames.tanks.collision.BulletEnemyTankHandler;
 import com.almasb.fxglgames.tanks.components.TankViewComponent;
 import javafx.scene.input.KeyCode;
@@ -134,7 +134,6 @@ public class BattleTanksApp extends GameApplication {
 
     @Override
     protected void initGame() {
-        ControllerApp.init();
         getGameScene().setBackgroundColor(Color.LIGHTGRAY);
 
         getGameWorld().addEntityFactory(new BattleTanksFactory());
@@ -173,17 +172,12 @@ public class BattleTanksApp extends GameApplication {
         getPhysicsWorld().addCollisionHandler(bulletTankHandler);
         getPhysicsWorld().addCollisionHandler(bulletTankHandler.copyFor(BULLET, PLAYER));
 
-        var bulletFlagHandler = new BulletEnemyFlagHandler();
+        var bulletFlagHandler = new BulletFlagHandler();
 
         getPhysicsWorld().addCollisionHandler(bulletFlagHandler);
         getPhysicsWorld().addCollisionHandler(bulletFlagHandler.copyFor(BULLET, PLAYER_FLAG));
 
         getPhysicsWorld().addCollisionHandler(new BulletBrickHandler());
-    }
-
-    @Override
-    protected void onUpdate(double tpf) {
-        ControllerApp.onUpdate(tpf);
     }
 
     public static void main(String[] args) {
