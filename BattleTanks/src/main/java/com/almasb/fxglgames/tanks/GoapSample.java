@@ -89,7 +89,7 @@ public class GoapSample extends GameApplication {
 //            goalGuard.add("wait", true);
 //        }
 
-        agent.addComponent(new GoapComponent(getGameState().getProperties(), goalKiller, initActions()));
+        agent.addComponent(new GoapComponent(getWorldProperties(), goalKiller, initActions()));
         //guard.addComponent(new GoapComponent(getGameState().getProperties(), goalGuard, initActions()));
 
         agent.addComponent(new ActionDebugViewComponent());

@@ -84,7 +84,7 @@ public class BattleTanksFactory implements EntityFactory {
                 .type(ENEMY)
                 .with("playerAlive", true)
                 .with("guard", false)
-                .with(new GoapComponent(getGameState().getProperties(), goal,
+                .with(new GoapComponent(getWorldProperties(), goal,
                         Set.of(
                                 new DoNothingAction(),
                                 new ShootPlayerAction(),

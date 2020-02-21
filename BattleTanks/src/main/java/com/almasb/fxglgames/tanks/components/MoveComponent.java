@@ -2,13 +2,17 @@ package com.almasb.fxglgames.tanks.components;
 
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.math.Vec2;
+import com.almasb.fxgl.core.util.LazyValue;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.EntityGroup;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.BoundingBoxComponent;
 import com.almasb.fxglgames.tanks.BattleTanksType;
 
 import java.util.List;
+
+import static com.almasb.fxglgames.tanks.BattleTanksType.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -20,6 +24,10 @@ public class MoveComponent extends Component {
     private MoveDirection moveDir;
 
     private boolean movedThisFrame = false;
+
+    private LazyValue<EntityGroup> bricks = new LazyValue<>(() -> {
+        return entity.getWorld().getGroup(WALL, BRICK);
+    });
 
     public MoveDirection getMoveDir() {
         return moveDir;
@@ -86,22 +94,19 @@ public class MoveComponent extends Component {
         move(5 * speed, 0);
     }
 
-    private List<Entity> blocks;
     private Vec2 velocity = new Vec2();
 
     private void move(double dx, double dy) {
         if (!getEntity().isActive())
             return;
 
-        if (blocks == null) {
-            blocks = FXGL.getGameWorld().getEntitiesByType(BattleTanksType.WALL, BattleTanksType.BRICK);
-        }
-
         velocity.set((float) dx, (float) dy);
 
         int length = Math.round(velocity.length());
 
         velocity.normalizeLocal();
+
+        var blocks = bricks.get().getEntitiesCopy();
 
         for (int i = 0; i < length; i++) {
             entity.translate(velocity.x, velocity.y);
