@@ -20,7 +20,6 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -156,14 +155,10 @@ public class GeoWarsFactory implements EntityFactory {
     public Entity spawnBouncer(SpawnData data) {
         double y = FXGLMath.random(0, getAppHeight() - 40);
 
-        Circle view = new Circle(20, 20, 20, Color.color(0.4, 0.7, 0.3, 0.3));
-        view.setStrokeWidth(2.5);
-        view.setStroke(Color.color(0.4, 0.7, 0.3, 0.8));
-
         return entityBuilder()
                 .type(BOUNCER)
                 .at(0, y)
-                .viewWithBBox(view)
+                .viewWithBBox(texture("Bouncer.png", 254 * 0.25, 304 * 0.25))
                 .with(new HealthComponent(config.getEnemyHealth()))
                 .with(new CollidableComponent(true))
                 .with(new BouncerComponent(config.getBouncerMoveSpeed()))

@@ -40,6 +40,8 @@ public class BouncerComponent extends Component {
     @Override
     public void onUpdate(double tpf) {
         animation.onUpdate(tpf);
+
+        entity.setScaleX(animation.isReverse() ? -1 : 1);
     }
 
     @Override
