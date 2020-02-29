@@ -37,6 +37,7 @@ import com.almasb.fxglgames.geowars.collision.PlayerCrystalHandler;
 import com.almasb.fxglgames.geowars.component.HealthComponent;
 import com.almasb.fxglgames.geowars.component.PlayerComponent;
 import javafx.geometry.Point2D;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
@@ -135,11 +136,11 @@ public class GeoWarsApp extends GameApplication {
         });
 
         getGameTimer().runAtInterval(() -> spawn("Wanderer"), Duration.seconds(1.5));
-        getGameTimer().runAtInterval(() -> spawn("Seeker"), Duration.seconds(3));
-        getGameTimer().runAtInterval(() -> spawn("Runner"), Duration.seconds(5));
-        getGameTimer().runAtInterval(() -> spawn("Bouncer"), Duration.seconds(5));
-        getGameTimer().runAtInterval(() -> spawn("Portal", getRandomPoint()), Duration.seconds(5));
-        getGameTimer().runAtInterval(() -> inc("time", -1), Duration.seconds(1));
+//        getGameTimer().runAtInterval(() -> spawn("Seeker"), Duration.seconds(3));
+//        getGameTimer().runAtInterval(() -> spawn("Runner"), Duration.seconds(5));
+//        getGameTimer().runAtInterval(() -> spawn("Bouncer"), Duration.seconds(5));
+//        getGameTimer().runAtInterval(() -> spawn("Portal", getRandomPoint()), Duration.seconds(5));
+//        getGameTimer().runAtInterval(() -> inc("time", -1), Duration.seconds(1));
     }
 
     @Override
@@ -192,6 +193,7 @@ public class GeoWarsApp extends GameApplication {
         scoreText.setTranslateX(60);
         scoreText.setTranslateY(70);
         scoreText.textProperty().bind(getip("score").asString());
+        scoreText.setStroke(Color.GOLD);
 
         Text multText = getUIFactoryService().newText("", Color.WHITE, 28);
         multText.setTranslateX(60);
@@ -253,19 +255,32 @@ public class GeoWarsApp extends GameApplication {
 
         final int multiplier = geti("multiplier");
 
+        inc("score", +100*multiplier);
+
+        var shadow = new DropShadow(25, Color.WHITE);
+
         Text bonusText = getUIFactoryService().newText("+100" + (multiplier == 1 ? "" : "x" + multiplier), Color.color(1, 1, 1, 0.8), 24);
+        bonusText.setStroke(Color.GOLD);
+        bonusText.setEffect(shadow);
 
         addUINode(bonusText, enemyPosition.getX(), enemyPosition.getY());
 
         animationBuilder()
-                .onFinished(() -> {
-                    inc("score", +100*multiplier);
-                    removeUINode(bonusText);
-                })
-                .interpolator(Interpolators.EXPONENTIAL.EASE_IN())
+                .onFinished(() -> removeUINode(bonusText))
+                .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
                 .translate(bonusText)
                 .from(enemyPosition)
-                .to(new Point2D(1100, 70))
+                .to(enemyPosition.subtract(0, 65))
+                .buildAndPlay();
+
+        animationBuilder()
+                .duration(Duration.seconds(0.35))
+                .autoReverse(true)
+                .repeat(2)
+                .interpolator(Interpolators.BOUNCE.EASE_IN())
+                .scale(bonusText)
+                .from(new Point2D(1, 1))
+                .to(new Point2D(1.2, 0.85))
                 .buildAndPlay();
     }
 
