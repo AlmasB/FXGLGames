@@ -136,7 +136,7 @@ public class GeoWarsApp extends GameApplication {
         });
 
         getGameTimer().runAtInterval(() -> spawn("Wanderer"), Duration.seconds(1.5));
-//        getGameTimer().runAtInterval(() -> spawn("Seeker"), Duration.seconds(3));
+        getGameTimer().runAtInterval(() -> spawn("Seeker"), Duration.seconds(3));
 //        getGameTimer().runAtInterval(() -> spawn("Runner"), Duration.seconds(5));
 //        getGameTimer().runAtInterval(() -> spawn("Bouncer"), Duration.seconds(5));
 //        getGameTimer().runAtInterval(() -> spawn("Portal", getRandomPoint()), Duration.seconds(5));
