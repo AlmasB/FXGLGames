@@ -30,6 +30,7 @@ import com.almasb.fxgl.animation.AnimatedValue;
 import com.almasb.fxgl.animation.Animation;
 import com.almasb.fxgl.animation.AnimationBuilder;
 import com.almasb.fxgl.animation.Interpolators;
+import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.core.math.FXGLMath;
@@ -39,11 +40,9 @@ import com.almasb.fxgl.entity.components.IrremovableComponent;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
-import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxglgames.breakout.components.BallComponent;
 import com.almasb.fxglgames.breakout.components.BatComponent;
 import com.almasb.fxglgames.breakout.components.BrickComponent;
-import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -59,6 +58,9 @@ import static com.almasb.fxglgames.breakout.BreakoutType.*;
  */
 public class BreakoutApp extends GameApplication {
 
+    private static final int MAX_LEVEL = 5;
+    private static final int STARTING_LEVEL = 1;
+
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("FXGL Breakout");
@@ -66,7 +68,6 @@ public class BreakoutApp extends GameApplication {
         settings.setWidth(14 * 96);
         settings.setHeight(22 * 32);
         settings.setFontUI("main_font.ttf");
-        settings.setDeveloperMenuEnabled(true);
     }
 
     private Text debugText;
@@ -94,13 +95,17 @@ public class BreakoutApp extends GameApplication {
         }, KeyCode.D);
 
         onKeyDown(KeyCode.SPACE, "Change color", () -> getBallControl().changeColorToNext());
+
+        if (getSettings().getApplicationMode() != ApplicationMode.RELEASE) {
+            onKeyDown(KeyCode.L, "Next level", () -> nextLevel());
+        }
     }
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("lives", 3);
         vars.put("score", 0);
-        vars.put("level", 1);
+        vars.put("level", STARTING_LEVEL);
     }
 
     @Override
@@ -109,24 +114,7 @@ public class BreakoutApp extends GameApplication {
 
         getGameWorld().addEntityFactory(new BreakoutFactory());
 
-        setLevel(1);
-    }
-
-    private void nextLevel() {
-        inc("level", +1);
-        var levelNum = geti("level");
-        setLevel(levelNum);
-    }
-
-    private void setLevel(int levelNum) {
-        getGameWorld().getEntitiesCopy().forEach(e -> e.removeFromWorld());
-        setLevelFromMap("tmx/level" + levelNum + ".tmx");
-
-        spawn("ball", getAppWidth() / 2, getAppHeight() - 250);
-
-        spawn("bat", getAppWidth() / 2, getAppHeight() - 180);
-
-        animateCamera(getBallControl()::release);
+        setLevel(STARTING_LEVEL);
     }
 
     private void initBackground() {
@@ -139,6 +127,29 @@ public class BreakoutApp extends GameApplication {
                 .collidable()
                 .with(new IrremovableComponent())
                 .buildScreenBoundsAndAttach(40);
+    }
+
+    private void nextLevel() {
+        inc("level", +1);
+        var levelNum = geti("level");
+
+        if (levelNum > MAX_LEVEL) {
+            getDisplay().showMessageBox("You have completed demo!", getGameController()::exit);
+            return;
+        }
+
+        setLevel(levelNum);
+    }
+
+    private void setLevel(int levelNum) {
+        getGameWorld().getEntitiesCopy().forEach(e -> e.removeFromWorld());
+        setLevelFromMap("tmx/level" + levelNum + ".tmx");
+
+        spawn("ball", getAppWidth() / 2, getAppHeight() - 250);
+
+        spawn("bat", getAppWidth() / 2, getAppHeight() - 180);
+
+        animateCamera(getBallControl()::release);
     }
 
     private Animation<Double> cameraAnimation;

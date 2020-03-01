@@ -27,18 +27,17 @@
 package com.almasb.fxglgames.breakout.components;
 
 import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.physics.PhysicsComponent;
 
-import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxgl.dsl.FXGL.getAppWidth;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class BatComponent extends Component {
 
-    private static final int BAT_SPEED = 750;
+    private static final int BAT_SPEED = 1050;
     private static final float BOUNCE_FACTOR = 1.5f;
     private static final float SPEED_DECAY = 0.66f;
 

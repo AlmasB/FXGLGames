@@ -105,7 +105,7 @@ public class BreakoutFactory implements EntityFactory {
                 .from(data)
                 .type(BreakoutType.BAT)
                 .at(getAppWidth() / 2 - 50, getAppHeight() - 70)
-                .viewWithBBox(getAssetLoader().loadTexture("bat.png", 464 / 3, 102 / 3))
+                .viewWithBBox(texture("bat.png", 464 / 3, 102 / 3))
                 .collidable()
                 .with(physics)
                 .with(new BatComponent())
@@ -174,15 +174,14 @@ public class BreakoutFactory implements EntityFactory {
 
     @Spawns("sparks")
     public Entity newSparks(SpawnData data) {
-        var emitter = ParticleEmitters.newExplosionEmitter(14);
-        emitter.setMaxEmissions(1);
-        emitter.setStartColor(Color.WHITE);
-
         Color color = data.get("color");
 
-        emitter.setEndColor(color);
-        emitter.setSize(2, 8);
-        emitter.setBlendMode(BlendMode.SRC_OVER);
+        var emitter = ParticleEmitters.newExplosionEmitter(24);
+        emitter.setSourceImage(texture("particles/smoke_06.png", 16, 16).multiplyColor(color));
+        emitter.setSize(4, 16);
+        emitter.setMaxEmissions(1);
+        emitter.setExpireFunction(i -> Duration.seconds(FXGLMath.random(0.25, 1.0)));
+        emitter.setBlendMode(BlendMode.ADD);
         emitter.setNumParticles(20);
 
         return entityBuilder()

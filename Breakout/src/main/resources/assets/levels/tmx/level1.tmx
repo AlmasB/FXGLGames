@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="14" height="22" tilewidth="96" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="92">
+<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="14" height="22" tilewidth="96" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="117">
  <tileset firstgid="1" name="brick_blue" tilewidth="96" tileheight="32" tilecount="1" columns="1">
   <image source="brick_blue.png" width="96" height="32"/>
  </tileset>
@@ -13,7 +13,132 @@
   <image source="brick_red.png" width="96" height="32"/>
  </tileset>
  <objectgroup id="3" name="brick_layer">
-  <object id="35" type="brick" gid="1" x="768" y="352" width="96" height="32">
+  <object id="35" type="brick" gid="1" x="768" y="128" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="92" type="brick" gid="1" x="384" y="128" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="93" type="brick" gid="1" x="480" y="96" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="94" type="brick" gid="1" x="576" y="64" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="95" type="brick" gid="1" x="672" y="96" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="96" type="brick" gid="1" x="288" y="96" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="97" type="brick" gid="1" x="192" y="64" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="98" type="brick" gid="1" x="96" y="96" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="99" type="brick" gid="1" x="0" y="128" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="100" type="brick" gid="1" x="864" y="96" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="101" type="brick" gid="1" x="960" y="64" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="102" type="brick" gid="1" x="1056" y="96" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="103" type="brick" gid="1" x="1152" y="128" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="104" type="brick" gid="1" x="96" y="192" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="105" type="brick" gid="1" x="192" y="160" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="106" type="brick" gid="1" x="288" y="192" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="107" type="brick" gid="1" x="384" y="224" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="108" type="brick" gid="1" x="480" y="192" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="109" type="brick" gid="1" x="576" y="160" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="110" type="brick" gid="1" x="672" y="192" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="111" type="brick" gid="1" x="768" y="224" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="112" type="brick" gid="1" x="864" y="192" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="113" type="brick" gid="1" x="960" y="160" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="114" type="brick" gid="1" x="1056" y="192" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="115" type="brick" gid="1" x="1152" y="224" width="96" height="32">
+   <properties>
+    <property name="color" value="blue"/>
+   </properties>
+  </object>
+  <object id="116" type="brick" gid="1" x="1248" y="192" width="96" height="32">
    <properties>
     <property name="color" value="blue"/>
    </properties>
