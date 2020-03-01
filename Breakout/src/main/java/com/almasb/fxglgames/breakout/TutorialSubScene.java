@@ -20,12 +20,13 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 public class TutorialSubScene extends SubScene {
 
     public TutorialSubScene() {
-        var textTutorial = getUIFactory().newText("Press SPACE to change ball color", Color.WHITE, 34);
-        textTutorial.setFont(getUIFactory().newFont(FontType.TEXT, 22));
+        var textTutorial = getUIFactory().newText("Press SPACE to change ball color\n\n" +
+                "The ball only interacts with bricks of the same color!");
+        textTutorial.setFont(getUIFactory().newFont(FontType.TEXT, 20));
         textTutorial.setWrappingWidth(250);
-        textTutorial.setTextAlignment(TextAlignment.JUSTIFY);
+        textTutorial.setTextAlignment(TextAlignment.LEFT);
 
-        var bg = new Rectangle(300, 150, Color.color(0.3627451f, 0.3627451f, 0.5627451f, 0.55));
+        var bg = new Rectangle(300, 170, Color.color(0.3627451f, 0.3627451f, 0.5627451f, 0.55));
         bg.setArcWidth(50);
         bg.setArcHeight(50);
         bg.setStroke(Color.WHITE);
