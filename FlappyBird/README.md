@@ -4,6 +4,10 @@ This is a clone of Flappy Bird.
 
 ![Code](https://img.shields.io/badge/difficulty-intermediate-green.svg)
 
+## Contribution
+
+This game is feature complete and only accepts API updates.
+
 ## Asset Credits
 
 Background Music - by Eric Matyas at [www.soundimage.org](www.soundimage.org)

@@ -57,6 +57,6 @@ These game demos are constantly upgraded, so feel free to fork and add something
 You are very welcome to contribute to any of these games, or link to your own games.
 List of community developed games / demos: (Please add links below)
 
-*
+* [FXGL based Idle Game](https://github.com/softknk/softknk.io) by Daniel Künkel.
 *
 * 
