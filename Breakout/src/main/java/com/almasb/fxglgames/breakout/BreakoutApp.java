@@ -231,6 +231,13 @@ public class BreakoutApp extends GameApplication {
 
         addUINode(textScore, 50, getAppHeight() - 20);
         addUINode(debugText, 50, 50);
+
+        runOnce(() -> {
+            getGameController().pushSubScene(new TutorialSubScene());
+
+            runOnce(() -> getBallControl().changeColorToNext(), Duration.seconds(0.016));
+
+        }, Duration.seconds(0.5));
     }
 
     @Override

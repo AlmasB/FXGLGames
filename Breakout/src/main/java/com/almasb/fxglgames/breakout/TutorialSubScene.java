@@ -1,0 +1,63 @@
+package com.almasb.fxglgames.breakout;
+
+import com.almasb.fxgl.animation.Interpolators;
+import com.almasb.fxgl.input.UserAction;
+import com.almasb.fxgl.scene.Scene;
+import com.almasb.fxgl.scene.SubScene;
+import com.almasb.fxgl.ui.FontType;
+import javafx.geometry.Point2D;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.TextAlignment;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
+
+/**
+ * @author Almas Baimagambetov (almaslvl@gmail.com)
+ */
+public class TutorialSubScene extends SubScene {
+
+    public TutorialSubScene() {
+        var textTutorial = getUIFactory().newText("Press SPACE to change ball color", Color.WHITE, 34);
+        textTutorial.setFont(getUIFactory().newFont(FontType.TEXT, 22));
+        textTutorial.setWrappingWidth(250);
+        textTutorial.setTextAlignment(TextAlignment.JUSTIFY);
+
+        var bg = new Rectangle(300, 150, Color.color(0.3627451f, 0.3627451f, 0.5627451f, 0.55));
+        bg.setArcWidth(50);
+        bg.setArcHeight(50);
+        bg.setStroke(Color.WHITE);
+        bg.setStrokeWidth(10);
+
+        var stackPane = new StackPane(bg, textTutorial);
+
+        getContentRoot().setTranslateX(-250);
+        getContentRoot().setTranslateY(250);
+        getContentRoot().getChildren().add(stackPane);
+
+        getInput().addAction(new UserAction("Space") {
+            @Override
+            protected void onActionBegin() {
+                animationBuilder()
+                        .onFinished(() -> getGameController().popSubScene())
+                        .interpolator(Interpolators.EXPONENTIAL.EASE_IN())
+                        .translate(getContentRoot())
+                        .from(new Point2D(50, 250))
+                        .to(new Point2D(-250, 250))
+                        .buildAndPlay(TutorialSubScene.this);
+            }
+        }, KeyCode.SPACE);
+    }
+
+    @Override
+    public void onEnteredFrom(Scene prevState) {
+        animationBuilder()
+                .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
+                .translate(getContentRoot())
+                .from(new Point2D(-250, 250))
+                .to(new Point2D(50, 250))
+                .buildAndPlay(this);
+    }
+}
