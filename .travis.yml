@@ -1,4 +1,6 @@
-os: osx
+os:
+  - linux
+  - osx
 
 language: java
 cache:
