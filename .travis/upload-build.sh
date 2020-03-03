@@ -6,6 +6,7 @@ cd upload
 git clone --quiet https://github.com/AlmasB/builds
 
 cd builds
+mkdir Drop
 
 git config user.email "$UP_USER_EMAIL"
 git config user.name "up-server"
