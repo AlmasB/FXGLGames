@@ -1,4 +1,4 @@
-os: windows
+os: osx
 
 language: java
 cache:
@@ -13,6 +13,7 @@ install:
 - echo "install NOOP"
 script:
 - cd Drop
+  - mvn clean compile
   - mvn javafx:jlink
 after_success:
 - if [ "$TRAVIS_BRANCH" == "master" ]; then openssl aes-256-cbc -pass pass:$ENC_PASSWORD
