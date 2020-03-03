@@ -17,8 +17,8 @@ script:
   - mvn javafx:jlink
 after_success:
 - if [ "$TRAVIS_BRANCH" == "master" ]; then openssl aes-256-cbc -pass pass:$ENC_PASSWORD
-  -in .travis/sign.asc.enc -out .travis/sign.asc -d; gpg -q --fast-import .travis/sign.asc;
-  chmod +x .travis/upload-build.sh; .travis/upload-build.sh; fi
+  -in ../.travis/sign.asc.enc -out ../.travis/sign.asc -d; gpg -q --fast-import ../.travis/sign.asc;
+  chmod +x ../.travis/upload-build.sh; ../.travis/upload-build.sh; fi
 notifications:
   email:
     recipients:
