@@ -13,10 +13,11 @@ install:
 - echo "install NOOP"
 script:
 - cd Drop
-  - mvn clean compile
-  - mvn javafx:jlink
+- mvn clean compile
+- mvn javafx:jlink
 after_success:
-- if [ "$TRAVIS_BRANCH" == "master" ]; chmod +x ../.travis/upload-build.sh; ../.travis/upload-build.sh; fi
+- chmod +x ../.travis/upload-build.sh
+- ../.travis/upload-build.sh
 notifications:
   email:
     recipients:
