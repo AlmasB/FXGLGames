@@ -6,7 +6,6 @@ import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.ui.FXGLButton;
 import com.almasb.fxgl.ui.FXGLScrollPane;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
@@ -14,6 +13,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.CubicCurve;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
@@ -55,7 +55,9 @@ public class NCCApp extends GameApplication {
         highlightRect = new Rectangle(CARD_WIDTH, CARD_HEIGHT, Color.color(0.7, 0.9, 0.8, 0.5));
         playerCardsSelected = 0;
 
-        getGameScene().setBackgroundColor(Color.LIGHTGRAY);
+        entityBuilder()
+                .view(texture("bg.png").darker().desaturate())
+                .buildAndAttach();
 
         getGameWorld().addEntityFactory(new NCCFactory());
 
@@ -91,7 +93,7 @@ public class NCCApp extends GameApplication {
             var playerPlaceholder = spawn("cardPlaceholder", new SpawnData(50 + i*(CARD_WIDTH + 25), 420 + 30).put("isPlayer", true));
 
             playerPlaceholder.getViewComponent().addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-                var btn = new FXGLButton("SELECT");
+                var btn = getUIFactoryService().newButton("SELECT");
                 btn.setOnAction(event -> {
                     // done selecting card from dialog
                     selectedCard.getViewComponent().removeChild(highlightRect);
@@ -222,17 +224,23 @@ public class NCCApp extends GameApplication {
                 if (targetEntity != null) {
                     animationBuilder()
                             .delay(Duration.seconds(i))
-                            .duration(Duration.seconds(0.5))
+                            .duration(Duration.seconds(0.3))
                             .interpolator(Interpolators.EXPONENTIAL.EASE_IN())
                             .repeat(2)
                             .autoReverse(true)
                             .translate(cardEntity)
-                            .from(cardEntity.getPosition())
-                            .to(cardEntity2.getPosition().add(0, CARD_HEIGHT / 2.0))
+                            .alongPath(new CubicCurve(
+                                    cardEntity.getX(), cardEntity.getY(),
+                                    cardEntity.getX() - 100, (cardEntity.getY() + cardEntity2.getY()) / 3,
+                                    cardEntity.getX() - 150, (cardEntity.getY() + cardEntity2.getY()) / 3 * 2,
+                                    cardEntity2.getX(), cardEntity2.getY()
+                            ))
+//                            .from(cardEntity.getPosition())
+//                            .to(cardEntity2.getPosition().add(0, 0))
                             .buildAndPlay();
 
                     animationBuilder()
-                            .delay(Duration.seconds(0.5 + i))
+                            .delay(Duration.seconds(0.2 + i))
                             .duration(Duration.seconds(0.1))
                             .interpolator(Interpolators.ELASTIC.EASE_OUT())
                             .repeat(4)

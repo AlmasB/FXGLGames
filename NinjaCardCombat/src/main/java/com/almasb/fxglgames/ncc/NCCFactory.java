@@ -46,7 +46,7 @@ public class NCCFactory implements EntityFactory {
         var bg = new Region();
         bg.setPrefSize(CARD_WIDTH, CARD_HEIGHT);
         bg.setStyle(
-                "-fx-background-color: darkgray;" +
+                "-fx-background-color: gold;" +
                 "-fx-border-color: black;" +
                 "-fx-border-width: 5;" +
                 "-fx-border-style: segments(10, 15, 15, 15)  line-cap round;"

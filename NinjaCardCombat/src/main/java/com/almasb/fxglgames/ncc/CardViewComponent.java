@@ -214,8 +214,7 @@ public class CardViewComponent extends ChildViewComponent {
 
             String tooltipMessage = skill.getName() + "\n" + skill.getDescription();
 
-            Text text = getUIFactory().newText(tooltipMessage, Color.WHITE, 14);
-            text.setFont(getUIFactory().newFont(FontType.TEXT, 14));
+            Text text = getUIFactoryService().newText(tooltipMessage, Color.WHITE, FontType.TEXT, 14);
             text.setWrappingWidth(CARD_WIDTH * 0.7);
 
             var bg = new Rectangle(CARD_WIDTH * 0.8, text.getLayoutBounds().getHeight() * 1.2, Color.color(0, 0, 0, 0.85));
