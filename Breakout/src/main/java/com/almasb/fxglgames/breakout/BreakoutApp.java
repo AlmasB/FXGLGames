@@ -226,14 +226,13 @@ public class BreakoutApp extends GameApplication {
         debugText = new Text();
         debugText.setFill(Color.WHITE);
 
-        var textScore = getUIFactory().newText("", 24);
-        textScore.textProperty().bind(getip("score").asString());
+        var textScore = getUIFactoryService().newText(getip("score").asString());
 
         addUINode(textScore, 50, getAppHeight() - 20);
         addUINode(debugText, 50, 50);
 
         runOnce(() -> {
-            getGameController().pushSubScene(new TutorialSubScene());
+            getSceneService().pushSubScene(new TutorialSubScene());
 
             runOnce(() -> getBallControl().changeColorToNext(), Duration.seconds(0.016));
 

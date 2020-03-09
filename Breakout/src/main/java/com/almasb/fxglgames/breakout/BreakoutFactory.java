@@ -195,8 +195,7 @@ public class BreakoutFactory implements EntityFactory {
     public Entity newPowerupGrow(SpawnData data) {
         var powerupType = FXGLMath.random(PowerupType.values()).get();
 
-        var view = getUIFactory().newText(powerupType.toString(), Color.WHITE, 16);
-        view.setFont(getUIFactory().newFont(FontType.GAME, 16));
+        var view = getUIFactoryService().newText(powerupType.toString(), Color.WHITE, FontType.GAME, 16);
 
         return entityBuilder()
                 .from(data)

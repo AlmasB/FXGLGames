@@ -20,9 +20,8 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 public class TutorialSubScene extends SubScene {
 
     public TutorialSubScene() {
-        var textTutorial = getUIFactory().newText("Press SPACE to change ball color\n\n" +
-                "The ball only interacts with bricks of the same color!");
-        textTutorial.setFont(getUIFactory().newFont(FontType.TEXT, 20));
+        var textTutorial = getUIFactoryService().newText("Press SPACE to change ball color\n\n" +
+                "The ball only interacts with bricks of the same color!", Color.WHITE, FontType.TEXT, 20);
         textTutorial.setWrappingWidth(250);
         textTutorial.setTextAlignment(TextAlignment.LEFT);
 
@@ -42,7 +41,7 @@ public class TutorialSubScene extends SubScene {
             @Override
             protected void onActionBegin() {
                 animationBuilder()
-                        .onFinished(() -> getGameController().popSubScene())
+                        .onFinished(() -> getSceneService().popSubScene())
                         .interpolator(Interpolators.EXPONENTIAL.EASE_IN())
                         .translate(getContentRoot())
                         .from(new Point2D(50, 250))
