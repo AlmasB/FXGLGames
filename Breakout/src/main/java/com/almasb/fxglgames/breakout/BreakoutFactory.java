@@ -73,7 +73,7 @@ public class BreakoutFactory implements EntityFactory {
     public BreakoutFactory() {
         image = new LazyValue<>(() -> {
             var images = IntStream.rangeClosed(1, 8)
-                    .mapToObj(i -> image("anim/Attack (" + i + ").png"))
+                    .mapToObj(i -> image("anim/Attack_" + i + ".png"))
                     .collect(Collectors.toList());
 
             return ImagesKt.merge(images);
