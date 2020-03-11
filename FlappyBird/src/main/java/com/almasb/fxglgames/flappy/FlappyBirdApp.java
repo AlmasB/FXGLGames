@@ -90,7 +90,7 @@ public class FlappyBirdApp extends GameApplication {
 
         Group dpadView = getInput().createVirtualDpadView();
 
-        addUINode(dpadView, 0, 500);
+        addUINode(dpadView, 0, 625);
     }
 
     @Override

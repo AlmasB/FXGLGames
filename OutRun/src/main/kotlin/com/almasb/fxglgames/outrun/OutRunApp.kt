@@ -27,22 +27,19 @@
 package com.almasb.fxglgames.outrun
 
 import com.almasb.fxgl.animation.Interpolators
-import com.almasb.fxgl.app.*
-import com.almasb.fxgl.core.util.BiConsumer
-import com.almasb.fxgl.dsl.FXGL
-import com.almasb.fxgl.dsl.FXGL.Companion.loopBGM
+import com.almasb.fxgl.app.GameApplication
+import com.almasb.fxgl.app.GameSettings
 import com.almasb.fxgl.dsl.*
 import com.almasb.fxgl.dsl.FXGL.Companion.centerTextBind
+import com.almasb.fxgl.dsl.FXGL.Companion.loopBGM
 import com.almasb.fxgl.dsl.components.Effect
 import com.almasb.fxgl.dsl.components.EffectComponent
 import com.almasb.fxgl.entity.Entity
 import com.almasb.fxgl.entity.level.text.TextLevelLoader
 import com.almasb.fxgl.input.UserAction
-import com.almasb.fxgl.physics.CollisionHandler
 import com.almasb.fxgl.ui.FXGLTextFlow
 import com.almasb.fxgl.ui.ProgressBar
 import com.almasb.fxglgames.outrun.EntityType.*
-import javafx.application.Application
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.geometry.Pos
 import javafx.scene.input.KeyCode
