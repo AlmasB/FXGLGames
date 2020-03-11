@@ -99,6 +99,8 @@
                 <configuration>
                     <bundlesList>
                         <list>com/almasb/fxgl/app/system</list>
+                        <list>java.util.ResourceBundle</list>
+                        <list>java.util.ListResourceBundle</list>
                     </bundlesList>
                     <attachList>
                         <list>storage</list>
@@ -115,10 +117,26 @@
                         <list>com.almasb.fxgl.app.GameSettings</list>
 
                         <!-- Engine services -->
+                        <list>com.almasb.fxgl.app.services.WindowService</list>
+                        <list>com.almasb.fxgl.app.services.FXGLDialogService</list>
+                        <list>com.almasb.fxgl.app.services.IOTaskExecutorService</list>
+                        <list>com.almasb.fxgl.app.services.SystemBundleService</list>
+                        <list>com.almasb.fxgl.app.services.UpdaterService</list>
+                        <list>com.almasb.fxgl.app.services.AssetLoaderService</list>
+                        <list>com.almasb.fxgl.cutscene.CutsceneService</list>
+                        <list>com.almasb.fxgl.event.EventBusService</list>
+                        <list>com.almasb.fxgl.io.FileSystemService</list>
+                        <list>com.almasb.fxgl.localization.LocalizationService</list>
+                        <list>com.almasb.fxgl.minigames.MiniGameService</list>
+                        <list>com.almasb.fxgl.net.NetService</list>
+                        <list>com.almasb.fxgl.profile.SaveLoadService</list>
+                        <list>com.almasb.fxgl.ui.FXGLDialogFactoryServiceProvider</list>
+                        <list>com.almasb.fxgl.ui.FXGLUIFactoryServiceProvider</list>
+                        <list>com.almasb.fxgl.app.GameApplication$GameApplicationService</list>
                         <list>com.almasb.fxgl.audio.AudioPlayer</list>
                         <list>com.almasb.fxgl.notification.impl.NotificationServiceProvider</list>
                         <list>com.almasb.fxgl.notification.view.XboxNotificationView</list>
-                        <list>com.almasb.fxgl.achievement.AchievementManager</list>
+                        <list>com.almasb.fxgl.achievement.AchievementService</list>
 
                         <!-- Components -->
 
