@@ -18,6 +18,7 @@
 
         <fxgl.version>11.8</fxgl.version>
         <jfx.maven.plugin.version>0.0.4</jfx.maven.plugin.version>
+        <client.plugin.version>0.1.17</client.plugin.version>
         <mainClassName>com.almasb.fxglgames.breakout.BreakoutApp</mainClassName>
     </properties>
 
@@ -28,6 +29,13 @@
             <version>${fxgl.version}</version>
         </dependency>
     </dependencies>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>gluon-releases</id>
+            <url>http://nexus.gluonhq.com/nexus/content/repositories/releases/</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <repositories>
         <repository>
@@ -80,6 +88,63 @@
                     <launcher>Start-game</launcher>
                     <jlinkImageName>game</jlinkImageName>
                     <jlinkZipName>breakout-game</jlinkZipName>
+                    <mainClass>${mainClassName}</mainClass>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.gluonhq</groupId>
+                <artifactId>client-maven-plugin</artifactId>
+                <version>${client.plugin.version}</version>
+                <configuration>
+                    <bundlesList>
+                        <list>com/almasb/fxgl/app/system</list>
+                    </bundlesList>
+                    <attachList>
+                        <list>storage</list>
+                    </attachList>
+                    <resourcesList>
+                        <list>properties</list>
+                        <list>tmx</list>
+                    </resourcesList>
+                    <verbose>true</verbose>
+                    <reflectionList>
+                        <list>com.almasb.fxgl.app.GameApplication</list>
+                        <list>com.almasb.fxgl.app.GameApplication$FXGLApplication</list>
+                        <list>com.almasb.fxgl.app.ReadOnlyGameSettings</list>
+                        <list>com.almasb.fxgl.app.GameSettings</list>
+
+                        <!-- Engine services -->
+                        <list>com.almasb.fxgl.audio.AudioPlayer</list>
+                        <list>com.almasb.fxgl.notification.impl.NotificationServiceProvider</list>
+                        <list>com.almasb.fxgl.notification.view.XboxNotificationView</list>
+                        <list>com.almasb.fxgl.achievement.AchievementManager</list>
+
+                        <!-- Components -->
+
+                        <list>com.almasb.fxgl.entity.components.BoundingBoxComponent</list>
+                        <list>com.almasb.fxgl.entity.components.CollidableComponent</list>
+                        <list>com.almasb.fxgl.entity.components.IDComponent</list>
+                        <list>com.almasb.fxgl.entity.components.IrremovableComponent</list>
+                        <list>com.almasb.fxgl.entity.components.TimeComponent</list>
+                        <list>com.almasb.fxgl.entity.components.TransformComponent</list>
+                        <list>com.almasb.fxgl.entity.components.TypeComponent</list>
+                        <list>com.almasb.fxgl.entity.components.ViewComponent</list>
+                        <list>com.almasb.fxgl.particle.ParticleComponent</list>
+                        <list>com.almasb.fxgl.physics.PhysicsComponent</list>
+                        <list>com.almasb.fxgl.dsl.components.LiftComponent</list>
+                        <list>com.almasb.fxgl.dsl.components.OffscreenCleanComponent</list>
+                        <list>com.almasb.fxgl.dsl.components.OffscreenPauseComponent</list>
+                        <list>com.almasb.fxgl.dsl.components.ProjectileComponent</list>
+
+                        <!--     Custom components                  -->
+
+                        <list>com.almasb.fxglgames.breakout.components.BallComponent</list>
+                        <list>com.almasb.fxglgames.breakout.components.BatComponent</list>
+                        <list>com.almasb.fxglgames.breakout.components.BrickComponent</list>
+                        <list>com.almasb.fxglgames.breakout.components.MoveDownComponent</list>
+                    </reflectionList>
+<!--                    <target>ios-sim</target>-->
                     <mainClass>${mainClassName}</mainClass>
                 </configuration>
             </plugin>

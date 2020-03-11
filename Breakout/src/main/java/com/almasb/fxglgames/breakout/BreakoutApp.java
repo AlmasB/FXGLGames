@@ -70,6 +70,7 @@ public class BreakoutApp extends GameApplication {
         settings.setWidth(14 * 96);
         settings.setHeight(22 * 32);
         settings.setFontUI("main_font.ttf");
+        settings.setApplicationMode(ApplicationMode.DEBUG);
     }
 
     private Text debugText;
