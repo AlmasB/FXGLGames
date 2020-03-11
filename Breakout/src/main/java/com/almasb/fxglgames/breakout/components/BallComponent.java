@@ -32,7 +32,6 @@ import com.almasb.fxgl.dsl.components.EffectComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.particle.ParticleComponent;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.texture.Texture;
@@ -46,7 +45,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
-import static java.lang.Math.*;
+import static java.lang.Math.abs;
+import static java.lang.Math.signum;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -141,6 +141,16 @@ public class BallComponent extends Component {
         emitter.setSourceImage(textures[colorIndex]);
 
         entity.getViewComponent().addChild(textures[colorIndex]);
+    }
+
+    public Color getNextColor() {
+        int nextIndex = colorIndex + 1;
+
+        if (nextIndex == textures.length) {
+            nextIndex = 0;
+        }
+
+        return COLORS[nextIndex];
     }
 
     public void release() {

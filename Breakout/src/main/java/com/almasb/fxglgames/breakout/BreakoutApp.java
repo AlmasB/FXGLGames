@@ -45,6 +45,8 @@ import com.almasb.fxglgames.breakout.components.BatComponent;
 import com.almasb.fxglgames.breakout.components.BrickComponent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -231,6 +233,30 @@ public class BreakoutApp extends GameApplication {
         addUINode(textScore, 50, getAppHeight() - 20);
         addUINode(debugText, 50, 50);
 
+        // touch based controls (e.g. mobile screen)
+        var circleLeft = new Circle(75);
+        circleLeft.setStroke(Color.WHITE);
+        circleLeft.setStrokeWidth(2.5);
+        circleLeft.setOnMouseClicked(e -> getBallControl().changeColorToNext());
+
+        getBallControl().colorProperty().addListener((obs, old, newValue) -> {
+            circleLeft.setFill(getBallControl().getNextColor());
+        });
+
+        var regionLeft = new Rectangle(getAppWidth() / 2, getAppHeight());
+        regionLeft.setOpacity(0);
+        regionLeft.setOnMousePressed(e -> getInput().mockKeyPress(KeyCode.A));
+        regionLeft.setOnMouseReleased(e -> getInput().mockKeyRelease(KeyCode.A));
+
+        var regionRight = new Rectangle(getAppWidth() / 2, getAppHeight());
+        regionRight.setOpacity(0);
+        regionRight.setOnMousePressed(e -> getInput().mockKeyPress(KeyCode.D));
+        regionRight.setOnMouseReleased(e -> getInput().mockKeyRelease(KeyCode.D));
+
+        addUINode(regionLeft);
+        addUINode(regionRight, getAppWidth() / 2, 0);
+        addUINode(circleLeft, 100, getAppHeight() - 120);
+        
         runOnce(() -> {
             getSceneService().pushSubScene(new TutorialSubScene());
 
