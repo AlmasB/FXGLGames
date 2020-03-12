@@ -158,6 +158,7 @@
                         <list>com.almasb.fxglgames.breakout.components.BatComponent</list>
                         <list>com.almasb.fxglgames.breakout.components.BrickComponent</list>
                         <list>com.almasb.fxglgames.breakout.components.MoveDownComponent</list>
+                        <list>com.almasb.fxglgames.breakout.BreakoutFactory</list>
                     </reflectionList>
 <!--                    <target>ios-sim</target>-->
                     <mainClass>${mainClassName}</mainClass>
