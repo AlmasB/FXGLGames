@@ -135,6 +135,7 @@
                         <list>com.almasb.fxgl.notification.view.XboxNotificationView</list>
                         <list>com.almasb.fxgl.achievement.AchievementService</list>
                         <list>com.almasb.fxgl.core.math.Vec2</list>
+                        <list>com.almasb.fxgl.particle.Particle</list>
                         <!-- Components -->
 
                         <list>com.almasb.fxgl.entity.components.BoundingBoxComponent</list>
