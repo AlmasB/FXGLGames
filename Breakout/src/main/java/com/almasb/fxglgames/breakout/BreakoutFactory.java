@@ -124,15 +124,6 @@ public class BreakoutFactory implements EntityFactory {
 
         physics.setBodyDef(bd);
 
-        var emitter = ParticleEmitters.newFireEmitter();
-        emitter.setSourceImage(texture("ball.png"));
-        emitter.setBlendMode(BlendMode.SRC_OVER);
-        emitter.setNumParticles(1);
-        emitter.setEmissionRate(1);
-        emitter.setSpawnPointFunction(i -> new Point2D(0, 0));
-        emitter.setScaleFunction(i -> new Point2D(-0.1, -0.1));
-        emitter.setExpireFunction(i -> Duration.millis(110));
-
         var e = entityBuilder()
                 .from(data)
                 .type(BreakoutType.BALL)
@@ -141,18 +132,31 @@ public class BreakoutFactory implements EntityFactory {
                 .collidable()
                 .with(physics)
                 .with(new TimeComponent())
-                .with(new ParticleComponent(emitter))
                 .with(new EffectComponent())
                 .with(new BallComponent())
+                .scaleOrigin(0, 0)
                 .scale(0.1, 0.1)
                 .build();
 
-        emitter.setEntityScaleFunction(() -> new Point2D(0.1, 0.1));
-        emitter.setScaleOriginFunction(i -> new Point2D(0, 0));
-        e.getTransformComponent().setScaleOrigin(new Point2D(0, 0));
+        // disable particle effects in native mode
+        if (!getSettings().isExperimentalNative()) {
+            var emitter = ParticleEmitters.newFireEmitter();
+            emitter.setSourceImage(texture("ball.png"));
+            emitter.setBlendMode(BlendMode.SRC_OVER);
+            emitter.setNumParticles(1);
+            emitter.setEmissionRate(1);
+            emitter.setSpawnPointFunction(i -> new Point2D(0, 0));
+            emitter.setScaleFunction(i -> new Point2D(-0.1, -0.1));
+            emitter.setExpireFunction(i -> Duration.millis(110));
 
-        emitter.minSizeProperty().bind(e.getTransformComponent().scaleXProperty().multiply(60));
-        emitter.maxSizeProperty().bind(e.getTransformComponent().scaleXProperty().multiply(60));
+            emitter.setEntityScaleFunction(() -> new Point2D(0.1, 0.1));
+            emitter.setScaleOriginFunction(i -> new Point2D(0, 0));
+
+            emitter.minSizeProperty().bind(e.getTransformComponent().scaleXProperty().multiply(60));
+            emitter.maxSizeProperty().bind(e.getTransformComponent().scaleXProperty().multiply(60));
+
+            e.addComponent(new ParticleComponent(emitter));
+        }
 
         return e;
     }
@@ -176,19 +180,24 @@ public class BreakoutFactory implements EntityFactory {
     public Entity newSparks(SpawnData data) {
         Color color = data.get("color");
 
-        var emitter = ParticleEmitters.newExplosionEmitter(24);
-        emitter.setSourceImage(texture("particles/smoke_06.png", 16, 16).multiplyColor(color));
-        emitter.setSize(4, 16);
-        emitter.setMaxEmissions(1);
-        emitter.setExpireFunction(i -> Duration.seconds(FXGLMath.random(0.25, 1.0)));
-        emitter.setBlendMode(BlendMode.ADD);
-        emitter.setNumParticles(20);
-
-        return entityBuilder()
+        var e = entityBuilder()
                 .from(data)
-                .with(new ParticleComponent(emitter))
                 .with(new ExpireCleanComponent(Duration.seconds(1.5)))
                 .build();
+
+        if (!getSettings().isExperimentalNative()) {
+            var emitter = ParticleEmitters.newExplosionEmitter(24);
+            emitter.setSourceImage(texture("particles/smoke_06.png", 16, 16).multiplyColor(color));
+            emitter.setSize(4, 16);
+            emitter.setMaxEmissions(1);
+            emitter.setExpireFunction(i -> Duration.seconds(FXGLMath.random(0.25, 1.0)));
+            emitter.setBlendMode(BlendMode.ADD);
+            emitter.setNumParticles(20);
+
+            e.addComponent(new ParticleComponent(emitter));
+        }
+
+        return e;
     }
 
     @Spawns("powerup")
