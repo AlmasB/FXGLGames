@@ -27,6 +27,7 @@
 package com.almasb.fxglgames.breakout.components;
 
 import com.almasb.fxgl.core.math.Vec2;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.Effect;
 import com.almasb.fxgl.dsl.components.EffectComponent;
 import com.almasb.fxgl.entity.Entity;
@@ -136,9 +137,11 @@ public class BallComponent extends Component {
 
         setColor(COLORS[colorIndex]);
 
-        // update emitter
-        var emitter = entity.getComponent(ParticleComponent.class).getEmitter();
-        emitter.setSourceImage(textures[colorIndex]);
+        if (!FXGL.getSettings().isExperimentalNative()) {
+            // update emitter
+            var emitter = entity.getComponent(ParticleComponent.class).getEmitter();
+            emitter.setSourceImage(textures[colorIndex]);
+        }
 
         entity.getViewComponent().addChild(textures[colorIndex]);
     }
