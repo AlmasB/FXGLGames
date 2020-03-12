@@ -79,7 +79,10 @@ public class BreakoutApp extends GameApplication {
     @Override
     protected void onPreInit() {
         getSettings().setGlobalMusicVolume(0.2);
-        loopBGM("BGM.mp3");
+
+        if (!getSettings().isExperimentalNative()) {
+            loopBGM("BGM.mp3");
+        }
     }
 
     @Override
@@ -169,13 +172,19 @@ public class BreakoutApp extends GameApplication {
         cameraAnimation.start();
     }
 
+    private void playHitSound() {
+        if (!getSettings().isExperimentalNative()) {
+            play("hit.wav");
+        }
+    }
+
     @Override
     protected void initPhysics() {
         getPhysicsWorld().setGravity(0, 0);
 
         onCollisionBegin(BALL, BRICK, (ball, brick) -> {
 
-            play("hit.wav");
+            playHitSound();
 
             if (!getBallControl().getColor().equals(brick.getComponent(BrickComponent.class).getColor())) {
                 return;
@@ -206,7 +215,7 @@ public class BreakoutApp extends GameApplication {
         });
 
         onCollisionBegin(BAT, BALL, (bat, ball) -> {
-            play("hit.wav");
+            playHitSound();
 
             ball.call("applySlow");
         });
@@ -214,7 +223,7 @@ public class BreakoutApp extends GameApplication {
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(BALL, WALL) {
             @Override
             protected void onHitBoxTrigger(Entity a, Entity b, HitBox boxA, HitBox boxB) {
-                play("hit.wav");
+                playHitSound();
 
                 if (boxB.getName().equals("BOT")) {
                     inc("score", -100);
