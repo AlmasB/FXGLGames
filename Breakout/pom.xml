@@ -16,7 +16,7 @@
         <maven.compiler.version>3.8.0</maven.compiler.version>
         <maven.shade.version>3.0.0</maven.shade.version>
 
-        <fxgl.version>11.8</fxgl.version>
+        <fxgl.version>dev-SNAPSHOT</fxgl.version>
         <jfx.maven.plugin.version>0.0.4</jfx.maven.plugin.version>
         <client.plugin.version>0.1.17</client.plugin.version>
         <mainClassName>com.almasb.fxglgames.breakout.BreakoutApp</mainClassName>
@@ -97,17 +97,14 @@
                 <artifactId>client-maven-plugin</artifactId>
                 <version>${client.plugin.version}</version>
                 <configuration>
-                    <bundlesList>
-                        <list>com/almasb/fxgl/app/system</list>
-                        <list>java.util.ResourceBundle</list>
-                        <list>java.util.ListResourceBundle</list>
-                    </bundlesList>
                     <attachList>
                         <list>storage</list>
                     </attachList>
                     <resourcesList>
-                        <list>properties</list>
+                        <list>lang</list>
                         <list>tmx</list>
+                        <list>wav</list>
+                        <list>mp3</list>
                     </resourcesList>
                     <verbose>true</verbose>
                     <reflectionList>
