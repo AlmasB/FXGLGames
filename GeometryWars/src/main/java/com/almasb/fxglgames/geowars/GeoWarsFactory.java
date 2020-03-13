@@ -70,7 +70,7 @@ public class GeoWarsFactory implements EntityFactory {
     public Entity spawnPlayer(SpawnData data) {
         var emitter = ParticleEmitters.newExplosionEmitter(1);
 
-        var t = texture("player.png");
+        var t = texture("Player.png");
         //t.setEffect(new Bloom());
 
         return entityBuilder()

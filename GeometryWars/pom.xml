@@ -13,10 +13,12 @@
         <source.version>11</source.version>
 
         <!-- plugins -->
-        <maven.compiler.version>3.8.0</maven.compiler.version>
+        <maven.compiler.version>3.8.1</maven.compiler.version>
         <maven.shade.version>3.0.0</maven.shade.version>
 
-        <fxgl.version>dev-SNAPSHOT</fxgl.version>
+        <fxgl.version>11.8</fxgl.version>
+        <jfx.maven.plugin.version>0.0.4</jfx.maven.plugin.version>
+        <mainClassName>com.almasb.fxglgames.geowars.GeoWarsApp</mainClassName>
     </properties>
 
     <dependencies>
@@ -78,21 +80,19 @@
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.3</version>
+                <version>${jfx.maven.plugin.version}</version>
                 <configuration>
-                    <mainClass>com.almasb.fxglgames.geowars.GeoWarsApp</mainClass>
+                    <stripDebug>true</stripDebug>
+                    <compress>2</compress>
+                    <noHeaderFiles>true</noHeaderFiles>
+                    <noManPages>true</noManPages>
+                    <launcher>Start-game</launcher>
+                    <jlinkImageName>game</jlinkImageName>
+                    <jlinkZipName>geowars-game</jlinkZipName>
+                    <mainClass>${mainClassName}</mainClass>
                 </configuration>
             </plugin>
 
-            <!-- client maven plugin -->
-            <plugin>
-                <groupId>com.gluonhq</groupId>
-                <artifactId>client-maven-plugin</artifactId>
-                <version>0.1.9</version>
-                <configuration>
-                    <mainClass>com.almasb.fxglgames.geowars.GeoWarsApp</mainClass>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
