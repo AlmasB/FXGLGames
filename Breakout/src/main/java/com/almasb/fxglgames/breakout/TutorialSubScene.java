@@ -11,6 +11,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
+import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
@@ -20,12 +21,13 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 public class TutorialSubScene extends SubScene {
 
     public TutorialSubScene() {
-        var textTutorial = getUIFactoryService().newText("Press SPACE to change ball color\n\n" +
-                "The ball only interacts with bricks of the same color!", Color.WHITE, FontType.TEXT, 20);
+        var textTutorial = getUIFactoryService().newText("Tap the circle to change ball color\n\n" +
+                "Tap the left side of the screen to move left!\n\n" +
+                "Tap the right side of the screen to move right!", Color.WHITE, FontType.TEXT, 20);
         textTutorial.setWrappingWidth(250);
         textTutorial.setTextAlignment(TextAlignment.LEFT);
 
-        var bg = new Rectangle(300, 170, Color.color(0.3627451f, 0.3627451f, 0.5627451f, 0.55));
+        var bg = new Rectangle(300, 230, Color.color(0.3627451f, 0.3627451f, 0.5627451f, 0.55));
         bg.setArcWidth(50);
         bg.setArcHeight(50);
         bg.setStroke(Color.WHITE);
@@ -37,18 +39,15 @@ public class TutorialSubScene extends SubScene {
         getContentRoot().setTranslateY(250);
         getContentRoot().getChildren().add(stackPane);
 
-        getInput().addAction(new UserAction("Space") {
-            @Override
-            protected void onActionBegin() {
-                animationBuilder()
-                        .onFinished(() -> getSceneService().popSubScene())
-                        .interpolator(Interpolators.EXPONENTIAL.EASE_IN())
-                        .translate(getContentRoot())
-                        .from(new Point2D(50, 250))
-                        .to(new Point2D(-250, 250))
-                        .buildAndPlay(TutorialSubScene.this);
-            }
-        }, KeyCode.SPACE);
+        getTimer().runOnceAfter(() -> {
+            animationBuilder()
+                    .onFinished(() -> getSceneService().popSubScene())
+                    .interpolator(Interpolators.EXPONENTIAL.EASE_IN())
+                    .translate(getContentRoot())
+                    .from(new Point2D(50, 250))
+                    .to(new Point2D(-250, 250))
+                    .buildAndPlay(TutorialSubScene.this);
+        }, Duration.seconds(5));
     }
 
     @Override

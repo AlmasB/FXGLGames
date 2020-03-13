@@ -248,7 +248,10 @@ public class BreakoutApp extends GameApplication {
         var circleLeft = new Circle(75);
         circleLeft.setStroke(Color.WHITE);
         circleLeft.setStrokeWidth(2.5);
-        circleLeft.setOnMouseClicked(e -> getBallControl().changeColorToNext());
+        circleLeft.setOnMouseClicked(e -> {
+            getInput().mockKeyPress(KeyCode.SPACE);
+            getInput().mockKeyRelease(KeyCode.SPACE);
+        });
 
         getBallControl().colorProperty().addListener((obs, old, newValue) -> {
             circleLeft.setFill(getBallControl().getNextColor());
