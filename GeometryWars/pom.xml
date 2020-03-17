@@ -16,8 +16,9 @@
         <maven.compiler.version>3.8.1</maven.compiler.version>
         <maven.shade.version>3.0.0</maven.shade.version>
 
-        <fxgl.version>11.8</fxgl.version>
+        <fxgl.version>dev-SNAPSHOT</fxgl.version>
         <jfx.maven.plugin.version>0.0.4</jfx.maven.plugin.version>
+        <client.plugin.version>0.1.17</client.plugin.version>
         <mainClassName>com.almasb.fxglgames.geowars.GeoWarsApp</mainClassName>
     </properties>
 
@@ -93,6 +94,91 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>com.gluonhq</groupId>
+                <artifactId>client-maven-plugin</artifactId>
+                <version>${client.plugin.version}</version>
+                <configuration>
+                    <attachList>
+                        <list>storage</list>
+                    </attachList>
+                    <resourcesList>
+                        <list>.*\\.lang$</list>
+                        <list>.*\\.tmx$</list>
+                        <list>.*\\.wav$</list>
+                        <list>.*\\.mp3$</list>
+                    </resourcesList>
+                    <verbose>true</verbose>
+                    <reflectionList>
+                        <list>com.almasb.fxgl.app.GameApplication</list>
+                        <list>com.almasb.fxgl.app.GameApplication$FXGLApplication</list>
+                        <list>com.almasb.fxgl.app.ReadOnlyGameSettings</list>
+                        <list>com.almasb.fxgl.app.GameSettings</list>
+
+                        <!-- Engine services -->
+                        <list>com.almasb.fxgl.app.services.WindowService</list>
+                        <list>com.almasb.fxgl.app.services.FXGLDialogService</list>
+                        <list>com.almasb.fxgl.app.services.IOTaskExecutorService</list>
+                        <list>com.almasb.fxgl.app.services.SystemBundleService</list>
+                        <list>com.almasb.fxgl.app.services.UpdaterService</list>
+                        <list>com.almasb.fxgl.app.services.AssetLoaderService</list>
+                        <list>com.almasb.fxgl.cutscene.CutsceneService</list>
+                        <list>com.almasb.fxgl.event.EventBusService</list>
+                        <list>com.almasb.fxgl.io.FileSystemService</list>
+                        <list>com.almasb.fxgl.localization.LocalizationService</list>
+                        <list>com.almasb.fxgl.minigames.MiniGameService</list>
+                        <list>com.almasb.fxgl.net.NetService</list>
+                        <list>com.almasb.fxgl.profile.SaveLoadService</list>
+                        <list>com.almasb.fxgl.ui.FXGLDialogFactoryServiceProvider</list>
+                        <list>com.almasb.fxgl.ui.FXGLUIFactoryServiceProvider</list>
+                        <list>com.almasb.fxgl.app.GameApplication$GameApplicationService</list>
+                        <list>com.almasb.fxgl.audio.AudioPlayer</list>
+                        <list>com.almasb.fxgl.notification.impl.NotificationServiceProvider</list>
+                        <list>com.almasb.fxgl.notification.view.XboxNotificationView</list>
+                        <list>com.almasb.fxgl.achievement.AchievementService</list>
+                        <list>com.almasb.fxgl.core.math.Vec2</list>
+                        <list>com.almasb.fxgl.particle.Particle</list>
+                        <!-- Components -->
+
+                        <list>com.almasb.fxgl.entity.components.BoundingBoxComponent</list>
+                        <list>com.almasb.fxgl.entity.components.CollidableComponent</list>
+                        <list>com.almasb.fxgl.entity.components.IDComponent</list>
+                        <list>com.almasb.fxgl.entity.components.IrremovableComponent</list>
+                        <list>com.almasb.fxgl.entity.components.TimeComponent</list>
+                        <list>com.almasb.fxgl.entity.components.TransformComponent</list>
+                        <list>com.almasb.fxgl.entity.components.TypeComponent</list>
+                        <list>com.almasb.fxgl.entity.components.ViewComponent</list>
+                        <list>com.almasb.fxgl.particle.ParticleComponent</list>
+                        <list>com.almasb.fxgl.physics.PhysicsComponent</list>
+                        <list>com.almasb.fxgl.dsl.components.LiftComponent</list>
+                        <list>com.almasb.fxgl.dsl.components.OffscreenCleanComponent</list>
+                        <list>com.almasb.fxgl.dsl.components.OffscreenPauseComponent</list>
+                        <list>com.almasb.fxgl.dsl.components.ProjectileComponent</list>
+                        <list>com.almasb.fxgl.dsl.components.ExpireCleanComponent</list>
+                        <list>com.almasb.fxgl.dsl.components.KeepOnScreenComponent</list>
+                        <list>com.almasb.fxgl.dsl.components.ProjectileComponent</list>
+                        <list>com.almasb.fxgl.dsl.components.RandomMoveComponent</list>
+
+                        <!--     Custom components                  -->
+
+                        <list>com.almasb.fxglgames.geowars.component.BulletComponent</list>
+                        <list>com.almasb.fxglgames.geowars.component.CrystalComponent</list>
+                        <list>com.almasb.fxglgames.geowars.component.ExhaustParticleComponent</list>
+                        <list>com.almasb.fxglgames.geowars.component.ExplosionParticleComponent</list>
+                        <list>com.almasb.fxglgames.geowars.component.GraphicsUpdateComponent</list>
+                        <list>com.almasb.fxglgames.geowars.component.GridComponent</list>
+                        <list>com.almasb.fxglgames.geowars.component.HealthComponent</list>
+                        <list>com.almasb.fxglgames.geowars.component.PlayerComponent</list>
+                        <list>com.almasb.fxglgames.geowars.component.RicochetComponent</list>
+                        <list>com.almasb.fxglgames.geowars.component.enemy.BouncerComponent</list>
+                        <list>com.almasb.fxglgames.geowars.component.enemy.RunnerComponent</list>
+                        <list>com.almasb.fxglgames.geowars.component.enemy.SeekerComponent</list>
+                        <list>com.almasb.fxglgames.geowars.component.enemy.WandererComponent</list>
+                    </reflectionList>
+                    <!--                    <target>ios-sim</target>-->
+                    <mainClass>${mainClassName}</mainClass>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

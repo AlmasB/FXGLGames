@@ -2,7 +2,11 @@ package com.almasb.fxglgames.geowars;
 
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
-import com.almasb.fxgl.dsl.components.*;
+import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
+import com.almasb.fxgl.dsl.components.KeepOnScreenComponent;
+import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
+import com.almasb.fxgl.dsl.components.ProjectileComponent;
+import com.almasb.fxgl.dsl.components.RandomMoveComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
@@ -68,20 +72,20 @@ public class GeoWarsFactory implements EntityFactory {
 
     @Spawns("Player")
     public Entity spawnPlayer(SpawnData data) {
-        var emitter = ParticleEmitters.newExplosionEmitter(1);
-
-        var t = texture("Player.png");
-        //t.setEffect(new Bloom());
-
-        return entityBuilder()
+        var e = entityBuilder()
                 .type(PLAYER)
                 .at(getAppWidth() / 2, getAppHeight() / 2)
-                .viewWithBBox(t)
+                .viewWithBBox("Player.png")
                 .collidable()
                 .with(new KeepOnScreenComponent().bothAxes())
                 .with(new PlayerComponent(config.getPlayerSpeed()))
-                .with(new ExhaustParticleComponent(emitter))
                 .build();
+
+        if (!getSettings().isExperimentalNative()) {
+            e.addComponent(new ExhaustParticleComponent(ParticleEmitters.newExplosionEmitter(1)));
+        }
+
+        return e;
     }
 
     @Spawns("Bullet")
@@ -169,12 +173,17 @@ public class GeoWarsFactory implements EntityFactory {
     public Entity spawnExplosion(SpawnData data) {
         play("explosion-0" + (int) (Math.random() * 8 + 1) + ".wav");
 
-        return entityBuilder()
+        var e = entityBuilder()
                 .at(data.getX() - 40, data.getY() - 40)
                 .view(texture("explosion.png", 80 * 48, 80).toAnimatedTexture(48, Duration.seconds(0.75)).play())
-                .with(new ExplosionParticleComponent())
                 .with(new ExpireCleanComponent(Duration.seconds(1.6)))
                 .build();
+
+        if (!getSettings().isExperimentalNative()) {
+            e.addComponent(new ExplosionParticleComponent());
+        }
+
+        return e;
     }
 
     @Spawns("Portal")

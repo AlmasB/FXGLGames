@@ -70,6 +70,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setTitle("FXGL Geometry Wars");
         settings.setVersion("1.0");
         settings.setConfigClass(GeoWarsConfig.class);
+        settings.setExperimentalNative(true);
 
         if (!settings.isExperimentalNative()) {
             settings.setFontUI("game_font_7.ttf");
@@ -81,10 +82,12 @@ public class GeoWarsApp extends GameApplication {
         // preload explosion sprite sheet
         getAssetLoader().loadTexture("explosion.png", 80 * 48, 80);
 
-        getSettings().setGlobalSoundVolume(0.2);
-        getSettings().setGlobalMusicVolume(0.2);
+        if (!getSettings().isExperimentalNative()) {
+            getSettings().setGlobalSoundVolume(0.2);
+            getSettings().setGlobalMusicVolume(0.2);
 
-        loopBGM("bgm.mp3");
+            loopBGM("bgm.mp3");
+        }
     }
 
     @Override
