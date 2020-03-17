@@ -90,7 +90,9 @@ public class GeoWarsFactory implements EntityFactory {
 
     @Spawns("Bullet")
     public Entity spawnBullet(SpawnData data) {
-        play("shoot" + (int) (Math.random() * 8 + 1) + ".wav");
+        if (!getSettings().isExperimentalNative()) {
+            play("shoot" + (int) (Math.random() * 8 + 1) + ".wav");
+        }
 
         return entityBuilder()
                 .type(BULLET)
@@ -171,8 +173,6 @@ public class GeoWarsFactory implements EntityFactory {
 
     @Spawns("Explosion")
     public Entity spawnExplosion(SpawnData data) {
-        play("explosion-0" + (int) (Math.random() * 8 + 1) + ".wav");
-
         var e = entityBuilder()
                 .at(data.getX() - 40, data.getY() - 40)
                 .view(texture("explosion.png", 80 * 48, 80).toAnimatedTexture(48, Duration.seconds(0.75)).play())
@@ -181,6 +181,8 @@ public class GeoWarsFactory implements EntityFactory {
 
         if (!getSettings().isExperimentalNative()) {
             e.addComponent(new ExplosionParticleComponent());
+
+            play("explosion-0" + (int) (Math.random() * 8 + 1) + ".wav");
         }
 
         return e;
