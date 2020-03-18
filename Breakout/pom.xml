@@ -37,7 +37,7 @@
         </pluginRepository>
 
         <pluginRepository>
-            <id>gluon-releases</id>
+            <id>gluon-snapshots</id>
             <url>http://nexus.gluonhq.com/nexus/content/repositories/public-snapshots/</url>
         </pluginRepository>
     </pluginRepositories>
