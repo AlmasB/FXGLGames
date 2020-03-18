@@ -18,7 +18,7 @@
 
         <fxgl.version>dev-SNAPSHOT</fxgl.version>
         <jfx.maven.plugin.version>0.0.4</jfx.maven.plugin.version>
-        <client.plugin.version>0.1.17</client.plugin.version>
+        <client.plugin.version>0.1.18-SNAPSHOT</client.plugin.version>
         <mainClassName>com.almasb.fxglgames.breakout.BreakoutApp</mainClassName>
     </properties>
 
@@ -34,6 +34,11 @@
         <pluginRepository>
             <id>gluon-releases</id>
             <url>http://nexus.gluonhq.com/nexus/content/repositories/releases/</url>
+        </pluginRepository>
+
+        <pluginRepository>
+            <id>gluon-releases</id>
+            <url>http://nexus.gluonhq.com/nexus/content/repositories/public-snapshots/</url>
         </pluginRepository>
     </pluginRepositories>
 
@@ -161,7 +166,7 @@
                         <list>com.almasb.fxglgames.breakout.components.MoveDownComponent</list>
                         <list>com.almasb.fxglgames.breakout.BreakoutFactory</list>
                     </reflectionList>
-<!--                    <target>ios-sim</target>-->
+                    <target>android</target>
                     <mainClass>${mainClassName}</mainClass>
                 </configuration>
             </plugin>
