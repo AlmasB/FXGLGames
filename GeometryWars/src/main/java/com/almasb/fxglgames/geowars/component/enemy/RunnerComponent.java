@@ -31,9 +31,7 @@ import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxglgames.geowars.GeoWarsType;
 import javafx.geometry.Point2D;
-import javafx.scene.effect.Bloom;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
