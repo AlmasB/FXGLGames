@@ -1,5 +1,7 @@
 package com.almasb.fxglgames.tictactoe;
 
+import com.almasb.fxgl.entity.Entity;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -8,10 +10,10 @@ import java.util.List;
  */
 public class TileCombo {
 
-    private TileEntity tile1, tile2, tile3;
-    private List<TileEntity> tiles;
+    private Entity tile1, tile2, tile3;
+    private List<Entity> tiles;
 
-    public TileCombo(TileEntity tile1, TileEntity tile2, TileEntity tile3) {
+    public TileCombo(Entity tile1, Entity tile2, Entity tile3) {
         this.tile1 = tile1;
         this.tile2 = tile2;
         this.tile3 = tile3;
@@ -19,22 +21,22 @@ public class TileCombo {
         tiles = Arrays.asList(tile1, tile2, tile3);
     }
 
-    public TileEntity getTile1() {
+    public Entity getTile1() {
         return tile1;
     }
 
-    public TileEntity getTile2() {
+    public Entity getTile2() {
         return tile2;
     }
 
-    public TileEntity getTile3() {
+    public Entity getTile3() {
         return tile3;
     }
 
     public boolean isComplete() {
-        return tile1.getValue() != TileValue.NONE
-                && tile1.getValue() == tile2.getValue()
-                && tile1.getValue() == tile3.getValue();
+        return !isEmpty(tile1)
+                && getValueOf(tile1) == getValueOf(tile2)
+                && getValueOf(tile1) == getValueOf(tile3);
     }
 
     /**
@@ -42,7 +44,7 @@ public class TileCombo {
      */
     public boolean isOpen() {
         return tiles.stream()
-                .allMatch(t -> t.getValue() == TileValue.NONE);
+                .allMatch(this::isEmpty);
     }
 
     /**
@@ -52,11 +54,11 @@ public class TileCombo {
     public boolean isTwoThirds(TileValue value) {
         TileValue oppositeValue = value == TileValue.X ? TileValue.O : TileValue.X;
 
-        if (tiles.stream().anyMatch(t -> t.getValue() == oppositeValue))
+        if (tiles.stream().anyMatch(t -> getValueOf(t) == oppositeValue))
             return false;
 
         return tiles.stream()
-                .filter(t -> t.getValue() == TileValue.NONE)
+                .filter(this::isEmpty)
                 .count() == 1;
     }
 
@@ -67,25 +69,33 @@ public class TileCombo {
     public boolean isOneThird(TileValue value) {
         TileValue oppositeValue = value == TileValue.X ? TileValue.O : TileValue.X;
 
-        if (tiles.stream().anyMatch(t -> t.getValue() == oppositeValue))
+        if (tiles.stream().anyMatch(t -> getValueOf(t) == oppositeValue))
             return false;
 
         return tiles.stream()
-                .filter(t -> t.getValue() == TileValue.NONE)
+                .filter(this::isEmpty)
                 .count() == 2;
     }
 
     /**
      * @return first empty tile or null if no empty tiles
      */
-    public TileEntity getFirstEmpty() {
+    public Entity getFirstEmpty() {
         return tiles.stream()
-                .filter(t -> t.getValue() == TileValue.NONE)
+                .filter(this::isEmpty)
                 .findAny()
                 .orElse(null);
     }
 
+    private TileValue getValueOf(Entity tile) {
+        return tile.getComponent(TileViewComponent.class).getValue();
+    }
+
+    private boolean isEmpty(Entity tile) {
+        return tile.getComponent(TileViewComponent.class).isEmpty();
+    }
+
     public String getWinSymbol() {
-        return tile1.getValue().symbol;
+        return getValueOf(tile1).symbol;
     }
 }

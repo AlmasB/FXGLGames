@@ -1,10 +1,11 @@
-package com.almasb.fxglgames.tictactoe.components.enemy;
+package com.almasb.fxglgames.tictactoe.ai;
 
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxglgames.tictactoe.TicTacToeApp;
 import com.almasb.fxglgames.tictactoe.TileCombo;
-import com.almasb.fxglgames.tictactoe.TileEntity;
 import com.almasb.fxglgames.tictactoe.TileValue;
+import com.almasb.fxglgames.tictactoe.TileViewComponent;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.function.Predicate;
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class RuleBasedComponent extends EnemyComponent {
+public class RuleBasedService extends TicTacToeAIService {
 
     private List<Predicate<TileCombo> > aiPredicates = Arrays.asList(
             c -> c.isTwoThirds(TileValue.O),
@@ -29,7 +30,7 @@ public class RuleBasedComponent extends EnemyComponent {
     public void makeMove() {
         List<TileCombo> combos = FXGL.<TicTacToeApp>getAppCast().getCombos();
 
-        TileEntity tile = aiPredicates.stream()
+        Entity tile = aiPredicates.stream()
                 .map(predicate -> {
                     return combos.stream()
                             .filter(predicate)
@@ -42,6 +43,6 @@ public class RuleBasedComponent extends EnemyComponent {
                 // should not happen
                 .orElseThrow(() -> new IllegalStateException("No empty tiles"));
 
-        tile.getControl().mark(TileValue.O);
+        tile.getComponent(TileViewComponent.class).mark(TileValue.O);
     }
 }

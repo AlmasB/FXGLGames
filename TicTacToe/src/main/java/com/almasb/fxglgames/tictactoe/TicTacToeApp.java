@@ -3,7 +3,7 @@ package com.almasb.fxglgames.tictactoe;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxglgames.tictactoe.components.enemy.MinimaxComponent;
+import com.almasb.fxglgames.tictactoe.ai.MinimaxService;
 import com.almasb.fxglgames.tictactoe.event.AIEvent;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -29,17 +29,18 @@ public class TicTacToeApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("TicTacToe");
-        settings.setVersion("0.3");
+        settings.setVersion("1.0");
         settings.setWidth(600);
         settings.setHeight(600);
+        settings.addEngineService(MinimaxService.class);
     }
 
-    private TileEntity[][] board = new TileEntity[3][3];
+    private Entity[][] board = new Entity[3][3];
     private List<TileCombo> combos = new ArrayList<>();
 
     private boolean playerStarts = true;
 
-    public TileEntity[][] getBoard() {
+    public Entity[][] getBoard() {
         return board;
     }
 
@@ -47,29 +48,20 @@ public class TicTacToeApp extends GameApplication {
         return combos;
     }
 
-    private boolean firstTime = true;
+    @Override
+    protected void onPreInit() {
+        getEventBus().addEventHandler(AIEvent.MOVED, event -> checkGameFinished());
+    }
 
     @Override
     protected void initGame() {
-        if (firstTime) {
-            getEventBus().addEventHandler(AIEvent.MOVED, event -> checkGameFinished());
-            firstTime = false;
-        }
+        getGameWorld().addEntityFactory(new TicTacToeFactory());
 
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 3; x++) {
-                TileEntity tile = new TileEntity(x * getAppWidth() / 3, y * getAppHeight() / 3);
-                board[x][y] = tile;
-
-                getGameWorld().addEntity(tile);
+                board[x][y] = spawn("tile", x * getAppWidth() / 3, y * getAppHeight() / 3);
             }
         }
-
-        Entity enemy = new Entity();
-
-        // this controls the AI behavior
-        enemy.addComponent(new MinimaxComponent());
-        getGameWorld().addEntity(enemy);
 
         combos.clear();
 
@@ -131,8 +123,8 @@ public class TicTacToeApp extends GameApplication {
 
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 3; x++) {
-                TileEntity tile = board[x][y];
-                if (tile.getValue() == TileValue.NONE) {
+                Entity tile = board[x][y];
+                if (tile.getComponent(TileViewComponent.class).isEmpty()) {
                     // at least 1 tile is empty
                     return false;
                 }
@@ -163,7 +155,7 @@ public class TicTacToeApp extends GameApplication {
     }
 
     private void gameOver(String winner) {
-        getDisplay().showConfirmationBox("Winner: " + winner + "\nContinue?", yes -> {
+        getDialogService().showConfirmationBox("Winner: " + winner + "\nContinue?", yes -> {
             if (yes)
                 getGameController().startNewGame();
             else
@@ -171,8 +163,8 @@ public class TicTacToeApp extends GameApplication {
         });
     }
 
-    public void onUserMove(TileEntity tile) {
-        boolean ok = tile.getControl().mark(TileValue.X);
+    public void onUserMove(Entity tile) {
+        boolean ok = tile.getComponent(TileViewComponent.class).mark(TileValue.X);
 
         if (ok) {
             boolean over = checkGameFinished();

@@ -1,9 +1,10 @@
-package com.almasb.fxglgames.tictactoe.components.enemy;
+package com.almasb.fxglgames.tictactoe.ai;
 
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxglgames.tictactoe.TicTacToeApp;
-import com.almasb.fxglgames.tictactoe.TileEntity;
 import com.almasb.fxglgames.tictactoe.TileValue;
+import com.almasb.fxglgames.tictactoe.TileViewComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class MinimaxComponent extends EnemyComponent {
+public class MinimaxService extends TicTacToeAIService {
 
     private TileValue mySeed = TileValue.O;
     private TileValue oppSeed = TileValue.X;
@@ -22,22 +23,25 @@ public class MinimaxComponent extends EnemyComponent {
 
     @Override
     public void makeMove() {
-        TileEntity[][] board = FXGL.<TicTacToeApp>getAppCast().getBoard();
+        Entity[][] board = FXGL.<TicTacToeApp>getAppCast().getBoard();
 
         // the algorithm uses [row][col]
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 3; x++) {
-                cells[y][x] = board[x][y].getValue();
+                cells[y][x] = board[x][y].getComponent(TileViewComponent.class).getValue();
             }
         }
 
         int[] result = minimax(2, mySeed); // depth, max turn
 
-        board[result[2]][result[1]].getControl().mark(mySeed);
+        board[result[2]][result[1]].getComponent(TileViewComponent.class).mark(mySeed);
     }
 
-    /** Recursive minimax at level of depth for either maximizing or minimizing player.
-     Return int[3] of {score, row, col}  */
+    /**
+     * Recursive minimax at level of depth for either maximizing or minimizing player.
+     *
+     * @return int[3] of {score, row, col}
+     */
     private int[] minimax(int depth, TileValue player) {
         // Generate possible next moves in a List of int[2] of {row, col}.
         List<int[]> nextMoves = generateMoves();
@@ -77,8 +81,11 @@ public class MinimaxComponent extends EnemyComponent {
         return new int[] {bestScore, bestRow, bestCol};
     }
 
-    /** Find all valid next moves.
-     Return List of moves in int[2] of {row, col} or empty list if gameover */
+    /**
+     * Find all valid next moves.
+     *
+     * @return List of moves in int[2] of {row, col} or empty list if gameover
+     */
     private List<int[]> generateMoves() {
         List<int[]> nextMoves = new ArrayList<int[]>(); // allocate List
 
@@ -98,10 +105,13 @@ public class MinimaxComponent extends EnemyComponent {
         return nextMoves;
     }
 
-    /** The heuristic evaluation function for the current board
-     @Return +100, +10, +1 for EACH 3-, 2-, 1-in-a-line for computer.
-     -100, -10, -1 for EACH 3-, 2-, 1-in-a-line for opponent.
-     0 otherwise   */
+    /**
+     * The heuristic evaluation function for the current board
+     *
+     * @return +100, +10, +1 for EACH 3-, 2-, 1-in-a-line for computer.
+     *      -100, -10, -1 for EACH 3-, 2-, 1-in-a-line for opponent.
+     *      0 otherwise
+     */
     private int evaluate() {
         int score = 0;
         // Evaluate score for each of the 8 lines (3 rows, 3 columns, 2 diagonals)
@@ -116,10 +126,13 @@ public class MinimaxComponent extends EnemyComponent {
         return score;
     }
 
-    /** The heuristic evaluation function for the given line of 3 cells
-     @Return +100, +10, +1 for 3-, 2-, 1-in-a-line for computer.
-     -100, -10, -1 for 3-, 2-, 1-in-a-line for opponent.
-     0 otherwise */
+    /**
+     * The heuristic evaluation function for the given line of 3 cells
+     *
+     * @return +100, +10, +1 for 3-, 2-, 1-in-a-line for computer.
+     *      -100, -10, -1 for 3-, 2-, 1-in-a-line for opponent.
+     *      0 otherwise
+     */
     private int evaluateLine(int row1, int col1, int row2, int col2, int row3, int col3) {
         int score = 0;
 
@@ -176,7 +189,9 @@ public class MinimaxComponent extends EnemyComponent {
             0b100010001, 0b001010100               // diagonals
     };
 
-    /** Returns true if thePlayer wins */
+    /**
+     * @return true if thePlayer wins
+     */
     private boolean hasWon(TileValue thePlayer) {
         int pattern = 0b000000000;  // 9-bit pattern for the 9 cells
         for (int row = 0; row < 3; ++row) {

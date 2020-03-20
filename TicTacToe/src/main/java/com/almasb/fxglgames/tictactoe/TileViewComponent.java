@@ -1,6 +1,6 @@
 package com.almasb.fxglgames.tictactoe;
 
-import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.dsl.components.view.ChildViewComponent;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -11,23 +11,23 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
+import static com.almasb.fxgl.dsl.FXGL.*;
+
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class TileView extends StackPane {
+public class TileViewComponent extends ChildViewComponent {
 
-    private TicTacToeApp app;
+    private TileValue value = TileValue.NONE;
 
     private Arc arc = new Arc(34, 37, 34, 37, 0, 0);
     private Line line1 = new Line(0, 0, 0, 0);
     private Line line2 = new Line(75, 0, 75, 0);
 
-    public TileView(TileEntity tile) {
-        app = FXGL.getAppCast();
+    public TileViewComponent() {
+        Rectangle bg = new Rectangle(getAppWidth() / 3, getAppHeight() / 3, Color.rgb(13, 222, 236));
 
-        Rectangle bg = new Rectangle(FXGL.getAppWidth() / 3, FXGL.getAppHeight() / 3, Color.rgb(13, 222, 236));
-
-        Rectangle bg2 = new Rectangle(FXGL.getAppWidth() / 4, FXGL.getAppHeight() / 4, Color.rgb(250, 250, 250, 0.25));
+        Rectangle bg2 = new Rectangle(getAppWidth() / 4, getAppHeight() / 4, Color.rgb(250, 250, 250, 0.25));
         bg2.setArcWidth(25);
         bg2.setArcHeight(25);
 
@@ -41,13 +41,30 @@ public class TileView extends StackPane {
         line1.setVisible(false);
         line2.setVisible(false);
 
-        getChildren().addAll(bg, bg2, arc, line1, line2);
+        getViewRoot().getChildren().addAll(new StackPane(bg, bg2, arc, line1, line2));
+    }
 
-        tile.getComponent(TileValueComponent.class).valueProperty().addListener((observable, oldValue, newValue) -> {
-            animate(newValue);
-        });
+    public boolean isEmpty() {
+        return getValue() == TileValue.NONE;
+    }
 
-        setOnMouseClicked(e -> app.onUserMove(tile));
+    public TileValue getValue() {
+        return value;
+    }
+
+    /**
+     * @param value tile value
+     * @return true if marking succeeded
+     */
+    public boolean mark(TileValue value) {
+        if (this.value != TileValue.NONE)
+            return false;
+
+        this.value = value;
+
+        animate(value);
+
+        return true;
     }
 
     public void animate(TileValue value) {
