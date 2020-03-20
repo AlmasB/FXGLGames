@@ -37,9 +37,7 @@ public class PlayerCoinHandler extends CollisionHandler {
                 .to(new Point2D(0, 0))
                 .buildAndPlay();
 
-        var text = getUIFactory().newText("+100");
-        text.setFont(getUIFactory().newFont(FontType.GAME, 26.0));
-        text.setStroke(Color.RED);
+        var text = getUIFactoryService().newText("+100", Color.RED, FontType.GAME, 26.0);
         text.setStrokeWidth(2.75);
 
         var textEntity = entityBuilder()

@@ -1,7 +1,13 @@
 package com.almasb.fxglgames.mario;
 
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.app.*;
+import com.almasb.fxgl.app.ApplicationMode;
+import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.app.scene.GameView;
+import com.almasb.fxgl.app.scene.LoadingScene;
+import com.almasb.fxgl.app.scene.SceneFactory;
+import com.almasb.fxgl.app.scene.Viewport;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.components.CollidableComponent;

@@ -87,7 +87,7 @@ public class LevelEndScene extends SubScene {
                 if (!isAnimationDone.getValue())
                     return;
 
-                getGameController().popSubScene();
+                getSceneService().popSubScene();
             }
         }, MouseButton.PRIMARY);
     }
@@ -123,7 +123,7 @@ public class LevelEndScene extends SubScene {
                     .buildAndPlay(this);
         }
 
-        getGameController().pushSubScene(this);
+        getSceneService().pushSubScene(this);
     }
 
     private static class Grade extends VBox {

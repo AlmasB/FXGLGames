@@ -2,7 +2,6 @@ package com.almasb.fxglgames.mario;
 
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.components.*;
-import com.almasb.fxgl.dsl.views.ScrollingBackgroundView;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
@@ -166,8 +165,7 @@ public class MarioFactory implements EntityFactory {
 
     @Spawns("messagePrompt")
     public Entity newMessagePrompt(SpawnData data) {
-        var text = getUIFactory().newText(data.get("message"), Color.BLACK, 14.0);
-        text.setFont(getUIFactory().newFont(FontType.GAME, 20.0));
+        var text = getUIFactoryService().newText(data.get("message"), Color.BLACK, FontType.GAME, 20.0);
         text.setStrokeWidth(2);
 
         return entityBuilder()

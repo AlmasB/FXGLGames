@@ -1,7 +1,7 @@
 package com.almasb.fxglgames.mario.ui;
 
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.app.LoadingScene;
+import com.almasb.fxgl.app.scene.LoadingScene;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
