@@ -46,6 +46,7 @@ import com.almasb.fxglgames.breakout.components.BatComponent;
 import com.almasb.fxglgames.breakout.components.BrickComponent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -173,12 +174,16 @@ public class BreakoutApp extends GameApplication {
         getGameWorld().getEntitiesCopy().forEach(e -> e.removeFromWorld());
         setLevelFromMap("tmx/level" + levelNum + ".tmx");
 
-        spawn("ball", getAppWidth() / 2, getAppHeight() - 250);
+        var ball = spawn("ball", getAppWidth() / 2, getAppHeight() - 250);
+        ball.getComponent(BallComponent.class).colorProperty().addListener((obs, old, newValue) -> {
+            var circle = (Circle) getGameWorld().getSingleton(COLOR_CIRCLE).getViewComponent().getChildren().get(0);
+            circle.setFill(getBallControl().getNextColor());
+        });
 
         spawn("bat", getAppWidth() / 2, getAppHeight() - 180);
 
         animateCamera(() -> {
-            getSceneService().pushSubScene(new NewLevelSubScene());
+            getSceneService().pushSubScene(new NewLevelSubScene(levelNum));
             getBallControl().release();
         });
     }
@@ -268,12 +273,6 @@ public class BreakoutApp extends GameApplication {
 
         addUINode(textScore, 220, getAppHeight() - 20);
         addUINode(debugText, 50, 50);
-
-
-
-//        getBallControl().colorProperty().addListener((obs, old, newValue) -> {
-//            circleLeft.setFill(getBallControl().getNextColor());
-//        });
 
         var regionLeft = new Rectangle(getAppWidth() / 2, getAppHeight() - 200);
         regionLeft.setOpacity(0);

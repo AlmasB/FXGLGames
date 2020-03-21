@@ -17,7 +17,7 @@ public class NewLevelSubScene extends SubScene {
 
     private ParticleSystem particleSystem;
     
-    public NewLevelSubScene() {
+    public NewLevelSubScene(int level) {
         var emitter = ParticleEmitters.newExplosionEmitter(50);
 
         var t = texture("particles/trace_horizontal.png", 128.0, 128.0);
@@ -33,7 +33,7 @@ public class NewLevelSubScene extends SubScene {
         particleSystem = new ParticleSystem();
         particleSystem.addParticleEmitter(emitter, getAppWidth() / 2.0 - 120, getAppHeight() / 2.0 - 110);
 
-        var text = getUIFactoryService().newText("LEVEL 1", Color.BLACK, 48);
+        var text = getUIFactoryService().newText("LEVEL " + level, Color.BLACK, 48);
         text.setTranslateX(getAppWidth() / 2.0 + 20 - 100);
         text.setTranslateY(getAppHeight() / 2.0 + 130 - 100);
 

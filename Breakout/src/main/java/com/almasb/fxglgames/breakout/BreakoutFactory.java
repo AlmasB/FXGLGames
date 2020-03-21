@@ -115,6 +115,7 @@ public class BreakoutFactory implements EntityFactory {
 
         return entityBuilder()
                 .from(data)
+                .type(COLOR_CIRCLE)
                 .bbox(new HitBox(BoundingShape.circle(radius)))
                 .view(circle)
                 .with(new PhysicsComponent())
