@@ -96,7 +96,7 @@ public class BrickComponent extends Component {
                 entityBuilder()
                         .at(entity.getPosition().add(i*32, 0))
                         .view(te)
-                        .with(new MoveDownComponent(random(550, 700)))
+                        .with(new ProjectileComponent(new Point2D(0, 1), random(550, 700)).allowRotation(false))
                         .with(new ExpireCleanComponent(Duration.seconds(0.7)).animateOpacity())
                         .buildAndAttach();
             }

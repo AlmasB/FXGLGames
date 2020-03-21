@@ -1,12 +1,10 @@
 package com.almasb.fxglgames.breakout;
 
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.scene.Scene;
 import com.almasb.fxgl.scene.SubScene;
 import com.almasb.fxgl.ui.FontType;
 import javafx.geometry.Point2D;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -47,7 +45,7 @@ public class TutorialSubScene extends SubScene {
                     .from(new Point2D(50, 250))
                     .to(new Point2D(-250, 250))
                     .buildAndPlay(TutorialSubScene.this);
-        }, Duration.seconds(5));
+        }, Duration.seconds(0.5));
     }
 
     @Override

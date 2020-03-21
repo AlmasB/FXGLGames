@@ -35,6 +35,7 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
+import com.almasb.fxgl.entity.components.IrremovableComponent;
 import com.almasb.fxgl.entity.components.TimeComponent;
 import com.almasb.fxgl.particle.ParticleComponent;
 import com.almasb.fxgl.particle.ParticleEmitters;
@@ -48,11 +49,12 @@ import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxgl.texture.AnimationChannel;
 import com.almasb.fxgl.texture.ImagesKt;
 import com.almasb.fxgl.ui.FontType;
+import com.almasb.fxglgames.breakout.components.BackgroundStarsViewComponent;
 import com.almasb.fxglgames.breakout.components.BallComponent;
 import com.almasb.fxglgames.breakout.components.BatComponent;
 import com.almasb.fxglgames.breakout.components.BrickComponent;
-import com.almasb.fxglgames.breakout.components.MoveDownComponent;
 import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -62,6 +64,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxglgames.breakout.BreakoutType.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -82,13 +85,24 @@ public class BreakoutFactory implements EntityFactory {
         image.get();
     }
 
+    @Spawns("background")
+    public Entity newBackground(SpawnData data) {
+        return entityBuilder()
+                .from(data)
+                .type(BACKGROUND)
+                .view(texture("bg/bg_blue.png").subTexture(new Rectangle2D(0, 0, getAppWidth(), getAppHeight())))
+                .with(new IrremovableComponent())
+                .with(new BackgroundStarsViewComponent(texture("bg/stars_small_1.png")))
+                .build();
+    }
+
     @Spawns("brick")
     public Entity newBrick(SpawnData data) {
         var color = Color.valueOf(data.<String>get("color").toUpperCase());
 
         return entityBuilder()
                 .from(data)
-                .type(BreakoutType.BRICK)
+                .type(BRICK)
                 .bbox(new HitBox(BoundingShape.box(96, 32)))
                 .collidable()
                 .with(new PhysicsComponent())
@@ -103,12 +117,14 @@ public class BreakoutFactory implements EntityFactory {
 
         return entityBuilder()
                 .from(data)
-                .type(BreakoutType.BAT)
-                .at(getAppWidth() / 2 - 50, getAppHeight() - 70)
-                .viewWithBBox(texture("bat.png", 464 / 3, 102 / 3))
+                .type(BAT)
+                .at(getAppWidth() / 2.0 - 50, getAppHeight() - 70)
+                .viewWithBBox(texture("bat.png", 464 / 3.0, 102 / 3.0))
+                .scaleOrigin(464 / 3.0 / 2, 0)
                 .collidable()
                 .with(physics)
-                .with(new BatComponent())
+                .with(new EffectComponent())
+                .with(new BatComponent(texture("bat_hit.png", 464 / 3.0, 102 / 3.0)))
                 .build();
     }
 
@@ -126,7 +142,7 @@ public class BreakoutFactory implements EntityFactory {
 
         var e = entityBuilder()
                 .from(data)
-                .type(BreakoutType.BALL)
+                .type(BALL)
                 .bbox(new HitBox(BoundingShape.circle(64)))
                 .view("ball.png")
                 .collidable()
@@ -147,7 +163,7 @@ public class BreakoutFactory implements EntityFactory {
             emitter.setEmissionRate(1);
             emitter.setSpawnPointFunction(i -> new Point2D(0, 0));
             emitter.setScaleFunction(i -> new Point2D(-0.1, -0.1));
-            emitter.setExpireFunction(i -> Duration.millis(110));
+            emitter.setExpireFunction(i -> Duration.seconds(1));
 
             emitter.setEntityScaleFunction(() -> new Point2D(0.1, 0.1));
             emitter.setScaleOriginFunction(i -> new Point2D(0, 0));
@@ -167,7 +183,7 @@ public class BreakoutFactory implements EntityFactory {
 
         return entityBuilder()
                 .from(data)
-                .type(BreakoutType.BULLET_BALL)
+                .type(BULLET_BALL)
                 .bbox(new HitBox(BoundingShape.circle(64)))
                 .view("ball.png")
                 .collidable()
@@ -208,10 +224,10 @@ public class BreakoutFactory implements EntityFactory {
 
         return entityBuilder()
                 .from(data)
-                .type(BreakoutType.POWERUP)
+                .type(POWERUP)
                 .viewWithBBox(view)
                 .collidable()
-                .with(new MoveDownComponent(400))
+                .with(new ProjectileComponent(new Point2D(0, 1), 400).allowRotation(false))
                 .with("powerupType", powerupType)
                 .build();
     }

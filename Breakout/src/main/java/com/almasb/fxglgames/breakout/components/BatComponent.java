@@ -27,8 +27,14 @@
 package com.almasb.fxglgames.breakout.components;
 
 import com.almasb.fxgl.core.math.Vec2;
+import com.almasb.fxgl.dsl.components.EffectComponent;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.physics.PhysicsComponent;
+import com.almasb.fxgl.texture.Texture;
+import javafx.scene.effect.Effect;
+import javafx.scene.effect.MotionBlur;
+import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.getAppWidth;
 
@@ -45,6 +51,14 @@ public class BatComponent extends Component {
     private float speed = 0;
 
     private Vec2 velocity = new Vec2();
+
+    private Effect blur = new MotionBlur();
+
+    private Texture textureOnHit;
+
+    public BatComponent(Texture textureOnHit) {
+        this.textureOnHit = textureOnHit;
+    }
 
     @Override
     public void onUpdate(double tpf) {
@@ -63,9 +77,44 @@ public class BatComponent extends Component {
 
     public void left() {
         velocity.set(-speed, 0);
+        applyMoveEffects();
     }
 
     public void right() {
         velocity.set(speed, 0);
+        applyMoveEffects();
+    }
+
+    private void applyMoveEffects() {
+        entity.setScaleX(1.05);
+        entity.setScaleY(1 / entity.getScaleX());
+        entity.getViewComponent().getParent().setEffect(blur);
+    }
+
+    public void stop() {
+        entity.setScaleX(1);
+        entity.setScaleY(1);
+        entity.getViewComponent().getParent().setEffect(null);
+    }
+
+    public void onHit() {
+        entity.getComponent(EffectComponent.class).startEffect(new HitEffect());
+    }
+
+    public class HitEffect extends com.almasb.fxgl.dsl.components.Effect {
+
+        public HitEffect() {
+            super(Duration.seconds(0.1));
+        }
+
+        @Override
+        public void onStart(Entity entity) {
+            entity.getViewComponent().addChild(textureOnHit);
+        }
+
+        @Override
+        public void onEnd(Entity entity) {
+            entity.getViewComponent().removeChild(textureOnHit);
+        }
     }
 }

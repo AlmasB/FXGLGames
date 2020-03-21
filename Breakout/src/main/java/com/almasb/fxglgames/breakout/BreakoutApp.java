@@ -40,6 +40,7 @@ import com.almasb.fxgl.entity.components.IrremovableComponent;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
+import com.almasb.fxglgames.breakout.components.BackgroundStarsViewComponent;
 import com.almasb.fxglgames.breakout.components.BallComponent;
 import com.almasb.fxglgames.breakout.components.BatComponent;
 import com.almasb.fxglgames.breakout.components.BrickComponent;
@@ -60,6 +61,9 @@ import static com.almasb.fxglgames.breakout.BreakoutType.*;
  */
 public class BreakoutApp extends GameApplication {
 
+    public static final int WIDTH = 14 * 96;
+    public static final int HEIGHT = 22 * 32;
+
     private static final int MAX_LEVEL = 5;
     private static final int STARTING_LEVEL = 1;
 
@@ -67,18 +71,18 @@ public class BreakoutApp extends GameApplication {
     protected void initSettings(GameSettings settings) {
         settings.setTitle("FXGL Breakout");
         settings.setVersion("2.0");
-        settings.setWidth(14 * 96);
-        settings.setHeight(22 * 32);
+        settings.setWidth(WIDTH);
+        settings.setHeight(HEIGHT);
         settings.setFontUI("main_font.ttf");
-        settings.setApplicationMode(ApplicationMode.DEBUG);
-        settings.setExperimentalNative(true);
+        settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
     private Text debugText;
 
     @Override
     protected void onPreInit() {
-        getSettings().setGlobalMusicVolume(0.2);
+        getSettings().setGlobalMusicVolume(0);
+        getSettings().setGlobalSoundVolume(0);
 
         if (!getSettings().isExperimentalNative()) {
             loopBGM("BGM.mp3");
@@ -92,6 +96,11 @@ public class BreakoutApp extends GameApplication {
             protected void onAction() {
                 getBatControl().left();
             }
+
+            @Override
+            protected void onActionEnd() {
+                getBatControl().stop();
+            }
         }, KeyCode.A);
 
         getInput().addAction(new UserAction("Move Right") {
@@ -99,12 +108,22 @@ public class BreakoutApp extends GameApplication {
             protected void onAction() {
                 getBatControl().right();
             }
+
+            @Override
+            protected void onActionEnd() {
+                getBatControl().stop();
+            }
         }, KeyCode.D);
 
         onKeyDown(KeyCode.SPACE, "Change color", () -> getBallControl().changeColorToNext());
 
         if (getSettings().getApplicationMode() != ApplicationMode.RELEASE) {
             onKeyDown(KeyCode.L, "Next level", () -> nextLevel());
+
+            onKeyDown(KeyCode.K, "Print", () -> {
+                byType(BACKGROUND).get(0).getComponent(BackgroundStarsViewComponent.class).onUpdate(0.016);
+                System.out.println();
+            });
         }
     }
 
@@ -117,15 +136,17 @@ public class BreakoutApp extends GameApplication {
 
     @Override
     protected void initGame() {
-        initBackground();
-
         getGameWorld().addEntityFactory(new BreakoutFactory());
+
+        initBackground();
 
         setLevel(STARTING_LEVEL);
     }
 
     private void initBackground() {
         getGameScene().setBackgroundColor(Color.BLACK);
+
+        spawn("background");
 
         // we add IrremovableComponent because regardless of the level
         // the screen bounds stay in the game world
@@ -141,7 +162,7 @@ public class BreakoutApp extends GameApplication {
         var levelNum = geti("level");
 
         if (levelNum > MAX_LEVEL) {
-            getDisplay().showMessageBox("You have completed demo!", getGameController()::exit);
+            getDialogService().showMessageBox("You have completed demo!", getGameController()::exit);
             return;
         }
 
@@ -218,6 +239,7 @@ public class BreakoutApp extends GameApplication {
             playHitSound();
 
             ball.call("applySlow");
+            bat.call("onHit");
         });
 
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(BALL, WALL) {

@@ -31,5 +31,6 @@ package com.almasb.fxglgames.breakout;
  */
 public enum BreakoutType {
     BAT, BALL, BRICK, WALL,
-    POWERUP, BULLET_BALL
+    POWERUP, BULLET_BALL,
+    BACKGROUND
 }
