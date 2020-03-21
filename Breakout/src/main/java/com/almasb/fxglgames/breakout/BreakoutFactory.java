@@ -54,10 +54,11 @@ import com.almasb.fxglgames.breakout.components.BallComponent;
 import com.almasb.fxglgames.breakout.components.BatComponent;
 import com.almasb.fxglgames.breakout.components.BrickComponent;
 import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
 import java.util.stream.Collectors;
@@ -90,9 +91,34 @@ public class BreakoutFactory implements EntityFactory {
         return entityBuilder()
                 .from(data)
                 .type(BACKGROUND)
-                .view(texture("bg/bg_blue.png").subTexture(new Rectangle2D(0, 0, getAppWidth(), getAppHeight())))
                 .with(new IrremovableComponent())
-                .with(new BackgroundStarsViewComponent(texture("bg/stars_small_1.png")))
+                .with(new BackgroundStarsViewComponent(
+                        texture("bg/bg_blue.png"),
+                        texture("bg/stars_small_1.png"),
+                        texture("bg/stars_big_1.png")
+                ))
+                .build();
+    }
+
+    @Spawns("colorCircle")
+    public Entity newColorCircle(SpawnData data) {
+        var radius = 200;
+
+        // touch based color control (e.g. mobile screen)
+        var circle = new Circle(radius, radius, radius);
+        circle.setStroke(Color.WHITE);
+        circle.setStrokeWidth(3.5);
+        circle.setOnMouseClicked(e -> {
+            getInput().mockKeyPress(KeyCode.SPACE);
+            getInput().mockKeyRelease(KeyCode.SPACE);
+        });
+
+        return entityBuilder()
+                .from(data)
+                .bbox(new HitBox(BoundingShape.circle(radius)))
+                .view(circle)
+                .with(new PhysicsComponent())
+                .with(new IrremovableComponent())
                 .build();
     }
 

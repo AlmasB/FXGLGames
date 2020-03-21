@@ -27,6 +27,7 @@
 package com.almasb.fxglgames.breakout.components;
 
 import com.almasb.fxgl.animation.Interpolators;
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
 import com.almasb.fxgl.dsl.components.ProjectileComponent;
 import com.almasb.fxgl.entity.component.Component;
@@ -108,13 +109,13 @@ public class BrickComponent extends Component {
     private void playHitAnimation() {
         animationBuilder()
                 .onFinished(() -> canBeHit = true)
-                .repeat(2)
+                .repeat(4)
                 .autoReverse(true)
-                .duration(Duration.seconds(0.1))
+                .duration(Duration.seconds(0.02))
                 .interpolator(Interpolators.BACK.EASE_OUT())
                 .translate(entity)
                 .from(entity.getPosition())
-                .to(entity.getPosition().add(0, 1.5))
+                .to(entity.getPosition().add(FXGLMath.random(5, 10), 0))
                 .buildAndPlay();
     }
 }

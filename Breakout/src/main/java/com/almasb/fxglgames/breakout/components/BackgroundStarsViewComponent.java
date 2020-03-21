@@ -11,22 +11,30 @@ import javafx.util.Duration;
  */
 public class BackgroundStarsViewComponent extends ChildViewComponent {
 
-    private Texture stars;
+    private Texture[] stars;
 
-    public BackgroundStarsViewComponent(Texture stars) {
+    public BackgroundStarsViewComponent(Texture... stars) {
         this.stars = stars;
 
-        getViewRoot().getChildren().add(stars);
+        for (var t : stars) {
+            getViewRoot().getChildren().add(t);
+        }
 
         FXGL.run(() -> onUpdate(0.016), Duration.seconds(0.016));
     }
 
     @Override
     public void onUpdate(double tpf) {
-        stars.setTranslateY(stars.getTranslateY() - tpf * FXGLMath.random(1, 30));
+        for (var t : stars) {
+            move(t, tpf);
+        }
+    }
 
-        if (stars.getTranslateY() + stars.getHeight() <= FXGL.getAppHeight()) {
-            stars.setTranslateY(0);
+    private void move(Texture star, double tpf) {
+        star.setTranslateY(star.getTranslateY() - tpf * FXGLMath.random(1, 30));
+
+        if (star.getTranslateY() + star.getHeight() <= FXGL.getAppHeight()) {
+            star.setTranslateY(0);
         }
     }
 }

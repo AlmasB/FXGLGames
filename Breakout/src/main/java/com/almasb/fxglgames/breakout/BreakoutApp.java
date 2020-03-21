@@ -46,7 +46,6 @@ import com.almasb.fxglgames.breakout.components.BatComponent;
 import com.almasb.fxglgames.breakout.components.BrickComponent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -147,6 +146,7 @@ public class BreakoutApp extends GameApplication {
         getGameScene().setBackgroundColor(Color.BLACK);
 
         spawn("background");
+        spawn("colorCircle", -200, getAppHeight() - 200);
 
         // we add IrremovableComponent because regardless of the level
         // the screen bounds stay in the game world
@@ -177,7 +177,10 @@ public class BreakoutApp extends GameApplication {
 
         spawn("bat", getAppWidth() / 2, getAppHeight() - 180);
 
-        animateCamera(getBallControl()::release);
+        animateCamera(() -> {
+            getSceneService().pushSubScene(new NewLevelSubScene());
+            getBallControl().release();
+        });
     }
 
     private Animation<Double> cameraAnimation;
@@ -263,38 +266,30 @@ public class BreakoutApp extends GameApplication {
 
         var textScore = getUIFactoryService().newText(getip("score").asString());
 
-        addUINode(textScore, 50, getAppHeight() - 20);
+        addUINode(textScore, 220, getAppHeight() - 20);
         addUINode(debugText, 50, 50);
 
-        // touch based controls (e.g. mobile screen)
-        var circleLeft = new Circle(75);
-        circleLeft.setStroke(Color.WHITE);
-        circleLeft.setStrokeWidth(2.5);
-        circleLeft.setOnMouseClicked(e -> {
-            getInput().mockKeyPress(KeyCode.SPACE);
-            getInput().mockKeyRelease(KeyCode.SPACE);
-        });
 
-        getBallControl().colorProperty().addListener((obs, old, newValue) -> {
-            circleLeft.setFill(getBallControl().getNextColor());
-        });
 
-        var regionLeft = new Rectangle(getAppWidth() / 2, getAppHeight());
+//        getBallControl().colorProperty().addListener((obs, old, newValue) -> {
+//            circleLeft.setFill(getBallControl().getNextColor());
+//        });
+
+        var regionLeft = new Rectangle(getAppWidth() / 2, getAppHeight() - 200);
         regionLeft.setOpacity(0);
         regionLeft.setOnMousePressed(e -> getInput().mockKeyPress(KeyCode.A));
         regionLeft.setOnMouseReleased(e -> getInput().mockKeyRelease(KeyCode.A));
 
-        var regionRight = new Rectangle(getAppWidth() / 2, getAppHeight());
+        var regionRight = new Rectangle(getAppWidth() / 2, getAppHeight() - 200);
         regionRight.setOpacity(0);
         regionRight.setOnMousePressed(e -> getInput().mockKeyPress(KeyCode.D));
         regionRight.setOnMouseReleased(e -> getInput().mockKeyRelease(KeyCode.D));
 
         addUINode(regionLeft);
         addUINode(regionRight, getAppWidth() / 2, 0);
-        addUINode(circleLeft, 100, getAppHeight() - 120);
         
         runOnce(() -> {
-            getSceneService().pushSubScene(new TutorialSubScene());
+            //getSceneService().pushSubScene(new TutorialSubScene());
 
             runOnce(() -> getBallControl().changeColorToNext(), Duration.seconds(0.016));
 
