@@ -1,5 +1,6 @@
 package com.almasb.fxglgames.spaceinvaders.level;
 
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.GameWorld;
@@ -35,7 +36,7 @@ public class BossLevel1 extends BossLevel {
 
     @Override
     public void init() {
-        //boss.addComponent(new CircularMovementComponent(2, 200));
+        boss.addComponent(new CircularMovementComponent(2, 200));
         boss.addComponent(new Level1BossComponent());
     }
 
@@ -59,10 +60,30 @@ public class BossLevel1 extends BossLevel {
                 GameWorld world = getEntity().getWorld();
                 Entity bullet = world.spawn("Bullet", new SpawnData(0, 0).put("owner", getEntity()));
 
-                bullet.translateX(20 * (i-3));
+                bullet.translateX(5 + 20 * (i-3));
             }
 
             play("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
+        }
+    }
+
+    private static class CircularMovementComponent extends Component {
+        private final double speed;
+        private final double radius;
+
+        private double t = 0.0;
+
+        public CircularMovementComponent(double speed, double radius) {
+            this.speed = speed;
+            this.radius = radius;
+        }
+
+        @Override
+        public void onUpdate(double tpf) {
+            t += tpf * speed;
+
+            entity.setX(FXGL.getAppWidth() / 2.0 + FXGLMath.cos(t) * radius - 100);
+            entity.setY(FXGL.getAppHeight() / 2.0 + FXGLMath.sin(t) * radius - 100);
         }
     }
 }

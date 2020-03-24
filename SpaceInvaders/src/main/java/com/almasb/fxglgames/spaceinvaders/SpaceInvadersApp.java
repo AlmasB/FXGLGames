@@ -154,11 +154,11 @@ public class SpaceInvadersApp extends GameApplication {
         highScore = data.getHighScore();
 
         levels = Arrays.asList(
-                new Level12(),
+                //new Level16(),
                 //new Level1(),
                 //new Level2(),
                 //new Level3(),
-                //new BossLevel1(),
+                new BossLevel2(),
                 new Level4(),
                 new Level5(),
                 new Level6(),
