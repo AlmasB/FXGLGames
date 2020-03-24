@@ -35,7 +35,7 @@ public class Level7 extends SpaceLevel {
         }
     }
 
-    private class ButterflyMoveComponent extends Component {
+    private static class ButterflyMoveComponent extends Component {
 
         private double t = 0;
 
