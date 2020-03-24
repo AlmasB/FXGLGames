@@ -16,7 +16,7 @@ import static com.almasb.fxgl.core.math.FXGLMath.random;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class StarsControl extends Component {
+public class StarsComponent extends Component {
 
     private ViewComponent view;
     private List<Rectangle> starParticles;

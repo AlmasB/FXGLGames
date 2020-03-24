@@ -35,7 +35,7 @@ public class Level2 extends SpaceLevel {
         }
     }
 
-    private class MoveComponent extends Component {
+    private static class MoveComponent extends Component {
 
         private double t = 0;
 

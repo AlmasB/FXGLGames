@@ -1,18 +1,14 @@
 package com.almasb.fxglgames.spaceinvaders.level;
 
 import com.almasb.fxgl.animation.Interpolators;
+import com.almasb.fxgl.app.scene.GameView;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.texture.Texture;
-import com.almasb.fxgl.ui.FXGLTextFlow;
 import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
 import javafx.geometry.Point2D;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -30,8 +26,8 @@ public class Level1 extends SpaceLevel {
     @Override
     public void playInCutscene(Runnable onFinished) {
 
-        boolean b = false;
-        if (b) {
+        boolean doNotPlayCutscene = true;
+        if (doNotPlayCutscene) {
             onFinished.run();
             return;
         }
@@ -40,77 +36,80 @@ public class Level1 extends SpaceLevel {
 
         showStoryPane();
 
-        Text text = FXGL.getUIFactory().newText("HQ: Attention, V.I.T. generals! Your mission is to find and destroy the alien invaders...", Color.WHITE, 22.0);
-        text.setFont(Font.font(24.0));
-        text.setWrappingWidth(FXGL.getAppWidth() - 50);
+        Text text = getUIFactoryService().newText("HQ: Attention, V.I.T. generals! Your mission is to find and destroy the alien invaders...", Color.WHITE, 24.0);
+        text.setWrappingWidth(getAppWidth() - 50);
 
         updateStoryText(text);
 
         runOnce(() -> {
-            text.setText("HQ: Wait... we are reading alien signals.");
-        }, Duration.seconds(5));
+            text.setText("HQ: Wait a sec... we are reading alien signals.");
+        }, Duration.seconds(3));
 
         runOnce(() -> {
 
             placeBoss();
 
-        }, Duration.seconds(7));
+        }, Duration.seconds(6));
 
         runOnce(() -> {
             hideStoryPane();
             onFinished.run();
 
-        }, Duration.seconds(33));
+        }, Duration.seconds(26));
     }
 
     private void placeGenerals() {
         for (int i = 0; i < 5; i++) {
-            spawn("General", 25 + i*100, FXGL.getAppHeight() - (i % 2 == 0 ? 300 : 400));
+            spawn("General", 25 + i*100, getAppHeight() - (i % 2 == 0 ? 300 : 400));
         }
     }
 
     private void placeBoss() {
-//        Texture boss = texture("bosses/boss_final.png");
-//
-//        EntityView view = new EntityView(boss);
-//        view.setOpacity(0);
-//
-//        FXGL.getGameScene().addGameView(view);
-//
-//        fadeIn(view, Duration.seconds(2)).startInPlayState();
-//
-//        view.setTranslateX(FXGL.getAppWidth() / 2 - 101);
-//        view.setTranslateY(0);
-//
-//        updateAlienStoryText("Humans, you are now in MY domain!");
-//
-//        runOnce(() -> {
-//            updateAlienStoryText("I am taking your generals.");
-//        }, Duration.seconds(5));
-//
-//        runOnce(() -> {
-//            forEach(FXGL.getApp().getGameWorld().getEntitiesByType(SpaceInvadersType.NPC_GENERAL), e -> {
-//                Entities.animationBuilder()
-//                        .interpolator(Interpolators.EXPONENTIAL.EASE_IN())
-//                        .onFinished(() -> e.removeFromWorld())
-//                        .duration(Duration.seconds(3))
-//                        .translate(e)
-//                        .from(e.getPosition())
-//                        .to(new Point2D(FXGLMath.random(0, FXGL.getAppWidth() - 50), -50))
-//                        .buildAndPlay();
-//            });
-//        }, Duration.seconds(8));
-//
-//        runOnce(() -> {
-//            updateAlienStoryText("My fleet will destroy you.");
-//        }, Duration.seconds(12));
-//
-//        runOnce(() -> {
-//            fadeOut(view, Duration.seconds(2), () -> {
-//                getGameScene().removeGameView(view, RenderLayer.DEFAULT);
-//            }).startInPlayState();
-//        }, Duration.seconds(15));
-//
+        Texture boss = texture("bosses/boss_final.png");
+        boss.setOpacity(0);
+        boss.setTranslateX(getAppWidth() / 2 - 101);
+        boss.setTranslateY(0);
+
+        var view = new GameView(boss, 4000);
+
+        getGameScene().addGameView(view);
+
+        animationBuilder()
+                .duration(Duration.seconds(2))
+                .fadeIn(boss)
+                .buildAndPlay();
+
+        updateAlienStoryText("Humans, you are now in MY domain!");
+
+        runOnce(() -> {
+            updateAlienStoryText("I am taking your generals.");
+        }, Duration.seconds(5));
+
+        runOnce(() -> {
+            getGameWorld().getEntitiesByType(SpaceInvadersType.NPC_GENERAL).forEach(e -> {
+                animationBuilder()
+                        .interpolator(Interpolators.EXPONENTIAL.EASE_IN())
+                        .onFinished(() -> e.removeFromWorld())
+                        .duration(Duration.seconds(2.5))
+                        .translate(e)
+                        .from(e.getPosition())
+                        .to(new Point2D(FXGLMath.random(0, getAppWidth() - 50), -50))
+                        .buildAndPlay();
+            });
+        }, Duration.seconds(8));
+
+        runOnce(() -> {
+            updateAlienStoryText("My fleet will destroy you.");
+        }, Duration.seconds(12));
+
+        runOnce(() -> {
+            animationBuilder()
+                    .onFinished(() -> getGameScene().removeGameView(view))
+                    .duration(Duration.seconds(2))
+                    .fadeOut(boss)
+                    .buildAndPlay();
+        }, Duration.seconds(13.5));
+
 //        runOnce(() -> {
 //            showInstructions();
 //        }, Duration.seconds(18));
@@ -133,11 +132,8 @@ public class Level1 extends SpaceLevel {
             for (int x = 0; x < ENEMIES_PER_ROW; x++) {
 
                 runOnce(() -> {
-
                     Entity enemy = spawnEnemy(50, 50);
-
                     enemy.addComponent(new MoveComponent());
-
                 }, Duration.seconds(t));
 
                 t += 0.1;
@@ -145,13 +141,13 @@ public class Level1 extends SpaceLevel {
         }
     }
 
-    private class MoveComponent extends Component {
+    private static class MoveComponent extends Component {
 
         private double t = 0;
 
         @Override
         public void onUpdate(double tpf) {
-            entity.setPosition(curveFunction().add(FXGL.getAppWidth() / 2, FXGL.getAppHeight() / 2 - 100));
+            entity.setPosition(curveFunction().add(getAppWidth() / 2, getAppHeight() / 2 - 100));
 
             t += tpf;
         }

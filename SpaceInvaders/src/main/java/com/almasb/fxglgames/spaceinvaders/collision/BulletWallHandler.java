@@ -29,8 +29,8 @@ package com.almasb.fxglgames.spaceinvaders.collision;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
-import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;
-import com.almasb.fxglgames.spaceinvaders.components.WallControl;
+import com.almasb.fxglgames.spaceinvaders.components.OwnerComponent;
+import com.almasb.fxglgames.spaceinvaders.components.WallComponent;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -48,7 +48,7 @@ public class BulletWallHandler extends CollisionHandler {
         if (owner == SpaceInvadersType.ENEMY) {
             bullet.removeFromWorld();
 
-            wall.getComponent(WallControl.class).onHit();
+            wall.getComponent(WallComponent.class).onHit();
         }
     }
 }

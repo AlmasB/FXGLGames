@@ -29,7 +29,7 @@ package com.almasb.fxglgames.spaceinvaders.collision;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
-import com.almasb.fxglgames.spaceinvaders.components.EnemyControl;
+import com.almasb.fxglgames.spaceinvaders.components.EnemyComponent;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -42,6 +42,6 @@ public class LaserBeamEnemyHandler extends CollisionHandler {
 
     @Override
     protected void onCollisionBegin(Entity beam, Entity enemy) {
-        enemy.getComponent(EnemyControl.class).die();
+        enemy.getComponent(EnemyComponent.class).die();
     }
 }

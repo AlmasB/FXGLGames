@@ -27,31 +27,25 @@
 package com.almasb.fxglgames.spaceinvaders.components;
 
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
-import static com.almasb.fxgl.dsl.FXGL.play;
-import static com.almasb.fxgl.dsl.FXGL.texture;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class WallControl extends Component {
+public class WallComponent extends Component {
 
     private final int originalLives;
     private int lives;
 
-    public WallControl(int lives) {
+    public WallComponent(int lives) {
         this.lives = lives;
         originalLives = lives;
     }
-
-    @Override
-    public void onUpdate(double tpf) {}
 
     public void onHit() {
         lives--;

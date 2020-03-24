@@ -30,8 +30,8 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
-import com.almasb.fxglgames.spaceinvaders.component.InvincibleComponent;
-import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;
+import com.almasb.fxglgames.spaceinvaders.components.InvincibleComponent;
+import com.almasb.fxglgames.spaceinvaders.components.OwnerComponent;
 import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
 
 /**

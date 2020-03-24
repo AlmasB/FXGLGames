@@ -8,7 +8,7 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class LaserBeamControl extends Component {
+public class LaserBeamComponent extends Component {
 
     @Override
     public void onUpdate(double tpf) {

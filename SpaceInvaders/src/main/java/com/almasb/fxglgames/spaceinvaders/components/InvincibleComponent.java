@@ -24,15 +24,15 @@
  * SOFTWARE.
  */
 
-package com.almasb.fxglgames.spaceinvaders.component;
+package com.almasb.fxglgames.spaceinvaders.components;
 
-import com.almasb.fxgl.entity.components.ObjectComponent;
+import com.almasb.fxgl.entity.components.BooleanComponent;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class SubTypeComponent extends ObjectComponent<Object> {
-    public SubTypeComponent(Object type) {
-        super(type);
+public class InvincibleComponent extends BooleanComponent {
+    public InvincibleComponent() {
+        super(false);
     }
 }

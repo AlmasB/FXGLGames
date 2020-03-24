@@ -26,9 +26,8 @@
 
 package com.almasb.fxglgames.spaceinvaders;
 
-import com.almasb.fxgl.app.GameScene;
-import com.almasb.fxgl.app.Viewport;
-import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.app.scene.GameScene;
+import com.almasb.fxgl.app.scene.Viewport;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxgl.ui.FXGLTextFlow;
 import com.almasb.fxgl.ui.ProgressBar;
@@ -40,7 +39,6 @@ import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -54,7 +52,7 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class GameController implements UIController {
+public class SpaceInvadersController implements UIController {
 
     @FXML
     private Label labelScore;
@@ -78,14 +76,14 @@ public class GameController implements UIController {
 
     private GameScene gameScene;
 
-    public GameController(GameScene gameScene) {
+    public SpaceInvadersController(GameScene gameScene) {
         this.gameScene = gameScene;
     }
 
     @Override
     public void init() {
-        labelScore.setFont(getUIFactory().newFont(18));
-        labelHighScore.setFont(getUIFactory().newFont(18));
+        labelScore.setFont(getUIFactoryService().newFont(18));
+        labelHighScore.setFont(getUIFactoryService().newFont(18));
 
         labelHighScore.setVisible(false);
 

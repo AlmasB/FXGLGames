@@ -26,7 +26,6 @@
 
 package com.almasb.fxglgames.spaceinvaders.components;
 
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
@@ -34,7 +33,6 @@ import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.component.Required;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxglgames.spaceinvaders.Config;
-import com.almasb.fxglgames.spaceinvaders.component.InvincibleComponent;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 
@@ -44,7 +42,7 @@ import static com.almasb.fxgl.dsl.FXGL.*;
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 @Required(InvincibleComponent.class)
-public class PlayerControl extends Component {
+public class PlayerComponent extends Component {
 
     private InvincibleComponent invincibility;
 
@@ -124,13 +122,15 @@ public class PlayerControl extends Component {
 
     private void spawnParticles() {
         if (particle == null) {
-            particle = texture("player2.png", 40, 30).getImage();
+            particle = image("player2.png", 40, 30);
         }
 
+        // TODO: move to factory
+        // TODO: add z index layer mapping in Config
         entityBuilder()
                 .at(getEntity().getCenter().subtract(particle.getWidth() / 2, particle.getHeight() / 2))
                 .view(new Texture(particle))
-                .zIndex(5000)
+                .zIndex(-300)
                 .with(new ExpireCleanComponent(Duration.seconds(0.33)).animateOpacity())
                 .buildAndAttach();
     }

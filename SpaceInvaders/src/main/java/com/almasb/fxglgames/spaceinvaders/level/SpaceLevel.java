@@ -1,7 +1,6 @@
 package com.almasb.fxglgames.spaceinvaders.level;
 
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
 import javafx.geometry.Point2D;
@@ -17,8 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.almasb.fxgl.dsl.FXGL.animationBuilder;
-import static com.almasb.fxgl.dsl.FXGL.spawn;
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -31,7 +29,7 @@ public abstract class SpaceLevel {
     private Pane rootPane;
 
     public SpaceLevel() {
-        Rectangle bg = new Rectangle(FXGL.getAppWidth() - 20, 200, Color.color(0, 0, 0, 0.6));
+        Rectangle bg = new Rectangle(getAppWidth() - 20, 200, Color.color(0, 0, 0, 0.6));
         bg.setArcWidth(25);
         bg.setArcHeight(25);
         bg.setStroke(Color.color(0.1, 0.2, 0.86, 0.76));
@@ -42,10 +40,14 @@ public abstract class SpaceLevel {
 
         rootPane = new Pane(bg, storyPane);
         rootPane.setTranslateX(10);
-        rootPane.setTranslateY(FXGL.getAppHeight() - 200);
+        rootPane.setTranslateY(getAppHeight() - 200);
     }
 
     public abstract void init();
+
+    public void onUpdate(double tpf) {
+
+    }
 
     public void destroy() {
 
@@ -60,11 +62,11 @@ public abstract class SpaceLevel {
     }
 
     void showStoryPane() {
-        FXGL.getGameScene().addUINode(rootPane);
+        addUINode(rootPane);
     }
 
     void hideStoryPane() {
-        FXGL.getGameScene().removeUINode(rootPane);
+        removeUINode(rootPane);
     }
 
     void updateStoryText(Node node) {

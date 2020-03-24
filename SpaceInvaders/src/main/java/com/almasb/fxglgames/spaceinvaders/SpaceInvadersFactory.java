@@ -27,13 +27,15 @@
 package com.almasb.fxglgames.spaceinvaders;
 
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.components.EffectComponent;
 import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
 import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
 import com.almasb.fxgl.dsl.components.ProjectileComponent;
-import com.almasb.fxgl.entity.*;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.EntityFactory;
+import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.components.TimeComponent;
 import com.almasb.fxgl.particle.ParticleComponent;
@@ -42,9 +44,9 @@ import com.almasb.fxgl.particle.ParticleEmitters;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.texture.Texture;
-import com.almasb.fxglgames.spaceinvaders.component.InvincibleComponent;
-import com.almasb.fxglgames.spaceinvaders.component.OwnerComponent;
-import com.almasb.fxglgames.spaceinvaders.component.SubTypeComponent;
+import com.almasb.fxglgames.spaceinvaders.components.InvincibleComponent;
+import com.almasb.fxglgames.spaceinvaders.components.OwnerComponent;
+import com.almasb.fxglgames.spaceinvaders.components.SubTypeComponent;
 import com.almasb.fxglgames.spaceinvaders.components.*;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -88,15 +90,16 @@ public final class SpaceInvadersFactory implements EntityFactory {
         return entityBuilder()
                 .view(group)
                 .zIndex(-450)
-                .with(new StarsControl())
+                .with(new StarsComponent())
                 .build();
     }
 
     @Spawns("Meteor")
     public Entity newMeteor(SpawnData data) {
-        double w = FXGL.getSettings().getWidth();
-        double h = FXGL.getSettings().getHeight();
-        double x = 0, y = 0;
+        double w = getSettings().getWidth();
+        double h = getSettings().getHeight();
+        double x = 0;
+        double y = 0;
 
         // these are deliberately arbitrary to create illusion of randomness
         if (random.nextBoolean()) {
@@ -123,7 +126,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
                 .at(x, y)
                 .view("background/meteor" + FXGLMath.random(1, 4) + ".png")
                 .zIndex(1001)
-                .with(new MeteorControl())
+                .with(new MeteorComponent())
                 .build();
 
         // add offscreen clean a bit later so that they are not cleaned from start
@@ -142,8 +145,9 @@ public final class SpaceInvadersFactory implements EntityFactory {
                 .from(data)
                 .type(PLAYER)
                 .viewWithBBox(texture)
-                .with(new CollidableComponent(true), new InvincibleComponent())
-                .with(new PlayerControl())
+                .with(new CollidableComponent(true))
+                .with(new InvincibleComponent())
+                .with(new PlayerComponent())
                 .build();
     }
 
@@ -167,7 +171,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
                         texture("enemy" + ((int)(Math.random() * 3) + 1) + ".png").toAnimatedTexture(2, Duration.seconds(2))
                 )
                 .with(new CollidableComponent(true), new HealthComponent(2), new TimeComponent(1.0))
-                .with(new EnemyControl(), new EffectComponent())
+                .with(new EnemyComponent(), new EffectComponent())
                 .build();
     }
 
@@ -210,7 +214,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
                 .bbox(new HitBox(BoundingShape.box(9, 20)))
                 .view(t)
                 .with(new CollidableComponent(true), new OwnerComponent(owner.getType()))
-                .with(new OffscreenCleanComponent(), new BulletControl(850))
+                .with(new OffscreenCleanComponent(), new BulletComponent(850))
                 .build();
     }
 
@@ -219,7 +223,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
         return entityBuilder()
                 .at(data.getX() - 15, data.getY() - 15)
                 .view(texture("laser_hit.png", 15, 15))
-                .with(new LaserHitControl())
+                .with(new LaserHitComponent())
                 .build();
     }
 
@@ -236,7 +240,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
                 .type(LASER_BEAM)
                 .viewWithBBox(view)
                 .with(new CollidableComponent(true))
-                .with(new LaserBeamControl())
+                .with(new LaserBeamComponent())
                 .build();
     }
 
@@ -247,7 +251,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
                 .type(WALL)
                 .viewWithBBox(texture("wall.png", 232 / 3, 104 / 3))
                 .with(new CollidableComponent(true))
-                .with(new WallControl(7))
+                .with(new WallComponent(7))
                 .build();
     }
 
@@ -259,8 +263,9 @@ public final class SpaceInvadersFactory implements EntityFactory {
                 .from(data)
                 .type(BONUS)
                 .viewWithBBox(type.textureName)
-                .with(new SubTypeComponent(type), new CollidableComponent(true))
-                .with(new BonusControl())
+                .collidable()
+                .with(new SubTypeComponent(type))
+                .with(new ProjectileComponent(new Point2D(0, 1), Config.BONUS_MOVE_SPEED).allowRotation(false))
                 .build();
     }
 
@@ -285,7 +290,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
 
     @Spawns("ParticleExplosion")
     public Entity newParticleExplosion(SpawnData data) {
-        ParticleEmitter emitter = ParticleEmitters.newExplosionEmitter(FXGL.getAppWidth());
+        ParticleEmitter emitter = ParticleEmitters.newExplosionEmitter(getAppWidth());
         emitter.setStartColor(Color.web("ffffe0"));
         emitter.setSize(3, 5);
         emitter.setNumParticles(8);
@@ -301,7 +306,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
 
     @Spawns("LevelInfo")
     public Entity newLevelInfo(SpawnData data) {
-        Text levelText = FXGL.getUIFactory().newText("Level " + geti("level"), Color.AQUAMARINE, 44);
+        Text levelText = getUIFactoryService().newText("Level " + geti("level"), Color.AQUAMARINE, 44);
 
         Entity levelInfo = entityBuilder()
                 .view(levelText)
@@ -312,8 +317,8 @@ public final class SpaceInvadersFactory implements EntityFactory {
                 .interpolator(Interpolators.BOUNCE.EASE_OUT())
                 .duration(Duration.seconds(LEVEL_START_DELAY - 0.1))
                 .translate(levelInfo)
-                .from(new Point2D(FXGL.getAppWidth() / 2 - levelText.getLayoutBounds().getWidth() / 2, 0))
-                .to(new Point2D(FXGL.getAppWidth() / 2 - levelText.getLayoutBounds().getWidth() / 2, FXGL.getAppHeight() / 2))
+                .from(new Point2D(getAppWidth() / 2 - levelText.getLayoutBounds().getWidth() / 2, 0))
+                .to(new Point2D(getAppWidth() / 2 - levelText.getLayoutBounds().getWidth() / 2, getAppHeight() / 2))
                 .buildAndPlay();
 
         return levelInfo;

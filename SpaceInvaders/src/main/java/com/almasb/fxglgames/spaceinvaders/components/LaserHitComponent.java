@@ -31,13 +31,13 @@ import com.almasb.fxgl.entity.component.Component;
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class LaserHitControl extends Component {
+public class LaserHitComponent extends Component {
 
     @Override
     public void onUpdate(double tpf) {
-        entity.getViewComponent().setOpacity(entity.getViewComponent().getOpacity() - tpf);
+        entity.setOpacity(entity.getOpacity() - tpf);
 
-        if (entity.getViewComponent().getOpacity() <= 0) {
+        if (entity.getOpacity() <= 0) {
             entity.removeFromWorld();
         }
     }

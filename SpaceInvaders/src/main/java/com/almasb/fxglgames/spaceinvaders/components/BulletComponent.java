@@ -27,14 +27,25 @@
 package com.almasb.fxglgames.spaceinvaders.components;
 
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxglgames.spaceinvaders.Config;
+import com.almasb.fxgl.entity.component.Required;
+import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
-public class BonusControl extends Component {
+@Required(OwnerComponent.class)
+public class BulletComponent extends Component {
+
+    private OwnerComponent owner;
+
+    private double speed;
+
+    public BulletComponent(double speed) {
+        this.speed = speed;
+    }
+
     @Override
     public void onUpdate(double tpf) {
-        entity.translateY(tpf * Config.BONUS_MOVE_SPEED);
+        entity.translateY(owner.getValue() == (SpaceInvadersType.PLAYER) ? -tpf * speed : tpf * speed);
     }
 }

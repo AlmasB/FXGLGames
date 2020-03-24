@@ -32,12 +32,12 @@ import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.input.*;
-import com.almasb.fxgl.io.FS;
+import com.almasb.fxgl.input.Input;
+import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.ui.UI;
 import com.almasb.fxglgames.spaceinvaders.collision.*;
-import com.almasb.fxglgames.spaceinvaders.components.EnemyControl;
-import com.almasb.fxglgames.spaceinvaders.components.PlayerControl;
+import com.almasb.fxglgames.spaceinvaders.components.EnemyComponent;
+import com.almasb.fxglgames.spaceinvaders.components.PlayerComponent;
 import com.almasb.fxglgames.spaceinvaders.event.BonusPickupEvent;
 import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
 import com.almasb.fxglgames.spaceinvaders.level.*;
@@ -67,7 +67,7 @@ public class SpaceInvadersApp extends GameApplication {
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
         settings.setProfilingEnabled(false);
-        settings.setIntroEnabled(true);
+        settings.setIntroEnabled(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
@@ -75,10 +75,10 @@ public class SpaceInvadersApp extends GameApplication {
     protected void initInput() {
         Input input = getInput();
 
-//        input.addInputMapping(new InputMapping("Move Left", KeyCode.A));
-//        input.addInputMapping(new InputMapping("Move Right", KeyCode.D));
-//        input.addInputMapping(new InputMapping("Shoot", MouseButton.PRIMARY));
-//        input.addInputMapping(new InputMapping("Laser Beam", MouseButton.SECONDARY));
+        onKey(KeyCode.A, "Move Left", () -> playerComponent.left());
+        onKey(KeyCode.D, "Move Right", () -> playerComponent.right());
+        onBtn(MouseButton.PRIMARY, "Shoot", () -> playerComponent.shoot());
+        onBtn(MouseButton.SECONDARY, "Laser Beam", () -> playerComponent.shootLaser());
 
         // developer cheats
         if (getSettings().getApplicationMode() != ApplicationMode.RELEASE) {
@@ -91,29 +91,13 @@ public class SpaceInvadersApp extends GameApplication {
         }
     }
 
-    public void moveLeft() {
-        playerControl.left();
-    }
-
-    public void moveRight() {
-        playerControl.right();
-    }
-
-    public void shoot() {
-        playerControl.shoot();
-    }
-
-    public void laserBeam() {
-        playerControl.shootLaser();
-    }
-
     private Entity player;
-    private PlayerControl playerControl;
+    private PlayerComponent playerComponent;
 
     private int highScore;
     private String highScoreName;
 
-    private GameController uiController;
+    private SpaceInvadersController uiController;
 
     private List<SpaceLevel> levels;
 
@@ -141,7 +125,7 @@ public class SpaceInvadersApp extends GameApplication {
         getGameWorld().addEntityFactory(new SpaceInvadersFactory());
 
         // we have to use file system directly, since we are running without menus
-        getFS().<SaveData>readDataTask(SAVE_DATA_NAME)
+        getFileSystemService().<SaveData>readDataTask(SAVE_DATA_NAME)
                 .onSuccess(data -> savedData = data)
                 .onFailure(ignore -> {})
                 .run();
@@ -168,16 +152,16 @@ public class SpaceInvadersApp extends GameApplication {
                 new Level1(),
                 new Level2(),
                 new Level3(),
-                new BossLevel1(),
+                //new BossLevel1(),
                 new Level4(),
                 new Level5(),
                 new Level6(),
-                new BossLevel2(),
+                //new BossLevel2(),
                 new Level7(),
                 new Level8(),
                 new Level9(),
-                new Level11(),
-                new BossLevel3()
+                new Level11()
+                //new BossLevel3()
         );
 
         spawnBackground();
@@ -197,7 +181,7 @@ public class SpaceInvadersApp extends GameApplication {
 
     private void spawnPlayer() {
         player = spawn("Player", getAppWidth() / 2 - 20, getAppHeight() - 40);
-        playerControl = player.getComponent(PlayerControl.class);
+        playerComponent = player.getComponent(PlayerComponent.class);
     }
 
     private void spawnWall(double x, double y) {
@@ -280,7 +264,7 @@ public class SpaceInvadersApp extends GameApplication {
 
     @Override
     protected void initUI() {
-        uiController = new GameController(getGameScene());
+        uiController = new SpaceInvadersController(getGameScene());
 
         UI ui = getAssetLoader().loadUI(Asset.FXML_MAIN_UI, uiController);
 
@@ -302,6 +286,8 @@ public class SpaceInvadersApp extends GameApplication {
             nextLevel();
             runningFirstTime = false;
         }
+
+        getCurrentLevel().onUpdate(tpf);
     }
 
     // TODO: @Handles(eventType = "PLAYER_GOT_HIT")
@@ -311,9 +297,9 @@ public class SpaceInvadersApp extends GameApplication {
         inc("lives", -1);
         uiController.loseLife();
 
-        playerControl.enableInvincibility();
+        playerComponent.enableInvincibility();
 
-        runOnce(playerControl::disableInvincibility, Duration.seconds(INVINCIBILITY_TIME));
+        runOnce(playerComponent::disableInvincibility, Duration.seconds(INVINCIBILITY_TIME));
 
         play(Asset.SOUND_LOSE_LIFE);
 
@@ -322,7 +308,7 @@ public class SpaceInvadersApp extends GameApplication {
     }
 
     private int scoreForKill() {
-        return SCORE_ENEMY_KILL * (getGameState().getGameDifficulty().ordinal() + SCORE_DIFFICULTY_MODIFIER);
+        return SCORE_ENEMY_KILL * (getSettings().getGameDifficulty().ordinal() + SCORE_DIFFICULTY_MODIFIER);
     }
 
     // TODO: @Handles(eventType = "ENEMY_KILLED")
@@ -330,7 +316,7 @@ public class SpaceInvadersApp extends GameApplication {
         inc("enemiesKilled", +1);
         inc("score", scoreForKill());
 
-        if (!playerControl.isLaserBeamActive() && getd("laserMeter") < LASER_METER_MAX) {
+        if (!playerComponent.isLaserBeamActive() && getd("laserMeter") < LASER_METER_MAX) {
             inc("laserMeter", +LASER_METER_RECHARGE);
             if (getd("laserMeter") > LASER_METER_MAX) {
                 set("laserMeter", LASER_METER_MAX);
@@ -364,10 +350,10 @@ public class SpaceInvadersApp extends GameApplication {
     public void onBonusPickup(BonusPickupEvent event) {
         switch (event.getType()) {
             case ATTACK_RATE:
-                playerControl.increaseAttackSpeed(PLAYER_BONUS_ATTACK_SPEED);
+                playerComponent.increaseAttackSpeed(PLAYER_BONUS_ATTACK_SPEED);
                 break;
             case LIFE:
-                getGameState().increment("lives", +1);
+                inc("lives", +1);
                 uiController.addLife();
                 break;
             case BOMB:
@@ -378,24 +364,24 @@ public class SpaceInvadersApp extends GameApplication {
 
     private void killRandomEnemy() {
         FXGLMath.random(getGameWorld().getEntitiesByType(SpaceInvadersType.ENEMY))
-                .flatMap(e -> e.getComponentOptional(EnemyControl.class))
+                .flatMap(e -> e.getComponentOptional(EnemyComponent.class))
                 .ifPresent(e -> e.die());
     }
 
     private void showGameOver() {
-        getDisplay().showConfirmationBox("Demo Over. Play Again?", yes -> {
+        getDialogService().showConfirmationBox("Demo Over. Play Again?", yes -> {
             if (yes) {
                 getGameWorld().getEntitiesCopy().forEach(Entity::removeFromWorld);
                 getGameController().startNewGame();
             } else {
 
-                int score = getGameState().getInt("score");
+                int score = geti("score");
 
                 if (score > highScore) {
-                    getDisplay().showInputBox("High Score! Enter your name", playerName -> {
+                    getDialogService().showInputBox("High Score! Enter your name", playerName -> {
 
                         // we have to use file system directly, since we are running without menus
-                        getFS().writeDataTask(new SaveData(playerName, score), SAVE_DATA_NAME).run();
+                        getFileSystemService().writeDataTask(new SaveData(playerName, score), SAVE_DATA_NAME).run();
 
                         getGameController().exit();
                     });

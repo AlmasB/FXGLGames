@@ -27,13 +27,12 @@
 package com.almasb.fxglgames.spaceinvaders.collision;
 
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxglgames.spaceinvaders.BonusType;
 import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
-import com.almasb.fxglgames.spaceinvaders.component.SubTypeComponent;
+import com.almasb.fxglgames.spaceinvaders.components.SubTypeComponent;
 import com.almasb.fxglgames.spaceinvaders.event.BonusPickupEvent;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;

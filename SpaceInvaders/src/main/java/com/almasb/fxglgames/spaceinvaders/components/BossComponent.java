@@ -1,6 +1,5 @@
 package com.almasb.fxglgames.spaceinvaders.components;
 
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
@@ -13,7 +12,7 @@ import static com.almasb.fxgl.dsl.FXGL.spawn;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class BossComponent extends EnemyControl {
+public class BossComponent extends EnemyComponent {
 
     @Override
     public void onUpdate(double tpf) {
