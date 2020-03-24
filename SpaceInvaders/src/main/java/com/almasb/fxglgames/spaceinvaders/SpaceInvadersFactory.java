@@ -74,7 +74,9 @@ public final class SpaceInvadersFactory implements EntityFactory {
     @Spawns("Background")
     public Entity newBackground(SpawnData data) {
         return entityBuilder()
-                .view(texture("background/background.png", Config.WIDTH, Config.HEIGHT))
+                .at(-10, -10)
+                // bigger than game size to account for camera shake
+                .view(texture("background/background.png", Config.WIDTH + 20, Config.HEIGHT + 20))
                 .zIndex(-500)
                 .build();
     }

@@ -107,6 +107,11 @@ public class SpaceInvadersApp extends GameApplication {
         getSettings().setGlobalMusicVolume(0.2);
 
         loopBGM("bgm.mp3");
+
+        onEvent(BonusPickupEvent.ANY, this::onBonusPickup);
+        onEvent(GameEvent.ENEMY_KILLED, this::onEnemyKilled);
+        onEvent(GameEvent.ENEMY_REACHED_END, this::onEnemyReachedEnd);
+        onEvent(GameEvent.PLAYER_GOT_HIT, this::onPlayerGotHit);
     }
 
     private SaveData savedData = null;
@@ -290,9 +295,8 @@ public class SpaceInvadersApp extends GameApplication {
         getCurrentLevel().onUpdate(tpf);
     }
 
-    // TODO: @Handles(eventType = "PLAYER_GOT_HIT")
     public void onPlayerGotHit(GameEvent event) {
-        getGameScene().getViewport().shake(14, 0.35);
+        getGameScene().getViewport().shakeTranslational(9.5);
 
         inc("lives", -1);
         uiController.loseLife();
@@ -311,7 +315,6 @@ public class SpaceInvadersApp extends GameApplication {
         return SCORE_ENEMY_KILL * (getSettings().getGameDifficulty().ordinal() + SCORE_DIFFICULTY_MODIFIER);
     }
 
-    // TODO: @Handles(eventType = "ENEMY_KILLED")
     public void onEnemyKilled(GameEvent event) {
         inc("enemiesKilled", +1);
         inc("score", scoreForKill());
@@ -332,7 +335,6 @@ public class SpaceInvadersApp extends GameApplication {
         }
     }
 
-    // TODO: @Handles(eventType = "ENEMY_REACHED_END")
     public void onEnemyReachedEnd(GameEvent event) {
         inc("enemiesKilled", +1);
 
@@ -346,7 +348,6 @@ public class SpaceInvadersApp extends GameApplication {
             nextLevel();
     }
 
-    // TODO: @Handles(eventType = "ANY")
     public void onBonusPickup(BonusPickupEvent event) {
         switch (event.getType()) {
             case ATTACK_RATE:
