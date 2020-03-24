@@ -6,14 +6,15 @@ import com.almasb.fxgl.entity.component.Component;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
+import static com.almasb.fxgl.core.math.FXGLMath.cos;
+import static com.almasb.fxgl.core.math.FXGLMath.sin;
 import static com.almasb.fxglgames.spaceinvaders.Config.ENEMIES_PER_ROW;
 import static com.almasb.fxglgames.spaceinvaders.Config.ENEMY_ROWS;
-import static java.lang.Math.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class Level3 extends SpaceLevel {
+public class Level12 extends SpaceLevel {
 
     @Override
     public void init() {
@@ -47,10 +48,10 @@ public class Level3 extends SpaceLevel {
         }
 
         private Point2D curveFunction() {
-            double x = 1 / t - 1.6 * cos(t);
-            double y = 1 / t - 1.6 * sin(t);
+            double x = Math.pow(2, cos(t));
+            double y = 1.6 * Math.pow(3, sin(t)) - 1;
 
-            return new Point2D(x, -y).multiply(85);
+            return new Point2D(x, y).multiply(85);
         }
     }
 }

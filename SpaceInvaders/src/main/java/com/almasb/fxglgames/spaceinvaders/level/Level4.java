@@ -33,13 +33,17 @@ public class Level4 extends SpaceLevel {
                 path.setX(50);
                 path.setY(50);
 
+                var inter = new Rectangle(Config.WIDTH - 100, Config.HEIGHT);
+                inter.setX(50);
+                inter.setY(50);
+
                 var a = animationBuilder()
                         .repeatInfinitely()
                         .delay(Duration.seconds(t))
-                        .duration(Duration.seconds(10))
+                        .duration(Duration.seconds(2.5))
                         .translate(enemy)
                         // TODO: remove intersection
-                        .alongPath(Shape.intersect(new Rectangle(Config.WIDTH, Config.HEIGHT), path))
+                        .alongPath(Shape.intersect(inter, path))
                         .build();
 
                 animations.add(a);

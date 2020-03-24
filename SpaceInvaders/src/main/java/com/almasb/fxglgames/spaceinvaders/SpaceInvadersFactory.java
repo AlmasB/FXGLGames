@@ -127,7 +127,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
         Entity meteor = entityBuilder()
                 .at(x, y)
                 .view("background/meteor" + FXGLMath.random(1, 4) + ".png")
-                .zIndex(1001)
+                .zIndex(-400)
                 .with(new MeteorComponent())
                 .build();
 
@@ -194,10 +194,12 @@ public final class SpaceInvadersFactory implements EntityFactory {
 
         return entityBuilder()
                 .type(BULLET)
-                .at(owner.getCenter().add(-8, 20))
-                .viewWithBBox("enemy_bullet.png")
-                .with(new CollidableComponent(true), new OwnerComponent(owner.getType()))
-                .with(new ProjectileComponent(new Point2D(0, 1), 600), new OffscreenCleanComponent())
+                .at(owner.getCenter().add(-3, 18))
+                .viewWithBBox("bullet.png")
+                .collidable()
+                .with(new OwnerComponent(owner.getType()))
+                .with(new ProjectileComponent(new Point2D(0, 1), 600).allowRotation(false))
+                .with(new OffscreenCleanComponent())
                 .with("dead", false)
                 .build();
     }
