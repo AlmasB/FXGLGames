@@ -79,7 +79,7 @@ public class Wait<E> extends LeafTask<E> {
      * @return {@link Status#SUCCEEDED} if the specified timeout has expired; {@link Status#RUNNING} otherwise.
      */
     @Override
-    public Status execute() {
+    public Status execute(double tpf) {
         return Status.SUCCEEDED;
         //return FXGL.getMasterTimer().getNow() - startTime < timeout ? Status.RUNNING : Status.SUCCEEDED;
     }

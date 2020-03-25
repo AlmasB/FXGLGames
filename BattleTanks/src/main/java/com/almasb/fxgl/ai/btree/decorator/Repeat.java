@@ -66,18 +66,18 @@ public class Repeat<E> extends LoopDecorator<E> {
     }
 
     @Override
-    public void childSuccess(Task<E> runningTask) {
+    public void childSuccess(Task<E> runningTask, double tpf) {
         if (count > 0) count--;
         if (count == 0) {
-            super.childSuccess(runningTask);
+            super.childSuccess(runningTask, tpf);
             loop = false;
         } else
             loop = true;
     }
 
     @Override
-    public void childFail(Task<E> runningTask) {
-        childSuccess(runningTask);
+    public void childFail(Task<E> runningTask, double tpf) {
+        childSuccess(runningTask, tpf);
     }
 
     @Override

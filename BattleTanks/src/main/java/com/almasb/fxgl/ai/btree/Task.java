@@ -148,19 +148,19 @@ public abstract class Task<E> {
      * @throws IllegalStateException if guard evaluation returns any status other than {@link Status#SUCCEEDED} and
      *                               {@link Status#FAILED}.
      */
-    public boolean checkGuard(Task<E> control) {
+    public boolean checkGuard(Task<E> control, double tpf) {
         // No guard to check
         if (guard == null)
             return true;
 
         // Check the guard of the guard recursively
-        if (!guard.checkGuard(control))
+        if (!guard.checkGuard(control, tpf))
             return false;
 
         // Use the tree's guard evaluator task to check the guard of this task
         guard.setControl(control.tree.guardEvaluator);
         guard.start();
-        guard.run();
+        guard.onUpdate(tpf);
 
         switch (guard.getStatus()) {
             case SUCCEEDED:
@@ -180,7 +180,7 @@ public abstract class Task<E> {
     }
 
     /**
-     * This method will be called by {@link #success()}, {@link #fail()} or {@link #cancel()}, meaning that this task's status has
+     * This method will be called by success(), fail() or {@link #cancel()}, meaning that this task's status has
      * just been set to {@link Status#SUCCEEDED}, {@link Status#FAILED} or {@link Status#CANCELLED} respectively.
      */
     public void end() {
@@ -189,28 +189,27 @@ public abstract class Task<E> {
 
     /**
      * This method contains the update logic of this task.
-     * The actual implementation MUST call {@link #running()},
-     * {@link #success()} or {@link #fail()} exactly once.
+     * The actual implementation MUST call running(), success() or fail() exactly once.
      */
-    public abstract void run();
+    public abstract void onUpdate(double tpf);
 
     /**
-     * This method will be called in {@link #run()} to inform control that this task needs to run again.
+     * This method will be called in {onUpdate} to inform control that this task needs to run again.
      */
-    public final void running() {
+    public final void running(double tpf) {
         Status previousStatus = status;
         status = Status.RUNNING;
 
         tree.notifyStatusUpdated(this, previousStatus);
 
         if (control != null)
-            control.childRunning(this, this);
+            control.childRunning(this, this, tpf);
     }
 
     /**
-     * This method will be called in {@link #run()} to inform control that this task has finished running with a success result.
+     * This method will be called in {onUpdate} to inform control that this task has finished running with a success result.
      */
-    public final void success() {
+    public final void success(double tpf) {
         Status previousStatus = status;
         status = Status.SUCCEEDED;
 
@@ -219,13 +218,13 @@ public abstract class Task<E> {
         end();
 
         if (control != null)
-            control.childSuccess(this);
+            control.childSuccess(this, tpf);
     }
 
     /**
-     * This method will be called in {@link #run()} to inform control that this task has finished running with a failure result.
+     * This method will be called in {onUpdate} to inform control that this task has finished running with a failure result.
      */
-    public final void fail() {
+    public final void fail(double tpf) {
         Status previousStatus = status;
         status = Status.FAILED;
 
@@ -234,7 +233,7 @@ public abstract class Task<E> {
         end();
 
         if (control != null)
-            control.childFail(this);
+            control.childFail(this, tpf);
     }
 
     /**
@@ -242,14 +241,14 @@ public abstract class Task<E> {
      *
      * @param task the task that succeeded
      */
-    public abstract void childSuccess(Task<E> task);
+    public abstract void childSuccess(Task<E> task, double tpf);
 
     /**
      * This method will be called when one of the children of this task fails.
      *
      * @param task the task that failed
      */
-    public abstract void childFail(Task<E> task);
+    public abstract void childFail(Task<E> task, double tpf);
 
     /**
      * This method will be called when one of the ancestors of this task needs to run again.
@@ -257,7 +256,7 @@ public abstract class Task<E> {
      * @param runningTask the task that needs to run again
      * @param reporter    the task that reports, usually one of this task's children
      */
-    public abstract void childRunning(Task<E> runningTask, Task<E> reporter);
+    public abstract void childRunning(Task<E> runningTask, Task<E> reporter, double tpf);
 
     /**
      * Terminates this task and all its running children.
@@ -328,4 +327,9 @@ public abstract class Task<E> {
      * @throws TaskCloneException if the task cannot be successfully copied.
      */
     protected abstract Task<E> copyTo(Task<E> task);
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
+    }
 }

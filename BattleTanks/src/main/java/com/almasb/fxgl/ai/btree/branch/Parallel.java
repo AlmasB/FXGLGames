@@ -106,46 +106,46 @@ public class Parallel<E> extends BranchTask<E> {
     }
 
     @Override
-    public void run() {
+    public void onUpdate(double tpf) {
         noRunningTasks = true;
         lastResult = null;
         for (currentChildIndex = 0; currentChildIndex < children.size(); currentChildIndex++) {
             Task<E> child = children.get(currentChildIndex);
             if (child.getStatus() == Status.RUNNING) {
-                child.run();
+                child.onUpdate(tpf);
             } else {
                 child.setControl(this);
                 child.start();
-                if (child.checkGuard(this))
-                    child.run();
+                if (child.checkGuard(this, tpf))
+                    child.onUpdate(tpf);
                 else
-                    child.fail();
+                    child.fail(tpf);
             }
 
             if (lastResult != null) { // Current child has finished either with success or fail
                 cancelRunningChildren(noRunningTasks ? currentChildIndex + 1 : 0);
                 if (lastResult)
-                    success();
+                    success(tpf);
                 else
-                    fail();
+                    fail(tpf);
                 return;
             }
         }
-        running();
+        running(tpf);
     }
 
     @Override
-    public void childRunning(Task<E> task, Task<E> reporter) {
+    public void childRunning(Task<E> task, Task<E> reporter, double tpf) {
         noRunningTasks = false;
     }
 
     @Override
-    public void childSuccess(Task<E> runningTask) {
+    public void childSuccess(Task<E> runningTask, double tpf) {
         lastResult = policy.onChildSuccess(this);
     }
 
     @Override
-    public void childFail(Task<E> runningTask) {
+    public void childFail(Task<E> runningTask, double tpf) {
         lastResult = policy.onChildFail(this);
     }
 

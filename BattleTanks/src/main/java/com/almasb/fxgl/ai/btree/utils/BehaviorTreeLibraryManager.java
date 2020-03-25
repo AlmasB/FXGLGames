@@ -98,5 +98,4 @@ public final class BehaviorTreeLibraryManager {
     public <T> BehaviorTree<T> createBehaviorTree(String treeReference, T blackboard) {
         return library.createBehaviorTree(treeReference, blackboard);
     }
-
 }

@@ -6,25 +6,21 @@
 
 package com.almasb.s08ai;
 
-import com.almasb.fxgl.ai.btree.GoalAction;
+import com.almasb.fxgl.ai.btree.BehaviorTreeContinuousAction;
 import javafx.geometry.Point2D;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class MoveTask extends GoalAction {
-
-    public MoveTask() {
-        super("Move");
-    }
+public class MoveTask extends BehaviorTreeContinuousAction {
 
     @Override
-    public boolean reachedGoal() {
+    public boolean isCompleted() {
         return getEntity().getPosition().distance(400, 300) < 25;
     }
 
     @Override
-    public void onUpdate(double tpf) {
+    public void perform(double tpf) {
 
         double speed = tpf * 60 * 5;
 

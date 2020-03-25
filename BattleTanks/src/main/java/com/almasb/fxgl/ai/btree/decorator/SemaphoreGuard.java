@@ -102,11 +102,11 @@ public class SemaphoreGuard<E> extends Decorator<E> {
      * Runs its child if the semaphore has been successfully acquired; immediately fails otherwise.
      */
     @Override
-    public void run() {
+    public void onUpdate(double tpf) {
         if (semaphoreAcquired) {
-            super.run();
+            super.onUpdate(tpf);
         } else {
-            fail();
+            fail(tpf);
         }
     }
 

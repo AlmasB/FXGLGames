@@ -107,39 +107,40 @@ public class BehaviorTree<E> extends Task<E> {
     }
 
     @Override
-    public void childRunning(Task<E> runningTask, Task<E> reporter) {
-        running();
+    public void childRunning(Task<E> runningTask, Task<E> reporter, double tpf) {
+        running(tpf);
     }
 
     @Override
-    public void childFail(Task<E> runningTask) {
-        fail();
+    public void childFail(Task<E> runningTask, double tpf) {
+        fail(tpf);
     }
 
     @Override
-    public void childSuccess(Task<E> runningTask) {
-        success();
+    public void childSuccess(Task<E> runningTask, double tpf) {
+        success(tpf);
+    }
+
+    @Override
+    public void onUpdate(double tpf) {
+
     }
 
     /**
      * This method should be called when game entity needs to make decisions: call this in game loop or after a fixed time slice if
      * the game is real-time, or on entity's turn if the game is turn-based
      */
-    public void step() {
+    public void step(double tpf) {
         if (rootTask.status == Status.RUNNING) {
-            rootTask.run();
+            rootTask.onUpdate(tpf);
         } else {
             rootTask.setControl(this);
             rootTask.start();
-            if (rootTask.checkGuard(this))
-                rootTask.run();
+            if (rootTask.checkGuard(this, tpf))
+                rootTask.onUpdate(tpf);
             else
-                rootTask.fail();
+                rootTask.fail(tpf);
         }
-    }
-
-    @Override
-    public void run() {
     }
 
     @Override
@@ -207,19 +208,19 @@ public class BehaviorTree<E> extends Task<E> {
         }
 
         @Override
-        public void run() {
+        public void onUpdate(double tpf) {
         }
 
         @Override
-        public void childSuccess(Task<E> task) {
+        public void childSuccess(Task<E> task, double tpf) {
         }
 
         @Override
-        public void childFail(Task<E> task) {
+        public void childFail(Task<E> task, double tpf) {
         }
 
         @Override
-        public void childRunning(Task<E> runningTask, Task<E> reporter) {
+        public void childRunning(Task<E> runningTask, Task<E> reporter, double tpf) {
         }
 
         @Override

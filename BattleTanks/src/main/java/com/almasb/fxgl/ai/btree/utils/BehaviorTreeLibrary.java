@@ -24,7 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A {@code BehaviorTreeLibrary} is a repository of behavior tree archetypes. Behavior tree archetypes never run. Indeed, they are
+ * A {@code BehaviorTreeLibrary} is a repository of behavior tree archetypes.
+ * Behavior tree archetypes never run. Indeed, they are
  * only cloned to create behavior tree instances that can run.
  *
  * @author davebaol
@@ -33,48 +34,14 @@ public class BehaviorTreeLibrary {
 
     protected Map<String, BehaviorTree<?>> repository;
 
-    //	protected AssetManager assetManager;
-    //protected FileHandleResolver resolver;
     protected BehaviorTreeParser<?> parser;
 
-    //	/** Creates a {@code BehaviorTreeLibrary} using the new internal resolver returned by the call
-//	 * {@link FileSystem#newResolver(FileType) GdxAI.getFileSystem().newResolver(FileType.Internal)}. */
     public BehaviorTreeLibrary() {
         this(BehaviorTreeParser.DEBUG_NONE);
     }
-//
-//	/** Creates a {@code BehaviorTreeLibrary} with the given debug level and using the new internal resolver returned by the call
-//	 * {@link FileSystem#newResolver(FileType) GdxAI.getFileSystem().newResolver(FileType.Internal)}.
-//	 * @param parseDebugLevel the debug level the parser will use */
-//	public BehaviorTreeLibrary (int parseDebugLevel) {
-//		this(GdxAI.getFileSystem().newResolver(FileType.Internal), parseDebugLevel);
-//	}
-//
-//	/** Creates a {@code BehaviorTreeLibrary} with the given resolver.
-//	 * @param resolver the {@link FileHandleResolver} */
-//	public BehaviorTreeLibrary (FileHandleResolver resolver) {
-//		this(resolver, BehaviorTreeParser.DEBUG_NONE);
-//	}
-//
-//	/** Creates a {@code BehaviorTreeLibrary} with the given resolver and debug level.
-//	 * @param resolver the {@link FileHandleResolver}
-//	 * @param parseDebugLevel the debug level the parser will use */
-//	public BehaviorTreeLibrary (FileHandleResolver resolver, int parseDebugLevel) {
-//		this(resolver, null, parseDebugLevel);
-//	}
-
-//	public BehaviorTreeLibrary (AssetManager assetManager) {
-//		this(assetManager, BehaviorTreeParser.DEBUG_NONE);
-//	}
-//
-//	public BehaviorTreeLibrary (AssetManager assetManager, int parserDebugLevel) {
-//		this(null, assetManager, parserDebugLevel);
-//	}
 
     @SuppressWarnings("rawtypes")
     private BehaviorTreeLibrary(int parseDebugLevel) {
-        //this.resolver = resolver;
-//		this.assetManager = assetManager;
         this.repository = new HashMap<>();
         this.parser = new BehaviorTreeParser(parseDebugLevel);
     }

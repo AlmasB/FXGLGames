@@ -43,8 +43,8 @@ public class AlwaysSucceed<E> extends Decorator<E> {
     }
 
     @Override
-    public void childFail(Task<E> runningTask) {
-        childSuccess(runningTask);
+    public void childFail(Task<E> runningTask, double tpf) {
+        childSuccess(runningTask, tpf);
     }
 
 }

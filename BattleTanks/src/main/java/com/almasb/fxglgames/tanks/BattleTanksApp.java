@@ -28,8 +28,6 @@ package com.almasb.fxglgames.tanks;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
-import com.almasb.fxgl.entity.action.ActionComponent;
-import com.almasb.fxgl.entity.action.InstantAction;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.virtual.VirtualButton;
@@ -38,8 +36,8 @@ import com.almasb.fxgl.pathfinding.astar.AStarGrid;
 import com.almasb.fxgl.pathfinding.astar.AStarGridView;
 import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
 import com.almasb.fxglgames.tanks.collision.BulletBrickHandler;
-import com.almasb.fxglgames.tanks.collision.BulletFlagHandler;
 import com.almasb.fxglgames.tanks.collision.BulletEnemyTankHandler;
+import com.almasb.fxglgames.tanks.collision.BulletFlagHandler;
 import com.almasb.fxglgames.tanks.components.TankViewComponent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -120,14 +118,14 @@ public class BattleTanksApp extends GameApplication {
         input.addAction(new UserAction("Move To Action") {
             @Override
             protected void onActionBegin() {
-                tankViewComponent.getEntity().getComponent(ActionComponent.class)
-                        .pushAction(new InstantAction() {
-                            @Override
-                            protected void performOnce(double tpf) {
-                                tankViewComponent.getEntity().getComponent(AStarMoveComponent.class)
-                                        .moveToCell((int) (getInput().getMouseXWorld() / 30), (int) (getInput().getMouseYWorld() / 30));
-                            }
-                        });
+//                tankViewComponent.getEntity().getComponent(ActionComponent.class)
+//                        .addAction(new InstantAction() {
+//                            @Override
+//                            protected void performOnce(double tpf) {
+//                                tankViewComponent.getEntity().getComponent(AStarMoveComponent.class)
+//                                        .moveToCell((int) (getInput().getMouseXWorld() / 30), (int) (getInput().getMouseYWorld() / 30));
+//                            }
+//                        });
             }
         }, MouseButton.PRIMARY);
     }

@@ -6,8 +6,6 @@
 
 package com.almasb.fxgl.ai.btree
 
-import com.almasb.fxgl.ai.btree.LeafTask
-import com.almasb.fxgl.ai.btree.Task
 import com.almasb.fxgl.entity.Entity
 
 /**
@@ -15,15 +13,15 @@ import com.almasb.fxgl.entity.Entity
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-abstract class Condition : LeafTask<Entity>() {
+abstract class BehaviorTreeCondition : LeafTask<Entity>() {
 
     /**
      * Condition succeeds if this returns true.
      */
-    abstract fun evaluate(): Boolean
+    abstract fun evaluate(tpf: Double): Boolean
 
-    override final fun execute(): Status {
-        return if (evaluate()) Status.SUCCEEDED else Status.FAILED
+    override final fun execute(tpf: Double): Status {
+        return if (evaluate(tpf)) Status.SUCCEEDED else Status.FAILED
     }
 
     override fun copyTo(task: Task<Entity>): Task<Entity> {

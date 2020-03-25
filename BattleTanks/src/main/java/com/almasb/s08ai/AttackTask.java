@@ -6,7 +6,7 @@
 
 package com.almasb.s08ai;
 
-import com.almasb.fxgl.ai.btree.SingleAction;
+import com.almasb.fxgl.ai.btree.BehaviorTreeInstantAction;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import javafx.geometry.Point2D;
@@ -14,10 +14,10 @@ import javafx.geometry.Point2D;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class AttackTask extends SingleAction {
+public class AttackTask extends BehaviorTreeInstantAction {
 
     @Override
-    public void onUpdate(double tpf) {
+    public void performOnce(double tpf) {
         Entity player = ((BehaviorSample) FXGL.getApp()).player;
 
         if (player.distance(getEntity()) < 100) {

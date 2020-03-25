@@ -50,25 +50,25 @@ public abstract class SingleRunningChildBranch<E> extends BranchTask<E> {
     }
 
     @Override
-    public void childRunning(Task<E> task, Task<E> reporter) {
+    public void childRunning(Task<E> task, Task<E> reporter, double tpf) {
         runningChild = task;
-        running(); // Return a running status when a child says it's running
+        running(tpf); // Return a running status when a child says it's running
     }
 
     @Override
-    public void childSuccess(Task<E> task) {
+    public void childSuccess(Task<E> task, double tpf) {
         this.runningChild = null;
     }
 
     @Override
-    public void childFail(Task<E> task) {
+    public void childFail(Task<E> task, double tpf) {
         this.runningChild = null;
     }
 
     @Override
-    public void run() {
+    public void onUpdate(double tpf) {
         if (runningChild != null) {
-            runningChild.run();
+            runningChild.onUpdate(tpf);
         } else {
             if (currentChildIndex < children.size()) {
                 if (randomChildren != null) {
@@ -86,10 +86,10 @@ public abstract class SingleRunningChildBranch<E> extends BranchTask<E> {
                 }
                 runningChild.setControl(this);
                 runningChild.start();
-                if (!runningChild.checkGuard(this))
-                    runningChild.fail();
+                if (!runningChild.checkGuard(this, tpf))
+                    runningChild.fail(tpf);
                 else
-                    run();
+                    onUpdate(tpf);
             } else {
                 // Should never happen; this case must be handled by subclasses in childXXX methods
             }

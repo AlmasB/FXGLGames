@@ -62,32 +62,32 @@ public abstract class Decorator<E> extends Task<E> {
     }
 
     @Override
-    public void run() {
+    public void onUpdate(double tpf) {
         if (child.status == Status.RUNNING) {
-            child.run();
+            child.onUpdate(tpf);
         } else {
             child.setControl(this);
             child.start();
-            if (child.checkGuard(this))
-                child.run();
+            if (child.checkGuard(this, tpf))
+                child.onUpdate(tpf);
             else
-                child.fail();
+                child.fail(tpf);
         }
     }
 
     @Override
-    public void childRunning(Task<E> runningTask, Task<E> reporter) {
-        running();
+    public void childRunning(Task<E> runningTask, Task<E> reporter, double tpf) {
+        running(tpf);
     }
 
     @Override
-    public void childFail(Task<E> runningTask) {
-        fail();
+    public void childFail(Task<E> runningTask, double tpf) {
+        fail(tpf);
     }
 
     @Override
-    public void childSuccess(Task<E> runningTask) {
-        success();
+    public void childSuccess(Task<E> runningTask, double tpf) {
+        success(tpf);
     }
 
     @Override

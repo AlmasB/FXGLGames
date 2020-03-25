@@ -15,7 +15,7 @@ package com.almasb.fxgl.ai.btree;
 public abstract class LoopDecorator<E> extends Decorator<E> {
 
     /**
-     * Whether the {@link #run()} method must keep looping or not.
+     * Whether the {@link #onUpdate(double)} ()} method must keep looping or not.
      */
     protected boolean loop;
 
@@ -35,7 +35,7 @@ public abstract class LoopDecorator<E> extends Decorator<E> {
     }
 
     /**
-     * Whether the {@link #run()} method must keep looping or not.
+     * Whether the onUpdate method must keep looping or not.
      *
      * @return {@code true} if it must keep looping; {@code false} otherwise.
      */
@@ -44,25 +44,26 @@ public abstract class LoopDecorator<E> extends Decorator<E> {
     }
 
     @Override
-    public void run() {
+    public void onUpdate(double tpf) {
         loop = true;
         while (condition()) {
+            // TODO: super.onUpdate(tpf)?
             if (child.status == Status.RUNNING) {
-                child.run();
+                child.onUpdate(tpf);
             } else {
                 child.setControl(this);
                 child.start();
-                if (child.checkGuard(this))
-                    child.run();
+                if (child.checkGuard(this, tpf))
+                    child.onUpdate(tpf);
                 else
-                    child.fail();
+                    child.fail(tpf);
             }
         }
     }
 
     @Override
-    public void childRunning(Task<E> runningTask, Task<E> reporter) {
-        super.childRunning(runningTask, reporter);
+    public void childRunning(Task<E> runningTask, Task<E> reporter, double tpf) {
+        super.childRunning(runningTask, reporter, tpf);
         loop = false;
     }
 }

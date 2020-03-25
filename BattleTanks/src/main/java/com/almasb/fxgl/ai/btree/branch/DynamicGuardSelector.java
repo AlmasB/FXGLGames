@@ -63,30 +63,30 @@ public class DynamicGuardSelector<E> extends BranchTask<E> {
     }
 
     @Override
-    public void childRunning(Task<E> task, Task<E> reporter) {
+    public void childRunning(Task<E> task, Task<E> reporter, double tpf) {
         runningChild = task;
-        running(); // Return a running status when a child says it's running
+        running(tpf); // Return a running status when a child says it's running
     }
 
     @Override
-    public void childSuccess(Task<E> task) {
+    public void childSuccess(Task<E> task, double tpf) {
         this.runningChild = null;
-        success();
+        success(tpf);
     }
 
     @Override
-    public void childFail(Task<E> task) {
+    public void childFail(Task<E> task, double tpf) {
         this.runningChild = null;
-        fail();
+        fail(tpf);
     }
 
     @Override
-    public void run() {
+    public void onUpdate(double tpf) {
         // Check guards
         Task<E> childToRun = null;
         for (int i = 0, n = children.size(); i < n; i++) {
             Task<E> child = children.get(i);
-            if (child.checkGuard(this)) {
+            if (child.checkGuard(this, tpf)) {
                 childToRun = child;
                 break;
             }
@@ -97,14 +97,14 @@ public class DynamicGuardSelector<E> extends BranchTask<E> {
             runningChild = null;
         }
         if (childToRun == null) {
-            fail();
+            fail(tpf);
         } else {
             if (runningChild == null) {
                 runningChild = childToRun;
                 runningChild.setControl(this);
                 runningChild.start();
             }
-            runningChild.run();
+            runningChild.onUpdate(tpf);
         }
     }
 
@@ -121,5 +121,4 @@ public class DynamicGuardSelector<E> extends BranchTask<E> {
 
         return super.copyTo(task);
     }
-
 }

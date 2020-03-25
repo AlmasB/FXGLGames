@@ -39,7 +39,7 @@ public class Failure<E> extends LeafTask<E> {
      * @return {@link Status#FAILED}.
      */
     @Override
-    public Status execute() {
+    public Status execute(double tpf) {
         return Status.FAILED;
     }
 

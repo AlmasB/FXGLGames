@@ -47,13 +47,13 @@ public class UntilFail<E> extends LoopDecorator<E> {
     }
 
     @Override
-    public void childSuccess(Task<E> runningTask) {
+    public void childSuccess(Task<E> runningTask, double tpf) {
         loop = true;
     }
 
     @Override
-    public void childFail(Task<E> runningTask) {
-        success();
+    public void childFail(Task<E> runningTask, double tpf) {
+        success(tpf);
         loop = false;
     }
 }

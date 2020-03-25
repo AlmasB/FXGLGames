@@ -12,7 +12,7 @@ import com.almasb.fxgl.entity.Entity
 import com.almasb.fxgl.entity.component.Component
 
 /**
- * Allows attaching a behavior tree to a game entity.
+ * Allows attaching a behavior tree to an entity.
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
@@ -54,6 +54,6 @@ private constructor() : Component() {
     }
 
     override fun onUpdate(tpf: Double) {
-        behaviorTree.step()
+        behaviorTree.step(tpf)
     }
 }

@@ -55,19 +55,19 @@ public class Sequence<E> extends SingleRunningChildBranch<E> {
     }
 
     @Override
-    public void childSuccess(Task<E> runningTask) {
-        super.childSuccess(runningTask);
+    public void childSuccess(Task<E> runningTask, double tpf) {
+        super.childSuccess(runningTask, tpf);
         if (++currentChildIndex < children.size()) {
-            run(); // Run next child
+            onUpdate(tpf); // Run next child
         } else {
-            success(); // All children processed, return success status
+            success(tpf); // All children processed, return success status
         }
     }
 
     @Override
-    public void childFail(Task<E> runningTask) {
-        super.childFail(runningTask);
-        fail(); // Return failure status when a child says it failed
+    public void childFail(Task<E> runningTask, double tpf) {
+        super.childFail(runningTask, tpf);
+        fail(tpf); // Return failure status when a child says it failed
     }
 
 }

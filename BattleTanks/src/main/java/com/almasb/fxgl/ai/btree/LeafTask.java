@@ -19,37 +19,32 @@ import com.almasb.fxgl.ai.btree.annotation.TaskConstraint;
 public abstract class LeafTask<E> extends Task<E> {
 
     /**
-     * Creates a leaf task.
-     */
-    public LeafTask() {
-    }
-
-    /**
-     * This method contains the update logic of this leaf task. The actual implementation MUST return one of {@link Status#RUNNING}
-     * , {@link Status#SUCCEEDED} or {@link Status#FAILED}. Other return values will cause an {@code IllegalStateException}.
+     * This method contains the update logic of this leaf task.
+     * The actual implementation MUST return one of {@link Status#RUNNING}, {@link Status#SUCCEEDED} or {@link Status#FAILED}.
+     * Other return values will cause an {@code IllegalStateException}.
      *
      * @return the status of this leaf task
      */
-    public abstract Status execute();
+    protected abstract Status execute(double tpf);
 
     /**
-     * This method contains the update logic of this task. The implementation delegates the {@link #execute()} method.
+     * This method contains the update logic of this task. The implementation delegates the execute() method.
      */
     @Override
-    public final void run() {
-        Status result = execute();
+    public final void onUpdate(double tpf) {
+        Status result = execute(tpf);
         if (result == null)
             throw new IllegalStateException("Invalid status 'null' returned by the execute method");
 
         switch (result) {
             case SUCCEEDED:
-                success();
+                success(tpf);
                 return;
             case FAILED:
-                fail();
+                fail(tpf);
                 return;
             case RUNNING:
-                running();
+                running(tpf);
                 return;
             default:
                 throw new IllegalStateException("Invalid status '" + result.name() + "' returned by the execute method");
@@ -75,14 +70,14 @@ public abstract class LeafTask<E> extends Task<E> {
     }
 
     @Override
-    public final void childRunning(Task<E> runningTask, Task<E> reporter) {
+    public final void childRunning(Task<E> runningTask, Task<E> reporter, double tpf) {
     }
 
     @Override
-    public final void childFail(Task<E> runningTask) {
+    public final void childFail(Task<E> runningTask, double tpf) {
     }
 
     @Override
-    public final void childSuccess(Task<E> runningTask) {
+    public final void childSuccess(Task<E> runningTask, double tpf) {
     }
 }

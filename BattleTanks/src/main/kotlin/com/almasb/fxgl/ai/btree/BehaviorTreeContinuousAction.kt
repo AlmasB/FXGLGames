@@ -10,29 +10,28 @@ import com.almasb.fxgl.dsl.FXGL
 import com.almasb.fxgl.entity.Entity
 
 /**
- * In a behavior tree a goal action is executed until it reaches the goal.
+ * In a behavior tree a continuous action is executed until it is completed.
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-abstract class GoalAction
-@JvmOverloads constructor(val name: String = "") : LeafTask<Entity>() {
+abstract class BehaviorTreeContinuousAction : LeafTask<Entity>() {
 
     /**
      * The action succeeds when this returns true.
      */
-    abstract fun reachedGoal(): Boolean
+    abstract fun isCompleted(): Boolean
 
     /**
      * Executed every frame when action is active.
      */
-    abstract fun onUpdate(tpf: Double)
+    abstract fun perform(tpf: Double)
 
-    override final fun execute(): Status {
-        if (reachedGoal())
+    override final fun execute(tpf: Double): Status {
+        if (isCompleted())
             return Status.SUCCEEDED
 
-        onUpdate(FXGL.tpf())
-        return if (reachedGoal()) Status.SUCCEEDED else Status.RUNNING
+        perform(tpf)
+        return if (isCompleted()) Status.SUCCEEDED else Status.RUNNING
     }
 
     override fun copyTo(task: Task<Entity>): Task<Entity> {

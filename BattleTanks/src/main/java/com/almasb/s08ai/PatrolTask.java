@@ -6,14 +6,14 @@
 
 package com.almasb.s08ai;
 
-import com.almasb.fxgl.ai.btree.SingleAction;
+import com.almasb.fxgl.ai.btree.BehaviorTreeInstantAction;
 import com.almasb.fxgl.core.math.FXGLMath;
 import javafx.geometry.Point2D;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class PatrolTask extends SingleAction {
+public class PatrolTask extends BehaviorTreeInstantAction {
 
     private static final Point2D[] POINTS = new Point2D[] {
             new Point2D(300, 300),
@@ -23,12 +23,8 @@ public class PatrolTask extends SingleAction {
 
     private Point2D selectedPoint = POINTS[0];
 
-    public PatrolTask() {
-        super("Patrol");
-    }
-
     @Override
-    public void onUpdate(double tpf) {
+    public void performOnce(double tpf) {
         getEntity().translateTowards(selectedPoint, 60 * tpf);
 
         if (getEntity().getPosition().distance(selectedPoint) < 5) {

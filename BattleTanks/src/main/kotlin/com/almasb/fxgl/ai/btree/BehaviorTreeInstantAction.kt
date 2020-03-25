@@ -10,21 +10,16 @@ import com.almasb.fxgl.dsl.FXGL
 import com.almasb.fxgl.entity.Entity
 
 /**
- * A single action that always succeeds.
+ * An instant action that is executed in a single frame and it always succeeds.
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-abstract class SingleAction
-@JvmOverloads constructor(val name: String = "") : LeafTask<Entity>() {
+abstract class BehaviorTreeInstantAction : LeafTask<Entity>() {
 
-    /**
-     * Executed every frame when action is active.
-     */
-    abstract fun onUpdate(tpf: Double)
+    abstract fun performOnce(tpf: Double)
     
-    override final fun execute(): Status {
-        // TODO:
-        onUpdate(FXGL.tpf())
+    override final fun execute(tpf: Double): Status {
+        performOnce(tpf)
 
         return Status.SUCCEEDED
     }

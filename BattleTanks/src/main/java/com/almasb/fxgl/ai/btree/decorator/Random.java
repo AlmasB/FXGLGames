@@ -63,28 +63,28 @@ public class Random<E> extends Decorator<E> {
     }
 
     @Override
-    public void run() {
+    public void onUpdate(double tpf) {
         if (child != null)
-            super.run();
+            super.onUpdate(tpf);
         else
-            decide();
+            decide(tpf);
     }
 
     @Override
-    public void childFail(Task<E> runningTask) {
-        decide();
+    public void childFail(Task<E> runningTask, double tpf) {
+        decide(tpf);
     }
 
     @Override
-    public void childSuccess(Task<E> runningTask) {
-        decide();
+    public void childSuccess(Task<E> runningTask, double tpf) {
+        decide(tpf);
     }
 
-    private void decide() {
+    private void decide(double tpf) {
         if (FXGLMath.randomBoolean())
-            success();
+            success(tpf);
         else
-            fail();
+            fail(tpf);
     }
 
     @Override

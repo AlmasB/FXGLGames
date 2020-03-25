@@ -39,7 +39,7 @@ public class Success<E> extends LeafTask<E> {
      * @return {@link Status#SUCCEEDED}.
      */
     @Override
-    public Status execute() {
+    public Status execute(double tpf) {
         return Status.SUCCEEDED;
     }
 
