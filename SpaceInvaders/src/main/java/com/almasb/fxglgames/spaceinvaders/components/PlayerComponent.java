@@ -89,6 +89,10 @@ public class PlayerComponent extends Component {
         play("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
     }
 
+    public void shootRedLaser() {
+        spawn("RedLaser", entity.getCenter());
+    }
+
     public void shootLaser() {
         if (getd("laserMeter") == Config.LASER_METER_MAX) {
             laserBeamActive = true;

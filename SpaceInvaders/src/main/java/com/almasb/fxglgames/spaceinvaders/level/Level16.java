@@ -1,15 +1,20 @@
 package com.almasb.fxglgames.spaceinvaders.level;
 
 import com.almasb.fxgl.animation.Animation;
-import com.almasb.fxgl.animation.Interpolators;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxglgames.spaceinvaders.Config;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxgl.core.math.FXGLMath.cos;
+import static com.almasb.fxgl.core.math.FXGLMath.sin;
+import static com.almasb.fxgl.dsl.FXGL.animationBuilder;
+import static com.almasb.fxgl.dsl.FXGL.getGameTimer;
 import static com.almasb.fxglgames.spaceinvaders.Config.ENEMIES_PER_ROW;
 import static com.almasb.fxglgames.spaceinvaders.Config.ENEMY_ROWS;
 
@@ -20,46 +25,54 @@ public class Level16 extends SpaceLevel {
 
     private List<Animation<?>> animations = new ArrayList<>();
 
+    private double t = 0.0;
+
     @Override
     public void init() {
-        double t = 0.0;
-
         for (int y = 0; y < ENEMY_ROWS; y++) {
             for (int x = 0; x < ENEMIES_PER_ROW; x++) {
-                double px = random(0, getAppWidth() - 100);
-                double py = random(0, getAppHeight() / 2.0);
 
-                runOnce(() -> {
-                    Entity enemy = spawnEnemy(px, py);
+                Entity enemy;
 
-                    var a = animationBuilder()
+                if (y == 0) {
+                    enemy = spawnEnemy(Config.WIDTH / 2, 50);
+
+                    Animation<?> anim = animationBuilder()
+                            .delay(Duration.seconds(t))
                             .autoReverse(true)
-                            .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
-                            .repeatInfinitely()
-                            .duration(Duration.seconds(1.0))
+                            .duration(Duration.seconds(1))
+                            .repeat(Integer.MAX_VALUE)
                             .translate(enemy)
-                            .from(new Point2D(px, py))
-                            .to(new Point2D(random(0, getAppWidth() - 100), random(0, getAppHeight() / 2.0)))
+                            .from(enemy.getPosition())
+                            .to(new Point2D(Config.WIDTH - 50 - 40, Config.HEIGHT / 2 - 50))
                             .build();
 
-                    animations.add(a);
-                    a.start();
+                    animations.add(anim);
+                    anim.start();
 
-                    a = animationBuilder()
+                    enemy = spawnEnemy(Config.WIDTH - 50 - 40, 50);
+
+                    anim = animationBuilder()
+                            .delay(Duration.seconds(t))
                             .autoReverse(true)
-                            .interpolator(Interpolators.BACK.EASE_OUT())
-                            .repeatInfinitely()
-                            .duration(Duration.seconds(1.0))
-                            .scale(enemy)
-                            .from(new Point2D(1, 1))
-                            .to(new Point2D(0, 0))
+                            .duration(Duration.seconds(1))
+                            .repeat(Integer.MAX_VALUE)
+                            .translate(enemy)
+                            .from(enemy.getPosition())
+                            .to(new Point2D(Config.WIDTH / 2, Config.HEIGHT / 2 - 50))
                             .build();
 
-                    animations.add(a);
-                    a.start();
-                }, Duration.seconds(t));
+                    animations.add(anim);
+                    anim.start();
 
-                t += 0.25;
+                } else {
+                    getGameTimer().runOnceAfter(() -> {
+                        var e = spawnEnemy(0, 0);
+                        e.addComponent(new MoveComponent());
+                    }, Duration.seconds(t));
+                }
+
+                t += 0.2;
             }
         }
     }
@@ -72,5 +85,24 @@ public class Level16 extends SpaceLevel {
     @Override
     public void destroy() {
         animations.forEach(Animation::stop);
+    }
+
+    private static class MoveComponent extends Component {
+
+        private double t = 0;
+
+        @Override
+        public void onUpdate(double tpf) {
+            entity.setPosition(curveFunction().add(0, FXGL.getAppHeight() / 2 - 300));
+
+            t += tpf;
+        }
+
+        private Point2D curveFunction() {
+            double x = Math.pow(2, cos(t));
+            double y = 1.6 * Math.pow(3, sin(t)) - 1;
+
+            return new Point2D(x, y).multiply(85);
+        }
     }
 }

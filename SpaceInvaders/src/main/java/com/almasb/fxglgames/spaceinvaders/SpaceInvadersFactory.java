@@ -44,9 +44,6 @@ import com.almasb.fxgl.particle.ParticleEmitters;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.texture.Texture;
-import com.almasb.fxglgames.spaceinvaders.components.InvincibleComponent;
-import com.almasb.fxglgames.spaceinvaders.components.OwnerComponent;
-import com.almasb.fxglgames.spaceinvaders.components.SubTypeComponent;
 import com.almasb.fxglgames.spaceinvaders.components.*;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -170,7 +167,10 @@ public final class SpaceInvadersFactory implements EntityFactory {
                 .from(data)
                 .type(ENEMY)
                 .viewWithBBox(
-                        texture("enemy" + ((int)(Math.random() * 3) + 1) + ".png").toAnimatedTexture(2, Duration.seconds(2))
+                        texture("enemy" + ((int)(Math.random() * 3) + 1) + ".png")
+                                .outline(Color.BLACK)
+                                .toAnimatedTexture(2, Duration.seconds(2))
+                                .loop()
                 )
                 .with(new CollidableComponent(true), new HealthComponent(2), new TimeComponent(1.0))
                 .with(new EnemyComponent(), new EffectComponent())
@@ -201,6 +201,19 @@ public final class SpaceInvadersFactory implements EntityFactory {
                 .with(new ProjectileComponent(new Point2D(0, 1), 600).allowRotation(false))
                 .with(new OffscreenCleanComponent())
                 .with("dead", false)
+                .build();
+    }
+
+    @Spawns("RedLaser")
+    public Entity newRedLaser(SpawnData data) {
+        return entityBuilder()
+                .from(data)
+                .type(LASER_BEAM)
+                .viewWithBBox("red_laser.png")
+                .collidable()
+                .with(new RedLaserComponent(5))
+                .with(new AutoRotationComponent())
+                .scaleOrigin(57, 4.5)
                 .build();
     }
 

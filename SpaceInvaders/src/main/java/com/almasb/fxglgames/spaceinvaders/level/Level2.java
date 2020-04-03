@@ -1,56 +1,57 @@
 package com.almasb.fxglgames.spaceinvaders.level;
 
-import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.animation.Animation;
+import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.Component;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxglgames.spaceinvaders.Config.ENEMIES_PER_ROW;
 import static com.almasb.fxglgames.spaceinvaders.Config.ENEMY_ROWS;
-import static java.lang.Math.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class Level2 extends SpaceLevel {
 
+    private List<Animation<?>> animations = new ArrayList<>();
+
     @Override
     public void init() {
-        double t = 0;
-
         for (int y = 0; y < ENEMY_ROWS; y++) {
             for (int x = 0; x < ENEMIES_PER_ROW; x++) {
+                double px = random(0, getAppWidth() - 100);
+                double py = random(0, getAppHeight() / 2.0);
 
-                FXGL.getGameTimer().runOnceAfter(() -> {
+                Entity enemy = spawnEnemy(px, py);
 
-                    Entity enemy = spawnEnemy(50, 50);
+                var a = animationBuilder()
+                        .autoReverse(true)
+                        .interpolator(Interpolators.ELASTIC.EASE_IN_OUT())
+                        .repeatInfinitely()
+                        .duration(Duration.seconds(1.0))
+                        .translate(enemy)
+                        .from(new Point2D(px, py))
+                        .to(new Point2D(random(0, getAppWidth() - 100), random(0, getAppHeight() / 2.0)))
+                        .build();
 
-                    enemy.addComponent(new MoveComponent());
-
-                }, Duration.seconds(t));
-
-                t += 0.25;
+                animations.add(a);
+                a.start();
             }
         }
     }
 
-    private static class MoveComponent extends Component {
+    @Override
+    public void onUpdate(double tpf) {
+        animations.forEach(a -> a.onUpdate(tpf));
+    }
 
-        private double t = 0;
-
-        @Override
-        public void onUpdate(double tpf) {
-            entity.setPosition(curveFunction().add(FXGL.getAppWidth() / 2, FXGL.getAppHeight() / 2 - 100));
-
-            t += tpf;
-        }
-
-        private Point2D curveFunction() {
-            double x = cos(t) * cos(t) * cos(t);
-            double y = sin(t) * sin(t) * sin(t);
-
-            return new Point2D(x, -y).multiply(145);
-        }
+    @Override
+    public void destroy() {
+        animations.forEach(Animation::stop);
     }
 }

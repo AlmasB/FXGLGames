@@ -29,6 +29,7 @@ package com.almasb.fxglgames.spaceinvaders;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.app.MenuItem;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
@@ -41,11 +42,13 @@ import com.almasb.fxglgames.spaceinvaders.components.PlayerComponent;
 import com.almasb.fxglgames.spaceinvaders.event.BonusPickupEvent;
 import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
 import com.almasb.fxglgames.spaceinvaders.level.*;
+import com.almasb.fxglgames.spaceinvaders.level.boss.BossLevel2;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.util.Duration;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -67,7 +70,14 @@ public class SpaceInvadersApp extends GameApplication {
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
         settings.setProfilingEnabled(false);
+        settings.setMainMenuEnabled(false);
+        settings.setGameMenuEnabled(true);
         settings.setIntroEnabled(false);
+        settings.setEnabledMenuItems(EnumSet.of(MenuItem.EXTRA));
+        settings.getCredits().addAll(Arrays.asList(
+                "Music by Eric Matyas",
+                "www.soundimage.org"
+        ));
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
@@ -77,6 +87,7 @@ public class SpaceInvadersApp extends GameApplication {
 
         onKey(KeyCode.A, "Move Left", () -> playerComponent.left());
         onKey(KeyCode.D, "Move Right", () -> playerComponent.right());
+        onKeyDown(KeyCode.F, "Red Laser", () -> playerComponent.shootRedLaser());
         onBtn(MouseButton.PRIMARY, "Shoot", () -> playerComponent.shoot());
         onBtn(MouseButton.SECONDARY, "Laser Beam", () -> playerComponent.shootLaser());
 
@@ -104,7 +115,7 @@ public class SpaceInvadersApp extends GameApplication {
     @Override
     protected void onPreInit() {
         getSettings().setGlobalSoundVolume(0.2);
-        getSettings().setGlobalMusicVolume(0.2);
+        getSettings().setGlobalMusicVolume(0.5);
 
         loopBGM("bgm.mp3");
 
@@ -154,14 +165,14 @@ public class SpaceInvadersApp extends GameApplication {
         highScore = data.getHighScore();
 
         levels = Arrays.asList(
-                //new Level16(),
-                //new Level1(),
-                //new Level2(),
+                new Level20(),
+                new Level15(),
+                new Level2(),
                 //new Level3(),
                 new BossLevel2(),
                 new Level4(),
                 new Level5(),
-                new Level6(),
+                new Level16(),
                 //new BossLevel2(),
                 new Level7(),
                 new Level8(),
@@ -290,6 +301,7 @@ public class SpaceInvadersApp extends GameApplication {
     protected void onUpdate(double tpf) {
         if (runningFirstTime) {
             nextLevel();
+            getNotificationService().pushNotification("Music: Eric Matyas www.soundimage.org");
             runningFirstTime = false;
         }
 

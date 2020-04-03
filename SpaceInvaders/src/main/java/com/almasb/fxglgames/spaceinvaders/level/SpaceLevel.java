@@ -61,19 +61,19 @@ public abstract class SpaceLevel {
         onFinished.run();
     }
 
-    void showStoryPane() {
+    protected void showStoryPane() {
         addUINode(rootPane);
     }
 
-    void hideStoryPane() {
+    protected void hideStoryPane() {
         removeUINode(rootPane);
     }
 
-    void updateStoryText(Node node) {
+    protected void updateStoryText(Node node) {
         storyPane.getChildren().setAll(node);
     }
 
-    void updateAlienStoryText(String data) {
+    protected void updateAlienStoryText(String data) {
         List<Text> texts = new ArrayList<>();
         double bounds = 0;
 
@@ -119,7 +119,7 @@ public abstract class SpaceLevel {
         storyPane.getChildren().setAll(texts);
     }
 
-    void addEnemy(Entity entity) {
+    protected void addEnemy(Entity entity) {
         enemies.add(entity);
     }
 
@@ -127,7 +127,7 @@ public abstract class SpaceLevel {
         return enemies.stream().noneMatch(Entity::isActive);
     }
 
-    Entity spawnEnemy(double x, double y) {
+    protected Entity spawnEnemy(double x, double y) {
         Entity enemy = spawn("Enemy", x, y);
 
         addEnemy(enemy);
