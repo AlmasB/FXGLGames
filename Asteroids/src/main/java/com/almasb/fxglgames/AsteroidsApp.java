@@ -1,10 +1,11 @@
 package com.almasb.fxglgames;
 
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.app.FXGLMenu;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
-import com.almasb.fxgl.app.SceneFactory;
+import com.almasb.fxgl.app.scene.FXGLMenu;
+import com.almasb.fxgl.app.scene.SceneFactory;
+import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import javafx.geometry.Point2D;
@@ -28,7 +29,7 @@ public class AsteroidsApp extends GameApplication {
         settings.setHeight(750);
         settings.setTitle("Asteroids");
         settings.setVersion("0.1");
-        settings.setMenuEnabled(true);
+        settings.setMenuEnabled(false);
         settings.setSceneFactory(new SceneFactory() {
             @Override
             public FXGLMenu newMainMenu() {
@@ -75,6 +76,14 @@ public class AsteroidsApp extends GameApplication {
     protected void initPhysics() {
         onCollisionBegin(EntityType.BULLET, EntityType.ASTEROID, (bullet, asteroid) -> {
 
+            var hp = asteroid.getComponent(HealthIntComponent.class);
+
+            if (hp.getValue() > 1) {
+                bullet.removeFromWorld();
+                hp.damage(1);
+                return;
+            }
+
             spawn("scoreText", new SpawnData(asteroid.getX(), asteroid.getY()).put("text", "+100"));
 
             killAsteroid(asteroid);
@@ -118,7 +127,7 @@ public class AsteroidsApp extends GameApplication {
         });
 
         addUINode(text, 20, 50);
-        addVarText(20, 70, "lives");
+        addVarText("lives", 20, 70);
     }
 
     public static void main(String[] args) {

@@ -1,16 +1,15 @@
 package com.almasb.fxglgames;
 
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
-import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
-import com.almasb.fxgl.dsl.components.ProjectileComponent;
-import com.almasb.fxgl.dsl.components.RandomMoveComponent;
+import com.almasb.fxgl.dsl.components.*;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
+import com.almasb.fxgl.entity.components.TimeComponent;
 import com.almasb.fxgl.particle.ParticleComponent;
 import com.almasb.fxgl.particle.ParticleEmitters;
+import com.almasb.fxgl.ui.ProgressBar;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.paint.Color;
@@ -45,10 +44,21 @@ public class GameEntityFactory implements EntityFactory {
 
     @Spawns("asteroid")
     public Entity newAsteroid(SpawnData data) {
+        var hp = new HealthIntComponent(2);
+
+        var hpView = new ProgressBar(false);
+        hpView.setFill(Color.LIGHTGREEN);
+        hpView.setMaxValue(2);
+        hpView.setWidth(85);
+        hpView.setTranslateY(90);
+        hpView.currentValueProperty().bind(hp.valueProperty());
+
         return entityBuilder()
                 .type(EntityType.ASTEROID)
                 .from(data)
                 .viewWithBBox("asteroid.png")
+                .view(hpView)
+                .with(hp)
                 .with(new RandomMoveComponent(new Rectangle2D(0, 0, getAppWidth(), getAppHeight()), 100))
                 .collidable()
                 .build();
@@ -58,14 +68,41 @@ public class GameEntityFactory implements EntityFactory {
     public Entity newBullet(SpawnData data) {
         Point2D dir = data.get("dir");
 
-        return entityBuilder()
+        var effectComponent = new EffectComponent();
+
+        var e = entityBuilder()
                 .type(EntityType.BULLET)
                 .from(data)
                 .viewWithBBox("bullet.png")
                 .with(new ProjectileComponent(dir, 500))
                 .with(new OffscreenCleanComponent())
+                .with(new TimeComponent())
+                .with(effectComponent)
                 .collidable()
                 .build();
+
+        e.setOnActive(() -> {
+            effectComponent.startEffect(new SuperSlowTimeEffect());
+        });
+
+        return e;
+    }
+
+    class SuperSlowTimeEffect extends Effect {
+
+        public SuperSlowTimeEffect() {
+            super(Duration.seconds(0.5));
+        }
+
+        @Override
+        public void onStart(Entity entity) {
+            entity.getComponent(TimeComponent.class).setValue(0.05);
+        }
+
+        @Override
+        public void onEnd(Entity entity) {
+            entity.getComponent(TimeComponent.class).setValue(3.0);
+        }
     }
 
     @Spawns("explosion")
