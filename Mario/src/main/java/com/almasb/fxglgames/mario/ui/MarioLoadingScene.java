@@ -5,6 +5,7 @@ import com.almasb.fxgl.app.scene.LoadingScene;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -15,7 +16,7 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 public class MarioLoadingScene extends LoadingScene {
 
     public MarioLoadingScene() {
-        var bg = texture("background/bg_10.png", getAppWidth(), getAppHeight());
+        var bg = new Rectangle(getAppWidth(), getAppHeight(), Color.AZURE);
 
         var text = getUIFactory().newText("Loading level", Color.BLACK, 46.0);
         centerText(text, getAppWidth() / 2, getAppHeight() / 3  + 25);

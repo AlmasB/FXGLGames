@@ -8,30 +8,23 @@ import com.almasb.fxgl.app.scene.GameView;
 import com.almasb.fxgl.app.scene.LoadingScene;
 import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.app.scene.Viewport;
+import com.almasb.fxgl.core.util.LazyValue;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.level.Level;
-import com.almasb.fxgl.entity.level.tiled.TMXLevelLoader;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.view.KeyView;
-import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxglgames.mario.collisions.PlayerButtonHandler;
-import com.almasb.fxglgames.mario.collisions.PlayerCoinHandler;
-import com.almasb.fxglgames.mario.collisions.PlayerPortalHandler;
-import com.almasb.fxglgames.mario.components.*;
-import com.almasb.fxglgames.mario.ui.HealthIndicator;
+import com.almasb.fxglgames.mario.components.PlayerComponent;
 import com.almasb.fxglgames.mario.ui.LevelEndScene;
 import com.almasb.fxglgames.mario.ui.MarioLoadingScene;
-import javafx.beans.binding.Bindings;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
-import java.io.File;
 import java.util.Map;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -42,10 +35,8 @@ import static com.almasb.fxglgames.mario.MarioType.*;
  */
 public class MarioApp extends GameApplication {
 
-    private static final int MAX_LEVEL = 21;
+    private static final int MAX_LEVEL = 5;
     private static final int STARTING_LEVEL = 0;
-    private static final boolean DEVELOPING_NEW_LEVEL = true;
-    private static final boolean SHOW_BG = false;
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -60,6 +51,7 @@ public class MarioApp extends GameApplication {
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
+    private LazyValue<LevelEndScene> levelEndScene = new LazyValue<>(() -> new LevelEndScene());
     private Entity player;
 
     @Override
@@ -114,23 +106,6 @@ public class MarioApp extends GameApplication {
                         });
             }
         }, KeyCode.E);
-
-        getInput().addAction(new UserAction("Catapult") {
-            @Override
-            protected void onActionBegin() {
-                if (getb("canCatapult")) {
-                    Point2D vector = getInput().getVectorToMouse(player.getPosition());
-
-                    Entity catapult = geto("catapult");
-                    catapult.getComponent(CatapultComponent.class).activate();
-                    player.getComponent(PlayerComponent.class).superJump(vector.normalize().multiply(900));
-                }
-            }
-        }, MouseButton.PRIMARY);
-
-        if (!isRelease()) {
-            DeveloperActions.add(getInput());
-        }
     }
 
     @Override
@@ -138,31 +113,16 @@ public class MarioApp extends GameApplication {
         vars.put("level", STARTING_LEVEL);
         vars.put("levelTime", 0.0);
         vars.put("score", 0);
-        vars.put("canCatapult", false);
     }
-
-    private boolean firstTime = true;
-    private LevelEndScene levelEndScene;
 
     @Override
     protected void onPreInit() {
-        if (isRelease()) {
-            getSettings().setGlobalMusicVolume(0.25);
-            loopBGM("BGM_dash_runner.wav");
-        }
-    }
-
-    private boolean isRelease() {
-        return getSettings().getApplicationMode() == ApplicationMode.RELEASE;
+        getSettings().setGlobalMusicVolume(0.25);
+        loopBGM("BGM_dash_runner.wav");
     }
 
     @Override
     protected void initGame() {
-        if (firstTime) {
-            levelEndScene = new LevelEndScene();
-            firstTime = false;
-        }
-
         getGameWorld().addEntityFactory(new MarioFactory());
 
         player = null;
@@ -172,20 +132,9 @@ public class MarioApp extends GameApplication {
         // before the update tick _actually_ adds the player to game world
         player = getGameWorld().spawn("player", 50, 50);
 
-        var catapultLineIndicator = getGameWorld().spawn("catapultLineIndicator");
-        catapultLineIndicator.getViewComponent().opacityProperty().bind(
-                Bindings.when(getbp("canCatapult")).then(1.0).otherwise(0.0)
-        );
-        catapultLineIndicator.xProperty().bind(player.xProperty().add(16));
-        catapultLineIndicator.yProperty().bind(player.yProperty().add(21));
-
         set("player", player);
 
-        if (SHOW_BG) {
-            for (int i = 10; i >= 0; i--) {
-                spawn("background", new SpawnData(0, 0).put("index", i));
-            }
-        }
+        spawn("background");
 
         Viewport viewport = getGameScene().getViewport();
 
@@ -198,8 +147,6 @@ public class MarioApp extends GameApplication {
     @Override
     protected void initPhysics() {
         getPhysicsWorld().setGravity(0, 760);
-        getPhysicsWorld().addCollisionHandler(new PlayerCoinHandler());
-        getPhysicsWorld().addCollisionHandler(new PlayerPortalHandler());
         getPhysicsWorld().addCollisionHandler(new PlayerButtonHandler());
 
         onCollisionOneTimeOnly(PLAYER, EXIT_SIGN, (player, sign) -> {
@@ -219,7 +166,7 @@ public class MarioApp extends GameApplication {
         });
 
         onCollisionOneTimeOnly(PLAYER, DOOR_BOT, (player, door) -> {
-            levelEndScene.onLevelFinish();
+            levelEndScene.get().onLevelFinish();
 
             // the above runs in its own scene, so fade will wait until
             // the user exits that scene
@@ -232,67 +179,6 @@ public class MarioApp extends GameApplication {
             prompt.getViewComponent().setOpacity(1);
 
             despawnWithDelay(prompt, Duration.seconds(4.5));
-        });
-
-        onCollisionOneTimeOnly(PLAYER, TIMEOUT_BOX, (player, box) -> {
-            box.getComponent(TimeoutBoxComponent.class).startCountdown();
-        });
-
-        onCollisionOneTimeOnly(PLAYER, LOOT_BOX, (player, box) -> {
-            box.getComponent(LootBoxComponent.class).open();
-        });
-
-        onCollisionBegin(PLAYER, ENEMY, (player, enemy) -> {
-            player.getComponent(PlayerComponent.class).onHit(enemy);
-
-            if (enemy.getProperties().exists("isProjectile")) {
-                enemy.removeFromWorld();
-            }
-        });
-
-        onCollisionBegin(PLAYER, PLAYER_GUARD, (player, guard) -> {
-            guard.getComponent(CollidableComponent.class).addIgnoredType(PLAYER);
-
-            guard.setProperty("isActivated", true);
-            guard.addComponent(new PlayerGuardComponent());
-            //guard.addComponent(new CircularMovementComponent(10, 600));
-        });
-
-        onCollisionBegin(PLAYER_GUARD, ENEMY, (guard, enemy) -> {
-            if (guard.getBoolean("isActivated")) {
-                guard.removeFromWorld();
-                enemy.removeFromWorld();
-            }
-        });
-
-        onCollisionBegin(PLAYER, QUESTION, (player, question) -> {
-            var q = question.getString("question");
-            var a = question.getString("answer");
-
-            getDisplay().showInputBox("Question: " + q + "?", answer -> {
-                if (a.equals(answer)) {
-                    question.removeFromWorld();
-                }
-            });
-        });
-
-        onCollisionBegin(PLAYER, JUMP_PAD, (player, pad) -> {
-            player.getComponent(PlayerComponent.class).superJump();
-
-            pad.getComponent(JumpPadComponent.class).activate();
-        });
-
-        getPhysicsWorld().addCollisionHandler(new CollisionHandler(PLAYER, CATAPULT) {
-            @Override
-            protected void onCollisionBegin(Entity player, Entity catapult) {
-                set("canCatapult", true);
-                set("catapult", catapult);
-            }
-
-            @Override
-            protected void onCollisionEnd(Entity player, Entity catapult) {
-                set("canCatapult", false);
-            }
         });
 
         onCollisionBegin(PLAYER, KEY_PROMPT, (player, prompt) -> {
@@ -313,43 +199,19 @@ public class MarioApp extends GameApplication {
 
         doorBot.getComponent(CollidableComponent.class).setValue(true);
 
-        doorTop.getViewComponent().setOpacity(1);
-        doorBot.getViewComponent().setOpacity(1);
+        doorTop.setOpacity(1);
+        doorBot.setOpacity(1);
     }
 
     private void nextLevel() {
         if (geti("level") == MAX_LEVEL) {
-            getDisplay().showMessageBox("You finished the game!");
+            getDialogService().showMessageBox("You finished the demo!");
             return;
         }
 
-        // we play test the same level if dev mode
-        // so only increase level if release mode
-        if (!DEVELOPING_NEW_LEVEL) {
-            inc("level", +1);
-        }
+        inc("level", +1);
 
         setLevel(geti("level"));
-    }
-
-    @Override
-    protected void initUI() {
-        var hp = new HealthIndicator(player.getComponent(HPComponent.class));
-
-        var coin = texture("ui/coin.png", 48 * 0.75, 51 * 0.75);
-
-        var scoreText = getUIFactory().newText("", Color.GOLD, 38.0);
-        scoreText.setStrokeWidth(2.5);
-        scoreText.setStroke(Color.color(0.0, 0.0, 0.0, 0.56));
-        scoreText.textProperty().bind(getip("score").asString());
-
-        addUINode(hp);
-        addUINode(coin, 130, 15);
-        addUINode(scoreText, 170, 48);
-
-        // TODO: add convenience methods to map game world coord to UI coord
-        //var line = new Line();
-        //line.startXProperty().bind(player.xProperty());
     }
 
     @Override
@@ -369,32 +231,11 @@ public class MarioApp extends GameApplication {
         if (player != null) {
             player.getComponent(PhysicsComponent.class).overwritePosition(new Point2D(50, 50));
             player.setZ(Integer.MAX_VALUE);
-
-            player.getComponent(PlayerComponent.class).restoreHP();
         }
 
         set("levelTime", 0.0);
 
-        var levelFile = new File("level0.tmx");
-
-        Level level;
-
-        // this supports hot reloading of levels during development
-        if (!isRelease() && DEVELOPING_NEW_LEVEL && levelFile.exists()) {
-            System.out.println("Loading from development level");
-
-            try {
-                level = new TMXLevelLoader().load(levelFile.toURI().toURL(), getGameWorld());
-                getGameWorld().setLevel(level);
-
-                System.out.println("Success");
-
-            } catch (Exception e) {
-                level = setLevelFromMap("tmx/level" + levelNum  + ".tmx");
-            }
-        } else {
-            level = setLevelFromMap("tmx/level" + levelNum  + ".tmx");
-        }
+        Level level = setLevelFromMap("tmx/level" + levelNum  + ".tmx");
 
         var shortestTime = level.getProperties().getDouble("star1time");
 
