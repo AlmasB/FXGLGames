@@ -1,10 +1,12 @@
 package com.almasb.fxglgames.rts;
 
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.action.ActionComponent;
+import com.almasb.fxglgames.rts.state.StateComponent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -41,10 +43,15 @@ public class RTSFactory implements EntityFactory {
             System.out.println("STONE: " + newValue);
         });
 
-//        var text = getUIFactoryService().newText(e.getProperties().intProperty("wood").asString("Carrying wood: %d"));
-//        text.setFill(Color.BLACK);
-//
-//        e.getViewComponent().addChild(text);
+        var text = FXGL.getUIFactoryService().newText(e.getProperties().intProperty("WOOD").asString("Wood: %d"));
+        text.setFill(Color.BLACK);
+
+        var text2 = FXGL.getUIFactoryService().newText(e.getProperties().intProperty("STONE").asString("Stone: %d"));
+        text2.setTranslateY(-20);
+        text2.setFill(Color.BLACK);
+
+        e.getViewComponent().addChild(text);
+        e.getViewComponent().addChild(text2);
 
         return e;
     }
@@ -55,11 +62,25 @@ public class RTSFactory implements EntityFactory {
         view.setStroke(Color.BLACK);
         view.setStrokeWidth(2.5);
 
-        return entityBuilder()
+        var e = entityBuilder()
                 .from(data)
                 .type(EntityType.STOCKPILE)
                 .viewWithBBox(view)
+                .with(ResourceType.WOOD.toString(), 0)
+                .with(ResourceType.STONE.toString(), 0)
                 .build();
+
+        var text = FXGL.getUIFactoryService().newText(e.getProperties().intProperty("WOOD").asString("Wood: %d"));
+        text.setFill(Color.BLACK);
+
+        var text2 = FXGL.getUIFactoryService().newText(e.getProperties().intProperty("STONE").asString("Stone: %d"));
+        text2.setTranslateY(-20);
+        text2.setFill(Color.BLACK);
+
+        e.getViewComponent().addChild(text);
+        e.getViewComponent().addChild(text2);
+
+        return e;
     }
 
     @Spawns("tree")

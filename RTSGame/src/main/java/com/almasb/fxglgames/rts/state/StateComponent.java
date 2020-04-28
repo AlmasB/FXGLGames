@@ -1,4 +1,4 @@
-package com.almasb.fxglgames.rts;
+package com.almasb.fxglgames.rts.state;
 
 import com.almasb.fxgl.core.fsm.StateMachine;
 import com.almasb.fxgl.entity.component.Component;
@@ -27,6 +27,10 @@ public final class StateComponent extends Component {
             // TODO: update FXGL API to make it easier for java users
             return Unit.INSTANCE;
         });
+    }
+
+    public void changeStateToIdle() {
+        changeState(EntityState.IDLE);
     }
 
     public void changeState(EntityState state) {

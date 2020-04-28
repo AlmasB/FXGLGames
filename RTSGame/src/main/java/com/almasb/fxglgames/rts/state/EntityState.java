@@ -1,4 +1,4 @@
-package com.almasb.fxglgames.rts;
+package com.almasb.fxglgames.rts.state;
 
 import com.almasb.fxgl.core.fsm.State;
 

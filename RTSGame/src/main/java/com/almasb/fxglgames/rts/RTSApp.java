@@ -25,7 +25,9 @@ public class RTSApp extends GameApplication {
             var selectedResources = getGameWorld().getEntitiesInRange(new Rectangle2D(getInput().getMouseXWorld(), getInput().getMouseYWorld(), 100, 100));
 
             if (!selectedResources.isEmpty()) {
-                worker.getComponent(GathererComponent.class).startGathering(selectedResources.get(0));
+                worker.getComponent(GathererComponent.class).sendToGather(selectedResources.get(0));
+            } else {
+                worker.getComponent(GathererComponent.class).startMoving(getInput().getMousePositionWorld());
             }
         });
     }
