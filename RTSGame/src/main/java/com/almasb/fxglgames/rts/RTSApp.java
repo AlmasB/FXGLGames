@@ -2,7 +2,7 @@ package com.almasb.fxglgames.rts;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
-import com.almasb.fxgl.dsl.FXGL;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.input.MouseButton;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -21,7 +21,12 @@ public class RTSApp extends GameApplication {
     @Override
     protected void initInput() {
         onBtnDown(MouseButton.PRIMARY, () -> {
+            var worker = byType(EntityType.WORKER).get(0);
+            var selectedResources = getGameWorld().getEntitiesInRange(new Rectangle2D(getInput().getMouseXWorld(), getInput().getMouseYWorld(), 100, 100));
 
+            if (!selectedResources.isEmpty()) {
+                worker.getComponent(GathererComponent.class).startGathering(selectedResources.get(0));
+            }
         });
     }
 
@@ -29,7 +34,17 @@ public class RTSApp extends GameApplication {
     protected void initGame() {
         getGameWorld().addEntityFactory(new RTSFactory());
 
-        spawn("unit", 300, 300);
+        spawn("tree", 100, 300);
+        spawn("tree", 250, 300);
+        spawn("tree", 400, 300);
+
+        spawn("stone", 100, 500);
+        spawn("stone", 250, 500);
+        spawn("stone", 400, 500);
+
+        spawn("stockpile", 600, 50);
+
+        spawn("worker", 700, 400);
     }
 
     public static void main(String[] args) {
