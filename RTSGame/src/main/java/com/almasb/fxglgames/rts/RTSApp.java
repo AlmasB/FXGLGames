@@ -2,10 +2,11 @@ package com.almasb.fxglgames.rts;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxglgames.rts.EntityType.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -21,14 +22,8 @@ public class RTSApp extends GameApplication {
     @Override
     protected void initInput() {
         onBtnDown(MouseButton.PRIMARY, () -> {
-            var worker = byType(EntityType.WORKER).get(0);
-            var selectedResources = getGameWorld().getEntitiesInRange(new Rectangle2D(getInput().getMouseXWorld(), getInput().getMouseYWorld(), 100, 100));
-
-            if (!selectedResources.isEmpty()) {
-                worker.getComponent(GathererComponent.class).sendToGather(selectedResources.get(0));
-            } else {
-                worker.getComponent(GathererComponent.class).startMoving(getInput().getMousePositionWorld());
-            }
+            var worker = byType(WORKER).get(0);
+            worker.getComponent(GathererComponent.class).sendTo(getInput().getMousePositionWorld());
         });
     }
 
@@ -47,6 +42,14 @@ public class RTSApp extends GameApplication {
         spawn("stockpile", 600, 50);
 
         spawn("worker", 700, 400);
+
+        byType(TREE, STONE).forEach(e -> {
+            // TODO: convenience API for clicks?
+            e.getViewComponent().addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+                var worker = byType(WORKER).get(0);
+                worker.getComponent(GathererComponent.class).sendTo(e);
+            });
+        });
     }
 
     public static void main(String[] args) {

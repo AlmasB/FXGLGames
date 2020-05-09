@@ -26,4 +26,8 @@ public class ResourceComponent extends Component {
     public void gather() {
         quantity--;
     }
+
+    public boolean isEmpty() {
+        return quantity == 0;
+    }
 }

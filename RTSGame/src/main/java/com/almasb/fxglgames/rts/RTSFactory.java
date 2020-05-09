@@ -31,8 +31,8 @@ public class RTSFactory implements EntityFactory {
                 .with(ResourceType.WOOD.toString(), 0)
                 .with(ResourceType.STONE.toString(), 0)
                 .with(new StateComponent())
-                .with(new GathererComponent())
                 .with(new ActionComponent())
+                .with(new GathererComponent())
                 .build();
 
         e.getProperties().intProperty(ResourceType.WOOD.toString()).addListener((observable, oldValue, newValue) -> {

@@ -4,6 +4,7 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.action.ContinuousAction;
 import com.almasb.fxgl.time.LocalTimer;
+import com.almasb.fxglgames.rts.ResourceComponent;
 import javafx.util.Duration;
 
 /**
@@ -12,10 +13,10 @@ import javafx.util.Duration;
 public class GatherAction extends ContinuousAction {
 
     private LocalTimer gatherTimer = FXGL.newLocalTimer();
-    private Entity tree;
+    private Entity resource;
 
-    public GatherAction(Entity tree) {
-        this.tree = tree;
+    public GatherAction(Entity resource) {
+        this.resource = resource;
     }
 
     @Override
@@ -25,12 +26,15 @@ public class GatherAction extends ContinuousAction {
 
     @Override
     protected void perform(double tpf) {
-        if (entity.getInt("wood") == 10) {
+        if (entity.getInt("wood") == 10
+                || resource.getComponent(ResourceComponent.class).isEmpty()) {
+
             setComplete();
             return;
         }
 
         if (gatherTimer.elapsed(Duration.seconds(2.0))) {
+            resource.getComponent(ResourceComponent.class).gather();
             entity.getProperties().increment("wood", +1);
             gatherTimer.capture();
         }

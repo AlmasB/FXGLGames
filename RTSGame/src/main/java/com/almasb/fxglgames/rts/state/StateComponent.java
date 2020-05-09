@@ -2,7 +2,6 @@ package com.almasb.fxglgames.rts.state;
 
 import com.almasb.fxgl.core.fsm.StateMachine;
 import com.almasb.fxgl.entity.component.Component;
-import kotlin.Unit;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -21,12 +20,17 @@ public final class StateComponent extends Component {
 
     @Override
     public void onUpdate(double tpf) {
-        fsm.runOnActiveStates(e -> {
-            e.onUpdate(tpf);
+        var state = fsm.getCurrentState();
 
-            // TODO: update FXGL API to make it easier for java users
-            return Unit.INSTANCE;
-        });
+        state.getRules()
+                .stream()
+                .filter(rule -> rule.getCondition().get())
+                .findFirst()
+                .ifPresent(rule -> {
+                    changeState(rule.getNewState());
+                });
+
+        fsm.getCurrentState().onUpdate(tpf);
     }
 
     public void changeStateToIdle() {

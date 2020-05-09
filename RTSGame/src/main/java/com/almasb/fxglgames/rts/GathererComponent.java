@@ -11,37 +11,59 @@ import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
 /**
+ * An example of a gatherer AI.
+ * Can move to a resource to gather it.
+ * Once the backpack is full, will move to nearest stockpile to deposit resources.
+ * Then, will continue gathering resources.
+ *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 @Required(StateComponent.class)
 public class GathererComponent extends Component {
 
     private StateComponent stateComponent;
-    private LocalTimer gatherTimer = FXGL.newLocalTimer();
 
-    private Entity resource;
-    private Entity stockpile;
-    private Point2D point;
+    /**
+     * Current target of this entity.
+     * Can be null to indicate that there is no target.
+     */
+    private Entity target;
+
+    /**
+     * Position of the current target.
+     * If no target present, then position to where the entity is moving.
+     */
+    private Point2D targetPosition;
+
+    /**
+     * Previous target of this entity.
+     */
+    private Entity prevTarget;
 
     private EntityState GATHERING = new EntityState() {
+        private LocalTimer gatherTimer = FXGL.newLocalTimer();
         private ResourceComponent resourceComponent;
 
         @Override
         public void onEnteredFrom(EntityState entityState) {
+            resourceComponent = target.getComponent(ResourceComponent.class);
             gatherTimer.capture();
-            resourceComponent = resource.getComponent(ResourceComponent.class);
         }
 
         @Override
         public void onUpdate(double tpf) {
-            // TODO: check if resource qty is available, i.e. not empty
-
-            int qtyCarrying = entity.getInt(resourceComponent.getType().toString());
-
-            if (qtyCarrying == 10) {
+            if (isBackpackFull()) {
                 FXGL.getGameWorld()
                         .getClosestEntity(entity, e -> e.isType(EntityType.STOCKPILE))
-                        .ifPresent(s -> sendToStockpile(s));
+                        .ifPresent(s -> sendTo(s));
+                return;
+            }
+
+            if (resourceComponent.isEmpty()) {
+                FXGL.getGameWorld()
+                        // and matches resource type ...
+                        .getClosestEntity(entity, e -> e.hasComponent(ResourceComponent.class) && !e.getComponent(ResourceComponent.class).isEmpty())
+                        .ifPresent(resource -> sendTo(resource));
                 return;
             }
 
@@ -52,31 +74,55 @@ public class GathererComponent extends Component {
                 gatherTimer.capture();
             }
         }
-
-        @Override
-        public void onExitingTo(EntityState entityState) {
-            resource = null;
-        }
     };
 
-    private EntityState MOVING = tpf -> {
+    private EntityState MOVING = new EntityState() {
+        @Override
+        protected void onUpdate(double tpf) {
+            // reached destination, so stop moving
+            if (entity.getPosition().distance(targetPosition) < 5) {
 
-        // reached destination
-        if (entity.getPosition().distance(point) < 5) {
-            if (resource != null) {
-                startGathering(resource);
-            } else if (stockpile != null) {
-                depositResources(stockpile);
-                stateComponent.changeStateToIdle();
-            } else {
-                stateComponent.changeStateToIdle();
+                if (target != null) {
+
+                    if (target.hasComponent(ResourceComponent.class)) {
+                        // target is a resource
+                        stateComponent.changeState(GATHERING);
+
+                    } else if (target.isType(EntityType.STOCKPILE)) {
+                        // target is a stockpile
+                        depositResources(target);
+
+                        if (prevTarget != null) {
+                            sendTo(prevTarget);
+                        } else {
+                            // no target, just be idle
+                            stateComponent.changeStateToIdle();
+                        }
+                    }
+
+                } else {
+                    // no target, just be idle
+                    stateComponent.changeStateToIdle();
+                }
+
+                return;
             }
 
-            return;
+            entity.translateTowards(targetPosition, 5);
         }
-
-        entity.translateTowards(point, 5);
     };
+
+    @Override
+    public void onAdded() {
+        //MOVING.addRule(new StateChangeRule(GATHERING, () -> entity.getPosition().distance(targetPosition) < 5 && target != null && target.hasComponent(ResourceComponent.class)));
+        //MOVING.addRule(new StateChangeRule(DEPOSIT, () -> entity.getPosition().distance(targetPosition) < 5 && target != null && target.isType(EntityType.STOCKPILE)));
+
+        //GATHERING.addRule(new StateChangeRule(MOVING, () -> isBackpackFull()));
+    }
+
+    private boolean isBackpackFull() {
+        return entity.getInt(ResourceType.WOOD.toString()) + entity.getInt(ResourceType.STONE.toString()) == 10;
+    }
 
     private void depositResources(Entity stockpile) {
         for (var resourceType : ResourceType.values()) {
@@ -88,31 +134,15 @@ public class GathererComponent extends Component {
         }
     }
 
-    private void startGathering(Entity resource) {
-        this.resource = resource;
-
-        stateComponent.changeState(GATHERING);
+    public void sendTo(Entity target) {
+        this.prevTarget = this.target;
+        this.target = target;
+        sendTo(target.getPosition());
     }
 
-    public void startMoving(Point2D point) {
-        this.point = point;
+    public void sendTo(Point2D point) {
+        targetPosition = point;
 
         stateComponent.changeState(MOVING);
-    }
-
-    public void sendToGather(Entity resource) {
-        this.point = resource.getPosition();
-
-        stateComponent.changeState(MOVING);
-
-        this.resource = resource;
-    }
-
-    public void sendToStockpile(Entity stockpile) {
-        this.point = stockpile.getPosition();
-
-        stateComponent.changeState(MOVING);
-
-        this.stockpile = stockpile;
     }
 }

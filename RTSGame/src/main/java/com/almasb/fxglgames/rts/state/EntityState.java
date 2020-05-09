@@ -2,45 +2,61 @@ package com.almasb.fxglgames.rts.state;
 
 import com.almasb.fxgl.core.fsm.State;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A state in which an entity can be in (via StateComponent).
- * Subclasses may allow concurrency and substates.
  * 
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public interface EntityState extends State<EntityState> {
+public abstract class EntityState implements State<EntityState> {
 
-    EntityState IDLE = tpf -> { };
+    public static final EntityState IDLE = new EntityState() {
+        @Override
+        protected void onUpdate(double tpf) {
+        }
+    };
+
+    private List<StateChangeRule> rules = new ArrayList<>();
+
+    List<StateChangeRule> getRules() {
+        return rules;
+    }
+
+    public final void addRule(StateChangeRule rule) {
+        rules.add(rule);
+    }
     
     @Override
-    default boolean isAllowConcurrency() {
+    public final boolean isAllowConcurrency() {
         return false;
     }
 
     @Override
-    default boolean isSubState() {
+    public final boolean isSubState() {
         return false;
     }
 
     @Override
-    default void onCreate() {
+    public void onCreate() {
 
     }
 
     @Override
-    default void onDestroy() {
+    public void onDestroy() {
 
     }
 
     @Override
-    default void onEnteredFrom(EntityState entityState) {
+    public void onEnteredFrom(EntityState entityState) {
 
     }
 
     @Override
-    default void onExitingTo(EntityState entityState) {
+    public void onExitingTo(EntityState entityState) {
 
     }
 
-    void onUpdate(double tpf);
+    protected abstract void onUpdate(double tpf);
 }
