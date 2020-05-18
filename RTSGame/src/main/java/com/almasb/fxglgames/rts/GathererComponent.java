@@ -112,14 +112,6 @@ public class GathererComponent extends Component {
         }
     };
 
-    @Override
-    public void onAdded() {
-        //MOVING.addRule(new StateChangeRule(GATHERING, () -> entity.getPosition().distance(targetPosition) < 5 && target != null && target.hasComponent(ResourceComponent.class)));
-        //MOVING.addRule(new StateChangeRule(DEPOSIT, () -> entity.getPosition().distance(targetPosition) < 5 && target != null && target.isType(EntityType.STOCKPILE)));
-
-        //GATHERING.addRule(new StateChangeRule(MOVING, () -> isBackpackFull()));
-    }
-
     private boolean isBackpackFull() {
         return entity.getInt(ResourceType.WOOD.toString()) + entity.getInt(ResourceType.STONE.toString()) == 10;
     }
