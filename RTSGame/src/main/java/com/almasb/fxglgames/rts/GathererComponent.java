@@ -4,9 +4,9 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.component.Required;
+import com.almasb.fxgl.entity.state.EntityState;
+import com.almasb.fxgl.entity.state.StateComponent;
 import com.almasb.fxgl.time.LocalTimer;
-import com.almasb.fxglgames.rts.state.EntityState;
-import com.almasb.fxglgames.rts.state.StateComponent;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
