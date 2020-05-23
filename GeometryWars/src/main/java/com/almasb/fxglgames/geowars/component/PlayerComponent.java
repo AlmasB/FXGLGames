@@ -7,14 +7,14 @@ import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.geowars.WeaponType;
 import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.almasb.fxgl.dsl.FXGL.newLocalTimer;
-import static com.almasb.fxgl.dsl.FXGL.spawn;
+import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.geto;
 
 /**
@@ -22,7 +22,7 @@ import static com.almasb.fxgl.dsl.FXGLForKtKt.geto;
  */
 public class PlayerComponent extends Component {
 
-    private static final Duration WEAPON_DELAY = Duration.seconds(0.17);
+    private static final Duration WEAPON_DELAY = Duration.seconds(0.11);
 
     private Point2D oldPosition;
 
@@ -48,6 +48,22 @@ public class PlayerComponent extends Component {
             entity.rotateToVector(entity.getPosition().subtract(oldPosition));
 
         oldPosition = entity.getPosition();
+
+        // TODO: extract to KeepInBoundsComponent
+        
+        var viewport = new Rectangle2D(0, 0, getAppWidth(), getAppHeight());
+
+        if (getEntity().getX() < viewport.getMinX()) {
+            getEntity().setX(viewport.getMinX());
+        } else if (getEntity().getRightX() > viewport.getMaxX()) {
+            getEntity().setX(viewport.getMaxX() - getEntity().getWidth());
+        }
+
+        if (getEntity().getY() < viewport.getMinY()) {
+            getEntity().setY(viewport.getMinY());
+        } else if (getEntity().getBottomY() > viewport.getMaxY()) {
+            getEntity().setY(viewport.getMaxY() - getEntity().getHeight());
+        }
     }
 
     public void shoot(Point2D shootPoint) {

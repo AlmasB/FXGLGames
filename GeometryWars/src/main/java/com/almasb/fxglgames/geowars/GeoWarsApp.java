@@ -70,7 +70,8 @@ public class GeoWarsApp extends GameApplication {
         settings.setTitle("FXGL Geometry Wars");
         settings.setVersion("1.0");
         settings.setConfigClass(GeoWarsConfig.class);
-        settings.setExperimentalNative(true);
+        settings.setExperimentalNative(false);
+        settings.setManualResizeEnabled(true);
 
         if (!settings.isExperimentalNative()) {
             settings.setFontUI("game_font_7.ttf");
@@ -99,10 +100,7 @@ public class GeoWarsApp extends GameApplication {
         onKey(KeyCode.S, () -> playerComponent.down());
         onKey(KeyCode.D, () -> playerComponent.right());
 
-        // TODO: add the same API as above
-        //onKeyDown(KeyCode.E, "", Runnable { });
-
-        onBtn(MouseButton.PRIMARY, "Shoot", () -> playerComponent.shoot(input.getMousePositionWorld()));
+        onBtn(MouseButton.PRIMARY, () -> playerComponent.shoot(input.getMousePositionWorld()));
     }
 
     @Override
@@ -123,6 +121,11 @@ public class GeoWarsApp extends GameApplication {
         spawn("Background");
         player = spawn("Player");
         playerComponent = player.getComponent(PlayerComponent.class);
+
+        int dist = 200;
+
+        getGameScene().getViewport().setBounds(-dist, -dist, getAppWidth() + dist, getAppHeight() + dist);
+        getGameScene().getViewport().bindToEntity(player, getAppWidth() / 2, getAppHeight() / 2);
 
         getWorldProperties().<Integer>addListener("multiplier", (prev, now) -> {
             WeaponType current = geto("weaponType");
@@ -266,12 +269,15 @@ public class GeoWarsApp extends GameApplication {
         bonusText.setStroke(Color.GOLD);
         bonusText.setEffect(shadow);
 
-        addUINode(bonusText, enemyPosition.getX(), enemyPosition.getY());
+        var e = entityBuilder()
+                .at(enemyPosition)
+                .view(bonusText)
+                .buildAndAttach();
 
         animationBuilder()
-                .onFinished(() -> removeUINode(bonusText))
+                .onFinished(() -> e.removeFromWorld())
                 .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
-                .translate(bonusText)
+                .translate(e)
                 .from(enemyPosition)
                 .to(enemyPosition.subtract(0, 65))
                 .buildAndPlay();
@@ -281,7 +287,7 @@ public class GeoWarsApp extends GameApplication {
                 .autoReverse(true)
                 .repeat(2)
                 .interpolator(Interpolators.BOUNCE.EASE_IN())
-                .scale(bonusText)
+                .scale(e)
                 .from(new Point2D(1, 1))
                 .to(new Point2D(1.2, 0.85))
                 .buildAndPlay();

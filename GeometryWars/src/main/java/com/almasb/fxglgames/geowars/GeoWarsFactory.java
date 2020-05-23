@@ -73,7 +73,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .at(getAppWidth() / 2, getAppHeight() / 2)
                 .viewWithBBox("Player.png")
                 .collidable()
-                .with(new KeepOnScreenComponent().bothAxes())
+                //.with(new KeepOnScreenComponent().bothAxes())
                 .with(new PlayerComponent(config.getPlayerSpeed()))
                 .build();
 
@@ -90,12 +90,11 @@ public class GeoWarsFactory implements EntityFactory {
             play("shoot" + (int) (Math.random() * 8 + 1) + ".wav");
         }
 
-        return entityBuilder()
+        return entityBuilder(data)
                 .type(BULLET)
-                .from(data)
                 .viewWithBBox("Bullet.png")
                 .with(new CollidableComponent(true))
-                .with(new ProjectileComponent(data.get("direction"), 800))
+                .with(new ProjectileComponent(data.get("direction"), 1200))
                 .with(new BulletComponent())
                 .with(new OffscreenCleanComponent())
                 .build();
