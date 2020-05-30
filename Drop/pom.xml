@@ -19,7 +19,7 @@
         <fxgl.version>11.9</fxgl.version>
         <jfx.maven.plugin.version>0.0.4</jfx.maven.plugin.version>
         <client.plugin.version>0.1.17</client.plugin.version>
-        <attach.version>4.0.2</attach.version>
+        <attach.version>4.0.6</attach.version>
         <mainClassName>com.almasb.fxglgames.drop.DropApp</mainClassName>
     </properties>
 
@@ -135,6 +135,7 @@
                         <list>com.almasb.fxgl.app.services.AssetLoaderService</list>
                         <list>com.almasb.fxgl.cutscene.CutsceneService</list>
                         <list>com.almasb.fxgl.dev.DevService</list>
+                        <list>com.almasb.fxgl.dev.profiling.ProfilerService</list>
                         <list>com.almasb.fxgl.event.EventBusService</list>
                         <list>com.almasb.fxgl.io.FileSystemService</list>
                         <list>com.almasb.fxgl.localization.LocalizationService</list>
