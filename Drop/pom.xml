@@ -121,6 +121,7 @@
                         <list>com.almasb.fxgl.app.services.UpdaterService</list>
                         <list>com.almasb.fxgl.app.services.AssetLoaderService</list>
                         <list>com.almasb.fxgl.cutscene.CutsceneService</list>
+                        <list>com.almasb.fxgl.dev.DevService</list>
                         <list>com.almasb.fxgl.event.EventBusService</list>
                         <list>com.almasb.fxgl.io.FileSystemService</list>
                         <list>com.almasb.fxgl.localization.LocalizationService</list>
