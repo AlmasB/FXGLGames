@@ -49,6 +49,7 @@ public class DropApp extends GameApplication {
         settings.setWidth(480);
         settings.setHeight(800);
         settings.setExperimentalNative(true);
+        settings.setProfilingEnabled(true);
         settings.setApplicationMode(ApplicationMode.DEBUG);
     }
 

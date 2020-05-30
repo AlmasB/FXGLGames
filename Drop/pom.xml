@@ -19,6 +19,7 @@
         <fxgl.version>11.9</fxgl.version>
         <jfx.maven.plugin.version>0.0.4</jfx.maven.plugin.version>
         <client.plugin.version>0.1.17</client.plugin.version>
+        <attach.version>4.0.2</attach.version>
         <mainClassName>com.almasb.fxglgames.drop.DropApp</mainClassName>
     </properties>
 
@@ -34,6 +35,12 @@
             <id>oss.sonatype.org-snapshot</id>
             <url>http://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
+        
+        <!-- for attach -->
+        <repository>
+            <id>nexus-gluon</id>
+            <url>https://nexus.gluonhq.com/nexus/content/repositories/releases/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -41,6 +48,12 @@
             <groupId>com.github.almasb</groupId>
             <artifactId>fxgl</artifactId>
             <version>${fxgl.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.gluonhq.attach</groupId>
+            <artifactId>storage</artifactId>
+            <version>${attach.version}</version>
         </dependency>
     </dependencies>
 
