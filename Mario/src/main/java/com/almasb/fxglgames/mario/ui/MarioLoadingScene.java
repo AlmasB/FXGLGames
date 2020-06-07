@@ -18,22 +18,22 @@ public class MarioLoadingScene extends LoadingScene {
     public MarioLoadingScene() {
         var bg = new Rectangle(getAppWidth(), getAppHeight(), Color.AZURE);
 
-        var text = getUIFactory().newText("Loading level", Color.BLACK, 46.0);
+        var text = getUIFactoryService().newText("Loading level", Color.BLACK, 46.0);
         centerText(text, getAppWidth() / 2, getAppHeight() / 3  + 25);
 
         var hbox = new HBox(5);
 
         for (int i = 0; i < 3; i++) {
-            var textDot = getUIFactory().newText(".", Color.BLACK, 46.0);
+            var textDot = getUIFactoryService().newText(".", Color.BLACK, 46.0);
 
             hbox.getChildren().add(textDot);
 
-            animationBuilder()
+            animationBuilder(this)
                     .autoReverse(true)
                     .delay(Duration.seconds(i * 0.5))
                     .repeatInfinitely()
                     .fadeIn(textDot)
-                    .buildAndPlay(this);
+                    .buildAndPlay();
         }
 
         hbox.setTranslateX(getAppWidth() / 2 - 20);
@@ -43,7 +43,7 @@ public class MarioLoadingScene extends LoadingScene {
         playerTexture.setTranslateX(getAppWidth() / 2 - 32/2);
         playerTexture.setTranslateY(getAppHeight() / 2 - 42/2);
 
-        animationBuilder()
+        animationBuilder(this)
                 .duration(Duration.seconds(1.25))
                 .repeatInfinitely()
                 .autoReverse(true)
@@ -51,7 +51,7 @@ public class MarioLoadingScene extends LoadingScene {
                 .rotate(playerTexture)
                 .from(0)
                 .to(360)
-                .buildAndPlay(this);
+                .buildAndPlay();
 
         getContentRoot().getChildren().setAll(bg, text, hbox, playerTexture);
     }

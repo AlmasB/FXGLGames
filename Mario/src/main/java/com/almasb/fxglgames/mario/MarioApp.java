@@ -130,17 +130,15 @@ public class MarioApp extends GameApplication {
 
         // player must be spawned after call to nextLevel, otherwise player gets removed
         // before the update tick _actually_ adds the player to game world
-        player = getGameWorld().spawn("player", 50, 50);
+        player = spawn("player", 50, 50);
 
         set("player", player);
 
         spawn("background");
 
         Viewport viewport = getGameScene().getViewport();
-
         viewport.setBounds(-1500, 0, 250 * 70, getAppHeight());
         viewport.bindToEntity(player, getAppWidth() / 2, getAppHeight() / 2);
-
         viewport.setLazy(true);
     }
 
@@ -176,7 +174,7 @@ public class MarioApp extends GameApplication {
         });
 
         onCollisionOneTimeOnly(PLAYER, MESSAGE_PROMPT, (player, prompt) -> {
-            prompt.getViewComponent().setOpacity(1);
+            prompt.setOpacity(1);
 
             despawnWithDelay(prompt, Duration.seconds(4.5));
         });
@@ -205,7 +203,7 @@ public class MarioApp extends GameApplication {
 
     private void nextLevel() {
         if (geti("level") == MAX_LEVEL) {
-            getDialogService().showMessageBox("You finished the demo!");
+            showMessage("You finished the demo!");
             return;
         }
 

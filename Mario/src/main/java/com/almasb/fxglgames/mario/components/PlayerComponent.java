@@ -49,7 +49,7 @@ public class PlayerComponent extends Component {
 
     @Override
     public void onUpdate(double tpf) {
-        if (isMoving()) {
+        if (physics.isMovingX()) {
             if (texture.getAnimationChannel() != animWalk) {
                 texture.loopAnimationChannel(animWalk);
             }
@@ -58,10 +58,6 @@ public class PlayerComponent extends Component {
                 texture.loopAnimationChannel(animIdle);
             }
         }
-    }
-
-    private boolean isMoving() {
-        return physics.isMovingX();
     }
 
     public void left() {

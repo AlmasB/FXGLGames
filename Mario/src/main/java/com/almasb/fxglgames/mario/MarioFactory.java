@@ -40,9 +40,8 @@ public class MarioFactory implements EntityFactory {
 
     @Spawns("platform")
     public Entity newPlatform(SpawnData data) {
-        return entityBuilder()
+        return entityBuilder(data)
                 .type(PLATFORM)
-                .from(data)
                 .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
                 .with(new PhysicsComponent())
                 .build();
@@ -50,9 +49,8 @@ public class MarioFactory implements EntityFactory {
 
     @Spawns("exitTrigger")
     public Entity newExitTrigger(SpawnData data) {
-        return entityBuilder()
+        return entityBuilder(data)
                 .type(EXIT_TRIGGER)
-                .from(data)
                 .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
                 .with(new CollidableComponent(true))
                 .build();
@@ -60,18 +58,16 @@ public class MarioFactory implements EntityFactory {
 
     @Spawns("doorTop")
     public Entity newDoorTop(SpawnData data) {
-        return entityBuilder()
+        return entityBuilder(data)
                 .type(DOOR_TOP)
-                .from(data)
                 .opacity(0)
                 .build();
     }
 
     @Spawns("doorBot")
     public Entity newDoorBot(SpawnData data) {
-        return entityBuilder()
+        return entityBuilder(data)
                 .type(DOOR_BOT)
-                .from(data)
                 .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
                 .opacity(0)
                 .with(new CollidableComponent(false))
@@ -87,9 +83,8 @@ public class MarioFactory implements EntityFactory {
         // this avoids player sticking to walls
         physics.setFixtureDef(new FixtureDef().friction(0.0f));
 
-        return entityBuilder()
+        return entityBuilder(data)
                 .type(PLAYER)
-                .from(data)
                 .bbox(new HitBox(new Point2D(5,5), BoundingShape.circle(12)))
                 .bbox(new HitBox(new Point2D(10,25), BoundingShape.box(10, 17)))
                 .with(physics)
@@ -101,9 +96,8 @@ public class MarioFactory implements EntityFactory {
 
     @Spawns("exitSign")
     public Entity newExit(SpawnData data) {
-        return entityBuilder()
+        return entityBuilder(data)
                 .type(EXIT_SIGN)
-                .from(data)
                 .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
                 .with(new CollidableComponent(true))
                 .build();
@@ -111,9 +105,8 @@ public class MarioFactory implements EntityFactory {
 
     @Spawns("keyPrompt")
     public Entity newPrompt(SpawnData data) {
-        return entityBuilder()
+        return entityBuilder(data)
                 .type(KEY_PROMPT)
-                .from(data)
                 .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
                 .with(new CollidableComponent(true))
                 .build();
@@ -129,8 +122,7 @@ public class MarioFactory implements EntityFactory {
         lift.setGoingUp(true);
         lift.yAxisDistanceDuration(6, Duration.seconds(0.76));
 
-        return entityBuilder()
-                .from(data)
+        return entityBuilder(data)
                 .view(new KeyView(keyCode, Color.YELLOW, 24))
                 .with(lift)
                 .zIndex(100)
@@ -142,9 +134,8 @@ public class MarioFactory implements EntityFactory {
         var keyEntity = getGameWorld().create("keyCode", new SpawnData(data.getX(), data.getY() - 50).put("key", "E"));
         keyEntity.getViewComponent().setOpacity(0);
 
-        return entityBuilder()
+        return entityBuilder(data)
                 .type(BUTTON)
-                .from(data)
                 .viewWithBBox(texture("button.png", 20, 18))
                 .with(new CollidableComponent(true))
                 .with("keyEntity", keyEntity)
@@ -156,9 +147,8 @@ public class MarioFactory implements EntityFactory {
         var text = getUIFactoryService().newText(data.get("message"), Color.BLACK, FontType.GAME, 20.0);
         text.setStrokeWidth(2);
 
-        return entityBuilder()
+        return entityBuilder(data)
                 .type(MESSAGE_PROMPT)
-                .from(data)
                 .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
                 .view(text)
                 .with(new CollidableComponent(true))

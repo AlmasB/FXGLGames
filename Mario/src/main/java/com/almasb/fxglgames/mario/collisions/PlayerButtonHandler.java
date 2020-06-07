@@ -24,14 +24,14 @@ public class PlayerButtonHandler extends CollisionHandler {
             getGameWorld().addEntity(keyEntity);
         }
 
-        keyEntity.getViewComponent().setOpacity(1);
+        keyEntity.setOpacity(1);
     }
 
     @Override
     protected void onCollisionEnd(Entity player, Entity btn) {
         Entity keyEntity = btn.getObject("keyEntity");
         if (!keyEntity.getBoolean("activated")) {
-            keyEntity.getViewComponent().setOpacity(0);
+            keyEntity.setOpacity(0);
         }
     }
 }

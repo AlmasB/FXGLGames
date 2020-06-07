@@ -31,7 +31,7 @@ public class LevelEndScene extends SubScene {
     private static final int WIDTH = 400;
     private static final int HEIGHT = 250;
 
-    private Text textUserTime = getUIFactory().newText("", Color.WHITE, 24.0);
+    private Text textUserTime = getUIFactoryService().newText("", Color.WHITE, 24.0);
     private HBox gradeBox = new HBox();
 
     private FontFactory levelFont = getAssetLoader().loadFont("level_font.ttf");
@@ -45,16 +45,16 @@ public class LevelEndScene extends SubScene {
 
         VBox.setVgrow(gradeBox, Priority.ALWAYS);
 
-        var textContinue = getUIFactory().newText("Tap to continue", Color.WHITE, 11.0);
+        var textContinue = getUIFactoryService().newText("Tap to continue", Color.WHITE, 11.0);
         textContinue.visibleProperty().bind(isAnimationDone);
 
-        animationBuilder()
+        animationBuilder(this)
                 .repeatInfinitely()
                 .autoReverse(true)
                 .scale(textContinue)
                 .from(new Point2D(1, 1))
                 .to(new Point2D(1.25, 1.25))
-                .buildAndPlay(this);
+                .buildAndPlay();
 
         var vbox = new VBox(15, textUserTime, gradeBox, textContinue);
         vbox.setAlignment(Pos.CENTER);
@@ -108,7 +108,7 @@ public class LevelEndScene extends SubScene {
         );
 
         for (int i = 0; i < gradeBox.getChildren().size(); i++) {
-            var builder = animationBuilder().delay(Duration.seconds(i * 0.75))
+            var builder = animationBuilder(this).delay(Duration.seconds(i * 0.75))
                     .duration(Duration.seconds(0.75))
                     .interpolator(Interpolators.ELASTIC.EASE_OUT());
 
@@ -120,7 +120,7 @@ public class LevelEndScene extends SubScene {
             builder.translate(gradeBox.getChildren().get(i))
                     .from(new Point2D(0, -500))
                     .to(new Point2D(0, 0))
-                    .buildAndPlay(this);
+                    .buildAndPlay();
         }
 
         getSceneService().pushSubScene(this);
@@ -140,7 +140,7 @@ public class LevelEndScene extends SubScene {
 
             getChildren().add(userTime.lessThanOrEqualTo(gradeTime) ? STAR_FULL.copy() : STAR_EMPTY.copy());
 
-            getChildren().add(getUIFactory().newText(String.format("<%.2f", gradeTime.toSeconds()), Color.WHITE, 16.0));
+            getChildren().add(getUIFactoryService().newText(String.format("<%.2f", gradeTime.toSeconds()), Color.WHITE, 16.0));
         }
     }
 
