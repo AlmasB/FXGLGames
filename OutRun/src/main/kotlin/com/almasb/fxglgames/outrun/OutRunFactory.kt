@@ -26,11 +26,14 @@
 
 package com.almasb.fxglgames.outrun
 
-import com.almasb.fxgl.dsl.FXGL
 import com.almasb.fxgl.dsl.FXGL.Companion.texture
 import com.almasb.fxgl.dsl.components.EffectComponent
-import com.almasb.fxgl.entity.*
-import com.almasb.fxgl.entity.components.CollidableComponent
+import com.almasb.fxgl.dsl.entityBuilder
+import com.almasb.fxgl.entity.Entity
+import com.almasb.fxgl.entity.EntityFactory
+import com.almasb.fxgl.entity.SpawnData
+import com.almasb.fxgl.entity.Spawns
+import com.almasb.fxglgames.outrun.EntityType.*
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
 import java.util.*
@@ -44,9 +47,8 @@ class OutRunFactory : EntityFactory {
 
     @Spawns("background")
     fun newBackground(data: SpawnData): Entity {
-        return FXGL.entityBuilder()
-                .type(EntityType.BACKGROUND)
-                .from(data)
+        return entityBuilder(data)
+                .type(BACKGROUND)
                 .view(Rectangle(600.0, 800.0, Color.color(0.0, 0.5, 0.0)))
                 .view(Rectangle(440.0, 800.0, Color.color(0.25, 0.25, 0.25)).also { it.translateX = 80.0 })
                 .zIndex(-5)
@@ -55,65 +57,56 @@ class OutRunFactory : EntityFactory {
 
     @Spawns("player")
     fun newPlayer(data: SpawnData): Entity {
-        val playerTexture = texture("player.png")
-
-        return FXGL.entityBuilder()
-                .type(EntityType.PLAYER)
-                .from(data)
-                .viewWithBBox(playerTexture)
-                .with(CollidableComponent(true))
+        return entityBuilder(data)
+                .type(PLAYER)
+                .viewWithBBox("player.png")
+                .collidable()
                 .with(PlayerComponent(), EffectComponent())
                 .build()
     }
 
     @Spawns("enemy")
     fun newEnemy(data: SpawnData): Entity {
-        val playerTexture = texture("player.png").multiplyColor(Color.rgb(11, 33, 11))
-
-        return FXGL.entityBuilder()
-                .type(EntityType.ENEMY)
-                .from(data)
-                .viewWithBBox(playerTexture)
-                .with(CollidableComponent(true))
+        return entityBuilder(data)
+                .type(ENEMY)
+                .viewWithBBox(texture("player.png").multiplyColor(Color.rgb(11, 33, 11)))
+                .collidable()
                 .with(EnemyComponent())
                 .build()
     }
 
     @Spawns("b")
     fun newPowerup(data: SpawnData): Entity {
-        return FXGL.entityBuilder()
-                .type(EntityType.POWERUP)
-                .from(data)
+        return entityBuilder(data)
+                .type(POWERUP)
                 .viewWithBBox("powerup_boost.png")
-                .with(CollidableComponent(true))
+                .collidable()
                 .build()
     }
 
     @Spawns("1")
     fun newObstacle(data: SpawnData): Entity {
         val textures = arrayOf(
-                "cone_up.png".to("cone_down.png"),
-                "barrel_blue_up.png".to("barrel_blue_down.png")
-                )
+                "cone_up.png" to "cone_down.png",
+                "barrel_blue_up.png" to "barrel_blue_down.png"
+        )
 
         val index = Random().nextInt(textures.size)
 
-        return FXGL.entityBuilder()
-                .type(EntityType.OBSTACLE)
-                .from(data)
+        return entityBuilder(data)
+                .type(OBSTACLE)
                 .viewWithBBox(textures[index].first)
-                .with(CollidableComponent(true))
+                .collidable()
                 .with(ObstacleComponent(textures[index].first, textures[index].second))
                 .build()
     }
 
     @Spawns("F")
     fun newFinishLine(data: SpawnData): Entity {
-        return FXGL.entityBuilder()
-                .type(EntityType.FINISH)
-                .from(data)
+        return entityBuilder(data)
+                .type(FINISH)
                 .viewWithBBox(Rectangle(600.0, 40.0))
-                .with(CollidableComponent(true))
+                .collidable()
                 .build()
     }
 }

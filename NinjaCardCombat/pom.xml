@@ -20,7 +20,7 @@
         <kotlin.version>1.3.21</kotlin.version>
         <jackson.version>2.10.1</jackson.version>
 
-        <fxgl.version>dev-SNAPSHOT</fxgl.version>
+        <fxgl.version>11.9</fxgl.version>
     </properties>
 
     <dependencies>

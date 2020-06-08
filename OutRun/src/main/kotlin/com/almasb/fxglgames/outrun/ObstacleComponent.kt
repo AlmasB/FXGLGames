@@ -26,6 +26,7 @@
 
 package com.almasb.fxglgames.outrun
 
+import com.almasb.fxgl.dsl.texture
 import com.almasb.fxgl.entity.component.Component
 import com.almasb.fxgl.entity.components.CollidableComponent
 
@@ -38,9 +39,10 @@ class ObstacleComponent(
         private val textureUp: String,
         private val textureDown: String) : Component() {
 
-
     fun hit() {
         entity.removeComponent(CollidableComponent::class.java)
-        //entity.viewComponent.setTexture(textureDown)
+
+        entity.viewComponent.clearChildren()
+        entity.viewComponent.addChild(texture(textureDown))
     }
 }
