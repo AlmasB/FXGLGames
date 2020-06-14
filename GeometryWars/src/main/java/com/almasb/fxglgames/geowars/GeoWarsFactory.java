@@ -2,7 +2,10 @@ package com.almasb.fxglgames.geowars;
 
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
-import com.almasb.fxgl.dsl.components.*;
+import com.almasb.fxgl.dsl.components.AutoRotationComponent;
+import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
+import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
+import com.almasb.fxgl.dsl.components.ProjectileComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
@@ -13,11 +16,10 @@ import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxglgames.geowars.component.*;
 import com.almasb.fxglgames.geowars.component.enemy.BouncerComponent;
-import com.almasb.fxglgames.geowars.component.enemy.RunnerComponent;
+import com.almasb.fxglgames.geowars.component.enemy.NewRunnerComponent;
 import com.almasb.fxglgames.geowars.component.enemy.SeekerComponent;
 import com.almasb.fxglgames.geowars.component.enemy.WandererComponent;
 import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
@@ -144,11 +146,13 @@ public class GeoWarsFactory implements EntityFactory {
         return entityBuilder()
                 .type(RUNNER)
                 .at(getRandomSpawnPoint())
-                .viewWithBBox("Runner.png")
+                .viewWithBBox(texture("Runner.png", 258 * 0.25, 220 * 0.25))
                 .with(new HealthComponent(config.getEnemyHealth()))
                 .with(new CollidableComponent(true))
-                .with(new RunnerComponent(config.getRunnerMoveSpeed()),
-                        new RandomMoveComponent(new Rectangle2D(0, 0, getAppWidth(), getAppHeight()), config.getRunnerMoveSpeed(), FXGLMath.random(250, 500)))
+                .with(new NewRunnerComponent(config.getRunnerMoveSpeed()))
+                .with(new AutoRotationComponent().withSmoothing())
+                //.with(new RunnerComponent(config.getRunnerMoveSpeed()))
+                //.with(new RandomMoveComponent(new Rectangle2D(0, 0, getAppWidth(), getAppHeight()), config.getRunnerMoveSpeed(), FXGLMath.random(250, 500)))
                 .build();
     }
 

@@ -26,26 +26,28 @@
 package com.almasb.fxglgames.geowars;
 
 import com.almasb.fxgl.animation.Interpolators;
+import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxglgames.geowars.collision.BulletPortalHandler;
 import com.almasb.fxglgames.geowars.collision.PlayerCrystalHandler;
 import com.almasb.fxglgames.geowars.component.HealthComponent;
 import com.almasb.fxglgames.geowars.component.PlayerComponent;
+import javafx.event.Event;
+import javafx.event.EventType;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getInput;
@@ -65,13 +67,18 @@ public class GeoWarsApp extends GameApplication {
 
     @Override
     protected void initSettings(GameSettings settings) {
+        var isRelease = false;
+
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("FXGL Geometry Wars");
-        settings.setVersion("1.0");
+        settings.setVersion("1.1.0");
+        settings.setIntroEnabled(isRelease);
+        settings.setMainMenuEnabled(isRelease);
         settings.setConfigClass(GeoWarsConfig.class);
         settings.setExperimentalNative(false);
         settings.setManualResizeEnabled(true);
+        settings.setApplicationMode(isRelease ? ApplicationMode.RELEASE : ApplicationMode.DEVELOPER);
 
         if (!settings.isExperimentalNative()) {
             settings.setFontUI("game_font_7.ttf");
@@ -93,14 +100,12 @@ public class GeoWarsApp extends GameApplication {
 
     @Override
     protected void initInput() {
-        Input input = getInput();
-
         onKey(KeyCode.W, () -> playerComponent.up());
         onKey(KeyCode.A, () -> playerComponent.left());
         onKey(KeyCode.S, () -> playerComponent.down());
         onKey(KeyCode.D, () -> playerComponent.right());
 
-        onBtn(MouseButton.PRIMARY, () -> playerComponent.shoot(input.getMousePositionWorld()));
+        onBtn(MouseButton.PRIMARY, () -> playerComponent.shoot(getInput().getMousePositionWorld()));
     }
 
     @Override
@@ -108,7 +113,7 @@ public class GeoWarsApp extends GameApplication {
         vars.put("score", 0);
         vars.put("multiplier", 1);
         vars.put("kills", 0);
-        vars.put("time", 120);
+        vars.put("lives", 3);
         vars.put("weaponType", WeaponType.SINGLE);
     }
 
@@ -136,17 +141,44 @@ public class GeoWarsApp extends GameApplication {
             }
         });
 
-        getWorldProperties().<Integer>addListener("time", (prev, now) -> {
+        getWorldProperties().<Integer>addListener("lives", (prev, now) -> {
             if (now == 0)
                 getDialogService().showMessageBox("Demo Over. Your score: " + geti("score"), getGameController()::exit);
         });
 
-        getGameTimer().runAtInterval(() -> spawn("Wanderer"), Duration.seconds(1.5));
-        getGameTimer().runAtInterval(() -> spawn("Seeker"), Duration.seconds(3));
-//        getGameTimer().runAtInterval(() -> spawn("Runner"), Duration.seconds(5));
-        getGameTimer().runAtInterval(() -> spawn("Bouncer"), Duration.seconds(5));
-//        getGameTimer().runAtInterval(() -> spawn("Portal", getRandomPoint()), Duration.seconds(5));
-        getGameTimer().runAtInterval(() -> inc("time", -1), Duration.seconds(1));
+        eventBuilder()
+                .when((Supplier<Boolean>) () -> geti("score") >= 10000)
+                .thenFire((Supplier<Event>) () -> {
+                    run(() -> spawn("Bouncer"), Duration.seconds(5));
+                    return new Event(EventType.ROOT);
+                })
+                .buildAndStart();
+
+        eventBuilder()
+                .when((Supplier<Boolean>) () -> geti("score") >= 50000)
+                .thenFire((Supplier<Event>) () -> {
+                    run(() -> spawn("Seeker"), Duration.seconds(2));
+                    return new Event(EventType.ROOT);
+                })
+                .buildAndStart();
+
+        eventBuilder()
+                .when((Supplier<Boolean>) () -> geti("score") >= 70000)
+                .thenFire((Supplier<Event>) () -> {
+                    run(() -> spawn("Runner"), Duration.seconds(3));
+                    return new Event(EventType.ROOT);
+                })
+                .buildAndStart();
+
+        eventBuilder()
+                .when((Supplier<Boolean>) () -> geti("score") >= 500000)
+                .thenFire((Supplier<Event>) () -> {
+                    showMessage("Demo over! Your score: " + geti("score"), getGameController()::exit);
+                    return new Event(EventType.ROOT);
+                })
+                .buildAndStart();
+
+        run(() -> spawn("Wanderer"), Duration.seconds(1.5));
     }
 
     @Override
@@ -206,25 +238,14 @@ public class GeoWarsApp extends GameApplication {
         multText.setTranslateY(90);
         multText.textProperty().bind(getip("multiplier").asString("x %d"));
 
-        Text timerText = getUIFactoryService().newText("", Color.WHITE, 28);
-        timerText.layoutBoundsProperty().addListener((o, old, bounds) -> {
-            timerText.setTranslateX(getAppWidth() / 2 - bounds.getWidth() / 2);
-        });
+        var livesText = getUIFactoryService().newText("", Color.WHITE, 24.0);
+        livesText.setTranslateX(60);
+        livesText.setTranslateY(110);
+        livesText.textProperty().bind(getip("lives").asString("Lives: %d"));
 
-        timerText.setTranslateX(getAppWidth() / 2);
-        timerText.setTranslateY(60);
-        timerText.textProperty().bind(getip("time").asString());
-
-        Circle timerCircle = new Circle(40, 40, 40, null);
-        timerCircle.setStrokeWidth(2);
-        timerCircle.setStroke(Color.AQUA);
-        timerCircle.setTranslateX(getAppWidth() / 2 - 40);
-        timerCircle.setTranslateY(60 - 40 - 5);
-
-        getGameScene().addUINodes(multText, scoreText, timerText, timerCircle);
+        getGameScene().addUINodes(multText, scoreText, livesText);
 
         Text beware = getUIFactoryService().newText("Beware! Seekers get smarter every spawn!", Color.AQUA, 38);
-        beware.setOpacity(0);
 
         addUINode(beware);
 
@@ -235,15 +256,6 @@ public class GeoWarsApp extends GameApplication {
                 .autoReverse(true)
                 .repeat(2)
                 .fadeIn(beware)
-                .buildAndPlay();
-
-        animationBuilder()
-                .duration(Duration.seconds(0.35))
-                .autoReverse(true)
-                .repeatInfinitely()
-                .scale(timerCircle)
-                .from(new Point2D(1, 1))
-                .to(new Point2D(1.1, 1.1))
                 .buildAndPlay();
     }
 
@@ -294,6 +306,7 @@ public class GeoWarsApp extends GameApplication {
     }
 
     private void deductScoreDeath() {
+        inc("lives", -1);
         inc("score", -1000);
         set("kills", 0);
         set("multiplier", 1);

@@ -28,10 +28,15 @@ package com.almasb.fxglgames.geowars.component.enemy;
 
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.dsl.components.RandomMoveComponent;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.EntityGroup;
 import com.almasb.fxgl.entity.component.Component;
 import javafx.geometry.Point2D;
+import kotlin.Unit;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxglgames.geowars.GeoWarsType.BULLET;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -52,20 +57,19 @@ public class RunnerComponent extends Component {
 
     private Entity runner;
 
-    //private EntityGroup<Entity> bullets;
+    private EntityGroup bullets;
 
     public RunnerComponent(int moveSpeed) {
-        screenWidth = FXGL.getAppWidth();
-        screenHeight = FXGL.getAppHeight();
+        screenWidth = getAppWidth();
+        screenHeight = getAppHeight();
         this.moveSpeed = moveSpeed;
     }
 
     @Override
     public void onAdded() {
         runner = entity;
-        //runner.getView().setEffect(new Bloom(0.5));
 
-        //bullets = FXGL.getGameWorld().getGroup(GeoWarsType.BULLET);
+        bullets = getGameWorld().getGroup(BULLET);
     }
 
     @Override
@@ -78,38 +82,41 @@ public class RunnerComponent extends Component {
     private void fleeBullets(double tpf) {
 
         // from nature of code
-        float desiredDistance = 50*2;
+        float desiredDistance = 50*3;
 
         Vec2 sum = new Vec2();
         count = 0;
 
         // check if it's too close
-//        bullets.forEach(bullet -> {
-//
-//            double d = bullet.distance(runner);
-//
-//            // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)
-//            if ((d > 0) && (d < desiredDistance)) {
-//                // Calculate vector pointing away from bullet
-//                Point2D diff = runner.getCenter().subtract(bullet.getCenter()).normalize().multiply(1 / d);
-//
-//                sum.addLocal(diff.getX(), diff.getY());
-//
-//                count++;
-//            }
-//        });
-//
-//        // we have a bullet close
-//        if (count > 0) {
-//            runner.getComponent(RandomMoveControl.class).pause();
-//
-//            // Our desired vector is moving away
-//            sum.normalizeLocal().mulLocal(moveSpeed * tpf);
-//
-//            runner.translate(sum);
-//        } else {
-//            runner.getComponent(RandomMoveControl.class).resume();
-//        }
+        bullets.forEach(bullet -> {
+
+            double d = bullet.distance(runner);
+
+            // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)
+            if ((d > 0) && (d < desiredDistance)) {
+                // Calculate vector pointing away from bullet
+                Point2D diff = runner.getCenter().subtract(bullet.getCenter()).normalize().multiply(1 / d);
+
+                sum.addLocal(diff.getX(), diff.getY());
+
+                count++;
+            }
+
+            // TODO: java API ...
+            return Unit.INSTANCE;
+        });
+
+        // we have a bullet close
+        if (count > 0) {
+            runner.getComponent(RandomMoveComponent.class).pause();
+
+            // Our desired vector is moving away
+            sum.normalizeLocal().mulLocal(moveSpeed * tpf * 1.5);
+
+            runner.translate(sum);
+        } else {
+            runner.getComponent(RandomMoveComponent.class).resume();
+        }
     }
 
     private void adjustAngle(double tpf) {
