@@ -6,6 +6,8 @@ import com.almasb.fxgl.entity.components.BoundingBoxComponent;
 import com.almasb.fxglgames.bomberman.BombermanApp;
 import com.almasb.fxglgames.bomberman.BombermanType;
 
+import static com.almasb.fxgl.dsl.FXGL.*;
+
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
@@ -18,17 +20,17 @@ public class BombComponent extends Component {
     }
 
     public void explode() {
-        BoundingBoxComponent bbox = getEntity().getBoundingBoxComponent();
+        BoundingBoxComponent bbox = entity.getBoundingBoxComponent();
 
-        FXGL.getGameWorld()
+        getGameWorld()
                 .getEntitiesInRange(bbox.range(radius, radius))
                 .stream()
                 .filter(e -> e.isType(BombermanType.BRICK))
                 .forEach(e -> {
-                    FXGL.<BombermanApp>getAppCast().onWallDestroyed(e);
+                    FXGL.<BombermanApp>getAppCast().onBrickDestroyed(e);
                     e.removeFromWorld();
                 });
 
-        getEntity().removeFromWorld();
+        entity.removeFromWorld();
     }
 }
