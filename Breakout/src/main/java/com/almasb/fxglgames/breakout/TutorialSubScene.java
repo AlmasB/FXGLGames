@@ -9,7 +9,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
-import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
@@ -17,6 +16,8 @@ import static com.almasb.fxgl.dsl.FXGL.*;
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class TutorialSubScene extends SubScene {
+
+    private boolean isAnimating = false;
 
     public TutorialSubScene() {
         var textTutorial = getUIFactoryService().newText("Tap the circle to change ball color\n\n" +
@@ -33,19 +34,24 @@ public class TutorialSubScene extends SubScene {
 
         var stackPane = new StackPane(bg, textTutorial);
 
-        getContentRoot().setTranslateX(-250);
+        getContentRoot().setTranslateX(-350);
         getContentRoot().setTranslateY(250);
         getContentRoot().getChildren().add(stackPane);
 
-        getTimer().runOnceAfter(() -> {
+        getContentRoot().setOnMouseClicked(e -> {
+            if (isAnimating)
+                return;
+
+            isAnimating = true;
+
             animationBuilder()
                     .onFinished(() -> getSceneService().popSubScene())
                     .interpolator(Interpolators.EXPONENTIAL.EASE_IN())
                     .translate(getContentRoot())
                     .from(new Point2D(50, 250))
-                    .to(new Point2D(-250, 250))
+                    .to(new Point2D(-350, 250))
                     .buildAndPlay(TutorialSubScene.this);
-        }, Duration.seconds(0.5));
+        });
     }
 
     @Override
@@ -53,7 +59,7 @@ public class TutorialSubScene extends SubScene {
         animationBuilder()
                 .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
                 .translate(getContentRoot())
-                .from(new Point2D(-250, 250))
+                .from(new Point2D(-350, 250))
                 .to(new Point2D(50, 250))
                 .buildAndPlay(this);
     }

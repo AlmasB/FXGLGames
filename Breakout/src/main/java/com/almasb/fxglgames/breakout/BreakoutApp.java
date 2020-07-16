@@ -28,7 +28,6 @@ package com.almasb.fxglgames.breakout;
 
 import com.almasb.fxgl.animation.AnimatedValue;
 import com.almasb.fxgl.animation.Animation;
-import com.almasb.fxgl.animation.AnimationBuilder;
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
@@ -117,7 +116,7 @@ public class BreakoutApp extends GameApplication {
 
         onKeyDown(KeyCode.SPACE, "Change color", () -> getBallControl().changeColorToNext());
 
-        if (getSettings().getApplicationMode() != ApplicationMode.RELEASE) {
+        if (!isReleaseMode()) {
             onKeyDown(KeyCode.L, "Next level", () -> nextLevel());
 
             onKeyDown(KeyCode.K, "Print", () -> {
@@ -192,11 +191,13 @@ public class BreakoutApp extends GameApplication {
 
     private void animateCamera(Runnable onAnimationFinished) {
         AnimatedValue<Double> value = new AnimatedValue<>(getAppHeight() * 1.0, 0.0);
-        cameraAnimation = new AnimationBuilder()
+        cameraAnimation = animationBuilder()
                 .duration(Duration.seconds(0.5))
                 .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
                 .onFinished(onAnimationFinished::run)
-                .build(value, y -> getGameScene().getViewport().setY(y));
+                .animate(value)
+                .onProgress(y -> getGameScene().getViewport().setY(y))
+                .build();
 
         cameraAnimation.start();
     }
@@ -288,7 +289,9 @@ public class BreakoutApp extends GameApplication {
         addUINode(regionRight, getAppWidth() / 2, 0);
         
         runOnce(() -> {
-            //getSceneService().pushSubScene(new TutorialSubScene());
+            if (isReleaseMode()) {
+                getSceneService().pushSubScene(new TutorialSubScene());
+            }
 
             runOnce(() -> getBallControl().changeColorToNext(), Duration.seconds(0.016));
 

@@ -88,8 +88,7 @@ public class BreakoutFactory implements EntityFactory {
 
     @Spawns("background")
     public Entity newBackground(SpawnData data) {
-        return entityBuilder()
-                .from(data)
+        return entityBuilder(data)
                 .type(BACKGROUND)
                 .with(new IrremovableComponent())
                 .with(new BackgroundStarsViewComponent(
@@ -113,8 +112,7 @@ public class BreakoutFactory implements EntityFactory {
             getInput().mockKeyRelease(KeyCode.SPACE);
         });
 
-        return entityBuilder()
-                .from(data)
+        return entityBuilder(data)
                 .type(COLOR_CIRCLE)
                 .bbox(new HitBox(BoundingShape.circle(radius)))
                 .view(circle)
@@ -127,8 +125,7 @@ public class BreakoutFactory implements EntityFactory {
     public Entity newBrick(SpawnData data) {
         var color = Color.valueOf(data.<String>get("color").toUpperCase());
 
-        return entityBuilder()
-                .from(data)
+        return entityBuilder(data)
                 .type(BRICK)
                 .bbox(new HitBox(BoundingShape.box(96, 32)))
                 .collidable()
@@ -142,8 +139,7 @@ public class BreakoutFactory implements EntityFactory {
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.KINEMATIC);
 
-        return entityBuilder()
-                .from(data)
+        return entityBuilder(data)
                 .type(BAT)
                 .at(getAppWidth() / 2.0 - 50, getAppHeight() - 70)
                 .viewWithBBox(texture("bat.png", 464 / 3.0, 102 / 3.0))
@@ -167,8 +163,7 @@ public class BreakoutFactory implements EntityFactory {
 
         physics.setBodyDef(bd);
 
-        var e = entityBuilder()
-                .from(data)
+        var e = entityBuilder(data)
                 .type(BALL)
                 .bbox(new HitBox(BoundingShape.circle(64)))
                 .view("ball.png")
@@ -208,8 +203,7 @@ public class BreakoutFactory implements EntityFactory {
     public Entity newBulletBall(SpawnData data) {
         Point2D dir = data.get("dir");
 
-        return entityBuilder()
-                .from(data)
+        return entityBuilder(data)
                 .type(BULLET_BALL)
                 .bbox(new HitBox(BoundingShape.circle(64)))
                 .view("ball.png")
@@ -223,8 +217,8 @@ public class BreakoutFactory implements EntityFactory {
     public Entity newSparks(SpawnData data) {
         Color color = data.get("color");
 
-        var e = entityBuilder()
-                .from(data)
+        var e = entityBuilder(data)
+                
                 .with(new ExpireCleanComponent(Duration.seconds(1.5)))
                 .build();
 
@@ -249,8 +243,7 @@ public class BreakoutFactory implements EntityFactory {
 
         var view = getUIFactoryService().newText(powerupType.toString(), Color.WHITE, FontType.GAME, 16);
 
-        return entityBuilder()
-                .from(data)
+        return entityBuilder(data)
                 .type(POWERUP)
                 .viewWithBBox(view)
                 .collidable()
@@ -263,8 +256,7 @@ public class BreakoutFactory implements EntityFactory {
     public Entity newZombie(SpawnData data) {
         var channel = new AnimationChannel(image.get(), Duration.seconds(1), 8);
 
-        return entityBuilder()
-                .from(data)
+        return entityBuilder(data)
                 .view(new AnimatedTexture(channel).play())
                 .with(new ExpireCleanComponent(Duration.seconds(1)))
                 .scale(0.2, 0.2)
