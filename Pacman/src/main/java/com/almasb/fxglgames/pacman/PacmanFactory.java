@@ -40,7 +40,6 @@ import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxglgames.pacman.components.PaletteChangingComponent;
 import com.almasb.fxglgames.pacman.components.PlayerComponent;
-import com.almasb.fxglgames.pacman.components.ai.ChasePlayerComponent;
 import com.almasb.fxglgames.pacman.components.ai.DelayedChasePlayerComponent;
 import com.almasb.fxglgames.pacman.components.ai.GuardCoinComponent;
 import com.almasb.fxglgames.pacman.components.ai.RandomAStarMoveComponent;
@@ -71,8 +70,7 @@ public class PacmanFactory implements EntityFactory {
         rect.setStrokeWidth(1);
         rect.setStroke(Color.BLUE);
 
-        return entityBuilder()
-                .from(data)
+        return entityBuilder(data)
                 .type(BLOCK)
                 .viewWithBBox(rect)
                 .zIndex(-1)
@@ -85,8 +83,7 @@ public class PacmanFactory implements EntityFactory {
         view.setTranslateX(5);
         view.setTranslateY(5);
 
-        return entityBuilder()
-                .from(data)
+        return entityBuilder(data)
                 .type(COIN)
                 .bbox(new HitBox(new Point2D(5, 5), BoundingShape.box(30, 30)))
                 .view(view)
@@ -101,8 +98,7 @@ public class PacmanFactory implements EntityFactory {
     public Entity newPlayer(SpawnData data) {
         AnimatedTexture view = texture("player.png").toAnimatedTexture(2, Duration.seconds(0.33));
 
-        var e = entityBuilder()
-                .from(data)
+        var e = entityBuilder(data)
                 .type(PLAYER)
                 .bbox(new HitBox(new Point2D(4, 4), BoundingShape.box(32, 32)))
                 .view(view.loop())
@@ -111,19 +107,20 @@ public class PacmanFactory implements EntityFactory {
                 // there is no grid constructed yet, so pass lazily
                 .with(new AStarMoveComponent(new LazyValue<>(() -> geto("grid"))))
                 .with(new PlayerComponent())
+                .rotationOrigin(35 / 2.0, 40 / 2.0)
                 .build();
 
-        e.getTransformComponent().setRotationOrigin(new Point2D(35 / 2.0, 40 / 2.0));
+        e.setLocalAnchorFromCenter();
 
         return e;
     }
 
     private Supplier<Component> aiComponents = new Supplier<>() {
         private Map<Integer, Supplier<Component>> components = Map.of(
-                0, DelayedChasePlayerComponent::new,
+                0, () -> new DelayedChasePlayerComponent().withDelay(),
                 1, GuardCoinComponent::new,
                 2, RandomAStarMoveComponent::new,
-                3, ChasePlayerComponent::new
+                3, DelayedChasePlayerComponent::new
         );
 
         private int index = 0;
@@ -141,8 +138,7 @@ public class PacmanFactory implements EntityFactory {
 
     @Spawns("E")
     public Entity newEnemy(SpawnData data) {
-        Entity enemy = entityBuilder()
-                .from(data)
+        Entity enemy = entityBuilder(data)
                 .type(ENEMY)
                 .bbox(new HitBox(new Point2D(2, 2), BoundingShape.box(36, 36)))
                 .with(new CollidableComponent(true))
@@ -151,10 +147,11 @@ public class PacmanFactory implements EntityFactory {
                 // there is no grid constructed yet, so pass lazily
                 .with(new AStarMoveComponent(new LazyValue<>(() -> geto("grid"))))
                 .with(aiComponents.get())
+                .scaleOrigin(0, 0)
                 .scale(0.24, 0.24)
                 .build();
 
-        enemy.getTransformComponent().setScaleOrigin(new Point2D(0, 0));
+        enemy.setLocalAnchorFromCenter();
 
         return enemy;
     }

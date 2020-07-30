@@ -5,8 +5,9 @@ import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.component.Required;
 import com.almasb.fxgl.pathfinding.Cell;
 import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
+import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxglgames.pacman.PacmanType;
-import com.almasb.fxglgames.pacman.components.CoinHighlightViewComponent;
+import javafx.scene.paint.Color;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -21,16 +22,16 @@ public class GuardCoinComponent extends Component {
     @Override
     public void onUpdate(double tpf) {
         if (targetCoin == null || !targetCoin.isActive()) {
-            targetCoin = entity.getWorld()
+            entity.getWorld()
                     .getRandom(PacmanType.COIN)
-                    .orElse(null);
+                    .ifPresent(coin -> {
+                        highlight(coin);
 
-            if (targetCoin != null)
-                targetCoin.addComponent(new CoinHighlightViewComponent());
-
+                        targetCoin = coin;
+                    });
         } else {
-            // TODO: seems commonly needed, maybe move to a method in astar?
-            if (astar.isPathEmpty() && !astar.isMoving()) {
+
+            if (astar.isAtDestination()) {
                 int x = targetCoin.call("getCellX");
                 int y = targetCoin.call("getCellY");
                 Cell cell = astar.getGrid().get(x, y);
@@ -40,5 +41,15 @@ public class GuardCoinComponent extends Component {
                         .ifPresent(astar::moveToCell);
             }
         }
+    }
+
+    private void highlight(Entity coin) {
+        var texture = (Texture) coin.getViewComponent().getChildren().get(0);
+        var newTexture = texture.multiplyColor(Color.RED).brighter();
+        newTexture.setTranslateX(5);
+        newTexture.setTranslateY(5);
+
+        coin.getViewComponent().removeChild(texture);
+        coin.getViewComponent().addChild(newTexture);
     }
 }

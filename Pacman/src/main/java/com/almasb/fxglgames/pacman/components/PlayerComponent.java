@@ -31,13 +31,17 @@ import com.almasb.fxgl.entity.component.Required;
 import com.almasb.fxgl.pathfinding.CellMoveComponent;
 import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
 
-import static com.almasb.fxglgames.pacman.components.MoveDirection.*;
+import static com.almasb.fxglgames.pacman.components.PlayerComponent.MoveDirection.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 @Required(AStarMoveComponent.class)
 public class PlayerComponent extends Component {
+
+    enum MoveDirection {
+        UP, RIGHT, DOWN, LEFT
+    }
 
     private CellMoveComponent moveComponent;
 
@@ -144,38 +148,5 @@ public class PlayerComponent extends Component {
 //        ft.play();
 //    }
 //
-//    private List<Entity> blocks;
-//
-//    private void move(double dx, double dy) {
-//        if (!getEntity().isActive())
-//            return;
-//
-//        if (blocks == null) {
-//            blocks = FXGL.getApp().getGameWorld().getEntitiesByType(PacmanType.BLOCK);
-//        }
-//
-//        double mag = Math.sqrt(dx * dx + dy * dy);
-//        long length = Math.round(mag);
-//
-//        double unitX = dx / mag;
-//        double unitY = dy / mag;
-//
-//        for (int i = 0; i < length; i++) {
-//            position.translate(unitX, unitY);
-//
-//            boolean collision = false;
-//
-//            for (int j = 0; j < blocks.size(); j++) {
-//                if (blocks.get(j).getBoundingBoxComponent().isCollidingWith(bbox)) {
-//                    collision = true;
-//                    break;
-//                }
-//            }
-//
-//            if (collision) {
-//                position.translate(-unitX, -unitY);
-//                break;
-//            }
-//        }
-//    }
+
 }

@@ -43,7 +43,7 @@ public class RandomAStarMoveComponent extends Component {
     @Override
     public void onUpdate(double tpf) {
         if (moveTimer.elapsed(moveInterval)) {
-            if (astar.isPathEmpty() && !astar.isMoving()) {
+            if (astar.isAtDestination()) {
                 astar.getGrid()
                         .getRandomCell(c -> c.getState().isWalkable())
                         .ifPresent(astar::moveToCell);

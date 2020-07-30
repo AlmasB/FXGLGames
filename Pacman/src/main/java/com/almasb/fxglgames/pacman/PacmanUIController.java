@@ -33,8 +33,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
-import static com.almasb.fxgl.dsl.FXGL.getUIFactory;
-import static com.almasb.fxgl.dsl.FXGL.getip;
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -68,10 +67,10 @@ public class PacmanUIController implements UIController {
 
         root.getChildren().addAll(timeBar);
 
-        labelScore.setFont(getUIFactory().newFont(18));
-        labelTeleport.setFont(getUIFactory().newFont(24));
+        labelScore.setFont(getUIFactoryService().newFont(18));
+        labelTeleport.setFont(getUIFactoryService().newFont(12));
 
         labelScore.textProperty().bind(getip("score").asString("Score:\n%d"));
-        //labelTeleport.textProperty().bind(getip("teleport").asString("Teleports:\n[%d]"));
+        labelTeleport.textProperty().bind(getip("teleport").asString("Teleports:\n[%d]"));
     }
 }

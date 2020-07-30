@@ -155,7 +155,7 @@ public class PacmanApp extends GameApplication {
 
         run(() -> inc("time", -1), Duration.seconds(1));
 
-        getGameState().<Integer>addListener("time", (old, now) -> {
+        getWorldProperties().<Integer>addListener("time", (old, now) -> {
             if (now == 0) {
                 onPlayerKilled();
             }
@@ -205,7 +205,7 @@ public class PacmanApp extends GameApplication {
     }
 
     private void gameOver() {
-        getDisplay().showMessageBox("Demo Over. Press OK to exit", getGameController()::exit);
+        getDialogService().showMessageBox("Demo Over. Press OK to exit", getGameController()::exit);
     }
 
     public static void main(String[] args) {

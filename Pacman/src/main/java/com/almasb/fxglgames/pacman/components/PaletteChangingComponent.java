@@ -31,8 +31,6 @@ import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.texture.Texture;
 import javafx.geometry.Rectangle2D;
 
-import java.util.Random;
-
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
@@ -55,14 +53,12 @@ public class PaletteChangingComponent extends Component {
     private double timeToSwitch = 0;
     private int spriteColor = 0;
 
-    private Random random = FXGLMath.getRandom();
-
     @Override
     public void onUpdate(double tpf) {
         timeToSwitch += tpf;
 
         if (timeToSwitch >= 5.0) {
-            spriteColor = 160 * random.nextInt(3);
+            spriteColor = 160 * FXGLMath.random(0, 2);
             timeToSwitch = 0;
         }
 

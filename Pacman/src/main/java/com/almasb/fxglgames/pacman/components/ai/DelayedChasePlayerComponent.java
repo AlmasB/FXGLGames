@@ -14,15 +14,32 @@ public class DelayedChasePlayerComponent extends Component {
 
     private AStarMoveComponent astar;
 
+    private boolean isDelayed = false;
+
     @Override
     public void onUpdate(double tpf) {
-        if (astar.isPathEmpty() && !astar.isMoving()) {
-            var player = FXGL.getGameWorld().getSingleton(PacmanType.PLAYER);
+        if (!isDelayed) {
+            move();
+        } else {
 
-            int x = player.call("getCellX");
-            int y = player.call("getCellY");
-
-            astar.moveToCell(x, y);
+            // if delayed, only move when reached destination
+            if (astar.isAtDestination()) {
+                move();
+            }
         }
+    }
+
+    private void move() {
+        var player = FXGL.getGameWorld().getSingleton(PacmanType.PLAYER);
+
+        int x = player.call("getCellX");
+        int y = player.call("getCellY");
+
+        astar.moveToCell(x, y);
+    }
+
+    public DelayedChasePlayerComponent withDelay() {
+        isDelayed = true;
+        return this;
     }
 }
