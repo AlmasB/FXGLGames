@@ -50,7 +50,7 @@ public class DropApp extends GameApplication {
         settings.setHeight(800);
         settings.setExperimentalNative(true);
         settings.setProfilingEnabled(true);
-        settings.setApplicationMode(ApplicationMode.DEBUG);
+        settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
     @Override
