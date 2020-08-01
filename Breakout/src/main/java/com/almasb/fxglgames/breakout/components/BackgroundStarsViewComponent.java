@@ -1,10 +1,12 @@
 package com.almasb.fxglgames.breakout.components;
 
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.view.ChildViewComponent;
 import com.almasb.fxgl.texture.Texture;
 import javafx.util.Duration;
+
+import static com.almasb.fxgl.dsl.FXGL.getAppHeight;
+import static com.almasb.fxgl.dsl.FXGL.run;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -20,7 +22,7 @@ public class BackgroundStarsViewComponent extends ChildViewComponent {
             getViewRoot().getChildren().add(t);
         }
 
-        FXGL.run(() -> onUpdate(0.016), Duration.seconds(0.016));
+        run(() -> onUpdate(0.016), Duration.seconds(0.016));
     }
 
     @Override
@@ -33,7 +35,7 @@ public class BackgroundStarsViewComponent extends ChildViewComponent {
     private void move(Texture star, double tpf) {
         star.setTranslateY(star.getTranslateY() - tpf * FXGLMath.random(1, 30));
 
-        if (star.getTranslateY() + star.getHeight() <= FXGL.getAppHeight()) {
+        if (star.getTranslateY() + star.getHeight() <= getAppHeight()) {
             star.setTranslateY(0);
         }
     }

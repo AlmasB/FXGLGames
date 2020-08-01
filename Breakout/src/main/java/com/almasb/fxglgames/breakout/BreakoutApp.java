@@ -47,7 +47,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.util.Map;
@@ -75,8 +74,6 @@ public class BreakoutApp extends GameApplication {
         settings.setFontUI("main_font.ttf");
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
-
-    private Text debugText;
 
     @Override
     protected void onPreInit() {
@@ -267,13 +264,9 @@ public class BreakoutApp extends GameApplication {
 
     @Override
     protected void initUI() {
-        debugText = new Text();
-        debugText.setFill(Color.WHITE);
-
         var textScore = getUIFactoryService().newText(getip("score").asString());
 
         addUINode(textScore, 220, getAppHeight() - 20);
-        addUINode(debugText, 50, 50);
 
         var regionLeft = new Rectangle(getAppWidth() / 2, getAppHeight() - 200);
         regionLeft.setOpacity(0);

@@ -218,7 +218,6 @@ public class BreakoutFactory implements EntityFactory {
         Color color = data.get("color");
 
         var e = entityBuilder(data)
-                
                 .with(new ExpireCleanComponent(Duration.seconds(1.5)))
                 .build();
 
