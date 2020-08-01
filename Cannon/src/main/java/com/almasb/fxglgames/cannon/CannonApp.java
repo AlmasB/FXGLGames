@@ -106,7 +106,7 @@ public class CannonApp extends GameApplication {
 
     @Override
     protected void initUI() {
-        Text scoreText = getUIFactory().newText("", Color.BLACK, 24);
+        Text scoreText = getUIFactoryService().newText("", Color.BLACK, 24);
         scoreText.setTranslateX(550);
         scoreText.setTranslateY(100);
         scoreText.textProperty().bind(getip("score").asString("Score: [%d]"));

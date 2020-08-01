@@ -22,9 +22,8 @@ public class CannonFactory implements EntityFactory {
 
     @Spawns("cannon")
     public Entity newCannon(SpawnData data) {
-        return entityBuilder()
+        return entityBuilder(data)
                 .type(CANNON)
-                .from(data)
                 .view(new Rectangle(70, 30, Color.BROWN))
                 .with(new LiftComponent().yAxisSpeedDuration(150, Duration.seconds(1)))
                 .build();
@@ -42,9 +41,8 @@ public class CannonFactory implements EntityFactory {
             physics.setLinearVelocity(mousePosition.subtract(data.getX(), data.getY()).normalize().multiply(800));
         });
 
-        return entityBuilder()
+        return entityBuilder(data)
                 .type(BULLET)
-                .from(data)
                 .viewWithBBox(new Rectangle(25, 25, Color.BLUE))
                 .collidable()
                 .with(physics)
@@ -54,9 +52,8 @@ public class CannonFactory implements EntityFactory {
 
     @Spawns("basketBarrier")
     public Entity newBasketBarrier(SpawnData data) {
-        return entityBuilder()
+        return entityBuilder(data)
                 .type(BASKET)
-                .from(data)
                 .viewWithBBox(new Rectangle(100, 300, Color.RED))
                 .with(new PhysicsComponent())
                 .build();
@@ -64,9 +61,8 @@ public class CannonFactory implements EntityFactory {
 
     @Spawns("basketGround")
     public Entity newBasketGround(SpawnData data) {
-        return entityBuilder()
+        return entityBuilder(data)
                 .type(BASKET)
-                .from(data)
                 .viewWithBBox(new Rectangle(300, 5, Color.TRANSPARENT))
                 .collidable()
                 .with(new PhysicsComponent())
