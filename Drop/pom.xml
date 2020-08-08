@@ -18,7 +18,7 @@
 
         <fxgl.version>11.10</fxgl.version>
         <jfx.maven.plugin.version>0.0.4</jfx.maven.plugin.version>
-        <client.plugin.version>0.1.26</client.plugin.version>
+        <client.plugin.version>0.1.30</client.plugin.version>
         <attach.version>4.0.6</attach.version>
         <mainClassName>com.almasb.fxglgames.drop.DropApp</mainClassName>
     </properties>
