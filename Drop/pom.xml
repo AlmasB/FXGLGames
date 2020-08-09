@@ -18,7 +18,7 @@
 
         <fxgl.version>11.10</fxgl.version>
         <jfx.maven.plugin.version>0.0.4</jfx.maven.plugin.version>
-        <client.plugin.version>0.1.30</client.plugin.version>
+        <client.plugin.version>0.1.31-SNAPSHOT</client.plugin.version>
         <attach.version>4.0.6</attach.version>
         <mainClassName>com.almasb.fxglgames.drop.DropApp</mainClassName>
     </properties>
@@ -27,6 +27,11 @@
         <pluginRepository>
             <id>gluon-releases</id>
             <url>http://nexus.gluonhq.com/nexus/content/repositories/releases/</url>
+        </pluginRepository>
+
+        <pluginRepository>
+            <id>gluon-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </pluginRepository>
     </pluginRepositories>
 
@@ -115,6 +120,7 @@
                 <artifactId>client-maven-plugin</artifactId>
                 <version>${client.plugin.version}</version>
                 <configuration>
+                    <nativeImageArgs>--allow-incomplete-classpath</nativeImageArgs>
                     <attachList>
                         <list>storage</list>
                         <list>util</list>
@@ -137,7 +143,8 @@
                         <list>com.almasb.fxgl.app.services.IOTaskExecutorService</list>
                         <list>com.almasb.fxgl.app.services.SystemBundleService</list>
                         <list>com.almasb.fxgl.app.services.UpdaterService</list>
-                        <list>com.almasb.fxgl.app.services.AssetLoaderService</list>
+                        <list>com.almasb.fxgl.app.services.FXGLAssetLoaderService</list>
+                        <list>com.almasb.fxgl.core.asset.AssetLoaderService</list>
                         <list>com.almasb.fxgl.cutscene.CutsceneService</list>
                         <list>com.almasb.fxgl.dev.DevService</list>
                         <list>com.almasb.fxgl.dev.profiling.ProfilerService</list>
