@@ -5,6 +5,7 @@ import com.almasb.fxgl.particle.ParticleEmitters;
 import com.almasb.fxgl.particle.ParticleSystem;
 import com.almasb.fxgl.scene.SubScene;
 import javafx.geometry.Point2D;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
@@ -29,15 +30,19 @@ public class NewLevelSubScene extends SubScene {
         emitter.setNumParticles(20);
         emitter.setVelocityFunction(i -> new Point2D(random(-100, 100), 0));
         emitter.setExpireFunction(i -> Duration.seconds(random(1, 3)));
+        emitter.setBlendMode(getSettings().isExperimentalNative() ? BlendMode.SRC_OVER : BlendMode.ADD);
 
         particleSystem = new ParticleSystem();
         particleSystem.addParticleEmitter(emitter, getAppWidth() / 2.0 - 120, getAppHeight() / 2.0 - 110);
 
-        var text = getUIFactoryService().newText("LEVEL " + level, Color.BLACK, 48);
+        var text = getUIFactoryService().newText("LEVEL " + level, Color.GOLD, 48);
         text.setTranslateX(getAppWidth() / 2.0 + 20 - 100);
         text.setTranslateY(getAppHeight() / 2.0 + 130 - 100);
 
-        getContentRoot().getChildren().addAll(particleSystem.getPane(), text);
+        if (!getSettings().isExperimentalNative()) {
+            getContentRoot().getChildren().addAll(particleSystem.getPane());
+        }
+        getContentRoot().getChildren().addAll(text);
 
         animationBuilder()
                 .onFinished(() -> {
