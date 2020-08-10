@@ -73,6 +73,7 @@ public class BreakoutApp extends GameApplication {
         settings.setHeight(HEIGHT);
         settings.setFontUI("main_font.ttf");
         settings.setExperimentalNative(true);
+        settings.setProfilingEnabled(true);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
