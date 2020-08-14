@@ -27,7 +27,7 @@ internal object GoapPlanner {
     fun plan(availableActions: Set<GoapAction>, worldState: WorldState, goal: WorldState): Queue<GoapAction> {
 
         // reset the actions so we can start fresh with them
-        availableActions.forEach { it.reset() }
+        availableActions.forEach { it.cancel() }
 
         // check what actions can run
         val usableActions = availableActions.filter { it.canRun() }.toSet()

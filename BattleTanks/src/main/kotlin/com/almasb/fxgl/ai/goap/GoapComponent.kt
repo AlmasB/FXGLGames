@@ -65,7 +65,7 @@ class GoapComponent(
         if (!plan.isEmpty()) {
             listener.planFound(entity, goal, plan)
 
-            plan.forEach { actionComponent.pushAction(it) }
+            plan.forEach { actionComponent.addAction(it) }
 
         } else {
             listener.planFailed(entity, goal)

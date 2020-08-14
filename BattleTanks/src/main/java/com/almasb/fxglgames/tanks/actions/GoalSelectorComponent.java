@@ -37,14 +37,14 @@ public class GoalSelectorComponent extends Component {
             if (goap.getGoal() != ATTACK) {
                 goap.setGoal(ATTACK);
 
-                actionComponent.clearActions();
+                actionComponent.cancelActions();
                 goap.updatePlan();
             }
         } else {
             if (goap.getGoal() != GUARD) {
                 goap.setGoal(GUARD);
 
-                actionComponent.clearActions();
+                actionComponent.cancelActions();
                 goap.updatePlan();
             }
         }

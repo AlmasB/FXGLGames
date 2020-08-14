@@ -48,7 +48,7 @@ public class GoapSample extends GameApplication {
     @Override
     protected void initInput() {
         onBtnDown(MouseButton.PRIMARY, "move", () -> {
-            player.getComponent(ActionComponent.class).pushAction(new ContinuousAction() {
+            player.getComponent(ActionComponent.class).addAction(new ContinuousAction() {
                 Point2D p = new Point2D(getInput().getMouseXWorld(), getInput().getMouseYWorld());
 
                 @Override
@@ -57,7 +57,7 @@ public class GoapSample extends GameApplication {
                     if (player.getPosition().distance(p) > 10) {
                         player.getTransformComponent().translateTowards(p, 5);
                     } else {
-                        isCompleted = true;
+                        setComplete();
                     }
                 }
             });
@@ -182,10 +182,11 @@ public class GoapSample extends GameApplication {
             }
         }
 
-        @Override
-        public boolean isComplete() {
-            return !getb("playerAlive");
-        }
+        // TODO:
+//        @Override
+//        public boolean isComplete() {
+//            return !getb("playerAlive");
+//        }
 
         @Override
         public void perform() {
@@ -219,10 +220,11 @@ public class GoapSample extends GameApplication {
             }
         }
 
-        @Override
-        public boolean isComplete() {
-            return agent.getBoolean("hasWeapon");
-        }
+        // TODO:
+//        @Override
+//        public boolean isComplete() {
+//            return agent.getBoolean("hasWeapon");
+//        }
 
         @Override
         public void perform() {
@@ -257,10 +259,11 @@ public class GoapSample extends GameApplication {
             }
         }
 
-        @Override
-        public boolean isComplete() {
-            return agent.getBoolean("hasCoin");
-        }
+        // TODO:
+//        @Override
+//        public boolean isComplete() {
+//            return agent.getBoolean("hasCoin");
+//        }
 
         @Override
         public void perform() {
