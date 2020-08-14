@@ -29,7 +29,7 @@ public class AsteroidsApp extends GameApplication {
         settings.setHeight(750);
         settings.setTitle("Asteroids");
         settings.setVersion("0.1");
-        settings.setMenuEnabled(false);
+        settings.setMainMenuEnabled(false);
         settings.setSceneFactory(new SceneFactory() {
             @Override
             public FXGLMenu newMainMenu() {

@@ -7,7 +7,6 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.virtual.VirtualButton;
 import com.almasb.fxgl.physics.BoundingShape;
-import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -21,6 +20,8 @@ import javafx.util.Duration;
 import java.util.Map;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxglgames.flappy.EntityType.PLAYER;
+import static com.almasb.fxglgames.flappy.EntityType.WALL;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -54,26 +55,21 @@ public class FlappyBirdApp extends GameApplication {
         vars.put("score", 0);
     }
 
-    private boolean loopBGM = true;
+    @Override
+    protected void onPreInit() {
+        loopBGM("bgm.mp3");
+    }
 
     @Override
     protected void initGame() {
-        if (loopBGM) {
-            loopBGM("bgm.mp3");
-            loopBGM = false;
-        }
-
         initBackground();
         initPlayer();
     }
 
     @Override
     protected void initPhysics() {
-        getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.PLAYER, EntityType.WALL) {
-            @Override
-            protected void onCollisionBegin(Entity a, Entity b) {
-                requestNewGame();
-            }
+        onCollisionBegin(PLAYER, WALL, (player, wall) -> {
+            requestNewGame();
         });
     }
 
@@ -125,7 +121,7 @@ public class FlappyBirdApp extends GameApplication {
 
         Entity player = entityBuilder()
                 .at(100, 100)
-                .type(EntityType.PLAYER)
+                .type(PLAYER)
                 .bbox(new HitBox(BoundingShape.box(70, 60)))
                 .view(texture("bird.png").toAnimatedTexture(2, Duration.seconds(0.5)).loop())
                 .collidable()

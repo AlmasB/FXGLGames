@@ -1,15 +1,21 @@
 package com.almasb.fxglgames.geojumper
 
-import com.almasb.fxgl.app.*
+import com.almasb.fxgl.app.GameApplication
+import com.almasb.fxgl.app.GameSettings
 import com.almasb.fxgl.core.math.FXGLMath
 import com.almasb.fxgl.dsl.*
-import com.almasb.fxgl.entity.*
+import com.almasb.fxgl.entity.Entity
+import com.almasb.fxgl.entity.EntityFactory
+import com.almasb.fxgl.entity.SpawnData
+import com.almasb.fxgl.entity.Spawns
 import com.almasb.fxgl.entity.component.Component
 import com.almasb.fxgl.entity.components.CollidableComponent
 import com.almasb.fxgl.input.UserAction
-import com.almasb.fxgl.physics.*
+import com.almasb.fxgl.physics.BoundingShape
+import com.almasb.fxgl.physics.CollisionHandler
+import com.almasb.fxgl.physics.HitBox
+import com.almasb.fxgl.physics.PhysicsComponent
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType
-import javafx.application.Application
 import javafx.geometry.Point2D
 import javafx.scene.input.KeyCode
 import javafx.scene.input.MouseButton
@@ -26,7 +32,7 @@ class GeoJumperApp : GameApplication() {
 
     private val LEVEL_HEIGHT = 2600.0
 
-    private lateinit var playerControl: PlayerControl
+    private lateinit var playerComponent: PlayerComponent
 
     override fun initSettings(settings: GameSettings) {
         with(settings) {
@@ -39,16 +45,16 @@ class GeoJumperApp : GameApplication() {
 
     override fun initInput() {
         onBtnDown(MouseButton.PRIMARY, "Jump") {
-            playerControl.jump()
+            playerComponent.jump()
         }
 
         getInput().addAction(object : UserAction("Rewind") {
             override fun onAction() {
-                playerControl.rewind()
+                playerComponent.rewind()
             }
 
             override fun onActionEnd() {
-                playerControl.endRewind()
+                playerComponent.endRewind()
             }
         }, KeyCode.R)
     }
@@ -78,9 +84,9 @@ class GeoJumperApp : GameApplication() {
                 // only if player actually lands on the platform
                 if (player.bottomY <= platform.y) {
 
-                    platform.getComponent(PlatformControl::class.java).stop()
+                    platform.getComponent(PlatformComponent::class.java).stop()
 
-                    playerControl.startNewCapture()
+                    playerComponent.startNewCapture()
                 }
             }
 
@@ -88,7 +94,7 @@ class GeoJumperApp : GameApplication() {
 
                 // only if player is jumping off that platform
                 if (player.bottomY <= platform.y) {
-                    playerControl.removedPlatformAt(platform.position)
+                    playerComponent.removedPlatformAt(platform.position)
                     platform.removeFromWorld()
                 }
             }
@@ -100,14 +106,14 @@ class GeoJumperApp : GameApplication() {
         physics.setBodyType(BodyType.DYNAMIC)
         physics.addGroundSensor(HitBox(Point2D(10.0, 60.0), BoundingShape.box(10.0, 5.0)))
 
-        playerControl = PlayerControl()
+        playerComponent = PlayerComponent()
 
         val player = entityBuilder()
                 .type(EntityType.PLAYER)
                 .at(getAppWidth() / 2.0, LEVEL_HEIGHT - 60.0)
                 .viewWithBBox(Rectangle(30.0, 60.0, Color.BLUE))
                 .with(physics, CollidableComponent(true))
-                .with(playerControl)
+                .with(playerComponent)
                 .buildAndAttach()
 
         getGameScene().viewport.setBounds(0, 0, getAppWidth(), LEVEL_HEIGHT.toInt())
@@ -119,7 +125,7 @@ class GeoJumperApp : GameApplication() {
 
             entityBuilder()
                     .at(0.0, y * 1.0)
-                    .view(getUIFactory().newText("$y", Color.BLACK, 16.0))
+                    .view(getUIFactoryService().newText("$y", Color.BLACK, 16.0))
                     .buildAndAttach()
 
             spawn("platform", 20.0, y * 1.0)
@@ -127,7 +133,7 @@ class GeoJumperApp : GameApplication() {
     }
 }
 
-class PlayerControl : Component() {
+class PlayerComponent : Component() {
 
     private lateinit var physics: PhysicsComponent
 
@@ -139,7 +145,6 @@ class PlayerControl : Component() {
     private var t = 0.0
 
     override fun onUpdate(tpf: Double) {
-
         physics.velocityX = 0.0
 
         t += tpf
@@ -169,8 +174,6 @@ class PlayerControl : Component() {
             return
         }
 
-        //println("print")
-
         isRewinding = true
         entity.getComponent(CollidableComponent::class.java).value = false
 
@@ -179,7 +182,7 @@ class PlayerControl : Component() {
 
         if (platformPoints.isNotEmpty()) {
             platformPoints.forEach {
-                spawn("platform", it).getComponent(PlatformControl::class.java).stop()
+                spawn("platform", it).getComponent(PlatformComponent::class.java).stop()
             }
 
             platformPoints.clear()
@@ -201,7 +204,7 @@ class PlayerControl : Component() {
     }
 }
 
-class PlatformControl : Component() {
+class PlatformComponent : Component() {
 
     private val speed = FXGLMath.random(100.0, 400.0)
 
@@ -236,12 +239,11 @@ class Factory : EntityFactory {
         val physics = PhysicsComponent()
         physics.setBodyType(BodyType.KINEMATIC)
 
-        return entityBuilder()
+        return entityBuilder(data)
                 .type(EntityType.PLATFORM)
-                .from(data)
                 .viewWithBBox(Rectangle(100.0, 40.0))
                 .with(physics, CollidableComponent(true))
-                .with(PlatformControl())
+                .with(PlatformComponent())
                 .build()
     }
 }
