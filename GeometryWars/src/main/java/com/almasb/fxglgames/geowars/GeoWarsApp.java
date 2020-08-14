@@ -124,6 +124,11 @@ public class GeoWarsApp extends GameApplication {
         getGameScene().setBackgroundColor(Color.BLACK);
 
         spawn("Background");
+
+//        for (int i = 0; i < 20; i++) {
+//            spawn("BackgroundCircle", FXGLMath.randomPoint(new Rectangle2D(-200, -200, 200, getAppHeight())));
+//        }
+
         player = spawn("Player");
         playerComponent = player.getComponent(PlayerComponent.class);
 
@@ -257,6 +262,8 @@ public class GeoWarsApp extends GameApplication {
                 .repeat(2)
                 .fadeIn(beware)
                 .buildAndPlay();
+
+
     }
 
     private Point2D getRandomPoint() {

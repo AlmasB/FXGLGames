@@ -6,12 +6,13 @@ import com.almasb.fxgl.core.pool.Pools;
 import com.almasb.fxgl.entity.component.Component;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.almasb.fxgl.dsl.FXGL.getAppHeight;
-import static com.almasb.fxgl.dsl.FXGL.getAppWidth;
+import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxglgames.geowars.GeoWarsType.BULLET;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -21,6 +22,10 @@ public class GridComponent extends Component {
     private static final double POINT_MASS_DAMPING = 0.8;
     private static final double SPRING_STIFFNESS = 0.28;
     private static final double SPRING_DAMPING = 0.06;
+
+    private static final Color IDLE_COLOR = Color.color(0.138, 0.138, 0.375, 0.56);
+    private static final Color BULLET_COLOR = Color.color(0.138, 0.238, 0.975, 0.56);
+    private static final Color CRYSTAL_COLOR = Color.color(0.838, 0.538, 0.175, 0.56);
 
     private Array<Line> lines = new Array<>(1000);
     private Array<ExtraLine> extraLines = new Array<>(1000);
@@ -32,6 +37,8 @@ public class GridComponent extends Component {
 
     public GridComponent(GraphicsContext g) {
         this.g = g;
+
+        g.setStroke(IDLE_COLOR);
 
         Point2D spacing = new Point2D(38.8, 40);
 
@@ -100,10 +107,10 @@ public class GridComponent extends Component {
 
         // render
         for (Line line: lines)
-            line.update(g);
+            line.render(g);
 
         for (ExtraLine line: extraLines)
-            line.update(g);
+            line.render(g);
     }
 
     public void addLine(PointMass end1, PointMass end2) {
@@ -143,8 +150,22 @@ public class GridComponent extends Component {
             this.end2 = end2;
         }
 
-        void update(GraphicsContext g) {
+        void render(GraphicsContext g) {
+            var bullets = byType(BULLET);
+
+//            var isCollision = bullets.stream()
+//                    .anyMatch(e -> {
+//                        return e.getCenter().distance(end1.getPosition().toPoint2D()) < 15
+//                                || e.getCenter().distance(end2.getPosition().toPoint2D()) < 15;
+//                    });
+//
+//            if (isCollision) {
+//                g.setStroke(BULLET_COLOR);
+//            }
+
             g.strokeLine(end1.getPosition().x, end1.getPosition().y, end2.getPosition().x, end2.getPosition().y);
+
+            g.setStroke(IDLE_COLOR);
         }
     }
 
@@ -162,14 +183,24 @@ public class GridComponent extends Component {
             this.end22 = end22;
         }
 
-        void update(GraphicsContext g) {
+        void render(GraphicsContext g) {
             position1.x = end11.getPosition().x + (end12.getPosition().x - end11.getPosition().x) / 2;
             position1.y = end11.getPosition().y + (end12.getPosition().y - end11.getPosition().y) / 2;
 
             position2.x = end21.getPosition().x + (end22.getPosition().x - end21.getPosition().x) / 2;
             position2.y = end21.getPosition().y + (end22.getPosition().y - end21.getPosition().y) / 2;
 
+            if (
+                    byType(BULLET).stream()
+                    .anyMatch(e -> e.getCenter().distance(position1.toPoint2D()) > 15
+                            && e.getCenter().distance(position1.toPoint2D()) < 70)
+            ) {
+                g.setStroke(BULLET_COLOR);
+            }
+
             g.strokeLine(position1.x, position1.y, position2.x, position2.y);
+
+            g.setStroke(IDLE_COLOR);
         }
     }
 
@@ -271,6 +302,59 @@ public class GridComponent extends Component {
             }
 
             Pools.free(current);
+        }
+    }
+
+    private static boolean circleIntersectsLine(double r, Point2D circleCenter, Point2D lineStart, Point2D lineEnd) {
+        var d = lineEnd.subtract(lineStart);
+        var f = lineStart.subtract(circleCenter);
+
+
+        var a = d.dotProduct(d);
+        var b = 2 * f.dotProduct(d);
+        var c = f.dotProduct(f) - r * r;
+
+        var discriminant = b * b - 4f * a * c;
+        if (discriminant < 0) {
+            // no intersection
+            return false;
+        } else {
+            // ray didn't totally miss sphere,
+            // so there is a solution to
+            // the equation.
+
+            discriminant = Math.sqrt(discriminant);
+
+            // either solution may be on or off the ray so need to test both
+            // t1 is always the smaller varue, because BOTH discriminant and
+            // a are nonnegative.
+            var t1 = (-b - discriminant) / (2 * a);
+            var t2 = (-b + discriminant) / (2 * a);
+
+            // 3x HIT cases:
+            //          -o->             --|-->  |            |  --|->
+            // Impale(t1 hit,t2 hit), Poke(t1 hit,t2>1), ExitWound(t1<0, t2 hit),
+
+            // 3x MISS cases:
+            //       ->  o                     o ->              | -> |
+            // FallShort (t1>1,t2>1), Past (t1<0,t2<0), CompletelyInside(t1<0, t2>1)
+
+            if (t1 >= 0 && t1 <= 1) {
+                // t1 is the intersection, and it's closer than t2
+                // (since t1 uses -b - discriminant)
+                // Impale, Poke
+                return true;
+            }
+
+            // here t1 didn't intersect so we are either started
+            // inside the sphere or completely past it
+            if( t2 >= 0 && t2 <= 1 )
+            {
+                // ExitWound
+                return true;
+            }
+
+            return false;
         }
     }
 }

@@ -2,10 +2,7 @@ package com.almasb.fxglgames.geowars;
 
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
-import com.almasb.fxgl.dsl.components.AutoRotationComponent;
-import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
-import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
-import com.almasb.fxgl.dsl.components.ProjectileComponent;
+import com.almasb.fxgl.dsl.components.*;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
@@ -20,9 +17,15 @@ import com.almasb.fxglgames.geowars.component.enemy.NewRunnerComponent;
 import com.almasb.fxglgames.geowars.component.enemy.SeekerComponent;
 import com.almasb.fxglgames.geowars.component.enemy.WandererComponent;
 import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.effect.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.StrokeType;
 import javafx.util.Duration;
+
+import java.util.Arrays;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxglgames.geowars.GeoWarsType.*;
@@ -57,7 +60,6 @@ public class GeoWarsFactory implements EntityFactory {
     @Spawns("Background")
     public Entity spawnBackground(SpawnData data) {
         Canvas canvas = new Canvas(getAppWidth(), getAppHeight());
-        canvas.getGraphicsContext2D().setStroke(new Color(0.138, 0.138, 0.375, 0.56));
 
         return entityBuilder()
                 .type(GRID)
@@ -68,12 +70,37 @@ public class GeoWarsFactory implements EntityFactory {
                 .build();
     }
 
+    @Spawns("BackgroundCircle")
+    public Entity spawnBackgroundCircle(SpawnData data) {
+        var radius = random(60.0, 100.0);
+        Circle circle = new Circle(radius, radius, radius, Color.color(0.2, 0.6, 0.7, 0.5));
+
+        circle.setStrokeType(StrokeType.OUTSIDE);
+        circle.setStroke(Color.web("white", 0.3f));
+        circle.setStrokeWidth(3);
+        circle.setEffect(new BoxBlur(5, 5, 3));
+
+        return entityBuilder(data)
+                .view(circle)
+                .rotationOrigin(radius, radius)
+                .with(new RandomMoveComponent(new Rectangle2D(-200, -200, 200, getAppHeight() + 400), random(1, 15)))
+                .build();
+    }
+
     @Spawns("Player")
     public Entity spawnPlayer(SpawnData data) {
+        DropShadow ds = new DropShadow();
+        ds.setOffsetY(5.0);
+        ds.setOffsetX(5.0);
+        ds.setColor(Color.GRAY);
+
+        var texture = texture("Player.png");
+        texture.setEffect(new Bloom(0.7));
+
         var e = entityBuilder()
                 .type(PLAYER)
                 .at(getAppWidth() / 2, getAppHeight() / 2)
-                .viewWithBBox("Player.png")
+                .viewWithBBox(texture)
                 .collidable()
                 //.with(new KeepOnScreenComponent().bothAxes())
                 .with(new PlayerComponent(config.getPlayerSpeed()))
@@ -92,9 +119,22 @@ public class GeoWarsFactory implements EntityFactory {
             play("shoot" + (int) (Math.random() * 8 + 1) + ".wav");
         }
 
+        var name = FXGLMath.random(Arrays.asList("muzzle_01.png", "muzzle_02.png", "muzzle_03.png")).get();
+
+        var w = 96;
+        var h = 96;
+
+        var t2 = texture("particles/" + name, w, h).multiplyColor(Color.BLUE.brighter());
+        t2.setBlendMode(BlendMode.ADD);
+        t2.setTranslateX(-(w / 2.0 - 49 / 2.0));
+        t2.setTranslateY(-(h / 2.0 - 13 / 2.0));
+        //t2.setEffect(new BoxBlur(15, 15, 3));
+
+
         return entityBuilder(data)
                 .type(BULLET)
                 .viewWithBBox("Bullet.png")
+                .view(t2)
                 .with(new CollidableComponent(true))
                 .with(new ProjectileComponent(data.get("direction"), 1200))
                 .with(new BulletComponent())
@@ -111,10 +151,22 @@ public class GeoWarsFactory implements EntityFactory {
 
         var t = texture(red ? "RedWanderer.png" : "Wanderer.png", 80, 80).brighter();
 
+        var name = "spark_04.png";
+
+        var w = 128;
+        var h = 128;
+
+        var t2 = texture("particles/" + name, w, h).multiplyColor(Color.BLUE.brighter());
+        t2.setBlendMode(BlendMode.ADD);
+        t2.setTranslateX(-(w / 2.0 - 80 / 2.0));
+        t2.setTranslateY(-(h / 2.0 - 80 / 2.0));
+        //t2.setEffect(new BoxBlur(15, 15, 3));
+
         return entityBuilder()
                 .type(WANDERER)
                 .at(getRandomSpawnPoint())
                 .bbox(new HitBox(new Point2D(20, 20), BoundingShape.box(40, 40)))
+                //.view(t2)
                 .view(t)
                 .with(new HealthComponent(red ? config.getRedEnemyHealth() : config.getEnemyHealth()))
                 .with(new CollidableComponent(true))
@@ -200,10 +252,22 @@ public class GeoWarsFactory implements EntityFactory {
 
     @Spawns("Crystal")
     public Entity spawnCrystal(SpawnData data) {
+        var name = "light_02.png";
+
+        var w = 64;
+        var h = 64;
+
+        var t = texture("particles/" + name, w, h).multiplyColor(Color.YELLOW.brighter());
+        t.setBlendMode(BlendMode.ADD);
+        t.setTranslateX(-(w / 2.0 - 32 / 2.0));
+        t.setTranslateY(-(h / 2.0 - 32 / 2.0));
+        t.setEffect(new BoxBlur(15, 15, 3));
+
         return entityBuilder()
                 .type(CRYSTAL)
                 .from(data)
                 .scale(0.65, 0.65)
+                .view(t)
                 .viewWithBBox(texture("YellowCrystal.png").toAnimatedTexture(8, Duration.seconds(1)))
                 .with(new CollidableComponent(true))
                 .with(new CrystalComponent(), new ExpireCleanComponent(Duration.seconds(10)))
