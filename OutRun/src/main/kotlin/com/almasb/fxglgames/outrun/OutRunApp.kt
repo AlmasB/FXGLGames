@@ -205,10 +205,9 @@ class OutRunApp : GameApplication() {
         if (firstTime) {
             val flow = getUIFactoryService().newTextFlow()
             flow.append("OutRun Demo\n", Color.WHITE)
-
-//                    .append(KeyCode.W, Color.GREEN).append(" - Boost\n", Color.WHITE)
-//                    .append(KeyCode.A, Color.GREEN).append(" - Move Left\n", Color.WHITE)
-//                    .append(KeyCode.D, Color.GREEN).append(" - Move Right", Color.WHITE)
+                .append(KeyCode.W, Color.GREEN).append(" - Boost\n", Color.WHITE)
+                .append(KeyCode.A, Color.GREEN).append(" - Move Left\n", Color.WHITE)
+                .append(KeyCode.D, Color.GREEN).append(" - Move Right", Color.WHITE)
 
             val vbox = VBox(flow)
             vbox.translateX = 200.0
