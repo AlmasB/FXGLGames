@@ -96,7 +96,7 @@ public class SpaceInvadersController implements UIController {
         laserMeter.setWidth(110);
         laserMeter.setHeight(10);
 
-        FXGLTextFlow flow = new FXGLTextFlow();
+        FXGLTextFlow flow = getUIFactoryService().newTextFlow();
         // TODO: bind dynamically to trigger
         //flow.append("Press ", Color.WHITE).append(MouseButton.SECONDARY, Color.BLUE);
 

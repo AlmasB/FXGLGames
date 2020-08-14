@@ -42,7 +42,6 @@ import com.almasb.fxglgames.spaceinvaders.components.PlayerComponent;
 import com.almasb.fxglgames.spaceinvaders.event.BonusPickupEvent;
 import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
 import com.almasb.fxglgames.spaceinvaders.level.*;
-import com.almasb.fxglgames.spaceinvaders.level.boss.BossLevel2;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.util.Duration;
@@ -57,7 +56,7 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxglgames.spaceinvaders.Config.*;
 
 /**
- * A clone of Space Invaders.
+ * A modernized clone of Space Invaders.
  *
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
@@ -70,15 +69,17 @@ public class SpaceInvadersApp extends GameApplication {
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
         settings.setProfilingEnabled(false);
-        settings.setMainMenuEnabled(false);
+        settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(true);
+        settings.setManualResizeEnabled(true);
+        settings.setPreserveResizeRatio(true);
         settings.setIntroEnabled(false);
         settings.setEnabledMenuItems(EnumSet.of(MenuItem.EXTRA));
         settings.getCredits().addAll(Arrays.asList(
                 "Music by Eric Matyas",
                 "www.soundimage.org"
         ));
-        settings.setApplicationMode(ApplicationMode.DEVELOPER);
+        settings.setApplicationMode(ApplicationMode.RELEASE);
     }
 
     @Override
@@ -114,8 +115,8 @@ public class SpaceInvadersApp extends GameApplication {
 
     @Override
     protected void onPreInit() {
-        getSettings().setGlobalSoundVolume(0.2);
-        getSettings().setGlobalMusicVolume(0.5);
+        getSettings().setGlobalSoundVolume(0.1);
+        getSettings().setGlobalMusicVolume(1.0);
 
         loopBGM("bgm.mp3");
 
@@ -166,19 +167,25 @@ public class SpaceInvadersApp extends GameApplication {
 
         levels = Arrays.asList(
                 new Level20(),
-                new Level15(),
+                new Level1(),
                 new Level2(),
-                //new Level3(),
-                new BossLevel2(),
+                new Level3(),
                 new Level4(),
                 new Level5(),
-                new Level16(),
-                //new BossLevel2(),
+                new Level6(),
                 new Level7(),
                 new Level8(),
                 new Level9(),
-                new Level11()
-                //new BossLevel3()
+                new Level10(),
+                new Level11(),
+                new Level12(),
+                new Level13(),
+                new Level14(),
+                new Level15(),
+                new Level16(),
+                new Level17(),
+                new Level18(),
+                new Level19()
         );
 
         spawnBackground();
@@ -303,6 +310,11 @@ public class SpaceInvadersApp extends GameApplication {
             nextLevel();
             getNotificationService().pushNotification("Music: Eric Matyas www.soundimage.org");
             runningFirstTime = false;
+        }
+
+        if (geti("level") > levels.size()) {
+            showGameOver();
+            return;
         }
 
         getCurrentLevel().onUpdate(tpf);
