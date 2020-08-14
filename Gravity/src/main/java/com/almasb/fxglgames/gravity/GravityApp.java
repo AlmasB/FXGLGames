@@ -29,8 +29,6 @@ package com.almasb.fxglgames.gravity;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.level.tiled.TMXLevelLoader;
-import com.almasb.fxgl.entity.level.tiled.TiledMap;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxglgames.gravity.scifi.ScifiType;
@@ -52,7 +50,6 @@ public class GravityApp extends GameApplication {
         settings.setTitle("GravityApp");
         settings.setVersion("0.1");
         settings.setIntroEnabled(false);
-        settings.setMenuEnabled(false);
         settings.setProfilingEnabled(false);
         settings.setCloseConfirmation(false);
         settings.setDeveloperMenuEnabled(true);

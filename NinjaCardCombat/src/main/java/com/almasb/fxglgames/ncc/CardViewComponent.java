@@ -53,6 +53,8 @@ public class CardViewComponent extends ChildViewComponent {
     public void onAdded() {
         super.onAdded();
 
+        // TODO: see if we can pre-render Text objects to improve animations
+
         Rectangle border = new Rectangle(CARD_WIDTH, CARD_HEIGHT);
         border.setStrokeWidth(2);
         border.setArcWidth(10);
