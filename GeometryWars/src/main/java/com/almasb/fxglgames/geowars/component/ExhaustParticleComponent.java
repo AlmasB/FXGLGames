@@ -113,4 +113,9 @@ public class ExhaustParticleComponent extends ParticleComponent {
             up = true;
         }
     }
+
+    @Override
+    public boolean isComponentInjectionRequired() {
+        return true;
+    }
 }
