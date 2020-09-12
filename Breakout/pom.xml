@@ -16,9 +16,9 @@
         <maven.compiler.version>3.8.1</maven.compiler.version>
         <maven.shade.version>3.0.0</maven.shade.version>
 
-        <fxgl.version>dev-SNAPSHOT</fxgl.version>
+        <fxgl.version>11.11</fxgl.version>
         <jfx.maven.plugin.version>0.0.4</jfx.maven.plugin.version>
-        <client.plugin.version>0.1.31-SNAPSHOT</client.plugin.version>
+        <client.plugin.version>0.1.31</client.plugin.version>
         <attach.version>4.0.8</attach.version>
         <mainClassName>com.almasb.fxglgames.breakout.BreakoutApp</mainClassName>
     </properties>
@@ -122,6 +122,7 @@
                 <configuration>
                     <nativeImageArgs>--allow-incomplete-classpath</nativeImageArgs>
                     <attachList>
+                        <list>lifecycle</list>
                         <list>storage</list>
                         <list>util</list>
                     </attachList>
