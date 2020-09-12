@@ -19,6 +19,35 @@ java -jar PROJECT_NAME-VERSION.jar
 ```
 OR simply double-click the jar file if the extensions are correctly set on your machine.
 
+## Build for Mobile
+
+Follow latest instructions from [client-samples](https://github.com/gluonhq/client-samples#build-and-run-the-samples). A relevant extract is copied below.
+
+For example, to build Breakout for Android (can only build from Linux):
+
+1. Download [GraalVM](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-20.2.0) zip: `graalvm-ce-java11-linux-amd64-20.2.0.tar.gz`
+
+2. Set `GRAALVM_HOME` and `JAVA_HOME` environment variables to the GraalVM installation directory. For example:
+
+```
+export GRAALVM_HOME=/opt/graalvm-ce-java11-20.2.0
+export JAVA_HOME=$GRAALVM_HOME
+```   
+
+3.
+
+```
+cd Breakout
+mvn clean client:build
+mvn client:package
+
+// connect your Android device and allow it installation over USB
+
+mvn client:install
+```
+
+You can now run the game from Android, or you can run with logging from Linux: `mvn client:run`.
+
 ## Contribute
 
 These game demos are constantly upgraded, so feel free to fork and add something of your own.
