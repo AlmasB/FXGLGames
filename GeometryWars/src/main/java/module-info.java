@@ -3,4 +3,5 @@
  */
 open module geowars.main {
     requires com.almasb.fxgl.all;
+    requires com.almasb.fxgl.controllerinput;
 }

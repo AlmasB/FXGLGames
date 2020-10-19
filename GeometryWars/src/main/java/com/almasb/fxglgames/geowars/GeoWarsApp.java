@@ -29,7 +29,10 @@ import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.controllerinput.ControllerInputService;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.input.UserAction;
+import com.almasb.fxgl.input.virtual.VirtualButton;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxglgames.geowars.collision.BulletPortalHandler;
@@ -78,6 +81,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setConfigClass(GeoWarsConfig.class);
         settings.setExperimentalNative(false);
         settings.setManualResizeEnabled(true);
+        settings.addEngineService(ControllerInputService.class);
         settings.setApplicationMode(isRelease ? ApplicationMode.RELEASE : ApplicationMode.DEVELOPER);
 
         if (!settings.isExperimentalNative()) {
@@ -100,12 +104,50 @@ public class GeoWarsApp extends GameApplication {
 
     @Override
     protected void initInput() {
-        onKey(KeyCode.W, () -> playerComponent.up());
-        onKey(KeyCode.A, () -> playerComponent.left());
-        onKey(KeyCode.S, () -> playerComponent.down());
-        onKey(KeyCode.D, () -> playerComponent.right());
+        getInput().addAction(new UserAction("Up") {
+            @Override
+            protected void onAction() {
+                playerComponent.up();
+            }
+        }, KeyCode.W, VirtualButton.UP);
 
-        onBtn(MouseButton.PRIMARY, () -> playerComponent.shoot(getInput().getMousePositionWorld()));
+        getInput().addAction(new UserAction("Down") {
+            @Override
+            protected void onAction() {
+                playerComponent.down();
+            }
+        }, KeyCode.S, VirtualButton.DOWN);
+
+        getInput().addAction(new UserAction("Left") {
+            @Override
+            protected void onAction() {
+                playerComponent.left();
+            }
+        }, KeyCode.A, VirtualButton.LEFT);
+
+        getInput().addAction(new UserAction("Right") {
+            @Override
+            protected void onAction() {
+                playerComponent.right();
+            }
+        }, KeyCode.D, VirtualButton.RIGHT);
+
+        // TODO: allow virtual button + sticks + onKey() DSL with virtual button
+        getInput().addAction(new UserAction("Shoot Mouse") {
+            @Override
+            protected void onAction() {
+                playerComponent.shoot(getInput().getMousePositionWorld());
+            }
+        }, MouseButton.PRIMARY);
+
+        getInput().addAction(new UserAction("Shoot Key") {
+            @Override
+            protected void onAction() {
+                playerComponent.shoot(getInput().getMousePositionWorld());
+            }
+        }, KeyCode.F, VirtualButton.A);
+
+        getService(ControllerInputService.class).addInputHandler(getInput());
     }
 
     @Override
