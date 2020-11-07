@@ -1,3 +1,5 @@
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FAlmasB%2FFXGLGames&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=PAGE+VIEWS&edge_flat=false)](https://hits.seeyoufarm.com)
+
 This repo contains sample games built with <a href="https://github.com/AlmasB/FXGL">FXGL</a> Game Library.
 Each game focuses on one or two aspects of FXGL, e.g. Drop focuses on bare minimums, Pac-man focuses on AI, etc.
 
