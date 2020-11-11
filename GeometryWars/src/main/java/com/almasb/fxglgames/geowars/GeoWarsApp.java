@@ -49,6 +49,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+import java.util.Comparator;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -82,7 +83,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setExperimentalNative(false);
         settings.setManualResizeEnabled(true);
         settings.addEngineService(ControllerInputService.class);
-        settings.setApplicationMode(isRelease ? ApplicationMode.RELEASE : ApplicationMode.DEVELOPER);
+        settings.setApplicationMode(isRelease ? ApplicationMode.RELEASE : ApplicationMode.DEBUG);
 
         if (!settings.isExperimentalNative()) {
             settings.setFontUI("game_font_7.ttf");
@@ -143,11 +144,16 @@ public class GeoWarsApp extends GameApplication {
         getInput().addAction(new UserAction("Shoot Key") {
             @Override
             protected void onAction() {
-                playerComponent.shoot(getInput().getMousePositionWorld());
+
+                // TODO: use sticks to aim?
+                byType(WANDERER, SEEKER, RUNNER, BOUNCER)
+                        .stream()
+                        .min(Comparator.comparingDouble(e -> e.distance(player)))
+                        .ifPresent(e -> playerComponent.shoot(e.getPosition()));
             }
         }, KeyCode.F, VirtualButton.A);
 
-        getService(ControllerInputService.class).addInputHandler(getInput());
+        //getService(ControllerInputService.class).addInputHandler(getInput());
     }
 
     @Override
@@ -155,7 +161,7 @@ public class GeoWarsApp extends GameApplication {
         vars.put("score", 0);
         vars.put("multiplier", 1);
         vars.put("kills", 0);
-        vars.put("lives", 3);
+        vars.put("lives", 388);
         vars.put("weaponType", WeaponType.SINGLE);
     }
 
