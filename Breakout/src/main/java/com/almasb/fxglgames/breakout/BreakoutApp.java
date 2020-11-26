@@ -73,17 +73,16 @@ public class BreakoutApp extends GameApplication {
         settings.setHeight(HEIGHT);
         settings.setFontUI("main_font.ttf");
         settings.setIntroEnabled(true);
+        settings.setProfilingEnabled(true);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
     @Override
     protected void onPreInit() {
-        getSettings().setGlobalMusicVolume(0);
-        getSettings().setGlobalSoundVolume(0);
+        getSettings().setGlobalMusicVolume(0.5);
+        getSettings().setGlobalSoundVolume(0.5);
 
-        if (!getSettings().isExperimentalNative()) {
-            loopBGM("BGM.mp3");
-        }
+        loopBGM("BGM.mp3");
     }
 
     @Override
@@ -201,9 +200,7 @@ public class BreakoutApp extends GameApplication {
     }
 
     private void playHitSound() {
-        if (!getSettings().isExperimentalNative()) {
-            play("hit.wav");
-        }
+        play("hit.wav");
     }
 
     @Override
