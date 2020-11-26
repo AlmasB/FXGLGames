@@ -266,12 +266,12 @@ public class BreakoutApp extends GameApplication {
 
         addUINode(textScore, 220, getAppHeight() - 20);
 
-        var regionLeft = new Rectangle(getAppWidth() / 2, getAppHeight() - 200);
+        var regionLeft = new Rectangle(getAppWidth() / 2, getAppHeight());
         regionLeft.setOpacity(0);
         regionLeft.setOnMousePressed(e -> getInput().mockKeyPress(KeyCode.A));
         regionLeft.setOnMouseReleased(e -> getInput().mockKeyRelease(KeyCode.A));
 
-        var regionRight = new Rectangle(getAppWidth() / 2, getAppHeight() - 200);
+        var regionRight = new Rectangle(getAppWidth() / 2, getAppHeight());
         regionRight.setOpacity(0);
         regionRight.setOnMousePressed(e -> getInput().mockKeyPress(KeyCode.D));
         regionRight.setOnMouseReleased(e -> getInput().mockKeyRelease(KeyCode.D));
