@@ -1,0 +1,16 @@
+<?xml version='1.0'?>
+<manifest xmlns:android='http://schemas.android.com/apk/res/android' package='com.almasb.fxglgames.Breakout' android:versionCode='1' android:versionName='1.0'>
+    <supports-screens android:xlargeScreens="true"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    
+    <application android:label='Breakout' android:icon="@mipmap/ic_launcher">
+        <activity android:screenOrientation="landscape" android:name='com.gluonhq.helloandroid.MainActivity' android:configChanges="orientation|keyboardHidden">
+             <intent-filter>
+                <category android:name='android.intent.category.LAUNCHER'/>
+                <action android:name='android.intent.action.MAIN'/>
+             </intent-filter>
+        </activity>
+        <activity android:name='com.gluonhq.helloandroid.PermissionRequestActivity'/>
+    </application>
+</manifest>
+
