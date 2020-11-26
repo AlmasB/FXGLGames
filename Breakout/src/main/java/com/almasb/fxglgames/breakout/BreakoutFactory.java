@@ -56,9 +56,7 @@ import com.almasb.fxglgames.breakout.components.BrickComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
 import java.util.stream.Collectors;
@@ -103,19 +101,10 @@ public class BreakoutFactory implements EntityFactory {
     public Entity newColorCircle(SpawnData data) {
         var radius = 200;
 
-        // touch based color control (e.g. mobile screen)
-        var circle = new Circle(radius, radius, radius);
-        circle.setStroke(Color.WHITE);
-        circle.setStrokeWidth(3.5);
-        circle.setOnMouseClicked(e -> {
-            getInput().mockKeyPress(KeyCode.SPACE);
-            getInput().mockKeyRelease(KeyCode.SPACE);
-        });
-
         return entityBuilder(data)
                 .type(COLOR_CIRCLE)
                 .bbox(new HitBox(BoundingShape.circle(radius)))
-                .view(circle)
+                //.view(circle)
                 .with(new PhysicsComponent())
                 .with(new IrremovableComponent())
                 .build();

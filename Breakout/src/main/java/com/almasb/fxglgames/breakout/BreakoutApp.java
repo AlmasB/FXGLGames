@@ -65,6 +65,8 @@ public class BreakoutApp extends GameApplication {
     private static final int MAX_LEVEL = 5;
     private static final int STARTING_LEVEL = 1;
 
+    private Circle uiCircle;
+
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("FXGL Breakout");
@@ -172,8 +174,7 @@ public class BreakoutApp extends GameApplication {
 
         var ball = spawn("ball", getAppWidth() / 2, getAppHeight() - 250);
         ball.getComponent(BallComponent.class).colorProperty().addListener((obs, old, newValue) -> {
-            var circle = (Circle) getGameWorld().getSingleton(COLOR_CIRCLE).getViewComponent().getChildren().get(0);
-            circle.setFill(getBallControl().getNextColor());
+            uiCircle.setFill(getBallControl().getNextColor());
         });
 
         spawn("bat", getAppWidth() / 2, getAppHeight() - 180);
@@ -278,6 +279,19 @@ public class BreakoutApp extends GameApplication {
 
         addUINode(regionLeft);
         addUINode(regionRight, getAppWidth() / 2, 0);
+
+        var radius = 200;
+
+        // touch based color control (e.g. mobile screen)
+        uiCircle = new Circle(radius, radius, radius);
+        uiCircle.setStroke(Color.WHITE);
+        uiCircle.setStrokeWidth(3.5);
+        uiCircle.setOnMouseClicked(e -> {
+            getInput().mockKeyPress(KeyCode.SPACE);
+            getInput().mockKeyRelease(KeyCode.SPACE);
+        });
+
+        addUINode(uiCircle, -200, getAppHeight() - 200);
         
         runOnce(() -> {
             if (isReleaseMode()) {
