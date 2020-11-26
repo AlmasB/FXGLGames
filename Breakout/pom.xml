@@ -19,7 +19,7 @@
         <fxgl.version>dev-SNAPSHOT</fxgl.version>
         <jfx.maven.plugin.version>0.0.4</jfx.maven.plugin.version>
         <client.plugin.version>0.1.35</client.plugin.version>
-        <attach.version>4.0.8</attach.version>
+        <attach.version>4.0.9</attach.version>
         <mainClassName>com.almasb.fxglgames.breakout.BreakoutApp</mainClassName>
     </properties>
 
@@ -29,7 +29,12 @@
             <artifactId>fxgl</artifactId>
             <version>${fxgl.version}</version>
         </dependency>
-        
+
+        <dependency>
+            <groupId>com.gluonhq.attach</groupId>
+            <artifactId>audio</artifactId>
+            <version>${attach.version}</version>
+        </dependency>        
         <dependency>
             <groupId>com.gluonhq.attach</groupId>
             <artifactId>lifecycle</artifactId>
@@ -127,6 +132,7 @@
                 <configuration>
                     <nativeImageArgs>--allow-incomplete-classpath</nativeImageArgs>
                     <attachList>
+                        <list>audio</list>
                         <list>lifecycle</list>
                         <list>storage</list>
                         <list>util</list>
