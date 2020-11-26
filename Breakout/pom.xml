@@ -16,9 +16,9 @@
         <maven.compiler.version>3.8.1</maven.compiler.version>
         <maven.shade.version>3.0.0</maven.shade.version>
 
-        <fxgl.version>11.11</fxgl.version>
+        <fxgl.version>dev-SNAPSHOT</fxgl.version>
         <jfx.maven.plugin.version>0.0.4</jfx.maven.plugin.version>
-        <client.plugin.version>0.1.31</client.plugin.version>
+        <client.plugin.version>0.1.35</client.plugin.version>
         <attach.version>4.0.8</attach.version>
         <mainClassName>com.almasb.fxglgames.breakout.BreakoutApp</mainClassName>
     </properties>
@@ -29,7 +29,12 @@
             <artifactId>fxgl</artifactId>
             <version>${fxgl.version}</version>
         </dependency>
-
+        
+        <dependency>
+            <groupId>com.gluonhq.attach</groupId>
+            <artifactId>lifecycle</artifactId>
+            <version>${attach.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.gluonhq.attach</groupId>
             <artifactId>storage</artifactId>
