@@ -23,6 +23,7 @@ import com.almasb.fxglgames.mario.ui.LevelEndScene;
 import com.almasb.fxglgames.mario.ui.MarioLoadingScene;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TouchEvent;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
@@ -56,6 +57,8 @@ public class MarioApp extends GameApplication {
     private LazyValue<LevelEndScene> levelEndScene = new LazyValue<>(() -> new LevelEndScene());
     private Entity player;
 
+    private boolean isMouseEvents = true;
+
     @Override
     protected void initInput() {
         getInput().addAction(new UserAction("Left") {
@@ -66,6 +69,7 @@ public class MarioApp extends GameApplication {
 
             @Override
             protected void onActionEnd() {
+                isMouseEvents = true;
                 player.getComponent(PlayerComponent.class).stop();
             }
         }, KeyCode.A, VirtualButton.LEFT);
@@ -85,6 +89,7 @@ public class MarioApp extends GameApplication {
         getInput().addAction(new UserAction("Jump") {
             @Override
             protected void onActionBegin() {
+                isMouseEvents = false;
                 player.getComponent(PlayerComponent.class).jump();
             }
         }, KeyCode.W, VirtualButton.A);
@@ -225,7 +230,15 @@ public class MarioApp extends GameApplication {
 
             runOnce(() -> {
                 dpadView.getScene().addEventFilter(TouchEvent.ANY, event -> {
-                    System.out.println(event);
+                    if (!isMouseEvents) {
+                        System.out.println(event);
+                    }
+                });
+
+                dpadView.getScene().addEventFilter(MouseEvent.ANY, event -> {
+                    if (isMouseEvents) {
+                        System.out.println(event);
+                    }
                 });
             }, Duration.seconds(2));
         }
