@@ -15,6 +15,7 @@ import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.level.Level;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.view.KeyView;
+import com.almasb.fxgl.input.virtual.VirtualButton;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxglgames.mario.collisions.PlayerButtonHandler;
 import com.almasb.fxglgames.mario.components.PlayerComponent;
@@ -66,7 +67,7 @@ public class MarioApp extends GameApplication {
             protected void onActionEnd() {
                 player.getComponent(PlayerComponent.class).stop();
             }
-        }, KeyCode.A);
+        }, KeyCode.A, VirtualButton.LEFT);
 
         getInput().addAction(new UserAction("Right") {
             @Override
@@ -78,14 +79,14 @@ public class MarioApp extends GameApplication {
             protected void onActionEnd() {
                 player.getComponent(PlayerComponent.class).stop();
             }
-        }, KeyCode.D);
+        }, KeyCode.D, VirtualButton.RIGHT);
 
         getInput().addAction(new UserAction("Jump") {
             @Override
             protected void onActionBegin() {
                 player.getComponent(PlayerComponent.class).jump();
             }
-        }, KeyCode.W);
+        }, KeyCode.W, VirtualButton.A);
 
         getInput().addAction(new UserAction("Use") {
             @Override
@@ -105,7 +106,7 @@ public class MarioApp extends GameApplication {
                             makeExitDoor();
                         });
             }
-        }, KeyCode.E);
+        }, KeyCode.E, VirtualButton.B);
     }
 
     @Override
@@ -210,6 +211,17 @@ public class MarioApp extends GameApplication {
         inc("level", +1);
 
         setLevel(geti("level"));
+    }
+
+    @Override
+    protected void initUI() {
+        if (isMobile()) {
+            var dpadView = getInput().createVirtualDpadView();
+            var buttonsView = getInput().createXboxVirtualControllerView();
+
+            addUINode(dpadView, 0, getAppHeight() - 290);
+            addUINode(buttonsView, getAppWidth() - 280, getAppHeight() - 290);
+        }
     }
 
     @Override
