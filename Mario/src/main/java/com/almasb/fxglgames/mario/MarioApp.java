@@ -23,6 +23,7 @@ import com.almasb.fxglgames.mario.ui.LevelEndScene;
 import com.almasb.fxglgames.mario.ui.MarioLoadingScene;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.TouchEvent;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
@@ -221,6 +222,12 @@ public class MarioApp extends GameApplication {
 
             addUINode(dpadView, 0, getAppHeight() - 290);
             addUINode(buttonsView, getAppWidth() - 280, getAppHeight() - 290);
+
+            runOnce(() -> {
+                dpadView.getScene().addEventFilter(TouchEvent.ANY, event -> {
+                    System.out.println(event);
+                });
+            }, Duration.seconds(2));
         }
     }
 
