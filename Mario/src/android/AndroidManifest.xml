@@ -3,7 +3,7 @@
     <supports-screens android:xlargeScreens="true"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     
-    <application android:label='Breakout' android:icon="@mipmap/ic_launcher">
+    <application android:label='Mario' android:icon="@mipmap/ic_launcher">
         <activity android:screenOrientation="landscape" android:name='com.gluonhq.helloandroid.MainActivity' android:configChanges="orientation|keyboardHidden">
              <intent-filter>
                 <category android:name='android.intent.category.LAUNCHER'/>
