@@ -43,6 +43,7 @@ import com.almasb.fxglgames.breakout.components.BackgroundStarsViewComponent;
 import com.almasb.fxglgames.breakout.components.BallComponent;
 import com.almasb.fxglgames.breakout.components.BatComponent;
 import com.almasb.fxglgames.breakout.components.BrickComponent;
+import javafx.beans.binding.Bindings;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -63,9 +64,10 @@ public class BreakoutApp extends GameApplication {
     public static final int HEIGHT = 22 * 32;
 
     private static final int MAX_LEVEL = 10;
-    private static final int STARTING_LEVEL = 10;
+    private static final int STARTING_LEVEL = 1;
 
     private Circle uiCircle;
+    private MultiplierView uiMultiplier;
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -74,6 +76,7 @@ public class BreakoutApp extends GameApplication {
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
         settings.setFontUI("main_font.ttf");
+        settings.setFontGame("ENDORALT.ttf");
         settings.setIntroEnabled(false);
         settings.setProfilingEnabled(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
@@ -81,8 +84,8 @@ public class BreakoutApp extends GameApplication {
 
     @Override
     protected void onPreInit() {
-        getSettings().setGlobalMusicVolume(0.0);
-        getSettings().setGlobalSoundVolume(0.0);
+        getSettings().setGlobalMusicVolume(0.5);
+        getSettings().setGlobalSoundVolume(0.5);
 
         loopBGM("BGM.mp3");
     }
@@ -129,6 +132,7 @@ public class BreakoutApp extends GameApplication {
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("lives", 3);
         vars.put("score", 0);
+        vars.put("multiplier", 0);
         vars.put("level", STARTING_LEVEL);
     }
 
@@ -213,6 +217,7 @@ public class BreakoutApp extends GameApplication {
             playHitSound();
 
             if (!getBallControl().getColor().equals(brick.getComponent(BrickComponent.class).getColor())) {
+                set("multiplier", 0);
                 return;
             }
 
@@ -221,6 +226,8 @@ public class BreakoutApp extends GameApplication {
 
             spawn("sparks", new SpawnData(ball.getPosition()).put("color", getBallControl().getColor()));
 
+            inc("multiplier", +1);
+            // TODO: use mult to compute score
             inc("score", +50);
 
             if (FXGLMath.randomBoolean()) {
@@ -253,6 +260,7 @@ public class BreakoutApp extends GameApplication {
                 playHitSound();
 
                 if (boxB.getName().equals("BOT")) {
+                    set("multiplier", 0);
                     inc("score", -100);
                 }
 
@@ -292,7 +300,63 @@ public class BreakoutApp extends GameApplication {
         });
 
         addUINode(uiCircle, -200, getAppHeight() - 200);
-        
+
+        uiMultiplier = new MultiplierView();
+        uiMultiplier.getAssessmentText().textProperty().bind(
+                Bindings.createStringBinding(() -> {
+                    int mult = geti("multiplier");
+
+                    if (mult > 15) {
+                        return "LEGENDARY";
+                    } else if (mult > 10) {
+                        return "EPIC";
+                    } else if (mult > 6) {
+                        return "AWESOME";
+                    } else if (mult > 2) {
+                        return "GOOD";
+                    }
+
+                    return "";
+                }, getip("multiplier"))
+        );
+
+        uiMultiplier.getAssessmentText().strokeProperty().bind(
+                uiMultiplier.getAssessmentText().fillProperty()
+        );
+
+        uiMultiplier.getAssessmentText().fillProperty().bind(
+                Bindings.createObjectBinding(() -> {
+                    int mult = geti("multiplier");
+
+                    if (mult > 15) {
+                        return Color.RED;
+                    } else if (mult > 10) {
+                        return Color.LIGHTPINK;
+                    } else if (mult > 6) {
+                        return Color.GREENYELLOW;
+                    } else if (mult > 2) {
+                        return Color.GREEN;
+                    }
+
+                    return Color.GREEN;
+                }, getip("multiplier"))
+        );
+
+        uiMultiplier.getText().fillProperty().bind(uiMultiplier.getAssessmentText().fillProperty());
+        uiMultiplier.getText().textProperty().bind(getip("multiplier").asString("x%d"));
+        uiMultiplier.visibleProperty().bind(getip("multiplier").greaterThan(0));
+
+        addUINode(uiMultiplier, getAppWidth() - 140, -60);
+
+        getWorldProperties().<Integer>addListener("multiplier", (old, now) -> {
+            int mult = now;
+            int prev = old;
+
+            if (mult > 0 && mult != prev) {
+                uiMultiplier.playAnimation();
+            }
+        });
+
         runOnce(() -> {
             if (isReleaseMode()) {
                 getSceneService().pushSubScene(new TutorialSubScene());

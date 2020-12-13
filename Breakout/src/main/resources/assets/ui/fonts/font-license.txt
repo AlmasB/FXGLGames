@@ -1,14 +1,85 @@
-Thank you for downloading this font!
+main_font.ttf
 
-This font is copyright (c) Jakob Fischer at www.pizzadude.dk,  all rights reserved. Do not distribute without the author's permission.
+https://www.1001freefonts.com/chintzy-cpu.font
 
-Use this font for non-commercial use only! If you plan to use it for commercial purposes, contact me before doing so!
+README LICENSE BELOW
+__________________________________
+Chintzy CPU  Created by Brian Kent
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+Thanks for Downloading Chintzy CPU.
+
+-Chintzy CPU
+-Chintzy CPU Shadow
+
+If you have any questions or comments, you can e-mail me at
+aefonts[AT]frontiernet[DOT]net
+
+You can visit my Homepage <ÆNIGMA GAMES & FONTS> at
+http://www.aenigmafonts.com/
+
+____________
+!!! NOTE !!!
+¯¯¯¯¯¯¯¯¯¯¯¯
+This font has been updated!  I've edited the (BRK) in the font name
+to just BRK.  It seems that Adobe Illustrator and web pages with CSS
+don't like fonts with ( and ) in their name.
+
+________________
+INSTALLING FONTS
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+  There's a couple of ways to install Fonts. The 'easy' way to
+install fonts is to just Unzip/place the font file [.ttf] into your
+Windows\Fonts directory (I always use this method). If you're unable
+to do it the 'easy' way, then try to do it this way (for Windows
+95/98/NT):
+
+1] Unzip the Font(s) to a folder (or somewhere, just remember where
+you unzipped it) on your Computer.
+
+2] Next, click on the START button, then select SETTINGS then
+CONTROL PANEL.
+
+3] When the Control Panel Window pops up, Double Click on FONTS.
+
+4] When the FONTS window pops up, select File then Install New Font...
+
+5] A Add Fonts window will pop up, just go to the folder that you
+unzipped the Font(s) to, select the Font(s) and then click on OK.
+Now the Font(s) are installed.
+
+  Now you can use the Font(s) in programs the utilize Fonts.  Make
+sure that you install the font(s) first, then open up your apps
+(so the app will recognize the font).    Sometimes you'll have to
+wait until you computer 'auto-refreshes' for programs to recognize
+fonts (Windows is sometimes slow to do that).  You can refresh your
+computer quicker by going into Windows Explorer -or- My Computer and
+press F5 (or in the menubar select VIEW then REFRESH).
 
 
-For more original fonts take a look at www.pizzadude.dk
+__________
+DISCLAIMER
+¯¯¯¯¯¯¯¯¯¯
+-The font(s) in this zip file were created by me (Brian Kent).  All
+of my Fonts are Freeware, you can use them any way you want to
+(Personal use, Commercial use, or whatever).
 
-Have fun and enjoy!
+-If you have a Font related site and would like to offer my fonts on
+your site, go right ahead. All I ask is that you keep this text file
+intact with the Font.
 
-Jakob Fischer
-jakob@pizzadude.dk
-www.pizzadude.dk
+-You may not Sell or Distribute my Fonts for profit or alter the font
+file(s) [.ttf .fon] in any way without asking me first. I can be
+reached at:
+aefonts[AT]frontiernet[DOT]net
+
+(make sure you replace the [AT] and [DOT] with the proper characters) .
+
+
+---
+
+ENDORALT.ttf
+
+https://www.1001freefonts.com/endor.font
+
+NO LICENSE README ATTACHED WITH THIS FONT
