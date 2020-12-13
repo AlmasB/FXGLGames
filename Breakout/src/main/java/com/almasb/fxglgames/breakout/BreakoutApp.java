@@ -62,27 +62,27 @@ public class BreakoutApp extends GameApplication {
     public static final int WIDTH = 14 * 96;
     public static final int HEIGHT = 22 * 32;
 
-    private static final int MAX_LEVEL = 5;
-    private static final int STARTING_LEVEL = 1;
+    private static final int MAX_LEVEL = 10;
+    private static final int STARTING_LEVEL = 10;
 
     private Circle uiCircle;
 
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("FXGL Breakout");
-        settings.setVersion("2.0");
+        settings.setVersion("2.1");
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
         settings.setFontUI("main_font.ttf");
-        settings.setIntroEnabled(true);
-        settings.setProfilingEnabled(true);
+        settings.setIntroEnabled(false);
+        settings.setProfilingEnabled(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
     @Override
     protected void onPreInit() {
-        getSettings().setGlobalMusicVolume(0.5);
-        getSettings().setGlobalSoundVolume(0.5);
+        getSettings().setGlobalMusicVolume(0.0);
+        getSettings().setGlobalSoundVolume(0.0);
 
         loopBGM("BGM.mp3");
     }
