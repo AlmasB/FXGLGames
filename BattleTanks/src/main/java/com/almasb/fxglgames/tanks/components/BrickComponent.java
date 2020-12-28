@@ -4,7 +4,7 @@ import com.almasb.fxgl.entity.component.Component;
 
 public class BrickComponent extends Component {
 
-    private int hp = 2;
+    private int hp = 10;
 
     public void onHit() {
         if (hp <= 0)
@@ -12,7 +12,7 @@ public class BrickComponent extends Component {
 
         hp--;
 
-        if (hp == 1) {
+        if (hp >= 1) {
             entity.getViewComponent().setOpacity(0.5);
         } else {
             entity.removeFromWorld();

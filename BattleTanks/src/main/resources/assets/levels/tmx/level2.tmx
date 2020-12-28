@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="21" height="12" tilewidth="60" tileheight="60" infinite="0" nextlayerid="3" nextobjectid="85">
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="21" height="12" tilewidth="60" tileheight="60" infinite="0" nextlayerid="3" nextobjectid="89">
  <layer id="1" name="Tile Layer 1" width="21" height="12">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -93,7 +93,11 @@
   <object id="80" type="enemySpawnPoint" x="900" y="60" width="60" height="60"/>
   <object id="81" type="enemySpawnPoint" x="300" y="60" width="60" height="60"/>
   <object id="82" type="enemySpawnPoint" x="600" y="180" width="60" height="60"/>
-  <object id="83" type="enemySpawnPoint" x="900" y="600" width="60" height="60"/>
-  <object id="84" type="enemySpawnPoint" x="300" y="600" width="60" height="60"/>
+  <object id="83" type="enemySpawnPoint" x="960" y="60" width="60" height="60"/>
+  <object id="84" type="enemySpawnPoint" x="240" y="60" width="60" height="60"/>
+  <object id="85" type="allySpawnPoint" x="240" y="600" width="60" height="60"/>
+  <object id="86" type="allySpawnPoint" x="300" y="600" width="60" height="60"/>
+  <object id="87" type="allySpawnPoint" x="900" y="600" width="60" height="60"/>
+  <object id="88" type="allySpawnPoint" x="960" y="600" width="60" height="60"/>
  </objectgroup>
 </map>

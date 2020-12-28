@@ -33,14 +33,13 @@ import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.virtual.VirtualButton;
 import com.almasb.fxgl.pathfinding.CellState;
 import com.almasb.fxgl.pathfinding.astar.AStarGrid;
-import com.almasb.fxgl.pathfinding.astar.AStarGridView;
 import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
 import com.almasb.fxglgames.tanks.collision.BulletBrickHandler;
 import com.almasb.fxglgames.tanks.collision.BulletEnemyTankHandler;
 import com.almasb.fxglgames.tanks.collision.BulletFlagHandler;
+import com.almasb.fxglgames.tanks.components.TankAIComponent;
 import com.almasb.fxglgames.tanks.components.TankViewComponent;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -108,26 +107,11 @@ public class BattleTanksApp extends GameApplication {
         input.addAction(new UserAction("Move To") {
             @Override
             protected void onActionBegin() {
-
                 tankViewComponent.getEntity().getComponent(AStarMoveComponent.class)
                         .moveToCell((int) (getInput().getMouseXWorld() / 30), (int) (getInput().getMouseYWorld() / 30));
                 //tankViewComponent.getEntity().call("moveToCell", 2, 3);
             }
         }, KeyCode.G);
-
-        input.addAction(new UserAction("Move To Action") {
-            @Override
-            protected void onActionBegin() {
-//                tankViewComponent.getEntity().getComponent(ActionComponent.class)
-//                        .addAction(new InstantAction() {
-//                            @Override
-//                            protected void performOnce(double tpf) {
-//                                tankViewComponent.getEntity().getComponent(AStarMoveComponent.class)
-//                                        .moveToCell((int) (getInput().getMouseXWorld() / 30), (int) (getInput().getMouseYWorld() / 30));
-//                            }
-//                        });
-            }
-        }, MouseButton.PRIMARY);
     }
 
     @Override
@@ -146,21 +130,17 @@ public class BattleTanksApp extends GameApplication {
             return CellState.WALKABLE;
         });
 
-        var gridView = new AStarGridView(grid, BLOCK_SIZE / 2, BLOCK_SIZE / 2);
-        //getGameScene().addUINode(gridView);
-
         tankViewComponent = getGameWorld().getSingleton(PLAYER).getComponent(TankViewComponent.class);
-
         tankViewComponent.getEntity().addComponent(new AStarMoveComponent(grid));
+        tankViewComponent.getEntity().removeComponent(TankAIComponent.class);
 
         byType(ENEMY).forEach(e -> {
             e.addComponent(new AStarMoveComponent(grid));
-            //e.addComponent(new GuardComponent(grid, FXGLMath.randomBoolean()));
-            //e.addComponent(new RandomAStarMoveComponent());
         });
 
-        //getGameWorld().getRandom(ENEMY).ifPresent(e -> e.addComponent(new GuardComponent(grid, FXGLMath.randomBoolean())));
-        //getGameWorld().getRandom(ENEMY).ifPresent(e -> e.addComponent(new ShootPlayerComponent()));
+        byType(ALLY).forEach(e -> {
+            e.addComponent(new AStarMoveComponent(grid));
+        });
     }
 
     @Override

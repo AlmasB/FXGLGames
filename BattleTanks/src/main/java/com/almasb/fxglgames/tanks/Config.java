@@ -26,12 +26,16 @@
 
 package com.almasb.fxglgames.tanks;
 
+import javafx.util.Duration;
+
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class Config {
 
     public static final double BULLET_SPEED = 10 * 60;
+
+    public static final Duration SHOOT_DELAY = Duration.seconds(1);
 
     public static final int BLOCK_SIZE = 60;
 }

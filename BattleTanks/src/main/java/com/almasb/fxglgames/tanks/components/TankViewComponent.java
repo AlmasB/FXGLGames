@@ -31,9 +31,14 @@ import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.ViewComponent;
 import com.almasb.fxgl.texture.Texture;
+import com.almasb.fxgl.time.LocalTimer;
+import com.almasb.fxglgames.tanks.Config;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.paint.Color;
+
+import static com.almasb.fxgl.dsl.FXGL.spawn;
+import static com.almasb.fxgl.dsl.FXGL.texture;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -48,9 +53,11 @@ public class TankViewComponent extends Component {
     private double frameWidth;
     private double frameHeight;
 
+    private LocalTimer shootTimer = FXGL.newLocalTimer();
+
     @Override
     public void onAdded() {
-        texture = FXGL.getAssetLoader().loadTexture("player.png").multiplyColor(Color.LIGHTBLUE);
+        texture = texture("player.png").multiplyColor(Color.LIGHTBLUE);
         view.addChild(texture);
 
         // there are 8 frames
@@ -99,10 +106,15 @@ public class TankViewComponent extends Component {
     }
 
     public void shoot() {
-        FXGL.spawn("Bullet", new SpawnData(getEntity().getCenter())
+        if (!shootTimer.elapsed(Config.SHOOT_DELAY))
+            return;
+
+        spawn("Bullet", new SpawnData(getEntity().getCenter())
                 .put("direction", angleToVector())
                 .put("owner", entity)
         );
+
+        shootTimer.capture();
     }
 
     private Point2D angleToVector() {

@@ -26,10 +26,8 @@
 
 package com.almasb.fxglgames.tanks;
 
-import com.almasb.fxgl.entity.action.ActionDebugViewComponent;
-import com.almasb.fxgl.ai.goap.GoapComponent;
-import com.almasb.fxgl.ai.goap.WorldState;
 import com.almasb.fxgl.dsl.EntityBuilder;
+import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
 import com.almasb.fxgl.dsl.components.ProjectileComponent;
 import com.almasb.fxgl.entity.Entity;
@@ -38,23 +36,18 @@ import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.action.ActionComponent;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.entity.state.StateComponent;
 import com.almasb.fxgl.pathfinding.CellMoveComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
-import com.almasb.fxglgames.tanks.actions.DoNothingAction;
-import com.almasb.fxglgames.tanks.actions.GoalSelectorComponent;
-import com.almasb.fxglgames.tanks.actions.GuardAction;
-import com.almasb.fxglgames.tanks.actions.ShootPlayerAction;
-import com.almasb.fxglgames.tanks.components.BrickComponent;
-import com.almasb.fxglgames.tanks.components.MoveComponent;
-import com.almasb.fxglgames.tanks.components.PlayerArrowViewComponent;
-import com.almasb.fxglgames.tanks.components.TankViewComponent;
+import com.almasb.fxglgames.tanks.components.*;
 import javafx.geometry.Point2D;
+import javafx.scene.effect.BlendMode;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-import java.util.Set;
-
-import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
+import static com.almasb.fxgl.dsl.FXGL.texture;
 import static com.almasb.fxglgames.tanks.BattleTanksType.*;
 import static com.almasb.fxglgames.tanks.Config.BLOCK_SIZE;
 import static com.almasb.fxglgames.tanks.Config.BULLET_SPEED;
@@ -66,49 +59,53 @@ public class BattleTanksFactory implements EntityFactory {
 
     @Spawns("player,playerSpawnPoint")
     public Entity newPlayer(SpawnData data) {
-        var e = newTank(data)
+        return newTank(data)
                 .type(PLAYER)
                 .with(new PlayerArrowViewComponent())
+                .rotationOrigin(new Point2D(18, 18))
                 .build();
-
-        e.getTransformComponent().setRotationOrigin(new Point2D(18, 18));
-
-        return e;
     }
 
     @Spawns("enemy,enemySpawnPoint")
     public Entity newEnemy(SpawnData data) {
-        WorldState goal = new WorldState();
+        var rect = new Rectangle(36, 36, Color.RED);
+        rect.setBlendMode(BlendMode.COLOR_BURN);
 
         var e = newTank(data)
+                .view(rect)
                 .type(ENEMY)
-                .with("playerAlive", true)
-                .with("guard", false)
-                .with(new GoapComponent(getWorldProperties(), goal,
-                        Set.of(
-                                new DoNothingAction(),
-                                new ShootPlayerAction(),
-                                new GuardAction()
-                        )
-                ))
-                .with(new GoalSelectorComponent())
-                .with(new ActionDebugViewComponent())
+                .rotationOrigin(new Point2D(18, 18))
                 .build();
 
-        e.getTransformComponent().setRotationOrigin(new Point2D(18, 18));
+        e.setLocalAnchor(new Point2D(18, 18));
+
+        return e;
+    }
+
+    @Spawns("ally,allySpawnPoint")
+    public Entity newAlly(SpawnData data) {
+        var e = newTank(data)
+                .type(ALLY)
+                .rotationOrigin(new Point2D(18, 18))
+                .build();
+
+        e.setLocalAnchor(new Point2D(18, 18));
 
         return e;
     }
 
     private EntityBuilder newTank(SpawnData data) {
-        return entityBuilder()
-                .from(data)
+        return entityBuilder(data)
                 .bbox(new HitBox(new Point2D(5, 5), BoundingShape.box(26, 26)))
+                //.anchorFromCenter()
                 .collidable()
+                .with(new HealthIntComponent(10))
                 .with(new MoveComponent())
                 .with(new TankViewComponent())
                 .with(new CellMoveComponent(BLOCK_SIZE / 2, BLOCK_SIZE / 2, 300).allowRotation(true))
-                .with(new ActionComponent());
+                .with(new ActionComponent())
+                .with(new StateComponent())
+                .with(new TankAIComponent());
     }
 
     @Spawns("Bullet")
@@ -117,16 +114,24 @@ public class BattleTanksFactory implements EntityFactory {
 
         var collidable = new CollidableComponent(true);
         collidable.addIgnoredType(owner.getType());
-        collidable.addIgnoredType(owner.getType() == PLAYER ? PLAYER_FLAG : ENEMY_FLAG);
+        collidable.addIgnoredType(owner.getType() == PLAYER || owner.getType() == ALLY ? PLAYER_FLAG : ENEMY_FLAG);
 
-        return entityBuilder()
-                .from(data)
+        if (owner.getType() == PLAYER) {
+            collidable.addIgnoredType(ALLY);
+        }
+
+        if (owner.getType() == ALLY) {
+            collidable.addIgnoredType(PLAYER);
+        }
+
+        return entityBuilder(data)
                 .at(data.getX() - 8, data.getY() - 8)
                 .type(BULLET)
                 .viewWithBBox("tank_bullet.png")
                 .scale(0.5, 0.5)
                 .with(collidable)
-                .with(new OffscreenCleanComponent(), new ProjectileComponent(data.get("direction"), BULLET_SPEED))
+                .with(new OffscreenCleanComponent())
+                .with(new ProjectileComponent(data.get("direction"), BULLET_SPEED))
                 .build();
     }
 
@@ -145,16 +150,14 @@ public class BattleTanksFactory implements EntityFactory {
     }
 
     private EntityBuilder newFlag(SpawnData data) {
-        return entityBuilder()
-                .from(data)
+        return entityBuilder(data)
                 .viewWithBBox(texture("flag.png", data.<Integer>get("width"), data.<Integer>get("height")))
                 .collidable();
     }
 
     @Spawns("wall")
     public Entity newWall(SpawnData data) {
-        return entityBuilder()
-                .from(data)
+        return entityBuilder(data)
                 .type(WALL)
                 .viewWithBBox(new Rectangle(data.<Integer>get("width"), data.<Integer>get("height")))
                 .collidable()
@@ -163,8 +166,7 @@ public class BattleTanksFactory implements EntityFactory {
 
     @Spawns("brick")
     public Entity newBrick(SpawnData data) {
-        return entityBuilder()
-                .from(data)
+        return entityBuilder(data)
                 .type(BRICK)
                 .viewWithBBox(texture("brick.png", data.<Integer>get("width"), data.<Integer>get("height")))
                 .collidable()
