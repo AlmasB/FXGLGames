@@ -48,8 +48,6 @@ public class DropApp extends GameApplication {
         settings.setVersion("1.0");
         settings.setWidth(480);
         settings.setHeight(800);
-        settings.setExperimentalNative(true);
-        settings.setProfilingEnabled(true);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
@@ -61,8 +59,7 @@ public class DropApp extends GameApplication {
         run(() -> spawnDroplet(), Duration.seconds(1));
 
         // loop background music located in /resources/assets/music/
-        if (!getSettings().isExperimentalNative())
-            loopBGM("bgm.mp3");
+        loopBGM("bgm.mp3");
     }
 
     @Override
@@ -75,8 +72,7 @@ public class DropApp extends GameApplication {
             droplet.removeFromWorld();
 
             // play a sound effect located in /resources/assets/sounds/
-            if (!getSettings().isExperimentalNative())
-                play("drop.wav");
+            play("drop.wav");
         });
     }
 
