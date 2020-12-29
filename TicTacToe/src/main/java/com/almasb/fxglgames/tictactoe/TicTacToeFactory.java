@@ -19,8 +19,7 @@ public class TicTacToeFactory implements EntityFactory {
 
     @Spawns("tile")
     public Entity newTile(SpawnData data) {
-        var tile = entityBuilder()
-                .from(data)
+        var tile = entityBuilder(data)
                 .bbox(new HitBox(BoundingShape.box(getAppWidth() / 3, getAppWidth() / 3)))
                 .with(new TileViewComponent())
                 .build();
