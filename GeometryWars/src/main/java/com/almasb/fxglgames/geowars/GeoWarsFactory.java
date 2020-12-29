@@ -61,9 +61,8 @@ public class GeoWarsFactory implements EntityFactory {
     public Entity spawnBackground(SpawnData data) {
         Canvas canvas = new Canvas(getAppWidth(), getAppHeight());
 
-        return entityBuilder()
+        return entityBuilder(data)
                 .type(GRID)
-                .from(data)
                 .view(canvas)
                 .with(new GraphicsUpdateComponent(canvas.getGraphicsContext2D()))
                 .with(new GridComponent(canvas.getGraphicsContext2D()))
@@ -168,7 +167,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .bbox(new HitBox(new Point2D(20, 20), BoundingShape.box(40, 40)))
                 //.view(t2)
                 .view(t)
-                .with(new HealthComponent(red ? config.getRedEnemyHealth() : config.getEnemyHealth()))
+                .with(new HealthIntComponent(red ? config.getRedEnemyHealth() : config.getEnemyHealth()))
                 .with(new CollidableComponent(true))
                 .with(new WandererComponent(moveSpeed, t, texture("wanderer_overlay.png", 80, 80)))
                 .build();
@@ -187,7 +186,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .type(SEEKER)
                 .at(getRandomSpawnPoint())
                 .viewWithBBox(texture("Seeker.png", 60, 60).brighter())
-                .with(new HealthComponent(red ? config.getRedEnemyHealth() : config.getEnemyHealth()))
+                .with(new HealthIntComponent(red ? config.getRedEnemyHealth() : config.getEnemyHealth()))
                 .with(new CollidableComponent(true))
                 .with(new SeekerComponent(FXGL.<GeoWarsApp>getAppCast().getPlayer(), moveSpeed))
                 .build();
@@ -199,7 +198,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .type(RUNNER)
                 .at(getRandomSpawnPoint())
                 .viewWithBBox(texture("Runner.png", 258 * 0.25, 220 * 0.25))
-                .with(new HealthComponent(config.getEnemyHealth()))
+                .with(new HealthIntComponent(config.getEnemyHealth()))
                 .with(new CollidableComponent(true))
                 .with(new NewRunnerComponent(config.getRunnerMoveSpeed()))
                 .with(new AutoRotationComponent().withSmoothing())
@@ -216,7 +215,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .type(BOUNCER)
                 .at(0, y)
                 .viewWithBBox(texture("Bouncer.png", 254 * 0.25, 304 * 0.25))
-                .with(new HealthComponent(config.getEnemyHealth()))
+                .with(new HealthIntComponent(config.getEnemyHealth()))
                 .with(new CollidableComponent(true))
                 .with(new BouncerComponent(config.getBouncerMoveSpeed()))
                 .build();
@@ -241,9 +240,8 @@ public class GeoWarsFactory implements EntityFactory {
 
     @Spawns("Portal")
     public Entity spawnPortal(SpawnData data) {
-        return entityBuilder()
+        return entityBuilder(data)
                 .type(PORTAL)
-                .from(data)
                 .viewWithBBox("Portal.png")
                 .with(new CollidableComponent(true))
                 .with(new ExpireCleanComponent(Duration.seconds(10)))
@@ -263,9 +261,8 @@ public class GeoWarsFactory implements EntityFactory {
         t.setTranslateY(-(h / 2.0 - 32 / 2.0));
         t.setEffect(new BoxBlur(15, 15, 3));
 
-        return entityBuilder()
+        return entityBuilder(data)
                 .type(CRYSTAL)
-                .from(data)
                 .scale(0.65, 0.65)
                 .view(t)
                 .viewWithBBox(texture("YellowCrystal.png").toAnimatedTexture(8, Duration.seconds(1)))

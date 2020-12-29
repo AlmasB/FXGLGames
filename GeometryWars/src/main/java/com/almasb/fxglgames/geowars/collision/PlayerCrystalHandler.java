@@ -1,13 +1,14 @@
 package com.almasb.fxglgames.geowars.collision;
 
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
+import static com.almasb.fxgl.dsl.FXGL.animationBuilder;
+import static com.almasb.fxgl.dsl.FXGL.inc;
 import static com.almasb.fxglgames.geowars.GeoWarsType.CRYSTAL;
 import static com.almasb.fxglgames.geowars.GeoWarsType.PLAYER;
 
@@ -25,9 +26,9 @@ public class PlayerCrystalHandler extends CollisionHandler {
 
         crystal.getComponent(CollidableComponent.class).setValue(false);
 
-        FXGL.inc("multiplier", +1);
+        inc("multiplier", +1);
 
-        FXGL.animationBuilder()
+        animationBuilder()
                 .duration(Duration.seconds(0.75))
                 .onFinished(crystal::removeFromWorld)
                 .interpolator(Interpolators.BACK.EASE_IN())

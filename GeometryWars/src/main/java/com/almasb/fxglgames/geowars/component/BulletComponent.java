@@ -34,7 +34,6 @@ import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.BoundingBoxComponent;
 import com.almasb.fxglgames.geowars.GeoWarsType;
 import javafx.geometry.Point2D;
-import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -44,12 +43,7 @@ import static com.almasb.fxgl.dsl.FXGL.*;
  */
 public class BulletComponent extends Component {
 
-    private static final Color PARTICLE_COLOR = Color.YELLOW.brighter();
     private static final Duration PARTICLE_DURATION = Duration.seconds(1.2);
-
-    static {
-        //ExhaustParticleComponent.colorImage(PARTICLE_COLOR);
-    }
 
     private BoundingBoxComponent bbox;
 
@@ -78,23 +72,22 @@ public class BulletComponent extends Component {
         });
 
         if (bbox.getMinXWorld() < 0) {
-            spawnParticles(0, bbox.getCenterWorld().getY(), 1, FXGLMath.random(-1.0f, 1.0f));
+            spawnParticles(0, bbox.getCenterWorld().getY(), 1, random(-1.0f, 1.0f));
 
         } else if (bbox.getMaxXWorld() > getAppWidth()) {
-            spawnParticles(getAppWidth(), bbox.getCenterWorld().getY(), -1, FXGLMath.random(-1.0f, 1.0f));
+            spawnParticles(getAppWidth(), bbox.getCenterWorld().getY(), -1, random(-1.0f, 1.0f));
 
         } else if (bbox.getMinYWorld() < 0) {
-            spawnParticles(bbox.getCenterWorld().getX(), 0, FXGLMath.random(-1.0f, 1.0f), 1);
+            spawnParticles(bbox.getCenterWorld().getX(), 0, random(-1.0f, 1.0f), 1);
 
         } else if (bbox.getMaxYWorld() > getAppHeight()) {
-            spawnParticles(bbox.getCenterWorld().getX(), getAppHeight(), FXGLMath.random(-1.0f, 1.0f), -1);
+            spawnParticles(bbox.getCenterWorld().getX(), getAppHeight(), random(-1.0f, 1.0f), -1);
         }
     }
 
     private void spawnParticles(double x, double y, double dirX, double dirY) {
         entityBuilder()
                 .at(x, y)
-                //.view(new Texture(ExhaustParticleComponent.coloredImages.get(PARTICLE_COLOR)))
                 .with(new ProjectileComponent(new Point2D(dirX, dirY), FXGLMath.random(150, 280)))
                 .with(new ExpireCleanComponent(PARTICLE_DURATION))
                 .with(new ParticleControl())

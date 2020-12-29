@@ -30,6 +30,7 @@ import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.controllerinput.ControllerInputService;
+import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.virtual.VirtualButton;
@@ -37,7 +38,6 @@ import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxglgames.geowars.collision.BulletPortalHandler;
 import com.almasb.fxglgames.geowars.collision.PlayerCrystalHandler;
-import com.almasb.fxglgames.geowars.component.HealthComponent;
 import com.almasb.fxglgames.geowars.component.PlayerComponent;
 import javafx.event.Event;
 import javafx.event.EventType;
@@ -243,7 +243,7 @@ public class GeoWarsApp extends GameApplication {
             protected void onCollisionBegin(Entity bullet, Entity enemy) {
                 bullet.removeFromWorld();
 
-                HealthComponent hp = enemy.getComponent(HealthComponent.class);
+                HealthIntComponent hp = enemy.getComponent(HealthIntComponent.class);
                 hp.setValue(hp.getValue() - 1);
 
                 if (hp.getValue() == 0) {

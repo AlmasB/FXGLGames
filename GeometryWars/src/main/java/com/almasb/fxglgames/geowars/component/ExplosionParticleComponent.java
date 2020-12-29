@@ -50,10 +50,6 @@ public class ExplosionParticleComponent extends ParticleComponent {
 
         emitter.setSourceImage(texture("particles/" + name, 32, 32).multiplyColor(c));
 
-//        if (index == names.length) {
-//            index = 0;
-//        }
-
         emitter.setAllowParticleRotation(true);
 
         emitter.setControl(p -> {
