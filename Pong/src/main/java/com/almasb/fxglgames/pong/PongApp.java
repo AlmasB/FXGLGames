@@ -96,13 +96,13 @@ public class PongApp extends GameApplication {
 
     @Override
     protected void initGame() {
-        getGameState().<Integer>addListener("player1score", (old, newScore) -> {
+        getWorldProperties().<Integer>addListener("player1score", (old, newScore) -> {
             if (newScore == 11) {
                 showGameOver("Player 1");
             }
         });
 
-        getGameState().<Integer>addListener("player2score", (old, newScore) -> {
+        getWorldProperties().<Integer>addListener("player2score", (old, newScore) -> {
             if (newScore == 11) {
                 showGameOver("Player 2");
             }
@@ -186,7 +186,7 @@ public class PongApp extends GameApplication {
     }
 
     private void showGameOver(String winner) {
-        getDisplay().showMessageBox(winner + " won! Demo over\nThanks for playing", getGameController()::exit);
+        getDialogService().showMessageBox(winner + " won! Demo over\nThanks for playing", getGameController()::exit);
     }
 
     public static void main(String[] args) {

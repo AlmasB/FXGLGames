@@ -26,12 +26,13 @@
 
 package com.almasb.fxglgames.pong;
 
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.ui.UIController;
-import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
+
+import static com.almasb.fxgl.dsl.FXGL.animationBuilder;
+import static com.almasb.fxgl.dsl.FXGL.getUIFactoryService;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -54,8 +55,8 @@ public class MainUIController implements UIController {
 
     @Override
     public void init() {
-        labelScorePlayer.setFont(FXGL.getUIFactory().newFont(72));
-        labelScoreEnemy.setFont(FXGL.getUIFactory().newFont(72));
+        labelScorePlayer.setFont(getUIFactoryService().newFont(72));
+        labelScoreEnemy.setFont(getUIFactoryService().newFont(72));
 
         labelScoreEnemy.layoutBoundsProperty().addListener((observable, oldValue, newBounds) -> {
             double width = newBounds.getWidth();
@@ -72,9 +73,9 @@ public class MainUIController implements UIController {
     }
 
     private void animateLabel(Label label) {
-        FadeTransition ft = new FadeTransition(Duration.seconds(0.33), label);
-        ft.setFromValue(0);
-        ft.setToValue(1);
-        ft.play();
+        animationBuilder()
+                .duration(Duration.seconds(0.33))
+                .fadeIn(label)
+                .buildAndPlay();
     }
 }

@@ -26,7 +26,6 @@
 
 package com.almasb.fxglgames.pong;
 
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
@@ -45,7 +44,8 @@ import javafx.scene.effect.BlendMode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
+import static com.almasb.fxgl.dsl.FXGL.getip;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -78,8 +78,7 @@ public class PongFactory implements EntityFactory {
         emitter.setSize(5, 10);
         emitter.setEmissionRate(1);
 
-        return entityBuilder()
-                .from(data)
+        return entityBuilder(data)
                 .type(EntityType.BALL)
                 .bbox(new HitBox(BoundingShape.circle(5)))
                 .with(physics)
