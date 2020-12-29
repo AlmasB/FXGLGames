@@ -8,7 +8,6 @@ import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.virtual.VirtualButton;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
-import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -131,22 +130,7 @@ public class FlappyBirdApp extends GameApplication {
         getGameScene().getViewport().setBounds(0, 0, Integer.MAX_VALUE, getAppHeight());
         getGameScene().getViewport().bindToEntity(player, getAppWidth() / 3, getAppHeight() / 2);
 
-        playSpawnAnimation(player);
-    }
-
-    private void playSpawnAnimation(Entity player) {
-        player.setScaleX(0);
-        player.setScaleY(0);
-
-        getGameWorld().addEntity(player);
-
-        animationBuilder()
-                .duration(Duration.seconds(0.86))
-                .interpolator(Interpolators.BOUNCE.EASE_OUT())
-                .scale(player)
-                .from(new Point2D(0, 0))
-                .to(new Point2D(1, 1))
-                .buildAndPlay();
+        spawnWithScale(player, Duration.seconds(0.86), Interpolators.BOUNCE.EASE_OUT());
     }
 
     public void requestNewGame() {
@@ -154,7 +138,7 @@ public class FlappyBirdApp extends GameApplication {
     }
 
     private void showGameOver() {
-        getDisplay().showMessageBox("Demo Over. Thanks for playing!", getGameController()::exit);
+        showMessage("Demo Over. Thanks for playing!", getGameController()::exit);
     }
 
     public static void main(String[] args) {

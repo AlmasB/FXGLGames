@@ -25,7 +25,7 @@ public class WallBuildingComponent extends Component {
         Rectangle wall = new Rectangle(width, height);
         wall.setArcWidth(25);
         wall.setArcHeight(25);
-        wall.fillProperty().bind(FXGL.getGameState().objectProperty("stageColor"));
+        wall.fillProperty().bind(FXGL.getWorldProperties().objectProperty("stageColor"));
         return wall;
     }
 
