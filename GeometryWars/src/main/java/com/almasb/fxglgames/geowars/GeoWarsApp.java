@@ -29,7 +29,6 @@ import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
-import com.almasb.fxgl.controllerinput.ControllerInputService;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.UserAction;
@@ -82,7 +81,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setConfigClass(GeoWarsConfig.class);
         settings.setExperimentalNative(false);
         settings.setManualResizeEnabled(true);
-        settings.addEngineService(ControllerInputService.class);
+        //settings.addEngineService(ControllerInputService.class);
         settings.setApplicationMode(isRelease ? ApplicationMode.RELEASE : ApplicationMode.DEBUG);
 
         if (!settings.isExperimentalNative()) {
