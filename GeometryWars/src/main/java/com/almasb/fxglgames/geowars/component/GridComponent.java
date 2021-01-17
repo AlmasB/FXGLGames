@@ -2,14 +2,17 @@ package com.almasb.fxglgames.geowars.component;
 
 import com.almasb.fxgl.core.collection.Array;
 import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.core.pool.Pools;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
+import javafx.application.Platform;
 import javafx.geometry.Point2D;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxglgames.geowars.GeoWarsType.BULLET;
@@ -21,11 +24,10 @@ public class GridComponent extends Component {
 
     private static final double POINT_MASS_DAMPING = 0.8;
     private static final double SPRING_STIFFNESS = 0.28;
-    private static final double SPRING_DAMPING = 0.06;
+    private static final double SPRING_DAMPING = 0.86;
 
-    private static final Color IDLE_COLOR = Color.color(0.138, 0.138, 0.375, 0.56);
-    private static final Color BULLET_COLOR = Color.color(0.138, 0.238, 0.975, 0.56);
-    private static final Color CRYSTAL_COLOR = Color.color(0.838, 0.538, 0.175, 0.56);
+    private static final Color IDLE_COLOR = Color.color(0.138, 0.138, 0.375, 0.66);
+    private static final Color BULLET_COLOR = Color.color(0.138, 0.238, 0.975, 0.76);
 
     private Array<Line> lines = new Array<>(1000);
     private Array<ExtraLine> extraLines = new Array<>(1000);
@@ -33,14 +35,15 @@ public class GridComponent extends Component {
     private List<Spring> springs = new ArrayList<>();
     private PointMass[][] points;
 
-    private GraphicsContext g;
+    private Canvas onScreenCanvas = new Canvas(getAppWidth(), getAppHeight());
+    private Canvas offScreenCanvas = new Canvas(getAppWidth(), getAppHeight());
 
-    public GridComponent(GraphicsContext g) {
-        this.g = g;
+    private GridRenderThread gridRenderThread = new GridRenderThread();
 
-        g.setStroke(IDLE_COLOR);
+    private List<Entity> bullets = new ArrayList<>();
 
-        Point2D spacing = new Point2D(38.8, 40);
+    public GridComponent() {
+        Point2D spacing = new Point2D(38.8 / 2.0, 40 / 2.0);
 
         int numColumns = (int) (getAppWidth() / spacing.getX()) + 2;
         int numRows = (int) (getAppHeight() / spacing.getY()) + 2;
@@ -96,21 +99,74 @@ public class GridComponent extends Component {
     }
 
     @Override
-    public void onUpdate(double tpf) {
-        springs.forEach(Spring::update);
+    public void onAdded() {
+        entity.getViewComponent().addChild(onScreenCanvas);
 
-        for (int x = 0; x < points.length; x++) {
-            for (int y = 0; y < points[0].length; y++) {
-                points[x][y].update();
-            }
+        gridRenderThread.start();
+    }
+
+    @Override
+    public void onUpdate(double tpf) {
+        if (gridRenderThread.isRenderDone.get()) {
+            bullets = byType(BULLET);
+
+            gridRenderThread.isRenderDone.set(false);
+        }
+    }
+
+    private class GridRenderThread extends Thread {
+
+        AtomicBoolean isRenderDone = new AtomicBoolean(false);
+
+        GridRenderThread() {
+            super("GridRenderThread");
+            setDaemon(true);
         }
 
-        // render
-        for (Line line: lines)
-            line.render(g);
+        @Override
+        public void run() {
+            while (true) {
+                if (isRenderDone.get()) {
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e) {
+                        // TODO:
+                        e.printStackTrace();
+                    }
 
-        for (ExtraLine line: extraLines)
-            line.render(g);
+                    continue;
+                }
+
+                springs.forEach(Spring::update);
+
+                for (int x = 0; x < points.length; x++) {
+                    for (int y = 0; y < points[0].length; y++) {
+                        points[x][y].update();
+                    }
+                }
+
+                // render
+                offScreenCanvas.getGraphicsContext2D().clearRect(0, 0, getAppWidth(), getAppHeight());
+
+                for (Line line : lines)
+                    line.render(offScreenCanvas.getGraphicsContext2D());
+
+                for (ExtraLine line : extraLines)
+                    line.render(bullets, offScreenCanvas.getGraphicsContext2D());
+
+                isRenderDone.set(true);
+
+                Platform.runLater(() -> {
+                    entity.getViewComponent().removeChild(onScreenCanvas);
+
+                    var tmp = onScreenCanvas;
+                    onScreenCanvas = offScreenCanvas;
+                    offScreenCanvas = tmp;
+
+                    entity.getViewComponent().addChild(onScreenCanvas);
+                });
+            }
+        }
     }
 
     public void addLine(PointMass end1, PointMass end2) {
@@ -122,7 +178,7 @@ public class GridComponent extends Component {
     }
 
     public void applyExplosiveForce(double force, Point2D position, double radius) {
-        Vec2 tmpVec = Pools.obtain(Vec2.class);
+        Vec2 tmpVec = new Vec2();
 
         for (int x = 0; x < points.length; x++) {
             for (int y = 0; y < points[0].length; y++) {
@@ -138,8 +194,6 @@ public class GridComponent extends Component {
                 }
             }
         }
-
-        Pools.free(tmpVec);
     }
 
     private static class Line {
@@ -151,7 +205,7 @@ public class GridComponent extends Component {
         }
 
         void render(GraphicsContext g) {
-            var bullets = byType(BULLET);
+
 
 //            var isCollision = bullets.stream()
 //                    .anyMatch(e -> {
@@ -183,7 +237,7 @@ public class GridComponent extends Component {
             this.end22 = end22;
         }
 
-        void render(GraphicsContext g) {
+        void render(List<Entity> bullets, GraphicsContext g) {
             position1.x = end11.getPosition().x + (end12.getPosition().x - end11.getPosition().x) / 2;
             position1.y = end11.getPosition().y + (end12.getPosition().y - end11.getPosition().y) / 2;
 
@@ -191,8 +245,8 @@ public class GridComponent extends Component {
             position2.y = end21.getPosition().y + (end22.getPosition().y - end21.getPosition().y) / 2;
 
             if (
-                    byType(BULLET).stream()
-                    .anyMatch(e -> e.getCenter().distance(position1.toPoint2D()) > 15
+                    bullets.stream()
+                            .anyMatch(e -> e.getCenter().distance(position1.toPoint2D()) > 15
                             && e.getCenter().distance(position1.toPoint2D()) < 70)
             ) {
                 g.setStroke(BULLET_COLOR);
@@ -278,14 +332,14 @@ public class GridComponent extends Component {
         }
 
         public void update() {
-            Vec2 current = Pools.obtain(Vec2.class)
+            Vec2 current = new Vec2()
                     .set(end1.getPosition())
                     .subLocal(end2.getPosition());
 
             float currentLength = current.length();
 
             if (currentLength > lengthAtRest) {
-                Vec2 dv = Pools.obtain(Vec2.class)
+                Vec2 dv = new Vec2()
                         .set(end2.getVelocity())
                         .subLocal(end1.getVelocity())
                         .mulLocal(damping);
@@ -297,11 +351,7 @@ public class GridComponent extends Component {
 
                 end2.applyForce(force);
                 end1.applyForce(force.negateLocal());
-
-                Pools.free(dv);
             }
-
-            Pools.free(current);
         }
     }
 

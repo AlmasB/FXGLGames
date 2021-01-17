@@ -5,3 +5,5 @@ The original source and assets can be found
 <a href="http://gamedevelopment.tutsplus.com/tutorials/make-a-neon-vector-shooter-in-jmonkeyengine-the-basics--gamedev-11616">here</a>.
 
 Sprite assets: https://gisha.itch.io/spaceships-asset-pack?download
+
+Gameplay demo is feature-complete, this project only receives performance improvement updates / bug fixes.

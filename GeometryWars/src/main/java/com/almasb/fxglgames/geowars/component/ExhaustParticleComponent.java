@@ -36,7 +36,6 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.random;
-import static com.almasb.fxgl.dsl.FXGL.texture;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
@@ -58,10 +57,11 @@ public class ExhaustParticleComponent extends ParticleComponent {
         emitter.setMaxEmissions(Integer.MAX_VALUE);
         emitter.setNumParticles(2);
         emitter.setEmissionRate(1);
-        emitter.setBlendMode(BlendMode.ADD);
-        emitter.setSourceImage(texture("particles/spark_04.png", 32, 32).multiplyColor(Color.BLUEVIOLET));
+        emitter.setBlendMode(BlendMode.SRC_OVER);
+        emitter.setStartColor(Color.BLUE);
+        emitter.setEndColor(Color.BLUEVIOLET);
         emitter.setAllowParticleRotation(true);
-        emitter.setSize(2, 24);
+        emitter.setSize(2, 8);
         emitter.setScaleFunction(i -> FXGLMath.randomPoint2D().multiply(0.01));
         emitter.setExpireFunction(i -> Duration.seconds(random(0.25, 1.25)));
         emitter.setAccelerationFunction(() -> Point2D.ZERO);

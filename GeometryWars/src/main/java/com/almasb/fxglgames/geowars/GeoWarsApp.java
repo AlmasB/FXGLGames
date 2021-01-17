@@ -72,17 +72,14 @@ public class GeoWarsApp extends GameApplication {
     protected void initSettings(GameSettings settings) {
         var isRelease = false;
 
-        settings.setWidth(1280);
-        settings.setHeight(720);
+        settings.setWidth(1600);
+        settings.setHeight(900);
         settings.setTitle("FXGL Geometry Wars");
         settings.setVersion("1.1.0");
         settings.setIntroEnabled(isRelease);
         settings.setMainMenuEnabled(isRelease);
         settings.setConfigClass(GeoWarsConfig.class);
-        settings.setExperimentalNative(false);
-        settings.setManualResizeEnabled(true);
-        //settings.addEngineService(ControllerInputService.class);
-        settings.setApplicationMode(isRelease ? ApplicationMode.RELEASE : ApplicationMode.DEBUG);
+        settings.setApplicationMode(isRelease ? ApplicationMode.RELEASE : ApplicationMode.DEVELOPER);
 
         if (!settings.isExperimentalNative()) {
             settings.setFontUI("game_font_7.ttf");
@@ -151,8 +148,6 @@ public class GeoWarsApp extends GameApplication {
                         .ifPresent(e -> playerComponent.shoot(e.getPosition()));
             }
         }, KeyCode.F, VirtualButton.A);
-
-        //getService(ControllerInputService.class).addInputHandler(getInput());
     }
 
     @Override
@@ -160,7 +155,7 @@ public class GeoWarsApp extends GameApplication {
         vars.put("score", 0);
         vars.put("multiplier", 1);
         vars.put("kills", 0);
-        vars.put("lives", 388);
+        vars.put("lives", 3);
         vars.put("weaponType", WeaponType.SINGLE);
     }
 

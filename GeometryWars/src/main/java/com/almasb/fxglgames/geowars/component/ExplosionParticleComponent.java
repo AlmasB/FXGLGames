@@ -6,10 +6,10 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.particle.ParticleComponent;
 import com.almasb.fxgl.particle.ParticleEmitters;
 import javafx.geometry.Point2D;
+import javafx.scene.effect.BlendMode;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.random;
-import static com.almasb.fxgl.dsl.FXGL.texture;
 
 public class ExplosionParticleComponent extends ParticleComponent {
 
@@ -37,18 +37,20 @@ public class ExplosionParticleComponent extends ParticleComponent {
         emitter.setMaxEmissions(1);
         emitter.setNumParticles(200);
         emitter.setEmissionRate(0.86);
-        emitter.setSize(1, 14);
+        emitter.setSize(1, 6);
         emitter.setScaleFunction(i -> FXGLMath.randomPoint2D().multiply(0.01));
         emitter.setExpireFunction(i -> Duration.seconds(random(0.25, 1.5)));
         emitter.setSpawnPointFunction(i -> new Point2D(25, 25));
         emitter.setAccelerationFunction(() -> new Point2D(0, 0));
 
-        var c = FXGLMath.randomColor().brighter().brighter();
+        var c = FXGLMath.randomColor().brighter();
 
         //var c = Color.YELLOW;
         var name = "circle_05.png";
 
-        emitter.setSourceImage(texture("particles/" + name, 32, 32).multiplyColor(c));
+        emitter.setBlendMode(BlendMode.SRC_OVER);
+        emitter.setColor(c);
+        //emitter.setSourceImage(texture("particles/" + name, 32, 32).multiplyColor(c));
 
         emitter.setAllowParticleRotation(true);
 
