@@ -82,9 +82,6 @@ public class WandererComponent extends Component {
 
         entity.setRotation(entity.getRotation() * 0.9 + directionAngle * 0.1);
 
-
-        //rotate(tpf);
-
         tx += tpf;
 
         checkScreenBounds();
@@ -130,9 +127,5 @@ public class WandererComponent extends Component {
         } else {
             entity.getViewComponent().removeChild(saturatedTexture);
         }
-    }
-
-    private void rotate(double tpf) {
-        wanderer.rotateBy(rotationSpeed * tpf);
     }
 }

@@ -12,7 +12,7 @@ import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxglgames.geowars.component.*;
 import com.almasb.fxglgames.geowars.component.enemy.BouncerComponent;
-import com.almasb.fxglgames.geowars.component.enemy.NewRunnerComponent;
+import com.almasb.fxglgames.geowars.component.enemy.RunnerComponent;
 import com.almasb.fxglgames.geowars.component.enemy.SeekerComponent;
 import com.almasb.fxglgames.geowars.component.enemy.WandererComponent;
 import javafx.geometry.Point2D;
@@ -186,7 +186,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .viewWithBBox(texture("Runner.png", 258 * 0.25, 220 * 0.25))
                 .with(new HealthIntComponent(config.getEnemyHealth()))
                 .with(new CollidableComponent(true))
-                .with(new NewRunnerComponent(config.getRunnerMoveSpeed()))
+                .with(new RunnerComponent(config.getRunnerMoveSpeed()))
                 .with(new AutoRotationComponent().withSmoothing())
                 //.with(new RunnerComponent(config.getRunnerMoveSpeed()))
                 //.with(new RandomMoveComponent(new Rectangle2D(0, 0, getAppWidth(), getAppHeight()), config.getRunnerMoveSpeed(), FXGLMath.random(250, 500)))
@@ -253,7 +253,8 @@ public class GeoWarsFactory implements EntityFactory {
                 .viewWithBBox(texture("YellowCrystal.png").toAnimatedTexture(8, Duration.seconds(1)))
                 .zIndex(100)
                 .with(new CollidableComponent(true))
-                .with(new CrystalComponent(), new ExpireCleanComponent(Duration.seconds(10)))
+                .with(new CrystalComponent())
+                .with(new ExpireCleanComponent(Duration.seconds(10)))
                 .build();
     }
 }

@@ -18,6 +18,8 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxglgames.geowars.GeoWarsType.BULLET;
 
 /**
+ * Adapted from https://gamedevelopment.tutsplus.com/tutorials/make-a-neon-vector-shooter-with-jme-warping-grid--gamedev-12413
+ *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class GridComponent extends Component {
@@ -196,6 +198,36 @@ public class GridComponent extends Component {
         }
     }
 
+    public void applyImplosiveForce(double force, Point2D position, double radius) {
+        Vec2 tmpVec = new Vec2();
+
+        for (int x = 0; x < points.length; x++) {
+            for (int y = 0; y < points[0].length; y++) {
+                double dist = position.distance(points[x][y].getPosition().x, points[x][y].getPosition().y);
+                dist *= dist;
+
+                if (dist < radius * radius) {
+                    tmpVec.set((float) position.getX(), (float) position.getY());
+                    tmpVec.subLocal(points[x][y].getPosition()).mulLocal((float) (10f * force / (10000 + dist)));
+
+                    points[x][y].applyForce(tmpVec);
+                    points[x][y].increaseDamping(0.6f);
+                }
+            }
+        }
+    }
+
+//    public void applyDirectedForce(Vector3f force, Vector3f position, float radius) {
+//        for (int x=0; x<points.length; x++) {
+//            for (int y=0; y<points[0].length; y++) {
+//                if (position.distanceSquared(points[x][y].getPosition()) < radius * radius) {
+//                    float forceFactor = 10 / (10 + position.distance(points[x][y].getPosition()));
+//                    points[x][y].applyForce(force.mult(forceFactor));
+//                }
+//            }
+//        }
+//    }
+
     private static class Line {
         private PointMass end1, end2;
 
@@ -205,18 +237,6 @@ public class GridComponent extends Component {
         }
 
         void render(GraphicsContext g) {
-
-
-//            var isCollision = bullets.stream()
-//                    .anyMatch(e -> {
-//                        return e.getCenter().distance(end1.getPosition().toPoint2D()) < 15
-//                                || e.getCenter().distance(end2.getPosition().toPoint2D()) < 15;
-//                    });
-//
-//            if (isCollision) {
-//                g.setStroke(BULLET_COLOR);
-//            }
-
             g.strokeLine(end1.getPosition().x, end1.getPosition().y, end2.getPosition().x, end2.getPosition().y);
 
             g.setStroke(IDLE_COLOR);

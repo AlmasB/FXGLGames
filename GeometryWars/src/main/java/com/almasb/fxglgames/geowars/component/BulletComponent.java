@@ -68,7 +68,7 @@ public class BulletComponent extends Component {
     public void onUpdate(double tpf) {
         byType(GeoWarsType.GRID).forEach(g -> {
             var grid = g.getComponent(GridComponent.class);
-            grid.applyExplosiveForce(velocity.magnitude() / 60 * 18, bbox.getCenterWorld(), 80 * 60 * tpf);
+            grid.applyImplosiveForce(velocity.magnitude() / 60 * 18, bbox.getCenterWorld(), 80 * 60 * tpf);
         });
 
         if (bbox.getMinXWorld() < 0) {

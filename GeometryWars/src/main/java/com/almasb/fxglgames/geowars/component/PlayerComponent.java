@@ -12,7 +12,6 @@ import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.geto;
@@ -76,10 +75,6 @@ public class PlayerComponent extends Component {
             List<Entity> bullets = new ArrayList<>();
 
             switch (type) {
-                case MIRROR:
-
-                case RICOCHET:
-
                 case TRIPLE:
 
                     // spawn extra bullet
@@ -100,22 +95,7 @@ public class PlayerComponent extends Component {
                     break;
             }
 
-            if (type == WeaponType.MIRROR) {
-
-                bullets.addAll(
-                        bullets.stream()
-                                .map(b -> spawnBullet(position, vectorToMouse.multiply(-1)))
-                                .collect(Collectors.toList())
-                );
-
-                // TODO: duplicate code
-                bullets.forEach(bullet -> {
-                    bullet.removeComponent(OffscreenCleanComponent.class);
-                    bullet.addComponent(new RicochetComponent());
-                });
-            }
-
-            if (type == WeaponType.RICOCHET) {
+            if (getb("isRicochet")) {
                 bullets.forEach(bullet -> {
                     bullet.removeComponent(OffscreenCleanComponent.class);
                     bullet.addComponent(new RicochetComponent());

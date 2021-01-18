@@ -156,6 +156,7 @@ public class GeoWarsApp extends GameApplication {
         vars.put("multiplier", 1);
         vars.put("kills", 0);
         vars.put("lives", 3);
+        vars.put("isRicochet", false);
         vars.put("weaponType", WeaponType.SINGLE);
     }
 
@@ -163,13 +164,9 @@ public class GeoWarsApp extends GameApplication {
     protected void initGame() {
         getGameWorld().addEntityFactory(new GeoWarsFactory());
 
-        getGameScene().setBackgroundColor(Color.BLACK);
+        getGameScene().setBackgroundColor(Color.color(0, 0, 0.05, 1.0));
 
         spawn("Background");
-
-//        for (int i = 0; i < 20; i++) {
-//            spawn("BackgroundCircle", FXGLMath.randomPoint(new Rectangle2D(-200, -200, 200, getAppHeight())));
-//        }
 
         player = spawn("Player");
         playerComponent = player.getComponent(PlayerComponent.class);
@@ -290,22 +287,25 @@ public class GeoWarsApp extends GameApplication {
         livesText.setTranslateY(110);
         livesText.textProperty().bind(getip("lives").asString("Lives: %d"));
 
-        getGameScene().addUINodes(multText, scoreText, livesText);
+        var ricochetText = getUIFactoryService().newText("RICOCHET", Color.ANTIQUEWHITE, 16.0);
+        ricochetText.setTranslateX(60);
+        ricochetText.setTranslateY(130);
+        ricochetText.visibleProperty().bind(getbp("isRicochet"));
 
-        Text beware = getUIFactoryService().newText("Beware! Seekers get smarter every spawn!", Color.AQUA, 38);
+        getGameScene().addUINodes(multText, scoreText, livesText, ricochetText);
 
-        addUINode(beware);
+        Text goodLuck = getUIFactoryService().newText("Score as many points as you can. Good luck!", Color.AQUA, 38);
 
-        centerText(beware);
+        addUINode(goodLuck);
+
+        centerText(goodLuck);
 
         animationBuilder()
                 .duration(Duration.seconds(2))
                 .autoReverse(true)
                 .repeat(2)
-                .fadeIn(beware)
+                .fadeIn(goodLuck)
                 .buildAndPlay();
-
-
     }
 
     private Point2D getRandomPoint() {

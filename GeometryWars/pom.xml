@@ -165,7 +165,6 @@
                         <list>com.almasb.fxglgames.geowars.component.CrystalComponent</list>
                         <list>com.almasb.fxglgames.geowars.component.ExhaustParticleComponent</list>
                         <list>com.almasb.fxglgames.geowars.component.ExplosionParticleComponent</list>
-                        <list>com.almasb.fxglgames.geowars.component.GraphicsUpdateComponent</list>
                         <list>com.almasb.fxglgames.geowars.component.GridComponent</list>
                         <list>com.almasb.fxglgames.geowars.component.HealthComponent</list>
                         <list>com.almasb.fxglgames.geowars.component.PlayerComponent</list>

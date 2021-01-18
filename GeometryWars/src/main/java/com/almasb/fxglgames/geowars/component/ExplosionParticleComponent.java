@@ -5,10 +5,12 @@ import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.particle.ParticleComponent;
 import com.almasb.fxgl.particle.ParticleEmitters;
+import com.almasb.fxglgames.geowars.GeoWarsType;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;
 import javafx.util.Duration;
 
+import static com.almasb.fxgl.dsl.FXGL.byType;
 import static com.almasb.fxgl.dsl.FXGL.random;
 
 public class ExplosionParticleComponent extends ParticleComponent {
@@ -29,6 +31,11 @@ public class ExplosionParticleComponent extends ParticleComponent {
         super.onUpdate(tpf);
 
         t += tpf;
+
+        byType(GeoWarsType.GRID).forEach(g -> {
+            var grid = g.getComponent(GridComponent.class);
+            grid.applyExplosiveForce(2000.0 / 60 * 18, entity.getCenter(), 80 * 60 * tpf);
+        });
     }
 
     private void spawnParticles(Entity enemy) {
@@ -42,15 +49,8 @@ public class ExplosionParticleComponent extends ParticleComponent {
         emitter.setExpireFunction(i -> Duration.seconds(random(0.25, 1.5)));
         emitter.setSpawnPointFunction(i -> new Point2D(25, 25));
         emitter.setAccelerationFunction(() -> new Point2D(0, 0));
-
-        var c = FXGLMath.randomColor().brighter();
-
-        //var c = Color.YELLOW;
-        var name = "circle_05.png";
-
         emitter.setBlendMode(BlendMode.SRC_OVER);
-        emitter.setColor(c);
-        //emitter.setSourceImage(texture("particles/" + name, 32, 32).multiplyColor(c));
+        emitter.setColor(FXGLMath.randomColor().brighter());
 
         emitter.setAllowParticleRotation(true);
 

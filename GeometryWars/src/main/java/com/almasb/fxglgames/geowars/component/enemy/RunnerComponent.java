@@ -1,153 +1,110 @@
-/*
- * The MIT License (MIT)
- *
- * FXGL - JavaFX Game Library
- *
- * Copyright (c) 2015-2016 AlmasB (almaslvl@gmail.com)
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 package com.almasb.fxglgames.geowars.component.enemy;
 
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.dsl.components.RandomMoveComponent;
-import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.dsl.components.ProjectileComponent;
 import com.almasb.fxgl.entity.EntityGroup;
 import com.almasb.fxgl.entity.component.Component;
 import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import kotlin.Unit;
+
+import java.util.ArrayList;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxglgames.geowars.GeoWarsType.BULLET;
 
 /**
- * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
+ * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class RunnerComponent extends Component {
 
-    private int screenWidth, screenHeight;
-
-    private double angleAdjustRate = FXGLMath.random(0, 0.5);
-
-    private Vec2 velocity = new Vec2();
-    private double directionAngle = FXGLMath.toDegrees(FXGLMath.random(-1, 1) * FXGLMath.PI2);
-
+    private Vec2 moveVector = new Vec2();
     private int moveSpeed;
-    private int rotationSpeed = FXGLMath.random(-100, 100);
-
-    private float tx = FXGLMath.random(1000, 10000);
-
-    private Entity runner;
-
     private EntityGroup bullets;
 
     public RunnerComponent(int moveSpeed) {
-        screenWidth = getAppWidth();
-        screenHeight = getAppHeight();
         this.moveSpeed = moveSpeed;
     }
 
     @Override
     public void onAdded() {
-        runner = entity;
-
         bullets = getGameWorld().getGroup(BULLET);
+
+        setRandomMoveVector();
     }
 
     @Override
     public void onUpdate(double tpf) {
-        fleeBullets(tpf);
-    }
+        var movedVectors = new ArrayList<Point2D>();
 
-    private int count = 0;
-
-    private void fleeBullets(double tpf) {
-
-        // from nature of code
-        float desiredDistance = 50*3;
-
-        Vec2 sum = new Vec2();
-        count = 0;
-
-        // check if it's too close
         bullets.forEach(bullet -> {
+            var vectorToRunner = entity.getCenter().subtract(bullet.getCenter());
+            var bulletVector = bullet.getComponent(ProjectileComponent.class).getDirection();
 
-            double d = bullet.distance(runner);
+            var angleBetweenVectors = vectorToRunner.angle(bulletVector);
 
-            // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)
-            if ((d > 0) && (d < desiredDistance)) {
-                // Calculate vector pointing away from bullet
-                Point2D diff = runner.getCenter().subtract(bullet.getCenter()).normalize().multiply(1 / d);
+            if (angleBetweenVectors <= 45) {
+                var lineStart = bullet.getCenter();
+                // calc how much space the bullet is covering in 60 frames
+                var lineEnd = bullet.getCenter().add(bullet.getComponent(ProjectileComponent.class).getVelocity().multiply(tpf * 60));
 
-                sum.addLocal(diff.getX(), diff.getY());
+                var d = lineEnd.subtract(lineStart).normalize();
+                var p = entity.getCenter();
 
-                count++;
+                var x = lineStart.add(d.multiply(p.subtract(lineStart).dotProduct(d)));
+
+                // we will be colliding within 60 frames (1 sec)
+                if (x.distance(lineStart) < lineEnd.distance(lineStart)) {
+                    var vectorToFireLine = x.subtract(p);
+
+                    // eventual collision
+                    if (vectorToFireLine.magnitude() < 75) {
+                        var vector = vectorToFireLine.multiply(-1)
+                                .normalize()
+                                .multiply(moveSpeed);
+
+                        boolean notOk = movedVectors.stream()
+                                .anyMatch(v -> v.angle(vector) > 35);
+
+                        if (!notOk) {
+                            movedVectors.add(vector);
+                        } else {
+                            if (!movedVectors.isEmpty()) {
+                                movedVectors.add(movedVectors.get(movedVectors.size() - 1));
+                            }
+                        }
+                    }
+                }
             }
 
-            // TODO: java API ...
             return Unit.INSTANCE;
         });
 
-        // we have a bullet close
-        if (count > 0) {
-            runner.getComponent(RandomMoveComponent.class).pause();
+        movedVectors.stream()
+                .reduce((v1, v2) -> v1.add(v2))
+                .ifPresent(v -> moveVector.set(v));
 
-            // Our desired vector is moving away
-            sum.normalizeLocal().mulLocal(moveSpeed * tpf * 1.5);
+        checkBounds();
 
-            runner.translate(sum);
-        } else {
-            runner.getComponent(RandomMoveComponent.class).resume();
+        entity.translate(moveVector.mul(tpf));
+    }
+
+    private void checkBounds() {
+        if (entity.getX() < 0
+                || entity.getY() < 0
+                || entity.getRightX() >= getAppWidth()
+                || entity.getBottomY() >= getAppHeight()) {
+            setRandomMoveVector();
         }
     }
 
-    private void adjustAngle(double tpf) {
-        if (FXGLMath.randomBoolean(angleAdjustRate)) {
-            directionAngle += FXGLMath.toDegrees((FXGLMath.noise1D(tx) - 0.5));
-        }
-    }
+    private void setRandomMoveVector() {
+        var newDirectionVector = FXGLMath.randomPoint(new Rectangle2D(0, 0, getAppWidth(), getAppHeight()))
+                .subtract(entity.getCenter());
 
-    private void move(double tpf) {
-        Vec2 directionVector = Vec2.fromAngle(directionAngle).mulLocal(moveSpeed);
-
-        velocity.addLocal(directionVector).mulLocal((float)tpf);
-
-        runner.translate(new Point2D(velocity.x, velocity.y));
-    }
-
-    private void checkScreenBounds() {
-        if (runner.getX() < 0
-                || runner.getY() < 0
-                || runner.getRightX() >= screenWidth
-                || runner.getBottomY() >= screenHeight) {
-
-            Point2D newDirectionVector = new Point2D(screenWidth / 2, screenHeight / 2)
-                    .subtract(runner.getCenter());
-
-            double angle = Math.toDegrees(Math.atan(newDirectionVector.getY() / newDirectionVector.getX()));
-            directionAngle = newDirectionVector.getX() > 0 ? angle : 180 + angle;
-        }
-    }
-
-    private void rotate(double tpf) {
-        runner.rotateBy(rotationSpeed * tpf);
+        moveVector.set(newDirectionVector)
+                .normalizeLocal()
+                .mulLocal(moveSpeed);
     }
 }
