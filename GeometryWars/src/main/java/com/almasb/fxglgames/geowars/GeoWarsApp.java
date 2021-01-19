@@ -29,6 +29,8 @@ import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.app.scene.FXGLMenu;
+import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.UserAction;
@@ -37,6 +39,7 @@ import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxglgames.geowars.collision.PlayerCrystalHandler;
 import com.almasb.fxglgames.geowars.component.PlayerComponent;
+import com.almasb.fxglgames.geowars.menu.GeoWarsMainMenu;
 import javafx.event.Event;
 import javafx.event.EventType;
 import javafx.geometry.Point2D;
@@ -76,10 +79,16 @@ public class GeoWarsApp extends GameApplication {
         settings.setTitle("FXGL Geometry Wars");
         settings.setVersion("1.2.0");
         settings.setIntroEnabled(isRelease);
-        settings.setMainMenuEnabled(isRelease);
+        settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(isRelease);
         settings.setApplicationMode(isRelease ? ApplicationMode.RELEASE : ApplicationMode.DEVELOPER);
         settings.setFontUI("game_font_7.ttf");
+        settings.setSceneFactory(new SceneFactory() {
+            @Override
+            public FXGLMenu newMainMenu() {
+                return new GeoWarsMainMenu();
+            }
+        });
     }
 
     @Override

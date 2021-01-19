@@ -7,20 +7,18 @@ import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.geowars.WeaponType;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
-import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.geto;
+import static com.almasb.fxglgames.geowars.Config.WEAPON_DELAY;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class PlayerComponent extends Component {
-
-    private static final Duration WEAPON_DELAY = Duration.seconds(0.11);
 
     private Point2D oldPosition;
 

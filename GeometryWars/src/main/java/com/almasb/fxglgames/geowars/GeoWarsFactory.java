@@ -25,6 +25,7 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxglgames.geowars.Config.*;
 import static com.almasb.fxglgames.geowars.GeoWarsType.*;
 
 /**
@@ -48,12 +49,6 @@ public class GeoWarsFactory implements EntityFactory {
         return spawnPoints[FXGLMath.random(0, 3)];
     }
 
-    private final GeoWarsConfig config;
-
-    public GeoWarsFactory() {
-        config = new GeoWarsConfig();
-    }
-
     @Spawns("Background")
     public Entity spawnBackground(SpawnData data) {
         return entityBuilder(data)
@@ -73,7 +68,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .viewWithBBox(texture)
                 .collidable()
                 .zIndex(1000)
-                .with(new PlayerComponent(config.getPlayerSpeed()))
+                .with(new PlayerComponent(PLAYER_SPEED))
                 //.with(new ExhaustParticleComponent(ParticleEmitters.newExplosionEmitter(1)))
                 .build();
     }
@@ -102,12 +97,9 @@ public class GeoWarsFactory implements EntityFactory {
 
     @Spawns("Wanderer")
     public Entity spawnWanderer(SpawnData data) {
-        boolean red = FXGLMath.randomBoolean((float)config.getRedEnemyChance());
+        int moveSpeed = random(WANDERER_MIN_MOVE_SPEED, WANDERER_MAX_MOVE_SPEED);
 
-        int moveSpeed = red ? config.getRedEnemyMoveSpeed()
-                : FXGLMath.random(100, config.getWandererMaxMoveSpeed());
-
-        var t = texture(red ? "RedWanderer.png" : "Wanderer.png", 80, 80).brighter();
+        var t = texture("Wanderer.png", 80, 80).brighter();
 
         var name = "spark_04.png";
 
@@ -125,7 +117,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .bbox(new HitBox(new Point2D(20, 20), BoundingShape.box(40, 40)))
                 //.view(t2)
                 .view(t)
-                .with(new HealthIntComponent(red ? config.getRedEnemyHealth() : config.getEnemyHealth()))
+                .with(new HealthIntComponent(ENEMY_HP))
                 .with(new CollidableComponent(true))
                 .with(new WandererComponent(moveSpeed, t, texture("wanderer_overlay.png", 80, 80)))
                 .build();
@@ -133,18 +125,14 @@ public class GeoWarsFactory implements EntityFactory {
 
     @Spawns("Seeker")
     public Entity spawnSeeker(SpawnData data) {
-        boolean red = FXGLMath.randomBoolean((float)config.getRedEnemyChance());
 
-        int moveSpeed = red ? config.getRedEnemyMoveSpeed()
-                : FXGLMath.random(150, config.getSeekerMaxMoveSpeed());
-
-        // TODO: red ? "RedSeeker.png" : "Seeker.png"
+        int moveSpeed = random(SEEKER_MIN_MOVE_SPEED, SEEKER_MAX_MOVE_SPEED);
 
         return entityBuilder()
                 .type(SEEKER)
                 .at(getRandomSpawnPoint())
                 .viewWithBBox(texture("Seeker.png", 60, 60).brighter())
-                .with(new HealthIntComponent(red ? config.getRedEnemyHealth() : config.getEnemyHealth()))
+                .with(new HealthIntComponent(ENEMY_HP))
                 .with(new CollidableComponent(true))
                 .with(new SeekerComponent(FXGL.<GeoWarsApp>getAppCast().getPlayer(), moveSpeed))
                 .build();
@@ -156,9 +144,9 @@ public class GeoWarsFactory implements EntityFactory {
                 .type(RUNNER)
                 .at(getRandomSpawnPoint())
                 .viewWithBBox(texture("Runner.png", 258 * 0.25, 220 * 0.25))
-                .with(new HealthIntComponent(config.getEnemyHealth()))
+                .with(new HealthIntComponent(ENEMY_HP))
                 .with(new CollidableComponent(true))
-                .with(new RunnerComponent(config.getRunnerMoveSpeed()))
+                .with(new RunnerComponent(RUNNER_MOVE_SPEED))
                 .with(new AutoRotationComponent().withSmoothing())
                 .build();
     }
@@ -169,9 +157,9 @@ public class GeoWarsFactory implements EntityFactory {
                 .type(BOUNCER)
                 .at(0, random(0, getAppHeight() - 40))
                 .viewWithBBox(texture("Bouncer.png", 254 * 0.25, 304 * 0.25))
-                .with(new HealthIntComponent(config.getEnemyHealth()))
+                .with(new HealthIntComponent(ENEMY_HP))
                 .with(new CollidableComponent(true))
-                .with(new BouncerComponent(config.getBouncerMoveSpeed()))
+                .with(new BouncerComponent(BOUNCER_MOVE_SPEED))
                 .build();
     }
 
