@@ -2,7 +2,10 @@ package com.almasb.fxglgames.geowars;
 
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
-import com.almasb.fxgl.dsl.components.*;
+import com.almasb.fxgl.dsl.components.AutoRotationComponent;
+import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
+import com.almasb.fxgl.dsl.components.HealthIntComponent;
+import com.almasb.fxgl.dsl.components.ProjectileComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
@@ -16,13 +19,9 @@ import com.almasb.fxglgames.geowars.component.enemy.RunnerComponent;
 import com.almasb.fxglgames.geowars.component.enemy.SeekerComponent;
 import com.almasb.fxglgames.geowars.component.enemy.WandererComponent;
 import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.effect.Bloom;
 import javafx.scene.effect.BoxBlur;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.StrokeType;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -32,12 +31,6 @@ import static com.almasb.fxglgames.geowars.GeoWarsType.*;
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class GeoWarsFactory implements EntityFactory {
-
-    private final GeoWarsConfig config;
-
-    public GeoWarsFactory() {
-        config = new GeoWarsConfig();
-    }
 
     private static final int SPAWN_DISTANCE = 50;
 
@@ -55,6 +48,12 @@ public class GeoWarsFactory implements EntityFactory {
         return spawnPoints[FXGLMath.random(0, 3)];
     }
 
+    private final GeoWarsConfig config;
+
+    public GeoWarsFactory() {
+        config = new GeoWarsConfig();
+    }
+
     @Spawns("Background")
     public Entity spawnBackground(SpawnData data) {
         return entityBuilder(data)
@@ -63,59 +62,32 @@ public class GeoWarsFactory implements EntityFactory {
                 .build();
     }
 
-    @Spawns("BackgroundCircle")
-    public Entity spawnBackgroundCircle(SpawnData data) {
-        var radius = random(60.0, 100.0);
-        Circle circle = new Circle(radius, radius, radius, Color.color(0.2, 0.6, 0.7, 0.5));
-
-        circle.setStrokeType(StrokeType.OUTSIDE);
-        circle.setStroke(Color.web("white", 0.3f));
-        circle.setStrokeWidth(3);
-        circle.setEffect(new BoxBlur(5, 5, 3));
-
-        return entityBuilder(data)
-                .view(circle)
-                .rotationOrigin(radius, radius)
-                .with(new RandomMoveComponent(new Rectangle2D(-200, -200, 200, getAppHeight() + 400), random(1, 15)))
-                .build();
-    }
-
     @Spawns("Player")
     public Entity spawnPlayer(SpawnData data) {
-        DropShadow ds = new DropShadow();
-        ds.setOffsetY(5.0);
-        ds.setOffsetX(5.0);
-        ds.setColor(Color.GRAY);
-
         var texture = texture("Player.png");
         texture.setEffect(new Bloom(0.7));
 
-        var e = entityBuilder()
+        return entityBuilder()
                 .type(PLAYER)
                 .at(getAppWidth() / 2, getAppHeight() / 2)
                 .viewWithBBox(texture)
                 .collidable()
                 .zIndex(1000)
-                //.with(new KeepOnScreenComponent().bothAxes())
                 .with(new PlayerComponent(config.getPlayerSpeed()))
+                //.with(new ExhaustParticleComponent(ParticleEmitters.newExplosionEmitter(1)))
                 .build();
-
-        if (!getSettings().isExperimentalNative()) {
-            //e.addComponent(new ExhaustParticleComponent(ParticleEmitters.newExplosionEmitter(1)));
-        }
-
-        return e;
     }
 
     @Spawns("Bullet")
     public Entity spawnBullet(SpawnData data) {
-        if (!getSettings().isExperimentalNative()) {
-            play("shoot" + (int) (Math.random() * 8 + 1) + ".wav");
-        }
+        play("shoot" + (int) (Math.random() * 8 + 1) + ".wav");
 
         var t = texture("Bullet.png");
         t.setScaleX(1.2);
         t.setScaleY(1.2);
+
+        var expireClean = new ExpireCleanComponent(Duration.seconds(0.5)).animateOpacity();
+        expireClean.pause();
 
         return entityBuilder(data)
                 .type(BULLET)
@@ -124,7 +96,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .with(new CollidableComponent(true))
                 .with(new ProjectileComponent(data.get("direction"), 1200))
                 .with(new BulletComponent())
-                .with(new OffscreenCleanComponent())
+                .with(expireClean)
                 .build();
     }
 
@@ -188,18 +160,14 @@ public class GeoWarsFactory implements EntityFactory {
                 .with(new CollidableComponent(true))
                 .with(new RunnerComponent(config.getRunnerMoveSpeed()))
                 .with(new AutoRotationComponent().withSmoothing())
-                //.with(new RunnerComponent(config.getRunnerMoveSpeed()))
-                //.with(new RandomMoveComponent(new Rectangle2D(0, 0, getAppWidth(), getAppHeight()), config.getRunnerMoveSpeed(), FXGLMath.random(250, 500)))
                 .build();
     }
 
     @Spawns("Bouncer")
     public Entity spawnBouncer(SpawnData data) {
-        double y = FXGLMath.random(0, getAppHeight() - 40);
-
         return entityBuilder()
                 .type(BOUNCER)
-                .at(0, y)
+                .at(0, random(0, getAppHeight() - 40))
                 .viewWithBBox(texture("Bouncer.png", 254 * 0.25, 304 * 0.25))
                 .with(new HealthIntComponent(config.getEnemyHealth()))
                 .with(new CollidableComponent(true))
@@ -209,28 +177,13 @@ public class GeoWarsFactory implements EntityFactory {
 
     @Spawns("Explosion")
     public Entity spawnExplosion(SpawnData data) {
-        var e = entityBuilder()
+        play("explosion-0" + (int) (Math.random() * 8 + 1) + ".wav");
+
+        return entityBuilder()
                 .at(data.getX() - 40, data.getY() - 40)
                 .view(texture("explosion.png", 80 * 48, 80).toAnimatedTexture(48, Duration.seconds(0.75)).play())
                 .with(new ExpireCleanComponent(Duration.seconds(1.6)))
-                .build();
-
-        if (!getSettings().isExperimentalNative()) {
-            e.addComponent(new ExplosionParticleComponent());
-
-            play("explosion-0" + (int) (Math.random() * 8 + 1) + ".wav");
-        }
-
-        return e;
-    }
-
-    @Spawns("Portal")
-    public Entity spawnPortal(SpawnData data) {
-        return entityBuilder(data)
-                .type(PORTAL)
-                .viewWithBBox("Portal.png")
-                .with(new CollidableComponent(true))
-                .with(new ExpireCleanComponent(Duration.seconds(10)))
+                .with(new ExplosionParticleComponent())
                 .build();
     }
 

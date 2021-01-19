@@ -1,6 +1,5 @@
 package com.almasb.fxglgames.geowars.component;
 
-import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
@@ -97,7 +96,6 @@ public class PlayerComponent extends Component {
 
             if (getb("isRicochet")) {
                 bullets.forEach(bullet -> {
-                    bullet.removeComponent(OffscreenCleanComponent.class);
                     bullet.addComponent(new RicochetComponent());
                 });
             }

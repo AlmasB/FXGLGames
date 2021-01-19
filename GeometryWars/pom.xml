@@ -6,7 +6,7 @@
 
     <groupId>com.almasb</groupId>
     <artifactId>GeometryWars</artifactId>
-    <version>0.7.5</version>
+    <version>1.2.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -177,7 +177,6 @@
                         <!-- Factories -->
                         <list>com.almasb.fxglgames.geowars.GeoWarsFactory</list>
                     </reflectionList>
-                    <!--                    <target>ios-sim</target>-->
                     <mainClass>${mainClassName}</mainClass>
                 </configuration>
             </plugin>

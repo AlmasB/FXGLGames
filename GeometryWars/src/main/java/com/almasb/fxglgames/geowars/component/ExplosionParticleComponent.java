@@ -34,7 +34,7 @@ public class ExplosionParticleComponent extends ParticleComponent {
 
         byType(GeoWarsType.GRID).forEach(g -> {
             var grid = g.getComponent(GridComponent.class);
-            grid.applyExplosiveForce(2000.0 / 60 * 18, entity.getCenter(), 80 * 60 * tpf);
+            grid.applyExplosiveForce(1000.0 / 60 * 18, entity.getCenter().add(25, 25), 80 * 60 * tpf);
         });
     }
 

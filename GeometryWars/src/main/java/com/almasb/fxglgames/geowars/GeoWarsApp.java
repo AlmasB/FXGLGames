@@ -35,7 +35,6 @@ import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.virtual.VirtualButton;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
-import com.almasb.fxglgames.geowars.collision.BulletPortalHandler;
 import com.almasb.fxglgames.geowars.collision.PlayerCrystalHandler;
 import com.almasb.fxglgames.geowars.component.PlayerComponent;
 import javafx.event.Event;
@@ -75,15 +74,12 @@ public class GeoWarsApp extends GameApplication {
         settings.setWidth(1600);
         settings.setHeight(900);
         settings.setTitle("FXGL Geometry Wars");
-        settings.setVersion("1.1.0");
+        settings.setVersion("1.2.0");
         settings.setIntroEnabled(isRelease);
         settings.setMainMenuEnabled(isRelease);
-        settings.setConfigClass(GeoWarsConfig.class);
+        settings.setGameMenuEnabled(isRelease);
         settings.setApplicationMode(isRelease ? ApplicationMode.RELEASE : ApplicationMode.DEVELOPER);
-
-        if (!settings.isExperimentalNative()) {
-            settings.setFontUI("game_font_7.ttf");
-        }
+        settings.setFontUI("game_font_7.ttf");
     }
 
     @Override
@@ -91,12 +87,10 @@ public class GeoWarsApp extends GameApplication {
         // preload explosion sprite sheet
         getAssetLoader().loadTexture("explosion.png", 80 * 48, 80);
 
-        if (!getSettings().isExperimentalNative()) {
-            getSettings().setGlobalSoundVolume(0.2);
-            getSettings().setGlobalMusicVolume(0.2);
+        getSettings().setGlobalSoundVolume(0.2);
+        getSettings().setGlobalMusicVolume(0.2);
 
-            loopBGM("bgm.mp3");
-        }
+        loopBGM("bgm.mp3");
     }
 
     @Override
@@ -237,8 +231,13 @@ public class GeoWarsApp extends GameApplication {
                 HealthIntComponent hp = enemy.getComponent(HealthIntComponent.class);
                 hp.setValue(hp.getValue() - 1);
 
-                if (hp.getValue() == 0) {
-                    onDeath(enemy);
+                if (hp.isZero()) {
+                    spawn("Explosion", enemy.getCenter());
+                    spawn("Crystal", enemy.getCenter());
+
+                    addScoreKill(enemy.getCenter());
+
+
                     enemy.removeFromWorld();
                 }
             }
@@ -248,7 +247,6 @@ public class GeoWarsApp extends GameApplication {
         physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, SEEKER));
         physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, RUNNER));
         physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, BOUNCER));
-        physics.addCollisionHandler(new BulletPortalHandler());
         physics.addCollisionHandler(new PlayerCrystalHandler());
 
         CollisionHandler playerEnemy = new CollisionHandler(PLAYER, WANDERER) {
@@ -257,7 +255,9 @@ public class GeoWarsApp extends GameApplication {
 
                 getGameScene().getViewport().shakeTranslational(8);
 
-                a.setPosition(getRandomPoint());
+                var randomPoint = new Point2D(random(0, getAppWidth() - 40), random(0, getAppHeight() - 40));
+
+                a.setPosition(randomPoint);
                 b.removeFromWorld();
                 deductScoreDeath();
             }
@@ -308,10 +308,6 @@ public class GeoWarsApp extends GameApplication {
                 .buildAndPlay();
     }
 
-    private Point2D getRandomPoint() {
-        return new Point2D(Math.random() * getAppWidth(), Math.random() * getAppHeight());
-    }
-
     private void addScoreKill(Point2D enemyPosition) {
         inc("kills", +1);
 
@@ -333,6 +329,7 @@ public class GeoWarsApp extends GameApplication {
         var e = entityBuilder()
                 .at(enemyPosition)
                 .view(bonusText)
+                .zIndex(2000)
                 .buildAndAttach();
 
         animationBuilder()
@@ -374,13 +371,6 @@ public class GeoWarsApp extends GameApplication {
                 .from(new Point2D(bonusText.getTranslateX(), bonusText.getTranslateY()))
                 .to(new Point2D(bonusText.getTranslateX(), 0))
                 .buildAndPlay();
-    }
-
-    public void onDeath(Entity entity) {
-        spawn("Explosion", entity.getCenter());
-        spawn("Crystal", entity.getCenter());
-
-        addScoreKill(entity.getCenter());
     }
 
     public static void main(String[] args) {

@@ -26,15 +26,12 @@
 
 package com.almasb.fxglgames.geowars.component;
 
-import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
 import com.almasb.fxgl.dsl.components.ProjectileComponent;
-import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.BoundingBoxComponent;
 import com.almasb.fxglgames.geowars.GeoWarsType;
 import javafx.geometry.Point2D;
-import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
@@ -43,21 +40,9 @@ import static com.almasb.fxgl.dsl.FXGL.*;
  */
 public class BulletComponent extends Component {
 
-    private static final Duration PARTICLE_DURATION = Duration.seconds(1.2);
-
     private BoundingBoxComponent bbox;
 
     private Point2D velocity;
-
-    private Entity lastPortal = null;
-
-    public Entity getLastPortal() {
-        return lastPortal;
-    }
-
-    public void setLastPortal(Entity lastPortal) {
-        this.lastPortal = lastPortal;
-    }
 
     @Override
     public void onAdded() {
@@ -68,7 +53,7 @@ public class BulletComponent extends Component {
     public void onUpdate(double tpf) {
         byType(GeoWarsType.GRID).forEach(g -> {
             var grid = g.getComponent(GridComponent.class);
-            grid.applyImplosiveForce(velocity.magnitude() / 60 * 18, bbox.getCenterWorld(), 80 * 60 * tpf);
+            grid.applyImplosiveForce(velocity.magnitude() / 60 * 10, bbox.getCenterWorld(), 80 * 60 * tpf);
         });
 
         if (bbox.getMinXWorld() < 0) {
@@ -86,19 +71,8 @@ public class BulletComponent extends Component {
     }
 
     private void spawnParticles(double x, double y, double dirX, double dirY) {
-        entityBuilder()
-                .at(x, y)
-                .with(new ProjectileComponent(new Point2D(dirX, dirY), FXGLMath.random(150, 280)))
-                .with(new ExpireCleanComponent(PARTICLE_DURATION))
-                .with(new ParticleControl())
-                .buildAndAttach();
-    }
-
-    private static class ParticleControl extends Component {
-        @Override
-        public void onUpdate(double tpf) {
-            ProjectileComponent control = entity.getComponent(ProjectileComponent.class);
-            control.setSpeed(control.getSpeed() * (1 - 3*tpf));
+        if (!entity.hasComponent(RicochetComponent.class)) {
+            entity.getComponent(ExpireCleanComponent.class).resume();
         }
     }
 }

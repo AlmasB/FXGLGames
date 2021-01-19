@@ -29,6 +29,7 @@ public class GridComponent extends Component {
     private static final double SPRING_DAMPING = 0.86;
 
     private static final Color IDLE_COLOR = Color.color(0.138, 0.138, 0.375, 0.66);
+    private static final Color EDGE_COLOR = IDLE_COLOR.brighter().brighter();
     private static final Color BULLET_COLOR = Color.color(0.138, 0.238, 0.975, 0.76);
 
     private Array<Line> lines = new Array<>(1000);
@@ -155,6 +156,15 @@ public class GridComponent extends Component {
 
                 for (ExtraLine line : extraLines)
                     line.render(bullets, offScreenCanvas.getGraphicsContext2D());
+
+                var g = offScreenCanvas.getGraphicsContext2D();
+
+                g.setStroke(EDGE_COLOR);
+                g.strokeLine(0, 0, 0, getAppHeight());
+                g.strokeLine(0, 0, getAppWidth(), 0);
+                g.strokeLine(getAppWidth(), 0, getAppWidth(), getAppHeight());
+                g.strokeLine(0, getAppHeight(), getAppWidth(), getAppHeight());
+                g.setStroke(IDLE_COLOR);
 
                 isRenderDone.set(true);
 
