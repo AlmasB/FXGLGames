@@ -57,9 +57,9 @@ public class SlotMachineApp extends GameApplication {
         textMoney.setTranslateY(50);
         textMoney.setFont(Font.font(36));
         textMoney.setFill(Color.WHITE);
-        textMoney.textProperty().bind(getGameState().intProperty("money").asString("$%d"));
+        textMoney.textProperty().bind(getip("money").asString("$%d"));
 
-        getGameScene().addUINode(textMoney);
+        addUINode(textMoney);
     }
 
     private List<Integer> spinValues = new ArrayList<>();
@@ -105,7 +105,7 @@ public class SlotMachineApp extends GameApplication {
             reward = -100;
         }
 
-        getGameState().increment("money", reward);
+        inc("money", reward);
     }
 
     public static void main(String[] args) {
