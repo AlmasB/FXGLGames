@@ -142,13 +142,11 @@ public class PacmanFactory implements EntityFactory {
                 .type(ENEMY)
                 .bbox(new HitBox(new Point2D(2, 2), BoundingShape.box(36, 36)))
                 .with(new CollidableComponent(true))
-                .with(new PaletteChangingComponent(texture("spritesheet.png")))
+                .with(new PaletteChangingComponent(texture("spritesheet.png", 695 * 0.24, 1048 * 0.24)))
                 .with(new CellMoveComponent(BLOCK_SIZE, BLOCK_SIZE, 125))
                 // there is no grid constructed yet, so pass lazily
                 .with(new AStarMoveComponent(new LazyValue<>(() -> geto("grid"))))
                 .with(aiComponents.get())
-                .scaleOrigin(0, 0)
-                .scale(0.24, 0.24)
                 .build();
 
         enemy.setLocalAnchorFromCenter();

@@ -58,7 +58,7 @@ public class PaletteChangingComponent extends Component {
         timeToSwitch += tpf;
 
         if (timeToSwitch >= 5.0) {
-            spriteColor = 160 * FXGLMath.random(0, 2);
+            spriteColor = (int) (160 * FXGLMath.random(0, 2) * 0.24);
             timeToSwitch = 0;
         }
 
@@ -76,16 +76,16 @@ public class PaletteChangingComponent extends Component {
         if (Math.abs(dx) > Math.abs(dy)) {
             // move was horizontal
             if (dx > 0) {
-                texture.setViewport(new Rectangle2D(130*3, spriteColor, 130, 160));
+                texture.setViewport(new Rectangle2D(130*3 * 0.24, spriteColor, 130 * 0.24, 160 * 0.24));
             } else {
-                texture.setViewport(new Rectangle2D(130*2, spriteColor, 130, 160));
+                texture.setViewport(new Rectangle2D(130*2 * 0.24, spriteColor, 130 * 0.24, 160 * 0.24));
             }
         } else {
             // move was vertical
             if (dy > 0) {
-                texture.setViewport(new Rectangle2D(0, spriteColor, 130, 160));
+                texture.setViewport(new Rectangle2D(0, spriteColor, 130 * 0.24, 160 * 0.24));
             } else {
-                texture.setViewport(new Rectangle2D(130, spriteColor, 130, 160));
+                texture.setViewport(new Rectangle2D(130 * 0.24, spriteColor, 130 * 0.24, 160 * 0.24));
             }
         }
     }
