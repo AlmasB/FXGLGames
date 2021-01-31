@@ -260,7 +260,7 @@ public class MarioApp extends GameApplication {
     private void setLevel(int levelNum) {
         if (player != null) {
             player.getComponent(PhysicsComponent.class).overwritePosition(new Point2D(50, 50));
-            player.setZ(Integer.MAX_VALUE);
+            player.setZIndex(Integer.MAX_VALUE);
         }
 
         set("levelTime", 0.0);
