@@ -6,4 +6,8 @@ The original source and assets can be found
 
 Sprite assets: https://gisha.itch.io/spaceships-asset-pack?download
 
+BGM: Music by Eric Matyas
+     
+     www.soundimage.org
+
 Gameplay demo is feature-complete, this project only receives performance improvement updates / bug fixes.

@@ -81,6 +81,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setIntroEnabled(isRelease);
         settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(isRelease);
+        settings.setProfilingEnabled(true);
         settings.setApplicationMode(isRelease ? ApplicationMode.RELEASE : ApplicationMode.DEVELOPER);
         settings.setFontUI("game_font_7.ttf");
         settings.setSceneFactory(new SceneFactory() {
@@ -97,7 +98,7 @@ public class GeoWarsApp extends GameApplication {
         getAssetLoader().loadTexture("explosion.png", 80 * 48, 80);
 
         getSettings().setGlobalSoundVolume(0.2);
-        getSettings().setGlobalMusicVolume(0.2);
+        getSettings().setGlobalMusicVolume(0.5);
 
         loopBGM("bgm.mp3");
     }

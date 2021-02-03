@@ -4,13 +4,11 @@ import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.MenuType;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringBinding;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.effect.Bloom;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -145,35 +143,5 @@ public class GeoWarsMainMenu extends FXGLMenu {
 
             getChildren().add(text);
         }
-    }
-
-    @Override
-    protected Button createActionButton( StringBinding stringBinding,  Runnable runnable) {
-        return new Button();
-    }
-    
-    @Override
-    protected Button createActionButton( String s,  Runnable runnable) {
-        return new Button();
-    }
-    
-    @Override
-    protected Node createBackground(double w, double h) {
-        return new Rectangle(w, h);
-    }
-
-    @Override
-    protected Node createProfileView( String s) {
-        return new Button();
-    }
-
-    @Override
-    protected Node createTitleView( String s) {
-        return new Button();
-    }
-    
-    @Override
-    protected Node createVersionView( String s) {
-        return new Button();
     }
 }
