@@ -31,6 +31,7 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
+import com.almasb.fxgl.app.scene.SimpleGameMenu;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.UserAction;
@@ -40,6 +41,7 @@ import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxglgames.geowars.collision.PlayerCrystalHandler;
 import com.almasb.fxglgames.geowars.component.PlayerComponent;
 import com.almasb.fxglgames.geowars.menu.GeoWarsMainMenu;
+import com.almasb.fxglgames.geowars.service.HighScoreService;
 import javafx.event.Event;
 import javafx.event.EventType;
 import javafx.geometry.Point2D;
@@ -56,6 +58,7 @@ import java.util.function.Supplier;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getInput;
+import static com.almasb.fxglgames.geowars.Config.SAVE_FILE_NAME;
 import static com.almasb.fxglgames.geowars.GeoWarsType.*;
 
 /**
@@ -74,20 +77,28 @@ public class GeoWarsApp extends GameApplication {
     protected void initSettings(GameSettings settings) {
         var isRelease = false;
 
-        settings.setWidth(1600);
-        settings.setHeight(900);
+        settings.setWidth(1920);
+        settings.setHeight(1080);
         settings.setTitle("FXGL Geometry Wars");
         settings.setVersion("1.2.0");
         settings.setIntroEnabled(isRelease);
         settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(isRelease);
+        settings.setFullScreenAllowed(isRelease);
+        settings.setFullScreenFromStart(isRelease);
         settings.setProfilingEnabled(true);
         settings.setApplicationMode(isRelease ? ApplicationMode.RELEASE : ApplicationMode.DEVELOPER);
         settings.setFontUI("game_font_7.ttf");
+        settings.addEngineService(HighScoreService.class);
         settings.setSceneFactory(new SceneFactory() {
             @Override
             public FXGLMenu newMainMenu() {
                 return new GeoWarsMainMenu();
+            }
+
+            @Override
+            public FXGLMenu newGameMenu() {
+                return new SimpleGameMenu();
             }
         });
     }
@@ -189,9 +200,13 @@ public class GeoWarsApp extends GameApplication {
             }
         });
 
+        getWorldProperties().<Integer>addListener("score", (prev, now) -> {
+            getService(HighScoreService.class).setScore(now);
+        });
+
         getWorldProperties().<Integer>addListener("lives", (prev, now) -> {
             if (now == 0)
-                getDialogService().showMessageBox("Demo Over. Your score: " + geti("score"), getGameController()::exit);
+                gameOver();
         });
 
         eventBuilder()
@@ -221,7 +236,8 @@ public class GeoWarsApp extends GameApplication {
         eventBuilder()
                 .when((Supplier<Boolean>) () -> geti("score") >= 500000)
                 .thenFire((Supplier<Event>) () -> {
-                    showMessage("Demo over! Your score: " + geti("score"), getGameController()::exit);
+                    gameOver();
+
                     return new Event(EventType.ROOT);
                 })
                 .buildAndStart();
@@ -246,7 +262,6 @@ public class GeoWarsApp extends GameApplication {
                     spawn("Crystal", enemy.getCenter());
 
                     addScoreKill(enemy.getCenter());
-
 
                     enemy.removeFromWorld();
                 }
@@ -381,6 +396,17 @@ public class GeoWarsApp extends GameApplication {
                 .from(new Point2D(bonusText.getTranslateX(), bonusText.getTranslateY()))
                 .to(new Point2D(bonusText.getTranslateX(), 0))
                 .buildAndPlay();
+    }
+
+    private void gameOver() {
+        // TODO: if higher than high score
+        getDialogService().showInputBox("Your score:" + geti("score") + "\nEnter your name", s -> s.matches("[a-zA-Z]*"), name -> {
+            getService(HighScoreService.class).commit(name);
+
+            getSaveLoadService().saveAndWriteTask(SAVE_FILE_NAME).run();
+
+            getGameController().gotoMainMenu();
+        });
     }
 
     public static void main(String[] args) {

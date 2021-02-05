@@ -3,7 +3,10 @@ package com.almasb.fxglgames.geowars.menu;
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.MenuType;
+import com.almasb.fxgl.scene.Scene;
+import com.almasb.fxglgames.geowars.service.HighScoreService;
 import javafx.beans.binding.Bindings;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.CacheHint;
@@ -20,12 +23,14 @@ import javafx.util.Duration;
 import java.util.ArrayList;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxglgames.geowars.Config.SAVE_FILE_NAME;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class GeoWarsMainMenu extends FXGLMenu {
 
+    private VBox scoresRoot = new VBox(10);
     private Node highScores;
 
     public GeoWarsMainMenu() {
@@ -48,9 +53,11 @@ public class GeoWarsMainMenu extends FXGLMenu {
 
         var blocks = new ArrayList<ColorBlock>();
 
+        var blockStartX = getAppWidth() / 2.0 - 380;
+
         for (int i = 0; i < 15; i++) {
             var block = new ColorBlock(40, color);
-            block.setTranslateX(420 + i*50);
+            block.setTranslateX(blockStartX + i*50);
             block.setTranslateY(100);
 
             blocks.add(block);
@@ -59,7 +66,7 @@ public class GeoWarsMainMenu extends FXGLMenu {
 
         for (int i = 0; i < 15; i++) {
             var block = new ColorBlock(40, color);
-            block.setTranslateX(420 + i*50);
+            block.setTranslateX(blockStartX + i*50);
             block.setTranslateY(220);
 
             blocks.add(block);
@@ -88,23 +95,18 @@ public class GeoWarsMainMenu extends FXGLMenu {
         );
         menuBox.setAlignment(Pos.TOP_CENTER);
 
-        menuBox.setTranslateX(675);
-        menuBox.setTranslateY(550);
+        menuBox.setTranslateX(getAppWidth() / 2.0 - 125);
+        menuBox.setTranslateY(getAppHeight() / 2.0 + 125);
 
         // useful for checking if nodes are properly centered
         var centeringLine = new Line(getAppWidth() / 2.0, 0, getAppWidth() / 2.0, getAppHeight());
         centeringLine.setStroke(Color.WHITE);
 
-        var vbox = new VBox(10);
-        vbox.setAlignment(Pos.CENTER);
+        scoresRoot.setPadding(new Insets(10));
+        scoresRoot.setAlignment(Pos.TOP_LEFT);
 
-        for (int i = 0; i < 5; i++) {
-            var hsText = getUIFactoryService().newText("None: " + (5-i) * 100000, Color.WHITE, 32.0);
-
-            vbox.getChildren().add(hsText);
-        }
-
-        StackPane hsRoot = new StackPane(new Rectangle(250, 250, Color.color(0, 0, 0.2, 0.8)), vbox);
+        StackPane hsRoot = new StackPane(new Rectangle(450, 250, Color.color(0, 0, 0.2, 0.8)), scoresRoot);
+        hsRoot.setAlignment(Pos.TOP_CENTER);
         hsRoot.setCache(true);
         hsRoot.setCacheHint(CacheHint.SPEED);
         hsRoot.setTranslateX(getAppWidth());
@@ -115,13 +117,44 @@ public class GeoWarsMainMenu extends FXGLMenu {
         getContentRoot().getChildren().addAll(menuBox, hsRoot);
     }
 
+    private boolean isLoadedScore = false;
+
+    @Override
+    public void onCreate() {
+        if (isLoadedScore)
+            return;
+
+        getService(HighScoreService.class).setNumScoresToKeep(5);
+        
+        getSaveLoadService().readAndLoadTask(SAVE_FILE_NAME).run();
+        isLoadedScore = true;
+
+        updateHighScores();
+    }
+
+    @Override
+    public void onEnteredFrom(Scene prevState) {
+        updateHighScores();
+    }
+
+    private void updateHighScores() {
+        scoresRoot.getChildren().clear();
+
+        HighScoreService highScoreService = getService(HighScoreService.class);
+        highScoreService.getHighScores().forEach(data -> {
+            var hsText = getUIFactoryService().newText(data.getTag() + ": " + data.getScore(), Color.WHITE, 32.0);
+
+            scoresRoot.getChildren().add(hsText);
+        });
+    }
+
     private void toggleHighScores() {
         animationBuilder(this)
                 .duration(Duration.seconds(0.66))
                 .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
                 .translate(highScores)
                 .from(new Point2D(getAppWidth(), highScores.getTranslateY()))
-                .to(new Point2D(getAppWidth() - 250, highScores.getTranslateY()))
+                .to(new Point2D(getAppWidth() - 450, highScores.getTranslateY()))
                 .buildAndPlay();
     }
 

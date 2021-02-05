@@ -21,4 +21,6 @@ public final class Config {
     public static final int PLAYER_SPEED = 320;
 
     public static final Duration WEAPON_DELAY = Duration.seconds(0.11);
+
+    public static final String SAVE_FILE_NAME = "high_score.dat";
 }
