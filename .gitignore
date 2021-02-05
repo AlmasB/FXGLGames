@@ -30,4 +30,4 @@ profiles/
 system/
 
 # Space Invaders #
-hiscore.dat
+*.dat

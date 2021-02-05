@@ -125,7 +125,7 @@ public class GeoWarsMainMenu extends FXGLMenu {
             return;
 
         getService(HighScoreService.class).setNumScoresToKeep(5);
-        
+
         getSaveLoadService().readAndLoadTask(SAVE_FILE_NAME).run();
         isLoadedScore = true;
 
