@@ -7,6 +7,8 @@ import javafx.util.Duration;
  */
 public final class Config {
 
+    public static final boolean IS_NO_ENEMIES = false;
+
     public static final int OUTSIDE_DISTANCE = 200;
 
     public static final int ENEMY_HP = 1;

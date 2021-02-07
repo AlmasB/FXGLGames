@@ -1,12 +1,18 @@
 package com.almasb.fxglgames.geowars.component;
 
+import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.particle.ParticleComponent;
+import com.almasb.fxgl.particle.ParticleEmitters;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.geowars.WeaponType;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.effect.BlendMode;
+import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +20,7 @@ import java.util.List;
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.geto;
 import static com.almasb.fxglgames.geowars.Config.WEAPON_DELAY;
+import static com.almasb.fxglgames.geowars.GeoWarsType.GRID;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -127,5 +134,34 @@ public class PlayerComponent extends Component {
 
     public void down() {
         entity.translateY(speed);
+    }
+
+    public void playSpawnAnimation() {
+        for (int i = 0; i < 6; i++) {
+            final int j = i;
+
+            runOnce(() -> {
+                byType(GRID).get(0).getComponent(GridComponent.class)
+                        .applyExplosiveForce(1500 + j*100, new Point2D(getAppWidth() / 2.0, getAppHeight() / 2.0), j*50 + 50);
+            }, Duration.seconds(i * 0.4));
+        }
+
+        var emitter = ParticleEmitters.newExplosionEmitter(450);
+        emitter.setSize(1, 16);
+        emitter.setBlendMode(BlendMode.SRC_OVER);
+        emitter.setStartColor(Color.color(1.0, 1.0, 1.0, 0.5));
+        emitter.setEndColor(Color.BLUE);
+        emitter.setMaxEmissions(20);
+        emitter.setEmissionRate(0.5);
+
+        entityBuilder()
+                .at(entity.getPosition())
+                .with(new ParticleComponent(emitter))
+                .with(new ExpireCleanComponent(Duration.seconds(3)))
+                .buildAndAttach();
+
+        animationBuilder()
+                .fadeIn(entity)
+                .buildAndPlay();
     }
 }

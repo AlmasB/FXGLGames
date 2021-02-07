@@ -91,6 +91,7 @@ public class GeoWarsMainMenu extends FXGLMenu {
                 5,
                 new MenuButton("New Game", () -> fireNewGame()),
                 new MenuButton("High Scores", () -> toggleHighScores()),
+                new MenuButton("Credits", () -> showCredits()),
                 new MenuButton("Exit", () -> fireExit())
         );
         menuBox.setAlignment(Pos.TOP_CENTER);
@@ -115,6 +116,16 @@ public class GeoWarsMainMenu extends FXGLMenu {
         highScores = hsRoot;
 
         getContentRoot().getChildren().addAll(menuBox, hsRoot);
+    }
+
+    private void showCredits() {
+        getDialogService().showMessageBox("Sprite assets: https://gisha.itch.io/spaceships-asset-pack?download\n" +
+                "\n" +
+                "Background assets: https://dinvstudio.itch.io/dynamic-space-background-lite-free\n" +
+                "\n" +
+                "BGM: Music by Eric Matyas\n" +
+                "     \n" +
+                "     www.soundimage.org");
     }
 
     private boolean isLoadedScore = false;

@@ -58,8 +58,7 @@ import java.util.function.Supplier;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getInput;
-import static com.almasb.fxglgames.geowars.Config.OUTSIDE_DISTANCE;
-import static com.almasb.fxglgames.geowars.Config.SAVE_FILE_NAME;
+import static com.almasb.fxglgames.geowars.Config.*;
 import static com.almasb.fxglgames.geowars.GeoWarsType.*;
 
 /**
@@ -76,7 +75,7 @@ public class GeoWarsApp extends GameApplication {
 
     @Override
     protected void initSettings(GameSettings settings) {
-        var isRelease = true;
+        var isRelease = false;
 
         settings.setWidth(1920);
         settings.setHeight(1080);
@@ -84,10 +83,10 @@ public class GeoWarsApp extends GameApplication {
         settings.setVersion("1.2.0");
         settings.setIntroEnabled(isRelease);
         settings.setMainMenuEnabled(true);
-        settings.setGameMenuEnabled(isRelease);
+        settings.setGameMenuEnabled(true);
         settings.setFullScreenAllowed(isRelease);
         settings.setFullScreenFromStart(isRelease);
-        settings.setProfilingEnabled(true);
+        settings.setProfilingEnabled(false);
         settings.setApplicationMode(isRelease ? ApplicationMode.RELEASE : ApplicationMode.DEVELOPER);
         settings.setFontUI("game_font_7.ttf");
         settings.addEngineService(HighScoreService.class);
@@ -164,6 +163,12 @@ public class GeoWarsApp extends GameApplication {
                         .ifPresent(e -> playerComponent.shoot(e.getPosition()));
             }
         }, KeyCode.F, VirtualButton.A);
+
+        if (!isReleaseMode()) {
+            onKeyDown(KeyCode.G, () -> {
+
+            });
+        }
     }
 
     @Override
@@ -187,6 +192,7 @@ public class GeoWarsApp extends GameApplication {
 
         player = spawn("Player");
         playerComponent = player.getComponent(PlayerComponent.class);
+        playerComponent.playSpawnAnimation();
 
         int dist = OUTSIDE_DISTANCE;
 
@@ -211,44 +217,46 @@ public class GeoWarsApp extends GameApplication {
                 gameOver();
         });
 
-        eventBuilder()
-                .when((Supplier<Boolean>) () -> geti("score") >= 10000)
-                .thenFire((Supplier<Event>) () -> {
-                    run(() -> spawn("Bouncer"), Duration.seconds(5));
-                    return new Event(EventType.ROOT);
-                })
-                .buildAndStart();
+        if (!IS_NO_ENEMIES) {
+            eventBuilder()
+                    .when((Supplier<Boolean>) () -> geti("score") >= 10000)
+                    .thenFire((Supplier<Event>) () -> {
+                        run(() -> spawn("Bouncer"), Duration.seconds(5));
+                        return new Event(EventType.ROOT);
+                    })
+                    .buildAndStart();
 
-        eventBuilder()
-                .when((Supplier<Boolean>) () -> geti("score") >= 50000)
-                .thenFire((Supplier<Event>) () -> {
-                    run(() -> spawn("Seeker"), Duration.seconds(2));
-                    return new Event(EventType.ROOT);
-                })
-                .buildAndStart();
+            eventBuilder()
+                    .when((Supplier<Boolean>) () -> geti("score") >= 50000)
+                    .thenFire((Supplier<Event>) () -> {
+                        run(() -> spawn("Seeker"), Duration.seconds(2));
+                        return new Event(EventType.ROOT);
+                    })
+                    .buildAndStart();
 
-        eventBuilder()
-                .when((Supplier<Boolean>) () -> geti("score") >= 70000)
-                .thenFire((Supplier<Event>) () -> {
-                    run(() -> spawn("Runner"), Duration.seconds(3));
-                    return new Event(EventType.ROOT);
-                })
-                .buildAndStart();
+            eventBuilder()
+                    .when((Supplier<Boolean>) () -> geti("score") >= 70000)
+                    .thenFire((Supplier<Event>) () -> {
+                        run(() -> spawn("Runner"), Duration.seconds(3));
+                        return new Event(EventType.ROOT);
+                    })
+                    .buildAndStart();
 
-        eventBuilder()
-                .when((Supplier<Boolean>) () -> geti("score") >= 1000000)
-                .thenFire((Supplier<Event>) () -> {
-                    gameOver();
+            eventBuilder()
+                    .when((Supplier<Boolean>) () -> geti("score") >= 1000000)
+                    .thenFire((Supplier<Event>) () -> {
+                        gameOver();
 
-                    return new Event(EventType.ROOT);
-                })
-                .buildAndStart();
+                        return new Event(EventType.ROOT);
+                    })
+                    .buildAndStart();
 
-        run(() -> {
-            for (int i = 0; i < 4; i++) {
-                spawn("Wanderer");
-            }
-        }, Duration.seconds(1.5));
+            run(() -> {
+                for (int i = 0; i < 4; i++) {
+                    spawn("Wanderer");
+                }
+            }, Duration.seconds(1.5));
+        }
     }
 
     @Override
@@ -286,11 +294,10 @@ public class GeoWarsApp extends GameApplication {
 
                 getGameScene().getViewport().shakeTranslational(8);
 
-                var randomPoint = new Point2D(random(0, getAppWidth() - 40), random(0, getAppHeight() - 40));
-
                 byType(WANDERER, SEEKER, RUNNER, BOUNCER).forEach(Entity::removeFromWorld);
 
-                a.setPosition(randomPoint);
+                player.setPosition(getAppWidth() / 2, getAppHeight() / 2);
+                playerComponent.playSpawnAnimation();
 
                 deductScoreDeath();
             }
