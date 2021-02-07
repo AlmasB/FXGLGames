@@ -40,15 +40,12 @@ import javafx.util.Duration;
  */
 public class SeekerComponent extends Component {
 
-    // in seconds
-    private static double seekerAdjustDelay = 5;
-
     private Point2D velocity = Point2D.ZERO;
     private Entity player;
     private Entity seeker;
 
     private LocalTimer adjustDirectionTimer = FXGL.newLocalTimer();
-    private Duration adjustDelay = Duration.seconds(seekerAdjustDelay);
+    private Duration adjustDelay = Duration.seconds(0.15);
 
     private LocalTimer swapTexturesTimer = FXGL.newLocalTimer();
     private Duration swapTexturesDelay = Duration.seconds(0.2);
@@ -60,13 +57,6 @@ public class SeekerComponent extends Component {
     public SeekerComponent(Entity player, int moveSpeed) {
         this.player = player;
         this.moveSpeed = moveSpeed;
-
-        if (seekerAdjustDelay > 0) {
-            seekerAdjustDelay -= 0.15;
-            if (seekerAdjustDelay < 0) {
-                seekerAdjustDelay = 0;
-            }
-        }
     }
 
     @Override

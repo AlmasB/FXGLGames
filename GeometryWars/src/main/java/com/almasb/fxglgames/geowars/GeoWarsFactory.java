@@ -53,7 +53,7 @@ public class GeoWarsFactory implements EntityFactory {
     public Entity spawnBackground(SpawnData data) {
         return entityBuilder(data)
                 .type(GRID)
-                //.with(new BackgroundStarsComponent())
+                .with(new BackgroundStarsComponent())
                 .with(new GridComponent())
                 .build();
     }
@@ -190,7 +190,7 @@ public class GeoWarsFactory implements EntityFactory {
 
         return entityBuilder(data)
                 .type(CRYSTAL)
-                .scale(0.65, 0.65)
+                .scale(0.25, 0.25)
                 .view(t)
                 .viewWithBBox(texture("YellowCrystal.png").toAnimatedTexture(8, Duration.seconds(1)))
                 .zIndex(100)

@@ -6,6 +6,8 @@ The original source and assets can be found
 
 Sprite assets: https://gisha.itch.io/spaceships-asset-pack?download
 
+Background assets: https://dinvstudio.itch.io/dynamic-space-background-lite-free
+
 BGM: Music by Eric Matyas
      
      www.soundimage.org

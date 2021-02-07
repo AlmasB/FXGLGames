@@ -3,8 +3,7 @@ package com.almasb.fxglgames.geowars.component;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.texture.Texture;
 
-import static com.almasb.fxgl.dsl.FXGL.getGameScene;
-import static com.almasb.fxgl.dsl.FXGL.texture;
+import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxglgames.geowars.Config.OUTSIDE_DISTANCE;
 
 /**
@@ -22,10 +21,12 @@ public class BackgroundStarsComponent extends Component {
 
     @Override
     public void onAdded() {
-        starsLayerFront1 = texture("background/stars_big_1.png");
+        var size = getAppWidth() + OUTSIDE_DISTANCE*2;
 
-        starsLayerBack1 = texture("background/stars_small_1.png");
-        starsLayerBack2 = texture("background/stars_small_2.png");
+        starsLayerFront1 = texture("background/stars_big_1.png", size, size);
+
+        starsLayerBack1 = texture("background/stars_small_1.png", size, size);
+        starsLayerBack2 = texture("background/stars_small_2.png", size, size);
 
         entity.getViewComponent().addChild(starsLayerFront1);
         entity.getViewComponent().addChild(starsLayerBack1);

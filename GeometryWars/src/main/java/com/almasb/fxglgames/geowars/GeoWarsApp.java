@@ -76,7 +76,7 @@ public class GeoWarsApp extends GameApplication {
 
     @Override
     protected void initSettings(GameSettings settings) {
-        var isRelease = false;
+        var isRelease = true;
 
         settings.setWidth(1920);
         settings.setHeight(1080);
@@ -109,9 +109,8 @@ public class GeoWarsApp extends GameApplication {
         // preload explosion sprite sheet
         getAssetLoader().loadTexture("explosion.png", 80 * 48, 80);
 
-
-        getSettings().setGlobalSoundVolume(0.0);
-        getSettings().setGlobalMusicVolume(0.0);
+        getSettings().setGlobalSoundVolume(0.2);
+        getSettings().setGlobalMusicVolume(0.5);
 
         loopBGM("bgm.mp3");
     }
@@ -237,7 +236,7 @@ public class GeoWarsApp extends GameApplication {
                 .buildAndStart();
 
         eventBuilder()
-                .when((Supplier<Boolean>) () -> geti("score") >= 500000)
+                .when((Supplier<Boolean>) () -> geti("score") >= 1000000)
                 .thenFire((Supplier<Event>) () -> {
                     gameOver();
 
@@ -245,7 +244,11 @@ public class GeoWarsApp extends GameApplication {
                 })
                 .buildAndStart();
 
-        run(() -> spawn("Wanderer"), Duration.seconds(1.5));
+        run(() -> {
+            for (int i = 0; i < 4; i++) {
+                spawn("Wanderer");
+            }
+        }, Duration.seconds(1.5));
     }
 
     @Override
@@ -285,8 +288,10 @@ public class GeoWarsApp extends GameApplication {
 
                 var randomPoint = new Point2D(random(0, getAppWidth() - 40), random(0, getAppHeight() - 40));
 
+                byType(WANDERER, SEEKER, RUNNER, BOUNCER).forEach(Entity::removeFromWorld);
+
                 a.setPosition(randomPoint);
-                b.removeFromWorld();
+
                 deductScoreDeath();
             }
         };
@@ -346,11 +351,11 @@ public class GeoWarsApp extends GameApplication {
 
         final int multiplier = geti("multiplier");
 
-        inc("score", +100*multiplier);
+        inc("score", +10*multiplier);
 
         var shadow = new DropShadow(25, Color.WHITE);
 
-        Text bonusText = getUIFactoryService().newText("+100" + (multiplier == 1 ? "" : "x" + multiplier), Color.color(1, 1, 1, 0.8), 24);
+        Text bonusText = getUIFactoryService().newText("+10" + (multiplier == 1 ? "" : "x" + multiplier), Color.color(1, 1, 1, 0.8), 24);
         bonusText.setStroke(Color.GOLD);
         bonusText.setEffect(shadow);
 
