@@ -5,17 +5,19 @@ import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.particle.ParticleComponent;
 import com.almasb.fxgl.particle.ParticleEmitters;
-import com.almasb.fxglgames.geowars.GeoWarsType;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;
 import javafx.util.Duration;
 
-import static com.almasb.fxgl.dsl.FXGL.byType;
 import static com.almasb.fxgl.dsl.FXGL.random;
 
 public class ExplosionParticleComponent extends ParticleComponent {
 
     private double t = 0.0;
+    private boolean isExplosive = true;
+    private double explosionForce = 500.0 / 60 * 20;
+
+    private int ticks = 0;
 
     public ExplosionParticleComponent() {
         super(ParticleEmitters.newExplosionEmitter(20));
@@ -32,10 +34,26 @@ public class ExplosionParticleComponent extends ParticleComponent {
 
         t += tpf;
 
-        byType(GeoWarsType.GRID).forEach(g -> {
-            var grid = g.getComponent(GridComponent.class);
-            grid.applyExplosiveForce(500.0 / 60 * 18, entity.getCenter().add(25, 25), 80 * 60 * tpf);
-        });
+//        byType(GeoWarsType.GRID).forEach(g -> {
+//            var grid = g.getComponent(GridComponent.class);
+//
+//            if (isExplosive) {
+//                grid.applyExplosiveForce(explosionForce, entity.getCenter().add(25, 25), 80 * 60 * tpf);
+//            } else {
+//                grid.applyImplosiveForce(explosionForce, entity.getCenter().add(25, 25), 80 * 60 * tpf);
+//            }
+//        });
+//
+//        ticks++;
+//
+//        if (ticks == 45) {
+//            isExplosive = !isExplosive;
+//            ticks = 0;
+//        }
+//
+//
+//
+//        explosionForce *= 0.99;
     }
 
     private void spawnParticles(Entity enemy) {
@@ -65,8 +83,8 @@ public class ExplosionParticleComponent extends ParticleComponent {
 
             var v = Vec2.fromAngle(angle).normalizeLocal().mulLocal(FXGLMath.random(1.0, 15));
 
-            var vx = p.velocity.x * 0.8f + v.x * 0.2f;
-            var vy = p.velocity.y * 0.8f + v.y * 0.2f;
+            var vx = (p.velocity.x * 0.8f + v.x * 0.2f) * 1.15f;
+            var vy = (p.velocity.y * 0.8f + v.y * 0.2f) * 1.15f;
 
             p.velocity.x = vx;
             p.velocity.y = vy;

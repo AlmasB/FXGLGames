@@ -58,6 +58,7 @@ import java.util.function.Supplier;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getInput;
+import static com.almasb.fxglgames.geowars.Config.OUTSIDE_DISTANCE;
 import static com.almasb.fxglgames.geowars.Config.SAVE_FILE_NAME;
 import static com.almasb.fxglgames.geowars.GeoWarsType.*;
 
@@ -108,8 +109,9 @@ public class GeoWarsApp extends GameApplication {
         // preload explosion sprite sheet
         getAssetLoader().loadTexture("explosion.png", 80 * 48, 80);
 
-        getSettings().setGlobalSoundVolume(0.2);
-        getSettings().setGlobalMusicVolume(0.5);
+
+        getSettings().setGlobalSoundVolume(0.0);
+        getSettings().setGlobalMusicVolume(0.0);
 
         loopBGM("bgm.mp3");
     }
@@ -177,6 +179,7 @@ public class GeoWarsApp extends GameApplication {
 
     @Override
     protected void initGame() {
+
         getGameWorld().addEntityFactory(new GeoWarsFactory());
 
         getGameScene().setBackgroundColor(Color.color(0, 0, 0.05, 1.0));
@@ -186,7 +189,7 @@ public class GeoWarsApp extends GameApplication {
         player = spawn("Player");
         playerComponent = player.getComponent(PlayerComponent.class);
 
-        int dist = 200;
+        int dist = OUTSIDE_DISTANCE;
 
         getGameScene().getViewport().setBounds(-dist, -dist, getAppWidth() + dist, getAppHeight() + dist);
         getGameScene().getViewport().bindToEntity(player, getAppWidth() / 2, getAppHeight() / 2);
@@ -399,7 +402,6 @@ public class GeoWarsApp extends GameApplication {
     }
 
     private void gameOver() {
-        // TODO: if higher than high score
         getDialogService().showInputBox("Your score:" + geti("score") + "\nEnter your name", s -> s.matches("[a-zA-Z]*"), name -> {
             getService(HighScoreService.class).commit(name);
 

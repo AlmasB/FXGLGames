@@ -160,11 +160,13 @@ public class GridComponent extends Component {
                 var g = offScreenCanvas.getGraphicsContext2D();
 
                 g.setStroke(EDGE_COLOR);
+                g.setLineWidth(7.5);
                 g.strokeLine(0, 0, 0, getAppHeight());
                 g.strokeLine(0, 0, getAppWidth(), 0);
                 g.strokeLine(getAppWidth(), 0, getAppWidth(), getAppHeight());
                 g.strokeLine(0, getAppHeight(), getAppWidth(), getAppHeight());
                 g.setStroke(IDLE_COLOR);
+                g.setLineWidth(1);
 
                 isRenderDone.set(true);
 

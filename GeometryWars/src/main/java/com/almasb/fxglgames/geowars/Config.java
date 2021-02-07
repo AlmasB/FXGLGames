@@ -7,6 +7,8 @@ import javafx.util.Duration;
  */
 public final class Config {
 
+    public static final int OUTSIDE_DISTANCE = 200;
+
     public static final int ENEMY_HP = 1;
 
     public static final int WANDERER_MIN_MOVE_SPEED = 100;

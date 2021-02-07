@@ -53,6 +53,7 @@ public class GeoWarsFactory implements EntityFactory {
     public Entity spawnBackground(SpawnData data) {
         return entityBuilder(data)
                 .type(GRID)
+                //.with(new BackgroundStarsComponent())
                 .with(new GridComponent())
                 .build();
     }

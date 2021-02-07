@@ -6,7 +6,9 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -41,12 +43,10 @@ public final class HighScoreService extends EngineService {
     public void commit(String tag) {
         highScores.add(new HighScoreData(tag, getScore()));
 
+        score.unbind();
         setScore(0);
 
-        highScores = highScores.stream()
-                .sorted(Comparator.comparingInt(HighScoreData::getScore).reversed())
-                .limit(numScoresToKeep)
-                .collect(Collectors.toCollection(ArrayList::new));
+        updateScores();
     }
 
     /**
@@ -62,6 +62,15 @@ public final class HighScoreService extends EngineService {
 
     public void setNumScoresToKeep(int numScoresToKeep) {
         this.numScoresToKeep = numScoresToKeep;
+
+        updateScores();
+    }
+
+    private void updateScores() {
+        highScores = highScores.stream()
+                .sorted(Comparator.comparingInt(HighScoreData::getScore).reversed())
+                .limit(numScoresToKeep)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override
