@@ -64,7 +64,6 @@ public class TowerDefenseApp extends GameApplication {
         settings.setWidth(800);
         settings.setHeight(600);
         settings.setIntroEnabled(false);
-        settings.setMenuEnabled(false);
         settings.setProfilingEnabled(false);
         settings.setCloseConfirmation(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
@@ -105,7 +104,7 @@ public class TowerDefenseApp extends GameApplication {
         ));
 
         BooleanProperty enemiesLeft = new SimpleBooleanProperty();
-        enemiesLeft.bind(getGameState().intProperty("numEnemies").greaterThan(0));
+        enemiesLeft.bind(getip("numEnemies").greaterThan(0));
 
         getGameTimer().runAtIntervalWhile(this::spawnEnemy, Duration.seconds(1), enemiesLeft);
 
