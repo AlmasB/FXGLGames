@@ -278,8 +278,10 @@ public class GridComponent extends Component {
 
             if (
                     bullets.stream()
-                            .anyMatch(e -> e.getCenter().distance(position1.toPoint2D()) > 15
-                            && e.getCenter().distance(position1.toPoint2D()) < 70)
+                            .anyMatch(e -> {
+                                var distance = e.getPosition().distance(position1.toPoint2D());
+                                return distance > 15 && distance < 70;
+                            })
             ) {
                 g.setStroke(BULLET_COLOR);
             }
