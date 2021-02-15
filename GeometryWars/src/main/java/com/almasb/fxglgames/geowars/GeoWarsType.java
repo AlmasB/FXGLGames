@@ -7,6 +7,6 @@ public enum GeoWarsType {
     PLAYER,
     WANDERER, SEEKER, RUNNER, BOUNCER,
     BULLET, CRYSTAL,
-    GRID,
+    GRID, PARTICLE_LAYER,
     EXPLOSION
 }

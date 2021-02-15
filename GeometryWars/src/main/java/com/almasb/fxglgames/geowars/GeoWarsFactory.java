@@ -55,7 +55,15 @@ public class GeoWarsFactory implements EntityFactory {
                 .type(GRID)
                 //.with(new BackgroundStarsComponent())
                 .with(new GridComponent())
+                .build();
+    }
+
+    @Spawns("ParticleLayer")
+    public Entity spawnParticleLayer(SpawnData data) {
+        return entityBuilder(data)
+                .type(PARTICLE_LAYER)
                 .with(new ParticleCanvasComponent())
+                .zIndex(5000)
                 .build();
     }
 
@@ -173,7 +181,6 @@ public class GeoWarsFactory implements EntityFactory {
                 .at(data.getX() - 40, data.getY() - 40)
                 .type(EXPLOSION)
                 .view(texture("explosion.png", 80 * 48, 80).toAnimatedTexture(48, Duration.seconds(0.75)).play())
-                //.with(new ExpireCleanComponent(Duration.seconds(1.6)))
                 .with(new ExplosionParticleComponent())
                 .build();
     }

@@ -23,16 +23,9 @@ public class ExplosionParticleComponent extends Component {
     public void onAdded() {
         grid = byType(GeoWarsType.GRID).get(0).getComponent(GridComponent.class);
 
-        color = FXGLMath.randomColor().brighter().brighter();
+        color = Color.rgb(random(50, 235), random(155, 255), random(50, 235)).brighter();
 
         spawnParticles();
-    }
-
-    @Override
-    public void onUpdate(double tpf) {
-        //var g = grid.getOnScreenCanvas().getGraphicsContext2D();
-
-
     }
 
     public void onBackgroundUpdate(double tpf, GraphicsContext g) {
@@ -50,14 +43,6 @@ public class ExplosionParticleComponent extends Component {
     }
 
     private void spawnParticles() {
-//        emitter.setSize(1, 6);
-//        emitter.setScaleFunction(i -> FXGLMath.randomPoint2D().multiply(0.01));
-//        emitter.setExpireFunction(i -> Duration.seconds(random(0.25, 1.5)));
-//        emitter.setSpawnPointFunction(i -> new Point2D(25, 25));
-//        emitter.setAccelerationFunction(() -> new Point2D(0, 0));
-//        emitter.setBlendMode(BlendMode.SRC_OVER);
-//        emitter.setColor(color);
-
         var pos = entity.getPosition();
 
         for (int i = 0; i < 200; i++) {
@@ -67,6 +52,10 @@ public class ExplosionParticleComponent extends Component {
             p.life = p.initialLife;
             p.position.set(pos.add(25, 25));
             p.color = color;
+
+            var angle = FXGLMath.map(i, 0, 200, 0, 360);
+            p.velocity.setFromAngle(angle);
+            p.acceleration.set(p.velocity);
 
             particles.add(p);
         }

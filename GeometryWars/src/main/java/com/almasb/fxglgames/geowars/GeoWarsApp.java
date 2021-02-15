@@ -189,6 +189,7 @@ public class GeoWarsApp extends GameApplication {
         getGameScene().setBackgroundColor(Color.color(0, 0, 0.05, 1.0));
 
         spawn("Background");
+        spawn("ParticleLayer");
 
         player = spawn("Player");
         playerComponent = player.getComponent(PlayerComponent.class);
@@ -294,7 +295,7 @@ public class GeoWarsApp extends GameApplication {
 
                 getGameScene().getViewport().shakeTranslational(8);
 
-                byType(WANDERER, SEEKER, RUNNER, BOUNCER).forEach(Entity::removeFromWorld);
+                byType(WANDERER, SEEKER, RUNNER, BOUNCER, BULLET).forEach(Entity::removeFromWorld);
 
                 player.setPosition(getAppWidth() / 2, getAppHeight() / 2);
                 playerComponent.playSpawnAnimation();
