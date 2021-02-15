@@ -44,6 +44,7 @@ import com.almasb.fxglgames.geowars.component.PlayerComponent;
 import com.almasb.fxglgames.geowars.menu.GeoWarsMainMenu;
 import com.almasb.fxglgames.geowars.service.HighScoreService;
 import javafx.geometry.Point2D;
+import javafx.scene.CacheHint;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -217,39 +218,59 @@ public class GeoWarsApp extends GameApplication {
         });
 
         if (!IS_NO_ENEMIES) {
+            int[] scoresForBombers = new int[] {
+                    random(10_000, 15_000),
+                    random(25_000, 30_000),
+                    random(35_000, 45_000),
+                    random(50_000, 55_000),
+                    random(60_000, 65_000),
+                    random(70_000, 75_000),
+                    random(80_000, 85_000),
+                    random(90_000, 95_000)
+            };
+
+            for (int i = 0; i < scoresForBombers.length; i++) {
+                runOnce(() -> {
+                    int bomberHeight = (int)(166 * 0.15);
+
+                    for (int y = 0; y < getAppHeight(); y += bomberHeight) {
+                        spawn("Bomber", 0, y);
+                    }
+                }, Duration.seconds(50 + 50 * i));
+            }
+
+//            for (int bomberScore : scoresForBombers) {
+//                eventBuilder()
+//                        .when(() -> geti("score") >= bomberScore)
+//                        .thenRun(() -> {
+//                            int bomberHeight = (int)(166 * 0.15);
+//
+//                            for (int y = 0; y < getAppHeight(); y += bomberHeight) {
+//                                spawn("Bomber", 0, y);
+//                            }
+//                        })
+//                        .buildAndStart();
+//            }
+
             eventBuilder()
-                    .when(() -> geti("score") >= 0)
-                    .thenRun(() -> {
-
-                        int bomberHeight = (int)(166 * 0.15);
-
-                        for (int y = 0; y < getAppHeight(); y += bomberHeight) {
-                            spawn("Bomber", 0, y);
-                        }
-                    })
+                    .when(() -> geti("score") >= 10_000)
+                    .thenRun(() -> run(() -> spawn("Bouncer"), Duration.seconds(5)))
                     .buildAndStart();
 
+            eventBuilder()
+                    .when(() -> geti("score") >= 50_000)
+                    .thenRun(() -> run(() -> spawn("Seeker"), Duration.seconds(2)))
+                    .buildAndStart();
 
+            eventBuilder()
+                    .when(() -> geti("score") >= 70_000)
+                    .thenRun(() -> run(() -> spawn("Runner"), Duration.seconds(3)))
+                    .buildAndStart();
 
-//            eventBuilder()
-//                    .when(() -> geti("score") >= 10_000)
-//                    .thenRun(() -> run(() -> spawn("Bouncer"), Duration.seconds(5)))
-//                    .buildAndStart();
-//
-//            eventBuilder()
-//                    .when(() -> geti("score") >= 50_000)
-//                    .thenRun(() -> run(() -> spawn("Seeker"), Duration.seconds(2)))
-//                    .buildAndStart();
-//
-//            eventBuilder()
-//                    .when(() -> geti("score") >= 70_000)
-//                    .thenRun(() -> run(() -> spawn("Runner"), Duration.seconds(3)))
-//                    .buildAndStart();
-//
-//            eventBuilder()
-//                    .when(() -> geti("score") >= 10_000_000)
-//                    .thenRun(() -> gameOver())
-//                    .buildAndStart();
+            eventBuilder()
+                    .when(() -> geti("score") >= 10_000_000)
+                    .thenRun(() -> gameOver())
+                    .buildAndStart();
 
             run(() -> {
                 for (int i = 0; i < 4; i++) {
@@ -373,6 +394,8 @@ public class GeoWarsApp extends GameApplication {
         Text bonusText = getUIFactoryService().newText("+10" + (multiplier == 1 ? "" : "x" + multiplier), Color.color(1, 1, 1, 0.8), 24);
         bonusText.setStroke(Color.GOLD);
         bonusText.setEffect(shadow);
+        bonusText.setCache(true);
+        bonusText.setCacheHint(CacheHint.SPEED);
 
         var e = entityBuilder()
                 .at(enemyPosition)

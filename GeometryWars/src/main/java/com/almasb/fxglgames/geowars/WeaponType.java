@@ -13,8 +13,8 @@ public enum WeaponType {
     }
 
     public static WeaponType fromMultiplier(int multiplier) {
-        if (multiplier > 50) return TRIPLE;
-        if (multiplier > 25) return DOUBLE;
+        if (multiplier > 200) return TRIPLE;
+        if (multiplier > 100) return DOUBLE;
 
         return SINGLE;
     }

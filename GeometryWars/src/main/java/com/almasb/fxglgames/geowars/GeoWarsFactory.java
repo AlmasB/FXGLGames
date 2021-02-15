@@ -84,17 +84,12 @@ public class GeoWarsFactory implements EntityFactory {
     public Entity spawnBullet(SpawnData data) {
         play("shoot" + (int) (Math.random() * 8 + 1) + ".wav");
 
-        var t = texture("Bullet.png");
-        t.setScaleX(1.2);
-        t.setScaleY(1.2);
-
         var expireClean = new ExpireCleanComponent(Duration.seconds(0.5)).animateOpacity();
         expireClean.pause();
 
         return entityBuilder(data)
                 .type(BULLET)
                 .viewWithBBox("Bullet.png")
-                .view(t)
                 .with(new CollidableComponent(true))
                 .with(new ProjectileComponent(data.get("direction"), BULLET_MOVE_SPEED))
                 .with(new BulletComponent())
