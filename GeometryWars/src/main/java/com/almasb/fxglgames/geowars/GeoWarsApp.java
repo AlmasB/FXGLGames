@@ -42,8 +42,6 @@ import com.almasb.fxglgames.geowars.collision.PlayerCrystalHandler;
 import com.almasb.fxglgames.geowars.component.PlayerComponent;
 import com.almasb.fxglgames.geowars.menu.GeoWarsMainMenu;
 import com.almasb.fxglgames.geowars.service.HighScoreService;
-import javafx.event.Event;
-import javafx.event.EventType;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.KeyCode;
@@ -54,7 +52,6 @@ import javafx.util.Duration;
 
 import java.util.Comparator;
 import java.util.Map;
-import java.util.function.Supplier;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getInput;
@@ -80,7 +77,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setWidth(1920);
         settings.setHeight(1080);
         settings.setTitle("FXGL Geometry Wars");
-        settings.setVersion("1.2.0");
+        settings.setVersion("1.2.1");
         settings.setIntroEnabled(isRelease);
         settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(true);
@@ -220,36 +217,23 @@ public class GeoWarsApp extends GameApplication {
 
         if (!IS_NO_ENEMIES) {
             eventBuilder()
-                    .when((Supplier<Boolean>) () -> geti("score") >= 10000)
-                    .thenFire((Supplier<Event>) () -> {
-                        run(() -> spawn("Bouncer"), Duration.seconds(5));
-                        return new Event(EventType.ROOT);
-                    })
+                    .when(() -> geti("score") >= 10_000)
+                    .thenRun(() -> run(() -> spawn("Bouncer"), Duration.seconds(5)))
                     .buildAndStart();
 
             eventBuilder()
-                    .when((Supplier<Boolean>) () -> geti("score") >= 50000)
-                    .thenFire((Supplier<Event>) () -> {
-                        run(() -> spawn("Seeker"), Duration.seconds(2));
-                        return new Event(EventType.ROOT);
-                    })
+                    .when(() -> geti("score") >= 50_000)
+                    .thenRun(() -> run(() -> spawn("Seeker"), Duration.seconds(2)))
                     .buildAndStart();
 
             eventBuilder()
-                    .when((Supplier<Boolean>) () -> geti("score") >= 70000)
-                    .thenFire((Supplier<Event>) () -> {
-                        run(() -> spawn("Runner"), Duration.seconds(3));
-                        return new Event(EventType.ROOT);
-                    })
+                    .when(() -> geti("score") >= 70_000)
+                    .thenRun(() -> run(() -> spawn("Runner"), Duration.seconds(3)))
                     .buildAndStart();
 
             eventBuilder()
-                    .when((Supplier<Boolean>) () -> geti("score") >= 1000000)
-                    .thenFire((Supplier<Event>) () -> {
-                        gameOver();
-
-                        return new Event(EventType.ROOT);
-                    })
+                    .when(() -> geti("score") >= 10_000_000)
+                    .thenRun(() -> gameOver())
                     .buildAndStart();
 
             run(() -> {
