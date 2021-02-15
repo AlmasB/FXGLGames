@@ -34,6 +34,7 @@ import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.app.scene.SimpleGameMenu;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.virtual.VirtualButton;
 import com.almasb.fxgl.physics.CollisionHandler;
@@ -217,24 +218,38 @@ public class GeoWarsApp extends GameApplication {
 
         if (!IS_NO_ENEMIES) {
             eventBuilder()
-                    .when(() -> geti("score") >= 10_000)
-                    .thenRun(() -> run(() -> spawn("Bouncer"), Duration.seconds(5)))
+                    .when(() -> geti("score") >= 0)
+                    .thenRun(() -> {
+
+                        int bomberHeight = (int)(166 * 0.15);
+
+                        for (int y = 0; y < getAppHeight(); y += bomberHeight) {
+                            spawn("Bomber", 0, y);
+                        }
+                    })
                     .buildAndStart();
 
-            eventBuilder()
-                    .when(() -> geti("score") >= 50_000)
-                    .thenRun(() -> run(() -> spawn("Seeker"), Duration.seconds(2)))
-                    .buildAndStart();
 
-            eventBuilder()
-                    .when(() -> geti("score") >= 70_000)
-                    .thenRun(() -> run(() -> spawn("Runner"), Duration.seconds(3)))
-                    .buildAndStart();
 
-            eventBuilder()
-                    .when(() -> geti("score") >= 10_000_000)
-                    .thenRun(() -> gameOver())
-                    .buildAndStart();
+//            eventBuilder()
+//                    .when(() -> geti("score") >= 10_000)
+//                    .thenRun(() -> run(() -> spawn("Bouncer"), Duration.seconds(5)))
+//                    .buildAndStart();
+//
+//            eventBuilder()
+//                    .when(() -> geti("score") >= 50_000)
+//                    .thenRun(() -> run(() -> spawn("Seeker"), Duration.seconds(2)))
+//                    .buildAndStart();
+//
+//            eventBuilder()
+//                    .when(() -> geti("score") >= 70_000)
+//                    .thenRun(() -> run(() -> spawn("Runner"), Duration.seconds(3)))
+//                    .buildAndStart();
+//
+//            eventBuilder()
+//                    .when(() -> geti("score") >= 10_000_000)
+//                    .thenRun(() -> gameOver())
+//                    .buildAndStart();
 
             run(() -> {
                 for (int i = 0; i < 4; i++) {
@@ -257,7 +272,12 @@ public class GeoWarsApp extends GameApplication {
                 hp.setValue(hp.getValue() - 1);
 
                 if (hp.isZero()) {
-                    spawn("Explosion", enemy.getCenter());
+                    if (enemy.isType(BOMBER)) {
+                        spawn("Explosion", new SpawnData(enemy.getCenter()).put("numParticles", 10));
+                    } else {
+                        spawn("Explosion", enemy.getCenter());
+                    }
+
                     spawn("Crystal", enemy.getCenter());
 
                     addScoreKill(enemy.getCenter());
@@ -271,6 +291,7 @@ public class GeoWarsApp extends GameApplication {
         physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, SEEKER));
         physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, RUNNER));
         physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, BOUNCER));
+        physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, BOMBER));
         physics.addCollisionHandler(new PlayerCrystalHandler());
 
         CollisionHandler playerEnemy = new CollisionHandler(PLAYER, WANDERER) {
@@ -279,7 +300,8 @@ public class GeoWarsApp extends GameApplication {
 
                 getGameScene().getViewport().shakeTranslational(8);
 
-                byType(WANDERER, SEEKER, RUNNER, BOUNCER, BULLET).forEach(Entity::removeFromWorld);
+                byType(WANDERER, SEEKER, RUNNER, BOUNCER, BOMBER, BULLET, CRYSTAL)
+                        .forEach(Entity::removeFromWorld);
 
                 player.setPosition(getAppWidth() / 2, getAppHeight() / 2);
                 playerComponent.playSpawnAnimation();
@@ -292,6 +314,7 @@ public class GeoWarsApp extends GameApplication {
         physics.addCollisionHandler(playerEnemy.copyFor(PLAYER, SEEKER));
         physics.addCollisionHandler(playerEnemy.copyFor(PLAYER, RUNNER));
         physics.addCollisionHandler(playerEnemy.copyFor(PLAYER, BOUNCER));
+        physics.addCollisionHandler(playerEnemy.copyFor(PLAYER, BOMBER));
     }
 
     @Override

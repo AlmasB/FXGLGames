@@ -14,10 +14,7 @@ import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxglgames.geowars.component.*;
-import com.almasb.fxglgames.geowars.component.enemy.BouncerComponent;
-import com.almasb.fxglgames.geowars.component.enemy.RunnerComponent;
-import com.almasb.fxglgames.geowars.component.enemy.SeekerComponent;
-import com.almasb.fxglgames.geowars.component.enemy.WandererComponent;
+import com.almasb.fxglgames.geowars.component.enemy.*;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.Bloom;
 import javafx.scene.effect.BoxBlur;
@@ -99,7 +96,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .viewWithBBox("Bullet.png")
                 .view(t)
                 .with(new CollidableComponent(true))
-                .with(new ProjectileComponent(data.get("direction"), 1200))
+                .with(new ProjectileComponent(data.get("direction"), BULLET_MOVE_SPEED))
                 .with(new BulletComponent())
                 .with(expireClean)
                 .build();
@@ -161,6 +158,18 @@ public class GeoWarsFactory implements EntityFactory {
                 .build();
     }
 
+    @Spawns("Bomber")
+    public Entity spawnBomber(SpawnData data) {
+        return entityBuilder(data)
+                .type(BOMBER)
+                .viewWithBBox(texture("Bomber.png", 202 * 0.15, 166 * 0.15))
+                .with(new HealthIntComponent(ENEMY_HP))
+                .with(new CollidableComponent(true))
+                .with(new ProjectileComponent(new Point2D(1, 0), BOMBER_MOVE_SPEED))
+                .with(new BomberComponent())
+                .build();
+    }
+
     @Spawns("Bouncer")
     public Entity spawnBouncer(SpawnData data) {
         return entityBuilder()
@@ -175,13 +184,15 @@ public class GeoWarsFactory implements EntityFactory {
 
     @Spawns("Explosion")
     public Entity spawnExplosion(SpawnData data) {
+        int numParticles = data.hasKey("numParticles") ? data.get("numParticles") : 200;
+
         play("explosion-0" + (int) (Math.random() * 8 + 1) + ".wav");
 
         return entityBuilder()
                 .at(data.getX() - 40, data.getY() - 40)
                 .type(EXPLOSION)
                 .view(texture("explosion.png", 80 * 48, 80).toAnimatedTexture(48, Duration.seconds(0.75)).play())
-                .with(new ExplosionParticleComponent())
+                .with(new ExplosionParticleComponent(numParticles))
                 .build();
     }
 

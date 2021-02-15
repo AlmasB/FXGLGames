@@ -19,6 +19,12 @@ public class ExplosionParticleComponent extends Component {
 
     private Color color;
 
+    private int numParticles;
+
+    public ExplosionParticleComponent(int numParticles) {
+        this.numParticles = numParticles;
+    }
+
     @Override
     public void onAdded() {
         grid = byType(GeoWarsType.GRID).get(0).getComponent(GridComponent.class);
@@ -45,7 +51,7 @@ public class ExplosionParticleComponent extends Component {
     private void spawnParticles() {
         var pos = entity.getPosition();
 
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < numParticles; i++) {
             var p = new Particle();
             p.radius = random(1, 6);
             p.initialLife = random(0.25, 1.5) + 0.5;
