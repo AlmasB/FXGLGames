@@ -1,11 +1,9 @@
 package com.almasb.fxglgames.geowars;
 
+import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
-import com.almasb.fxgl.dsl.components.AutoRotationComponent;
-import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
-import com.almasb.fxgl.dsl.components.HealthIntComponent;
-import com.almasb.fxgl.dsl.components.ProjectileComponent;
+import com.almasb.fxgl.dsl.components.*;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
@@ -16,9 +14,11 @@ import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxglgames.geowars.component.*;
 import com.almasb.fxglgames.geowars.component.enemy.*;
 import javafx.geometry.Point2D;
+import javafx.scene.CacheHint;
 import javafx.scene.effect.Bloom;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -66,7 +66,7 @@ public class GeoWarsFactory implements EntityFactory {
 
     @Spawns("Player")
     public Entity spawnPlayer(SpawnData data) {
-        var texture = texture("Player.png");
+        var texture = texture("player.png");
         texture.setEffect(new Bloom(0.7));
 
         return entityBuilder()
@@ -188,6 +188,51 @@ public class GeoWarsFactory implements EntityFactory {
                 .type(EXPLOSION)
                 .view(texture("explosion.png", 80 * 48, 80).toAnimatedTexture(48, Duration.seconds(0.75)).play())
                 .with(new ExplosionParticleComponent(numParticles))
+                .build();
+    }
+
+    @Spawns("Shockwave")
+    public Entity spawnShockwave(SpawnData data) {
+        var view = new Rectangle(40, 40, null);
+        view.setStrokeWidth(2);
+        view.setStroke(Color.GOLD);
+        view.setCache(true);
+        view.setCacheHint(CacheHint.SCALE);
+
+        var e = entityBuilder()
+                .at(data.getX() - 40, data.getY() - 40)
+                .type(SHOCKWAVE)
+                .viewWithBBox(view)
+                .collidable()
+                .build();
+
+        animationBuilder()
+                .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
+                .scale(e)
+                .from(new Point2D(1, 1))
+                .to(new Point2D(15, 15))
+                .buildAndPlay();
+
+        animationBuilder()
+                .onFinished(() -> e.removeFromWorld())
+                .fadeOut(e)
+                .buildAndPlay();
+
+        return e;
+    }
+
+    @Spawns("ShockwavePickup")
+    public Entity spawnShockwavePickup(SpawnData data) {
+        var view = new Rectangle(15, 15, null);
+        view.setStrokeWidth(2);
+        view.setStroke(Color.GOLD);
+
+        return entityBuilder(data)
+                .type(SHOCKWAVE_PICKUP)
+                .viewWithBBox(view)
+                .collidable()
+                .zIndex(100)
+                .with(new LiftComponent().yAxisDistanceDuration(15, Duration.seconds(1)))
                 .build();
     }
 

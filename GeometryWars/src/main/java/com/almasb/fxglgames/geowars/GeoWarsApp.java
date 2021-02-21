@@ -32,6 +32,7 @@ import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.app.scene.SimpleGameMenu;
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
@@ -143,6 +144,13 @@ public class GeoWarsApp extends GameApplication {
             }
         }, KeyCode.D, VirtualButton.RIGHT);
 
+        getInput().addAction(new UserAction("Release Shockwave") {
+            @Override
+            protected void onActionBegin() {
+                playerComponent.releaseShockwave();
+            }
+        }, KeyCode.F, VirtualButton.B);
+
         // TODO: allow virtual button + sticks + onKey() DSL with virtual button
         getInput().addAction(new UserAction("Shoot Mouse") {
             @Override
@@ -161,7 +169,7 @@ public class GeoWarsApp extends GameApplication {
                         .min(Comparator.comparingDouble(e -> e.distance(player)))
                         .ifPresent(e -> playerComponent.shoot(e.getPosition()));
             }
-        }, KeyCode.F, VirtualButton.A);
+        }, KeyCode.H, VirtualButton.A);
 
         if (!isReleaseMode()) {
             onKeyDown(KeyCode.G, () -> {
@@ -292,6 +300,7 @@ public class GeoWarsApp extends GameApplication {
                 HealthIntComponent hp = enemy.getComponent(HealthIntComponent.class);
                 hp.setValue(hp.getValue() - 1);
 
+                // TODO: duplication with shockwave
                 if (hp.isZero()) {
                     if (enemy.isType(BOMBER)) {
                         spawn("Explosion", new SpawnData(enemy.getCenter()).put("numParticles", 10));
@@ -300,6 +309,10 @@ public class GeoWarsApp extends GameApplication {
                     }
 
                     spawn("Crystal", enemy.getCenter());
+
+                    if (FXGLMath.randomBoolean(0.005)) {
+                        spawn("ShockwavePickup", enemy.getPosition());
+                    }
 
                     addScoreKill(enemy.getCenter());
 
@@ -315,13 +328,46 @@ public class GeoWarsApp extends GameApplication {
         physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, BOMBER));
         physics.addCollisionHandler(new PlayerCrystalHandler());
 
+        CollisionHandler shockwaveEnemy = new CollisionHandler(SHOCKWAVE, WANDERER) {
+            @Override
+            protected void onCollisionBegin(Entity wave, Entity enemy) {
+                HealthIntComponent hp = enemy.getComponent(HealthIntComponent.class);
+                hp.setValue(hp.getValue() - 1);
+
+                if (hp.isZero()) {
+                    if (enemy.isType(BOMBER)) {
+                        spawn("Explosion", new SpawnData(enemy.getCenter()).put("numParticles", 10));
+                    } else {
+                        spawn("Explosion", enemy.getCenter());
+                    }
+
+                    spawn("Crystal", enemy.getCenter());
+
+                    if (FXGLMath.randomBoolean(0.005)) {
+                        spawn("ShockwavePickup", enemy.getPosition());
+                    }
+
+                    addScoreKill(enemy.getCenter());
+
+                    enemy.removeFromWorld();
+                }
+            }
+        };
+
+        physics.addCollisionHandler(shockwaveEnemy);
+        physics.addCollisionHandler(shockwaveEnemy.copyFor(SHOCKWAVE, SEEKER));
+        physics.addCollisionHandler(shockwaveEnemy.copyFor(SHOCKWAVE, RUNNER));
+        physics.addCollisionHandler(shockwaveEnemy.copyFor(SHOCKWAVE, BOUNCER));
+        physics.addCollisionHandler(shockwaveEnemy.copyFor(SHOCKWAVE, BOMBER));
+
         CollisionHandler playerEnemy = new CollisionHandler(PLAYER, WANDERER) {
             @Override
             protected void onCollisionBegin(Entity a, Entity b) {
 
                 getGameScene().getViewport().shakeTranslational(8);
 
-                byType(WANDERER, SEEKER, RUNNER, BOUNCER, BOMBER, BULLET, CRYSTAL)
+                // TODO: rewrite to be all but player grid etc.
+                byType(WANDERER, SEEKER, RUNNER, BOUNCER, BOMBER, BULLET, CRYSTAL, SHOCKWAVE_PICKUP)
                         .forEach(Entity::removeFromWorld);
 
                 player.setPosition(getAppWidth() / 2, getAppHeight() / 2);
@@ -336,6 +382,10 @@ public class GeoWarsApp extends GameApplication {
         physics.addCollisionHandler(playerEnemy.copyFor(PLAYER, RUNNER));
         physics.addCollisionHandler(playerEnemy.copyFor(PLAYER, BOUNCER));
         physics.addCollisionHandler(playerEnemy.copyFor(PLAYER, BOMBER));
+
+        onCollisionCollectible(PLAYER, SHOCKWAVE_PICKUP, (pickup) -> {
+            playerComponent.setShockwaveReady(true);
+        });
     }
 
     @Override

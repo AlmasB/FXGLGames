@@ -32,6 +32,8 @@ public class PlayerComponent extends Component {
     private int playerSpeed;
     private double speed;
 
+    private boolean isShockwaveReady = true;
+
     private LocalTimer weaponTimer = newLocalTimer();
 
     public PlayerComponent(int playerSpeed) {
@@ -116,8 +118,19 @@ public class PlayerComponent extends Component {
         );
     }
 
+    public boolean isShockwaveReady() {
+        return isShockwaveReady;
+    }
+
+    public void setShockwaveReady(boolean shockwaveReady) {
+        isShockwaveReady = shockwaveReady;
+    }
+
     public void releaseShockwave() {
-        spawn("Shockwave", entity.getCenter());
+        if (isShockwaveReady) {
+            isShockwaveReady = false;
+            spawn("Shockwave", entity.getCenter());
+        }
     }
 
     public void left() {

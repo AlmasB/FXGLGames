@@ -6,7 +6,7 @@ package com.almasb.fxglgames.geowars;
 public enum GeoWarsType {
     PLAYER,
     WANDERER, SEEKER, RUNNER, BOUNCER, BOMBER,
-    BULLET, CRYSTAL,
+    BULLET, CRYSTAL, SHOCKWAVE_PICKUP,
     GRID, PARTICLE_LAYER,
-    EXPLOSION
+    EXPLOSION, SHOCKWAVE
 }
