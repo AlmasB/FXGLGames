@@ -17,6 +17,7 @@ import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import com.almasb.fxgl.ui.FontType;
 import com.almasb.fxglgames.mario.components.PlayerComponent;
 import javafx.geometry.Point2D;
+import javafx.scene.CacheHint;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
@@ -122,8 +123,12 @@ public class MarioFactory implements EntityFactory {
         lift.setGoingUp(true);
         lift.yAxisDistanceDuration(6, Duration.seconds(0.76));
 
+        var view = new KeyView(keyCode, Color.YELLOW, 24);
+        view.setCache(true);
+        view.setCacheHint(CacheHint.SCALE);
+
         return entityBuilder(data)
-                .view(new KeyView(keyCode, Color.YELLOW, 24))
+                .view(view)
                 .with(lift)
                 .zIndex(100)
                 .build();
