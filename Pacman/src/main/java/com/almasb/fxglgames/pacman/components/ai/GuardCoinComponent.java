@@ -1,9 +1,9 @@
 package com.almasb.fxglgames.pacman.components.ai;
 
+import com.almasb.fxgl.core.collection.grid.Cell;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.component.Required;
-import com.almasb.fxgl.pathfinding.Cell;
 import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxglgames.pacman.PacmanType;
