@@ -3,6 +3,9 @@ package com.almasb.fxglgames.geowars.menu;
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.MenuType;
+import com.almasb.fxgl.input.view.KeyView;
+import com.almasb.fxgl.input.view.MouseButtonView;
+import com.almasb.fxgl.input.view.TriggerView;
 import com.almasb.fxgl.logging.Logger;
 import com.almasb.fxgl.scene.Scene;
 import com.almasb.fxglgames.geowars.service.HighScoreService;
@@ -14,6 +17,10 @@ import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.effect.Bloom;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.input.MouseButton;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -25,6 +32,8 @@ import java.util.ArrayList;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxglgames.geowars.Config.SAVE_FILE_NAME;
+import static javafx.scene.input.KeyCode.*;
+import static javafx.scene.input.KeyCode.X;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -92,6 +101,7 @@ public class GeoWarsMainMenu extends FXGLMenu {
                 5,
                 new MenuButton("New Game", () -> fireNewGame()),
                 new MenuButton("High Scores", () -> toggleHighScores()),
+                new MenuButton("How to Play", () -> instructions()),
                 new MenuButton("Credits", () -> showCredits()),
                 new MenuButton("Exit", () -> fireExit())
         );
@@ -170,6 +180,17 @@ public class GeoWarsMainMenu extends FXGLMenu {
                 .from(new Point2D(getAppWidth(), highScores.getTranslateY()))
                 .to(new Point2D(getAppWidth() - 450, highScores.getTranslateY()))
                 .buildAndPlay();
+    }
+
+    private void instructions() {
+        GridPane pane = new GridPane();
+        pane.setEffect(new DropShadow(5, 3.5, 3.5, Color.BLUE));
+        pane.setHgap(25);
+        pane.setVgap(10);
+        pane.addRow(0, getUIFactoryService().newText("Movement"), new HBox(4, new KeyView(W), new KeyView(S), new KeyView(A), new KeyView(D)));
+        pane.addRow(1, getUIFactoryService().newText("Shoot"), new MouseButtonView(MouseButton.PRIMARY));
+
+        getDialogService().showBox("How to Play", pane, getUIFactoryService().newButton("OK"));
     }
 
     private static class MenuButton extends Parent {
