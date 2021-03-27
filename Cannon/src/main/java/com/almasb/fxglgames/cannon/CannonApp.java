@@ -107,11 +107,9 @@ public class CannonApp extends GameApplication {
     @Override
     protected void initUI() {
         Text scoreText = getUIFactoryService().newText("", Color.BLACK, 24);
-        scoreText.setTranslateX(550);
-        scoreText.setTranslateY(100);
         scoreText.textProperty().bind(getip("score").asString("Score: [%d]"));
 
-        addUINode(scoreText);
+        addUINode(scoreText, 550, 100);
     }
 
     public static void main(String[] args) {

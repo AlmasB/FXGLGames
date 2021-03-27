@@ -55,7 +55,7 @@ public class BombermanFactory implements EntityFactory {
                 .type(PLAYER)
                 .viewWithBBox(new Rectangle(TILE_SIZE, TILE_SIZE, Color.BLUE))
                 .with(new CollidableComponent(true))
-                .with(new CellMoveComponent(40, 40, 80))
+                .with(new CellMoveComponent(40, 40, 150))
                 .with(new AStarMoveComponent(FXGL.<BombermanApp>getAppCast().getGrid()))
                 .with(new PlayerComponent())
                 .build();

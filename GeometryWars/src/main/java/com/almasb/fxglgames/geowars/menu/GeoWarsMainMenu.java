@@ -3,6 +3,7 @@ package com.almasb.fxglgames.geowars.menu;
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.MenuType;
+import com.almasb.fxgl.logging.Logger;
 import com.almasb.fxgl.scene.Scene;
 import com.almasb.fxglgames.geowars.service.HighScoreService;
 import javafx.beans.binding.Bindings;
@@ -137,7 +138,9 @@ public class GeoWarsMainMenu extends FXGLMenu {
 
         getService(HighScoreService.class).setNumScoresToKeep(5);
 
-        getSaveLoadService().readAndLoadTask(SAVE_FILE_NAME).run();
+        getSaveLoadService().readAndLoadTask(SAVE_FILE_NAME)
+                .onFailure(error -> Logger.get(GeoWarsMainMenu.class).warning("Cannot read " + SAVE_FILE_NAME))
+                .run();
         isLoadedScore = true;
 
         updateHighScores();

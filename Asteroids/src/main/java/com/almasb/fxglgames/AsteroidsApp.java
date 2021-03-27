@@ -111,10 +111,10 @@ public class AsteroidsApp extends GameApplication {
 
     @Override
     protected void initUI() {
-        var text = getUIFactory().newText("", 24);
+        var text = getUIFactoryService().newText("", 24);
         text.textProperty().bind(getip("score").asString("Score: [%d]"));
 
-        getGameState().addListener("score", (prev, now) -> {
+        getWorldProperties().addListener("score", (prev, now) -> {
             animationBuilder()
                     .duration(Duration.seconds(0.5))
                     .interpolator(Interpolators.BOUNCE.EASE_OUT())

@@ -25,17 +25,15 @@ public class GameEntityFactory implements EntityFactory {
 
     @Spawns("background")
     public Entity newBackground(SpawnData data) {
-        return entityBuilder()
-                .from(data)
+        return entityBuilder(data)
                 .view(new Rectangle(getAppWidth(), getAppHeight()))
                 .build();
     }
 
     @Spawns("player")
     public Entity newPlayer(SpawnData data) {
-        return entityBuilder()
+        return entityBuilder(data)
                 .type(EntityType.PLAYER)
-                .from(data)
                 .viewWithBBox("player.png")
                 .with(new PlayerComponent())
                 .collidable()
@@ -53,9 +51,8 @@ public class GameEntityFactory implements EntityFactory {
         hpView.setTranslateY(90);
         hpView.currentValueProperty().bind(hp.valueProperty());
 
-        return entityBuilder()
+        return entityBuilder(data)
                 .type(EntityType.ASTEROID)
-                .from(data)
                 .viewWithBBox("asteroid.png")
                 .view(hpView)
                 .with(hp)
@@ -70,9 +67,8 @@ public class GameEntityFactory implements EntityFactory {
 
         var effectComponent = new EffectComponent();
 
-        var e = entityBuilder()
+        var e = entityBuilder(data)
                 .type(EntityType.BULLET)
-                .from(data)
                 .viewWithBBox("bullet.png")
                 .with(new ProjectileComponent(dir, 500))
                 .with(new OffscreenCleanComponent())
@@ -116,8 +112,7 @@ public class GameEntityFactory implements EntityFactory {
         emitter.setEndColor(Color.BLUE);
         emitter.setSpawnPointFunction(i -> new Point2D(64, 64));
 
-        return entityBuilder()
-                .from(data)
+        return entityBuilder(data)
                 .view(texture("explosion.png").toAnimatedTexture(16, Duration.seconds(0.66)).play())
                 .with(new ExpireCleanComponent(Duration.seconds(0.66)))
                 .with(new ParticleComponent(emitter))
@@ -128,9 +123,8 @@ public class GameEntityFactory implements EntityFactory {
     public Entity newScoreText(SpawnData data) {
         String text = data.get("text");
 
-        var e = entityBuilder()
-                .from(data)
-                .view(getUIFactory().newText(text, 24))
+        var e = entityBuilder(data)
+                .view(getUIFactoryService().newText(text, 24))
                 .with(new ExpireCleanComponent(Duration.seconds(0.66)).animateOpacity())
                 .build();
 
