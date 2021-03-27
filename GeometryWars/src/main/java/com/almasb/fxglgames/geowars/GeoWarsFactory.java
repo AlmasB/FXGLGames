@@ -165,6 +165,16 @@ public class GeoWarsFactory implements EntityFactory {
                 .build();
     }
 
+    @Spawns("Mine")
+    public Entity spawnMine(SpawnData data) {
+        return entityBuilder(data)
+                .type(MINE)
+                .viewWithBBox(texture("mine.png", 315 * 0.25, 315 * 0.25))
+                .with(new MineComponent())
+                .collidable()
+                .build();
+    }
+
     @Spawns("Bouncer")
     public Entity spawnBouncer(SpawnData data) {
         return entityBuilder()

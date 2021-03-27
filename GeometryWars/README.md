@@ -8,6 +8,8 @@ Sprite assets: https://gisha.itch.io/spaceships-asset-pack?download
 
 Background assets: https://dinvstudio.itch.io/dynamic-space-background-lite-free
 
+Mine / bomb assets: https://idznak.itch.io/make-war-not-love-assets-pack
+
 BGM: Music by Eric Matyas
      
      www.soundimage.org

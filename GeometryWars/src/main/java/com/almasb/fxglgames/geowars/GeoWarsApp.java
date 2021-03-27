@@ -40,11 +40,13 @@ import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.virtual.VirtualButton;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
+import com.almasb.fxglgames.geowars.collision.BulletMineHandler;
 import com.almasb.fxglgames.geowars.collision.PlayerCrystalHandler;
 import com.almasb.fxglgames.geowars.component.PlayerComponent;
 import com.almasb.fxglgames.geowars.menu.GeoWarsMainMenu;
 import com.almasb.fxglgames.geowars.service.HighScoreService;
 import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.CacheHint;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.KeyCode;
@@ -79,7 +81,7 @@ public class GeoWarsApp extends GameApplication {
 
         settings.setWidth(1920);
         settings.setHeight(1080);
-        settings.setTitle("FXGL Geometry Wars");
+        settings.setTitle("FXGL Space Wars");
         settings.setVersion("1.2.1");
         settings.setIntroEnabled(isRelease);
         settings.setMainMenuEnabled(true);
@@ -285,6 +287,10 @@ public class GeoWarsApp extends GameApplication {
                     spawn("Wanderer");
                 }
             }, Duration.seconds(1.5));
+
+            run(() -> {
+                spawn("Mine", FXGLMath.randomPoint(new Rectangle2D(0, 0, getAppWidth() - 100, getAppHeight() - 100)));
+            }, Duration.seconds(10));
         }
     }
 
@@ -302,21 +308,7 @@ public class GeoWarsApp extends GameApplication {
 
                 // TODO: duplication with shockwave
                 if (hp.isZero()) {
-                    if (enemy.isType(BOMBER)) {
-                        spawn("Explosion", new SpawnData(enemy.getCenter()).put("numParticles", 10));
-                    } else {
-                        spawn("Explosion", enemy.getCenter());
-                    }
-
-                    spawn("Crystal", enemy.getCenter());
-
-                    if (FXGLMath.randomBoolean(0.005)) {
-                        spawn("ShockwavePickup", enemy.getPosition());
-                    }
-
-                    addScoreKill(enemy.getCenter());
-
-                    enemy.removeFromWorld();
+                    killEnemy(enemy);
                 }
             }
         };
@@ -327,6 +319,7 @@ public class GeoWarsApp extends GameApplication {
         physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, BOUNCER));
         physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, BOMBER));
         physics.addCollisionHandler(new PlayerCrystalHandler());
+        physics.addCollisionHandler(new BulletMineHandler());
 
         CollisionHandler shockwaveEnemy = new CollisionHandler(SHOCKWAVE, WANDERER) {
             @Override
@@ -367,7 +360,7 @@ public class GeoWarsApp extends GameApplication {
                 getGameScene().getViewport().shakeTranslational(8);
 
                 // TODO: rewrite to be all but player grid etc.
-                byType(WANDERER, SEEKER, RUNNER, BOUNCER, BOMBER, BULLET, CRYSTAL, SHOCKWAVE_PICKUP)
+                byType(WANDERER, SEEKER, RUNNER, BOUNCER, BOMBER, BULLET, CRYSTAL, MINE, SHOCKWAVE_PICKUP)
                         .forEach(Entity::removeFromWorld);
 
                 player.setPosition(getAppWidth() / 2, getAppHeight() / 2);
@@ -382,6 +375,7 @@ public class GeoWarsApp extends GameApplication {
         physics.addCollisionHandler(playerEnemy.copyFor(PLAYER, RUNNER));
         physics.addCollisionHandler(playerEnemy.copyFor(PLAYER, BOUNCER));
         physics.addCollisionHandler(playerEnemy.copyFor(PLAYER, BOMBER));
+        physics.addCollisionHandler(playerEnemy.copyFor(PLAYER, MINE));
 
         onCollisionCollectible(PLAYER, SHOCKWAVE_PICKUP, (pickup) -> {
             playerComponent.setShockwaveReady(true);
@@ -425,6 +419,24 @@ public class GeoWarsApp extends GameApplication {
                 .repeat(2)
                 .fadeIn(goodLuck)
                 .buildAndPlay();
+    }
+
+    public void killEnemy(Entity enemy) {
+        if (enemy.isType(BOMBER)) {
+            spawn("Explosion", new SpawnData(enemy.getCenter()).put("numParticles", 10));
+        } else {
+            spawn("Explosion", enemy.getCenter());
+        }
+
+        spawn("Crystal", enemy.getCenter());
+
+        if (FXGLMath.randomBoolean(0.005)) {
+            spawn("ShockwavePickup", enemy.getPosition());
+        }
+
+        addScoreKill(enemy.getCenter());
+
+        enemy.removeFromWorld();
     }
 
     private void addScoreKill(Point2D enemyPosition) {
