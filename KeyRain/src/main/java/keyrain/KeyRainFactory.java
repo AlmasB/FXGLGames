@@ -10,6 +10,7 @@ import com.almasb.fxgl.input.view.KeyView;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import javafx.geometry.Point2D;
+import javafx.scene.CacheHint;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -38,10 +39,14 @@ public class KeyRainFactory implements EntityFactory {
         var key = FXGLMath.random(ABC).get();
         var keyCode = KeyCode.valueOf(key);
 
+        var view = new KeyView(keyCode, Color.BLUE, 36);
+        view.setCache(true);
+        view.setCacheHint(CacheHint.SCALE);
+
         return entityBuilder(data)
                 .type(KEY)
                 .bbox(new HitBox(BoundingShape.box(45, 58)))
-                .view(new KeyView(keyCode, Color.BLUE, 36))
+                .view(view)
                 .with(
                         new ProjectileComponent(new Point2D(0, 1), random(100, 300))
                                 .allowRotation(false)

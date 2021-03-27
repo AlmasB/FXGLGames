@@ -33,9 +33,8 @@ public class SpaceRangerFactory implements EntityFactory {
         bot.setStroke(Color.GRAY);
         bot.setTranslateY(40);
 
-        return entityBuilder()
+        return entityBuilder(data)
                 .type(PLAYER)
-                .from(data)
                 .view(body)
                 .view(top)
                 .view(bot)
@@ -57,9 +56,8 @@ public class SpaceRangerFactory implements EntityFactory {
                 .to(Color.DARKRED)
                 .buildAndPlay();
 
-        return entityBuilder()
+        return entityBuilder(data)
                 .type(EntityType.ENEMY)
-                .from(data)
                 .viewWithBBox(view)
                 .collidable()
                 .with(new ProjectileComponent(new Point2D(-1, 0), FXGLMath.random(50, 150)))
@@ -73,9 +71,8 @@ public class SpaceRangerFactory implements EntityFactory {
         view.setArcWidth(15);
         view.setArcHeight(10);
 
-        return entityBuilder()
+        return entityBuilder(data)
                 .type(EntityType.PROJECTILE)
-                .from(data)
                 .viewWithBBox(view)
                 .collidable()
                 .zIndex(-5)

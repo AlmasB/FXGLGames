@@ -3,7 +3,6 @@ package com.almasb.fxglgames.rts;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxglgames.rts.EntityType.*;
@@ -44,8 +43,7 @@ public class RTSApp extends GameApplication {
         spawn("worker", 700, 400);
 
         byType(TREE, STONE).forEach(e -> {
-            // TODO: convenience API for clicks?
-            e.getViewComponent().addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            e.getViewComponent().addOnClickHandler(event -> {
                 var worker = byType(WORKER).get(0);
                 worker.getComponent(GathererComponent.class).sendTo(e);
             });

@@ -6,6 +6,7 @@ import com.almasb.fxgl.ui.FontType;
 import com.almasb.fxgl.ui.ProgressBar;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
+import javafx.scene.CacheHint;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -92,7 +93,7 @@ public class CardViewComponent extends ChildViewComponent {
 
         var iconAtk = texture("icon_atk.png", 512 / 16.0, 512 / 16.0).brighter().saturate();
 
-        Text textAtk = getUIFactory().newText("", Color.BLACK, 18);
+        Text textAtk = getUIFactoryService().newText("", Color.BLACK, 18);
         textAtk.textProperty().bind(card.atkProperty().asString("%d"));
 
         var boxAtk = new HBox(0, iconAtk, textAtk);
@@ -102,7 +103,7 @@ public class CardViewComponent extends ChildViewComponent {
 
         var iconDef = texture("icon_def.png", 512 / 16.0, 512 / 16.0);
 
-        Text textDef = getUIFactory().newText("", Color.BLACK, 18);
+        Text textDef = getUIFactoryService().newText("", Color.BLACK, 18);
         textDef.textProperty().bind(card.defProperty().asString("%d"));
 
         var boxDef = new HBox(0, iconDef, textDef);
@@ -118,7 +119,7 @@ public class CardViewComponent extends ChildViewComponent {
         barHP.setWidth(CARD_WIDTH / 3.2);
         barHP.setHeight(12.5);
 
-        Text textHP = getUIFactory().newText("", Color.BLACK, 18);
+        Text textHP = getUIFactoryService().newText("", Color.BLACK, 18);
         textHP.textProperty().bind(card.getHp().valueProperty().asString("%d"));
 
         var boxHP = new HBox(-10, barHP, textHP);
@@ -133,7 +134,7 @@ public class CardViewComponent extends ChildViewComponent {
         barSP.setWidth(CARD_WIDTH / 3.2);
         barSP.setHeight(12.5);
 
-        Text textSP = getUIFactory().newText("", Color.BLACK, 18);
+        Text textSP = getUIFactoryService().newText("", Color.BLACK, 18);
         textSP.textProperty().bind(card.getSp().valueProperty().asString("%d"));
 
         var boxSP = new HBox(-10, barSP, textSP);
@@ -141,7 +142,7 @@ public class CardViewComponent extends ChildViewComponent {
         boxSP.setTranslateX(CARD_WIDTH / 3.0);
         boxSP.setTranslateY(CARD_HEIGHT - 40);
 
-        Text textRarity = getUIFactory().newText(card.getRarity().toString().substring(0, 1), Color.color(0, 0, 0, 0.75), 34);
+        Text textRarity = getUIFactoryService().newText(card.getRarity().toString().substring(0, 1), Color.color(0, 0, 0, 0.75), 34);
         centerText(textRarity, CARD_IMAGE_WIDTH / 2.0 + 20, 20);
         textRarity.setStroke(Color.WHITE);
         textRarity.setStrokeWidth(1.5);
@@ -173,6 +174,9 @@ public class CardViewComponent extends ChildViewComponent {
         getViewRoot().opacityProperty().bind(
                 Bindings.when(card.aliveProperty()).then(1.0).otherwise(0.25)
         );
+
+        getViewRoot().setCache(true);
+        getViewRoot().setCacheHint(CacheHint.SPEED);
     }
 
     public Optional<SkillView> getSkillView1() {

@@ -15,8 +15,7 @@ public class ShooterFactory implements EntityFactory {
 
     @Spawns("Bullet")
     public Entity newBullet(SpawnData data) {
-        return FXGL.entityBuilder()
-                .from(data)
+        return FXGL.entityBuilder(data)
                 .type(ShooterType.BULLET)
                 .viewWithBBox(new Rectangle(10, 2, Color.BLUE))
                 .with(new CollidableComponent(true))
@@ -26,8 +25,7 @@ public class ShooterFactory implements EntityFactory {
 
     @Spawns("Enemy")
     public Entity newEnemy(SpawnData data) {
-        return FXGL.entityBuilder()
-                .from(data)
+        return FXGL.entityBuilder(data)
                 .type(ShooterType.ENEMY)
                 .viewWithBBox(new Rectangle(40, 40, Color.RED))
                 .with(new CollidableComponent(true))

@@ -16,16 +16,14 @@ public class RTSFactory implements EntityFactory {
 
     @Spawns("unit")
     public Entity newUnit(SpawnData data) {
-        return entityBuilder()
-                .from(data)
+        return entityBuilder(data)
                 .view(new Rectangle(40, 40))
                 .build();
     }
 
     @Spawns("worker")
     public Entity newWorker(SpawnData data) {
-        var e = entityBuilder()
-                .from(data)
+        var e = entityBuilder(data)
                 .type(EntityType.WORKER)
                 .view(new Rectangle(40, 40, Color.BLUE))
                 .with(ResourceType.WOOD.toString(), 0)
@@ -62,8 +60,7 @@ public class RTSFactory implements EntityFactory {
         view.setStroke(Color.BLACK);
         view.setStrokeWidth(2.5);
 
-        var e = entityBuilder()
-                .from(data)
+        var e = entityBuilder(data)
                 .type(EntityType.STOCKPILE)
                 .viewWithBBox(view)
                 .with(ResourceType.WOOD.toString(), 0)
@@ -85,8 +82,7 @@ public class RTSFactory implements EntityFactory {
 
     @Spawns("tree")
     public Entity newTree(SpawnData data) {
-        return entityBuilder()
-                .from(data)
+        return entityBuilder(data)
                 .type(EntityType.TREE)
                 .viewWithBBox("tree.png")
                 .with(new ResourceComponent(ResourceType.WOOD, 100))
@@ -95,8 +91,7 @@ public class RTSFactory implements EntityFactory {
 
     @Spawns("stone")
     public Entity newStone(SpawnData data) {
-        return entityBuilder()
-                .from(data)
+        return entityBuilder(data)
                 .type(EntityType.STONE)
                 .viewWithBBox("stone.png")
                 .with(new ResourceComponent(ResourceType.STONE, 50))

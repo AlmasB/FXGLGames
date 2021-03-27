@@ -12,8 +12,7 @@ import javafx.scene.paint.Color;
 
 import java.util.List;
 
-import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
-import static com.almasb.fxgl.dsl.FXGL.getUIFactory;
+import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxglgames.ncc.Config.CARD_HEIGHT;
 import static com.almasb.fxglgames.ncc.Config.CARD_WIDTH;
 
@@ -32,8 +31,7 @@ public class NCCFactory implements EntityFactory {
     public Entity newCard(SpawnData data) {
         Card card = data.get("card");
 
-        return entityBuilder()
-                .from(data)
+        return entityBuilder(data)
                 .with(new HealthIntComponent(card.getHp()))
                 .with(new ManaIntComponent(card.getSp()))
                 .with(new CardComponent(card))
@@ -52,12 +50,11 @@ public class NCCFactory implements EntityFactory {
                 "-fx-border-style: segments(10, 15, 15, 15)  line-cap round;"
         );
 
-        var text = getUIFactory().newText(data.get("isPlayer") ? "+" : "?", Color.WHITE, 76);
+        var text = getUIFactoryService().newText(data.get("isPlayer") ? "+" : "?", Color.WHITE, 76);
         text.setStroke(Color.BLACK);
         text.setStrokeWidth(2);
 
-        return entityBuilder()
-                .from(data)
+        return entityBuilder(data)
                 .view(new StackPane(bg, text))
                 .build();
     }

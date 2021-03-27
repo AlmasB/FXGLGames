@@ -48,15 +48,15 @@ public class ShooterApp extends GameApplication {
 
         getGameTimer().runAtInterval(() -> {
 
-            int numEnemies = getGameState().getInt("enemies");
+            int numEnemies = geti("enemies");
 
             if (numEnemies < 5) {
-                getGameWorld().spawn("Enemy",
+                spawn("Enemy",
                         FXGLMath.random(0, getAppWidth() - 40),
                         FXGLMath.random(0, getAppHeight() / 2 - 40)
                 );
 
-                getGameState().increment("enemies", +1);
+                inc("enemies", +1);
             }
 
         }, Duration.seconds(1));
@@ -72,7 +72,7 @@ public class ShooterApp extends GameApplication {
                 bullet.removeFromWorld();
                 enemy.removeFromWorld();
 
-                getGameState().increment("enemies", -1);
+                inc("enemies", -1);
             }
         });
     }
