@@ -282,15 +282,19 @@ public class GeoWarsApp extends GameApplication {
                     .thenRun(() -> gameOver())
                     .buildAndStart();
 
-            run(() -> {
-                for (int i = 0; i < 4; i++) {
-                    spawn("Wanderer");
-                }
-            }, Duration.seconds(1.5));
+//            run(() -> {
+//                for (int i = 0; i < 4; i++) {
+//                    spawn("Wanderer");
+//                }
+//            }, Duration.seconds(1.5));
 
             run(() -> {
-                spawn("Mine", FXGLMath.randomPoint(new Rectangle2D(0, 0, getAppWidth() - 100, getAppHeight() - 100)));
-            }, Duration.seconds(10));
+                spawnFadeIn(
+                        "Mine",
+                        new SpawnData(FXGLMath.randomPoint(new Rectangle2D(0, 0, getAppWidth() - 80, getAppHeight() - 80))),
+                        Duration.seconds(1)
+                );
+            }, Duration.seconds(1));
         }
     }
 
