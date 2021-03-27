@@ -111,6 +111,47 @@ public class PlayerComponent extends Component {
         }
     }
 
+    // TODO: remove duplicate
+    public void shootDirection(Point2D direction) {
+        if (weaponTimer.elapsed(WEAPON_DELAY)) {
+            Point2D position = entity.getCenter().subtract(14, 4.5);
+            Point2D vectorToMouse = direction;
+
+            WeaponType type = geto("weaponType");
+
+            List<Entity> bullets = new ArrayList<>();
+
+            switch (type) {
+                case TRIPLE:
+
+                    // spawn extra bullet
+                    bullets.add(spawnBullet(position.subtract(
+                            new Point2D(vectorToMouse.getY(), -vectorToMouse.getX()).normalize().multiply(15)
+                    ), vectorToMouse));
+
+                case DOUBLE:
+
+                    // spawn extra bullet
+                    bullets.add(spawnBullet(position.add(
+                            new Point2D(vectorToMouse.getY(), -vectorToMouse.getX()).normalize().multiply(15)
+                    ), vectorToMouse));
+
+                case SINGLE:
+                default:
+                    bullets.add(spawnBullet(position, vectorToMouse));
+                    break;
+            }
+
+            if (getb("isRicochet")) {
+                bullets.forEach(bullet -> {
+                    bullet.addComponent(new RicochetComponent());
+                });
+            }
+
+            weaponTimer.capture();
+        }
+    }
+
     private Entity spawnBullet(Point2D position, Point2D direction) {
         return spawn("Bullet",
                 new SpawnData(position.getX(), position.getY())

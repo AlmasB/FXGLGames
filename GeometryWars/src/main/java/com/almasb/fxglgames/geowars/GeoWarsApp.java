@@ -38,6 +38,7 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.virtual.VirtualButton;
+import com.almasb.fxgl.input.virtual.VirtualJoystick;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxglgames.geowars.collision.BulletMineHandler;
@@ -70,6 +71,8 @@ public class GeoWarsApp extends GameApplication {
 
     private Entity player;
     private PlayerComponent playerComponent;
+
+    private VirtualJoystick shootJoystick;
 
     public Entity getPlayer() {
         return player;
@@ -146,38 +149,43 @@ public class GeoWarsApp extends GameApplication {
             }
         }, KeyCode.D, VirtualButton.RIGHT);
 
-        getInput().addAction(new UserAction("Release Shockwave") {
-            @Override
-            protected void onActionBegin() {
-                playerComponent.releaseShockwave();
-            }
-        }, KeyCode.F, VirtualButton.B);
+//        getInput().addAction(new UserAction("Release Shockwave") {
+//            @Override
+//            protected void onActionBegin() {
+//                playerComponent.releaseShockwave();
+//            }
+//        }, KeyCode.F, VirtualButton.B);
 
-        // TODO: allow virtual button + sticks + onKey() DSL with virtual button
-        getInput().addAction(new UserAction("Shoot Mouse") {
-            @Override
-            protected void onAction() {
-                playerComponent.shoot(getInput().getMousePositionWorld());
-            }
-        }, MouseButton.PRIMARY);
+        if (!isOnMobile()) {
 
-        getInput().addAction(new UserAction("Shoot Key") {
-            @Override
-            protected void onAction() {
+            // TODO: allow virtual button + sticks
+            getInput().addAction(new UserAction("Shoot Mouse") {
+                @Override
+                protected void onAction() {
+                    playerComponent.shoot(getInput().getMousePositionWorld());
+                }
+            }, MouseButton.PRIMARY);
+        } else {
 
-                // TODO: use sticks to aim?
-                byType(WANDERER, SEEKER, RUNNER, BOUNCER)
-                        .stream()
-                        .min(Comparator.comparingDouble(e -> e.distance(player)))
-                        .ifPresent(e -> playerComponent.shoot(e.getPosition()));
-            }
-        }, KeyCode.H, VirtualButton.A);
-
-        if (!isReleaseMode()) {
-            onKeyDown(KeyCode.G, () -> {
-
-            });
         }
+
+//        getInput().addAction(new UserAction("Shoot Key") {
+//            @Override
+//            protected void onAction() {
+//
+//                // TODO: use sticks to aim?
+//                byType(WANDERER, SEEKER, RUNNER, BOUNCER)
+//                        .stream()
+//                        .min(Comparator.comparingDouble(e -> e.distance(player)))
+//                        .ifPresent(e -> playerComponent.shoot(e.getPosition()));
+//            }
+//        }, KeyCode.H, VirtualButton.A);
+//
+//        if (!isReleaseMode()) {
+//            onKeyDown(KeyCode.G, () -> {
+//
+//            });
+//        }
     }
 
     @Override
@@ -282,11 +290,11 @@ public class GeoWarsApp extends GameApplication {
                     .thenRun(() -> gameOver())
                     .buildAndStart();
 
-//            run(() -> {
-//                for (int i = 0; i < 4; i++) {
-//                    spawn("Wanderer");
-//                }
-//            }, Duration.seconds(1.5));
+            run(() -> {
+                for (int i = 0; i < 4; i++) {
+                    spawn("Wanderer");
+                }
+            }, Duration.seconds(1.5));
 
             run(() -> {
                 spawnFadeIn(
@@ -294,8 +302,12 @@ public class GeoWarsApp extends GameApplication {
                         new SpawnData(FXGLMath.randomPoint(new Rectangle2D(0, 0, getAppWidth() - 80, getAppHeight() - 80))),
                         Duration.seconds(1)
                 );
-            }, Duration.seconds(1));
+            }, Duration.seconds(10));
         }
+    }
+
+    private boolean isOnMobile() {
+        return false;
     }
 
     @Override
@@ -423,6 +435,23 @@ public class GeoWarsApp extends GameApplication {
                 .repeat(2)
                 .fadeIn(goodLuck)
                 .buildAndPlay();
+
+        if (isOnMobile()) {
+            shootJoystick = getInput().createVirtualJoystick();
+
+            addUINode(shootJoystick, getAppWidth() - 300, getAppHeight() - 300);
+        }
+    }
+
+    @Override
+    protected void onUpdate(double tpf) {
+        if (isOnMobile()) {
+            var vector = shootJoystick.getVector();
+
+            if (!vector.equals(Point2D.ZERO)) {
+                playerComponent.shootDirection(vector);
+            }
+        }
     }
 
     public void killEnemy(Entity enemy) {
