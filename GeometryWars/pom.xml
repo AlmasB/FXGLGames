@@ -18,7 +18,8 @@
 
         <fxgl.version>dev-SNAPSHOT</fxgl.version>
         <jfx.maven.plugin.version>0.0.5</jfx.maven.plugin.version>
-        <client.plugin.version>0.1.17</client.plugin.version>
+        <client.plugin.version>0.1.35</client.plugin.version>
+        <attach.version>4.0.9</attach.version>
         <mainClassName>com.almasb.fxglgames.geowars.GeoWarsApp</mainClassName>
     </properties>
 
@@ -28,22 +29,53 @@
             <artifactId>fxgl</artifactId>
             <version>${fxgl.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.gluonhq.attach</groupId>
+            <artifactId>audio</artifactId>
+            <version>${attach.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.gluonhq.attach</groupId>
+            <artifactId>lifecycle</artifactId>
+            <version>${attach.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.gluonhq.attach</groupId>
+            <artifactId>storage</artifactId>
+            <version>${attach.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.gluonhq.attach</groupId>
+            <artifactId>util</artifactId>
+            <version>${attach.version}</version>
+        </dependency>
     </dependencies>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>gluon-releases</id>
+            <url>http://nexus.gluonhq.com/nexus/content/repositories/releases/</url>
+        </pluginRepository>
+
+        <pluginRepository>
+            <id>gluon-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <repositories>
         <repository>
             <id>oss.sonatype.org-snapshot</id>
             <url>http://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
-    </repositories>
 
-    <!-- client maven plugin repo   -->
-    <pluginRepositories>
-        <pluginRepository>
-            <id>gluon-releases</id>
+        <!-- for attach -->
+        <repository>
+            <id>nexus-gluon</id>
             <url>https://nexus.gluonhq.com/nexus/content/repositories/releases/</url>
-        </pluginRepository>
-    </pluginRepositories>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>
@@ -89,7 +121,7 @@
                     <noManPages>true</noManPages>
                     <launcher>Start-game</launcher>
                     <jlinkImageName>game</jlinkImageName>
-                    <jlinkZipName>geowars-game-${project.version}</jlinkZipName>
+                    <jlinkZipName>spacewars-game-${project.version}</jlinkZipName>
                     <mainClass>${mainClassName}</mainClass>
                 </configuration>
             </plugin>
@@ -111,18 +143,20 @@
                     <verbose>true</verbose>
                     <reflectionList>
                         <list>com.almasb.fxgl.app.GameApplication</list>
-                        <list>com.almasb.fxgl.app.GameApplication$FXGLApplication</list>
+                        <list>com.almasb.fxgl.app.FXGLApplication</list>
                         <list>com.almasb.fxgl.app.ReadOnlyGameSettings</list>
                         <list>com.almasb.fxgl.app.GameSettings</list>
 
                         <!-- Engine services -->
-                        <list>com.almasb.fxgl.app.services.WindowService</list>
                         <list>com.almasb.fxgl.app.services.FXGLDialogService</list>
                         <list>com.almasb.fxgl.app.services.IOTaskExecutorService</list>
                         <list>com.almasb.fxgl.app.services.SystemBundleService</list>
                         <list>com.almasb.fxgl.app.services.UpdaterService</list>
-                        <list>com.almasb.fxgl.app.services.AssetLoaderService</list>
+                        <list>com.almasb.fxgl.app.services.FXGLAssetLoaderService</list>
+                        <list>com.almasb.fxgl.core.asset.AssetLoaderService</list>
                         <list>com.almasb.fxgl.cutscene.CutsceneService</list>
+                        <list>com.almasb.fxgl.dev.DevService</list>
+                        <list>com.almasb.fxgl.dev.profiling.ProfilerService</list>
                         <list>com.almasb.fxgl.event.EventBusService</list>
                         <list>com.almasb.fxgl.io.FileSystemService</list>
                         <list>com.almasb.fxgl.localization.LocalizationService</list>
@@ -131,7 +165,7 @@
                         <list>com.almasb.fxgl.profile.SaveLoadService</list>
                         <list>com.almasb.fxgl.ui.FXGLDialogFactoryServiceProvider</list>
                         <list>com.almasb.fxgl.ui.FXGLUIFactoryServiceProvider</list>
-                        <list>com.almasb.fxgl.app.GameApplication$GameApplicationService</list>
+                        <list>com.almasb.fxgl.app.FXGLApplication$GameApplicationService</list>
                         <list>com.almasb.fxgl.audio.AudioPlayer</list>
                         <list>com.almasb.fxgl.notification.impl.NotificationServiceProvider</list>
                         <list>com.almasb.fxgl.notification.view.XboxNotificationView</list>
@@ -150,25 +184,29 @@
                         <list>com.almasb.fxgl.entity.components.ViewComponent</list>
                         <list>com.almasb.fxgl.particle.ParticleComponent</list>
                         <list>com.almasb.fxgl.physics.PhysicsComponent</list>
+                        <list>com.almasb.fxgl.dsl.components.AutoRotationComponent</list>
+                        <list>com.almasb.fxgl.dsl.components.EffectComponent</list>
+                        <list>com.almasb.fxgl.dsl.components.ExpireCleanComponent</list>
+                        <list>com.almasb.fxgl.dsl.components.HealthIntComponent</list>
                         <list>com.almasb.fxgl.dsl.components.LiftComponent</list>
                         <list>com.almasb.fxgl.dsl.components.OffscreenCleanComponent</list>
                         <list>com.almasb.fxgl.dsl.components.OffscreenPauseComponent</list>
                         <list>com.almasb.fxgl.dsl.components.ProjectileComponent</list>
-                        <list>com.almasb.fxgl.dsl.components.ExpireCleanComponent</list>
-                        <list>com.almasb.fxgl.dsl.components.KeepOnScreenComponent</list>
-                        <list>com.almasb.fxgl.dsl.components.ProjectileComponent</list>
-                        <list>com.almasb.fxgl.dsl.components.RandomMoveComponent</list>
 
                         <!--     Custom components                  -->
 
+                        <list>com.almasb.fxglgames.geowars.service.HighScoreService</list>
+                        <list>com.almasb.fxglgames.geowars.component.BackgroundStarsComponent</list>
                         <list>com.almasb.fxglgames.geowars.component.BulletComponent</list>
                         <list>com.almasb.fxglgames.geowars.component.CrystalComponent</list>
                         <list>com.almasb.fxglgames.geowars.component.ExhaustParticleComponent</list>
                         <list>com.almasb.fxglgames.geowars.component.ExplosionParticleComponent</list>
                         <list>com.almasb.fxglgames.geowars.component.GridComponent</list>
-                        <list>com.almasb.fxglgames.geowars.component.HealthComponent</list>
+                        <list>com.almasb.fxglgames.geowars.component.MineComponent</list>
+                        <list>com.almasb.fxglgames.geowars.component.ParticleCanvasComponent</list>
                         <list>com.almasb.fxglgames.geowars.component.PlayerComponent</list>
                         <list>com.almasb.fxglgames.geowars.component.RicochetComponent</list>
+                        <list>com.almasb.fxglgames.geowars.component.enemy.BomberComponent</list>
                         <list>com.almasb.fxglgames.geowars.component.enemy.BouncerComponent</list>
                         <list>com.almasb.fxglgames.geowars.component.enemy.RunnerComponent</list>
                         <list>com.almasb.fxglgames.geowars.component.enemy.SeekerComponent</list>
@@ -177,6 +215,7 @@
                         <!-- Factories -->
                         <list>com.almasb.fxglgames.geowars.GeoWarsFactory</list>
                     </reflectionList>
+                    <target>android</target>
                     <mainClass>${mainClassName}</mainClass>
                 </configuration>
             </plugin>

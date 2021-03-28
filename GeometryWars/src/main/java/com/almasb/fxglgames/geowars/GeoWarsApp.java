@@ -33,6 +33,7 @@ import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.app.scene.SimpleGameMenu;
 import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
@@ -56,7 +57,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-import java.util.Comparator;
 import java.util.Map;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -72,6 +72,7 @@ public class GeoWarsApp extends GameApplication {
     private Entity player;
     private PlayerComponent playerComponent;
 
+    private VirtualJoystick moveJoystick;
     private VirtualJoystick shootJoystick;
 
     public Entity getPlayer() {
@@ -121,33 +122,7 @@ public class GeoWarsApp extends GameApplication {
 
     @Override
     protected void initInput() {
-        getInput().addAction(new UserAction("Up") {
-            @Override
-            protected void onAction() {
-                playerComponent.up();
-            }
-        }, KeyCode.W, VirtualButton.UP);
 
-        getInput().addAction(new UserAction("Down") {
-            @Override
-            protected void onAction() {
-                playerComponent.down();
-            }
-        }, KeyCode.S, VirtualButton.DOWN);
-
-        getInput().addAction(new UserAction("Left") {
-            @Override
-            protected void onAction() {
-                playerComponent.left();
-            }
-        }, KeyCode.A, VirtualButton.LEFT);
-
-        getInput().addAction(new UserAction("Right") {
-            @Override
-            protected void onAction() {
-                playerComponent.right();
-            }
-        }, KeyCode.D, VirtualButton.RIGHT);
 
 //        getInput().addAction(new UserAction("Release Shockwave") {
 //            @Override
@@ -157,6 +132,33 @@ public class GeoWarsApp extends GameApplication {
 //        }, KeyCode.F, VirtualButton.B);
 
         if (!isOnMobile()) {
+            getInput().addAction(new UserAction("Up") {
+                @Override
+                protected void onAction() {
+                    playerComponent.up();
+                }
+            }, KeyCode.W, VirtualButton.UP);
+
+            getInput().addAction(new UserAction("Down") {
+                @Override
+                protected void onAction() {
+                    playerComponent.down();
+                }
+            }, KeyCode.S, VirtualButton.DOWN);
+
+            getInput().addAction(new UserAction("Left") {
+                @Override
+                protected void onAction() {
+                    playerComponent.left();
+                }
+            }, KeyCode.A, VirtualButton.LEFT);
+
+            getInput().addAction(new UserAction("Right") {
+                @Override
+                protected void onAction() {
+                    playerComponent.right();
+                }
+            }, KeyCode.D, VirtualButton.RIGHT);
 
             // TODO: allow virtual button + sticks
             getInput().addAction(new UserAction("Shoot Mouse") {
@@ -165,8 +167,6 @@ public class GeoWarsApp extends GameApplication {
                     playerComponent.shoot(getInput().getMousePositionWorld());
                 }
             }, MouseButton.PRIMARY);
-        } else {
-
         }
 
 //        getInput().addAction(new UserAction("Shoot Key") {
@@ -307,7 +307,7 @@ public class GeoWarsApp extends GameApplication {
     }
 
     private boolean isOnMobile() {
-        return false;
+        return FXGL.isMobile();
     }
 
     @Override
@@ -437,19 +437,26 @@ public class GeoWarsApp extends GameApplication {
                 .buildAndPlay();
 
         if (isOnMobile()) {
+            moveJoystick = getInput().createVirtualJoystick();
             shootJoystick = getInput().createVirtualJoystick();
 
-            addUINode(shootJoystick, getAppWidth() - 300, getAppHeight() - 300);
+            addUINode(moveJoystick, 40, getAppHeight() - 240);
+            addUINode(shootJoystick, getAppWidth() - 240, getAppHeight() - 240);
         }
     }
 
     @Override
     protected void onUpdate(double tpf) {
         if (isOnMobile()) {
-            var vector = shootJoystick.getVector();
+            var moveVector = moveJoystick.getVector();
+            var shootVector = shootJoystick.getVector();
 
-            if (!vector.equals(Point2D.ZERO)) {
-                playerComponent.shootDirection(vector);
+            if (!moveVector.equals(Point2D.ZERO)) {
+                player.translate(moveVector.multiply(playerComponent.getSpeed()));
+            }
+
+            if (!shootVector.equals(Point2D.ZERO)) {
+                playerComponent.shootDirection(shootVector);
             }
         }
     }

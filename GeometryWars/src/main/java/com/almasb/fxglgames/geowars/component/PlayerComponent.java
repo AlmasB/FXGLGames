@@ -71,6 +71,10 @@ public class PlayerComponent extends Component {
         }
     }
 
+    public double getSpeed() {
+        return speed;
+    }
+
     public void shoot(Point2D shootPoint) {
         if (weaponTimer.elapsed(WEAPON_DELAY)) {
             Point2D position = entity.getCenter().subtract(14, 4.5);

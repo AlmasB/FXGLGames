@@ -3,7 +3,11 @@ package com.almasb.fxglgames.geowars;
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
-import com.almasb.fxgl.dsl.components.*;
+import com.almasb.fxgl.dsl.components.AutoRotationComponent;
+import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
+import com.almasb.fxgl.dsl.components.HealthIntComponent;
+import com.almasb.fxgl.dsl.components.LiftComponent;
+import com.almasb.fxgl.dsl.components.ProjectileComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
@@ -50,7 +54,7 @@ public class GeoWarsFactory implements EntityFactory {
     public Entity spawnBackground(SpawnData data) {
         return entityBuilder(data)
                 .type(GRID)
-                //.with(new BackgroundStarsComponent())
+                .with(new BackgroundStarsComponent())
                 .with(new GridComponent())
                 .build();
     }
