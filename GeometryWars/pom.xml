@@ -131,8 +131,12 @@
                 <artifactId>client-maven-plugin</artifactId>
                 <version>${client.plugin.version}</version>
                 <configuration>
+                    <nativeImageArgs>--allow-incomplete-classpath</nativeImageArgs>
                     <attachList>
+                        <list>audio</list>
+                        <list>lifecycle</list>
                         <list>storage</list>
+                        <list>util</list>
                     </attachList>
                     <resourcesList>
                         <list>.*\\.lang$</list>
