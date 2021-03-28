@@ -71,7 +71,9 @@ public class GeoWarsFactory implements EntityFactory {
     @Spawns("Player")
     public Entity spawnPlayer(SpawnData data) {
         var texture = texture("Player.png");
-        texture.setEffect(new Bloom(0.7));
+        if (!FXGL.isMobile()) {
+            texture.setEffect(new Bloom(0.7));
+        }
 
         return entityBuilder()
                 .type(PLAYER)
@@ -115,7 +117,6 @@ public class GeoWarsFactory implements EntityFactory {
         var t2 = texture("particles/" + name, w, h).multiplyColor(Color.BLUE.brighter());
         t2.setTranslateX(-(w / 2.0 - 80 / 2.0));
         t2.setTranslateY(-(h / 2.0 - 80 / 2.0));
-        //t2.setEffect(new BoxBlur(15, 15, 3));
 
         return entityBuilder()
                 .type(WANDERER)
@@ -269,7 +270,9 @@ public class GeoWarsFactory implements EntityFactory {
         var t = texture("particles/" + name, w, h).multiplyColor(Color.YELLOW.brighter());
         t.setTranslateX(-(w / 2.0 - 32 / 2.0));
         t.setTranslateY(-(h / 2.0 - 32 / 2.0));
-        t.setEffect(new BoxBlur(15, 15, 3));
+        if (!FXGL.isMobile()) {
+            t.setEffect(new BoxBlur(15, 15, 3));
+        }
 
         return entityBuilder(data)
                 .type(CRYSTAL)

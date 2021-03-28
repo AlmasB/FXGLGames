@@ -491,11 +491,12 @@ public class GeoWarsApp extends GameApplication {
 
         inc("score", +10*multiplier);
 
-        var shadow = new DropShadow(25, Color.WHITE);
-
         Text bonusText = getUIFactoryService().newText("+10" + (multiplier == 1 ? "" : "x" + multiplier), Color.color(1, 1, 1, 0.8), 24);
         bonusText.setStroke(Color.GOLD);
-        bonusText.setEffect(shadow);
+
+        if (!FXGL.isMobile()) {
+            bonusText.setEffect(new DropShadow(25, Color.WHITE));
+        }
         bonusText.setCache(true);
         bonusText.setCacheHint(CacheHint.SPEED);
 

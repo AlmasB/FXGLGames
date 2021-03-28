@@ -1,5 +1,6 @@
 package com.almasb.fxglgames.geowars.menu;
 
+import com.almasb.fxgl.dsl.FXGL;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -20,10 +21,12 @@ public class ColorBlock extends Rectangle {
         setStrokeWidth(2.5);
         setStroke(Color.color(0.138, 0.138, 0.375, 0.66));
 
-        var shadow = new InnerShadow(25, Color.BLACK);
-        shadow.setOffsetX(-3);
-        shadow.setOffsetY(-3);
+        if (!FXGL.isMobile()) {
+            var shadow = new InnerShadow(25, Color.BLACK);
+            shadow.setOffsetX(-3);
+            shadow.setOffsetY(-3);
 
-        setEffect(shadow);
+            setEffect(shadow);
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.almasb.fxglgames.geowars.menu;
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.MenuType;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.input.view.KeyView;
 import com.almasb.fxgl.input.view.MouseButtonView;
 import com.almasb.fxgl.input.view.TriggerView;
@@ -51,7 +52,10 @@ public class GeoWarsMainMenu extends FXGLMenu {
         var title = getUIFactoryService().newText(getSettings().getTitle(), Color.WHITE, 46.0);
         title.setStroke(Color.WHITESMOKE);
         title.setStrokeWidth(1.5);
-        title.setEffect(new Bloom(0.6));
+
+        if (!FXGL.isMobile()) {
+            title.setEffect(new Bloom(0.6));
+        }
         centerTextBind(title, getAppWidth() / 2.0, 200);
 
         var version = getUIFactoryService().newText(getSettings().getVersion(), Color.WHITE, 22.0);
@@ -184,7 +188,9 @@ public class GeoWarsMainMenu extends FXGLMenu {
 
     private void instructions() {
         GridPane pane = new GridPane();
-        pane.setEffect(new DropShadow(5, 3.5, 3.5, Color.BLUE));
+        if (!FXGL.isMobile()) {
+            pane.setEffect(new DropShadow(5, 3.5, 3.5, Color.BLUE));
+        }
         pane.setHgap(25);
         pane.setVgap(10);
         pane.addRow(0, getUIFactoryService().newText("Movement"), new HBox(4, new KeyView(W), new KeyView(S), new KeyView(A), new KeyView(D)));
