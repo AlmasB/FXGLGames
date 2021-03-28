@@ -70,7 +70,7 @@ public class GeoWarsFactory implements EntityFactory {
 
     @Spawns("Player")
     public Entity spawnPlayer(SpawnData data) {
-        var texture = texture("player.png");
+        var texture = texture("Player.png");
         texture.setEffect(new Bloom(0.7));
 
         return entityBuilder()
