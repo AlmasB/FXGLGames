@@ -468,11 +468,16 @@ public class GeoWarsApp extends GameApplication {
     }
 
     public void killEnemy(Entity enemy) {
+        SpawnData data;
+
         if (enemy.isType(BOMBER)) {
-            spawn("Explosion", new SpawnData(enemy.getCenter()).put("numParticles", 10));
+            data = new SpawnData(enemy.getCenter()).put("numParticles", 10);
         } else {
-            spawn("Explosion", enemy.getCenter());
+            data = new SpawnData(enemy.getCenter()).put("numParticles", 200);
         }
+
+        Entity explosion = spawn("Explosion", data);
+        GeoWarsFactory.respawnExplosion(explosion, data);
 
         spawn("Crystal", enemy.getCenter());
 

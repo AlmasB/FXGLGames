@@ -15,6 +15,7 @@ import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
+import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxglgames.geowars.component.*;
 import com.almasb.fxglgames.geowars.component.enemy.*;
 import javafx.geometry.Point2D;
@@ -224,16 +225,29 @@ public class GeoWarsFactory implements EntityFactory {
 
     @Spawns("Explosion")
     public Entity spawnExplosion(SpawnData data) {
+        var e = entityBuilder(data)
+                .at(data.getX() - 40, data.getY() - 40)
+                .type(EXPLOSION)
+                .view(texture("explosion.png", 80 * 48, 80).toAnimatedTexture(48, Duration.seconds(0.75)))
+                .with(new ExplosionParticleComponent())
+                .build();
+
+        e.setReusable(true);
+
+        return e;
+    }
+
+    public static void respawnExplosion(Entity entity, SpawnData data) {
+        entity.setPosition(data.getX() - 40, data.getY() - 40);
+
         int numParticles = data.hasKey("numParticles") ? data.get("numParticles") : 200;
 
         play("explosion-0" + (int) (Math.random() * 8 + 1) + ".wav");
 
-        return entityBuilder()
-                .at(data.getX() - 40, data.getY() - 40)
-                .type(EXPLOSION)
-                .view(texture("explosion.png", 80 * 48, 80).toAnimatedTexture(48, Duration.seconds(0.75)).play())
-                .with(new ExplosionParticleComponent(numParticles))
-                .build();
+        entity.getComponent(ExplosionParticleComponent.class).setNumParticles(numParticles);
+
+        AnimatedTexture animTexture = (AnimatedTexture) entity.getViewComponent().getChildren().get(0);
+        animTexture.play();
     }
 
     @Spawns("Shockwave")

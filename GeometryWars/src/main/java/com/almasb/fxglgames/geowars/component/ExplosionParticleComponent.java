@@ -19,15 +19,19 @@ public class ExplosionParticleComponent extends Component {
 
     private Color color;
 
-    private int numParticles;
-
-    public ExplosionParticleComponent(int numParticles) {
-        this.numParticles = numParticles;
-    }
+    private int numParticles = 0;
 
     @Override
     public void onAdded() {
         grid = byType(GeoWarsType.GRID).get(0).getComponent(GridComponent.class);
+
+        color = Color.rgb(random(50, 235), random(155, 255), random(50, 235)).brighter();
+
+        spawnParticles();
+    }
+
+    public void setNumParticles(int numParticles) {
+        this.numParticles = numParticles;
 
         color = Color.rgb(random(50, 235), random(155, 255), random(50, 235)).brighter();
 
