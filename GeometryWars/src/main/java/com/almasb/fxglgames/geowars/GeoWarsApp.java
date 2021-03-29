@@ -86,13 +86,13 @@ public class GeoWarsApp extends GameApplication {
         settings.setWidth(1920);
         settings.setHeight(1080);
         settings.setTitle("FXGL Space Wars");
-        settings.setVersion("1.2.1");
+        settings.setVersion("1.3-dev");
         settings.setIntroEnabled(isRelease);
         settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(true);
         settings.setFullScreenAllowed(isRelease);
         settings.setFullScreenFromStart(isRelease);
-        settings.setProfilingEnabled(false);
+        settings.setProfilingEnabled(true);
         settings.setApplicationMode(isRelease ? ApplicationMode.RELEASE : ApplicationMode.DEVELOPER);
         settings.setFontUI("game_font_7.ttf");
         settings.addEngineService(HighScoreService.class);
@@ -180,12 +180,17 @@ public class GeoWarsApp extends GameApplication {
 //                        .ifPresent(e -> playerComponent.shoot(e.getPosition()));
 //            }
 //        }, KeyCode.H, VirtualButton.A);
-//
-//        if (!isReleaseMode()) {
-//            onKeyDown(KeyCode.G, () -> {
-//
-//            });
-//        }
+
+        if (!isReleaseMode()) {
+            onKeyDown(KeyCode.G, () -> {
+                var e = spawn("Wanderer");
+                GeoWarsFactory.respawnWanderer(e);
+            });
+
+            onKeyDown(KeyCode.H, () -> {
+                byType(WANDERER).forEach(Entity::removeFromWorld);
+            });
+        }
     }
 
     @Override
@@ -292,7 +297,8 @@ public class GeoWarsApp extends GameApplication {
 
             run(() -> {
                 for (int i = 0; i < 4; i++) {
-                    spawn("Wanderer");
+                    var e = spawn("Wanderer");
+                    GeoWarsFactory.respawnWanderer(e);
                 }
             }, Duration.seconds(1.5));
 

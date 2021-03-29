@@ -7,6 +7,7 @@ import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.particle.ParticleComponent;
 import com.almasb.fxgl.particle.ParticleEmitters;
 import com.almasb.fxgl.time.LocalTimer;
+import com.almasb.fxglgames.geowars.GeoWarsFactory;
 import com.almasb.fxglgames.geowars.WeaponType;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
@@ -157,10 +158,13 @@ public class PlayerComponent extends Component {
     }
 
     private Entity spawnBullet(Point2D position, Point2D direction) {
-        return spawn("Bullet",
-                new SpawnData(position.getX(), position.getY())
-                        .put("direction", direction)
-        );
+        var data = new SpawnData(position.getX(), position.getY())
+                .put("direction", direction);
+        var e =  spawn("Bullet", data);
+
+        GeoWarsFactory.respawnBullet(e, data);
+
+        return e;
     }
 
     public boolean isShockwaveReady() {

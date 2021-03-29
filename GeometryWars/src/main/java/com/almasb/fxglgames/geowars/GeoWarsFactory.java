@@ -39,14 +39,14 @@ public class GeoWarsFactory implements EntityFactory {
     /**
      * These correspond to top-left, top-right, bottom-right, bottom-left.
      */
-    private Point2D[] spawnPoints = new Point2D[] {
+    private static final Point2D[] spawnPoints = new Point2D[] {
             new Point2D(SPAWN_DISTANCE, SPAWN_DISTANCE),
             new Point2D(getAppWidth() - SPAWN_DISTANCE, SPAWN_DISTANCE),
             new Point2D(getAppWidth() - SPAWN_DISTANCE, getAppHeight() - SPAWN_DISTANCE),
             new Point2D(SPAWN_DISTANCE, getAppHeight() - SPAWN_DISTANCE)
     };
 
-    private Point2D getRandomSpawnPoint() {
+    private static Point2D getRandomSpawnPoint() {
         return spawnPoints[FXGLMath.random(0, 3)];
     }
 
@@ -54,7 +54,7 @@ public class GeoWarsFactory implements EntityFactory {
     public Entity spawnBackground(SpawnData data) {
         return entityBuilder(data)
                 .type(GRID)
-                .with(new BackgroundStarsComponent())
+                //.with(new BackgroundStarsComponent())
                 .with(new GridComponent())
                 .build();
     }
@@ -88,12 +88,10 @@ public class GeoWarsFactory implements EntityFactory {
 
     @Spawns("Bullet")
     public Entity spawnBullet(SpawnData data) {
-        play("shoot" + (int) (Math.random() * 8 + 1) + ".wav");
-
         var expireClean = new ExpireCleanComponent(Duration.seconds(0.5)).animateOpacity();
         expireClean.pause();
 
-        return entityBuilder(data)
+        var e = entityBuilder(data)
                 .type(BULLET)
                 .viewWithBBox("Bullet.png")
                 .with(new CollidableComponent(true))
@@ -101,6 +99,30 @@ public class GeoWarsFactory implements EntityFactory {
                 .with(new BulletComponent())
                 .with(expireClean)
                 .build();
+
+        // creating entities can be expensive on mobile, so pool bullets
+        e.setReusable(true);
+
+        return e;
+    }
+
+    // this allows to "reset" the bullet after it is returned from the pool
+    public static void respawnBullet(Entity entity, SpawnData data) {
+        play("shoot" + (int) (Math.random() * 8 + 1) + ".wav");
+
+        entity.setOpacity(1);
+
+        entity.removeComponent(RicochetComponent.class);
+        entity.removeComponent(ExpireCleanComponent.class);
+
+        var expireClean = new ExpireCleanComponent(Duration.seconds(0.5)).animateOpacity();
+        expireClean.pause();
+
+        entity.addComponent(expireClean);
+
+        Point2D dir = data.get("direction");
+
+        entity.getComponent(ProjectileComponent.class).setDirection(dir);
     }
 
     @Spawns("Wanderer")
@@ -109,25 +131,24 @@ public class GeoWarsFactory implements EntityFactory {
 
         var t = texture("Wanderer.png", 80, 80).brighter();
 
-        var name = "spark_04.png";
-
-        var w = 128;
-        var h = 128;
-
-        var t2 = texture("particles/" + name, w, h).multiplyColor(Color.BLUE.brighter());
-        t2.setTranslateX(-(w / 2.0 - 80 / 2.0));
-        t2.setTranslateY(-(h / 2.0 - 80 / 2.0));
-
-        return entityBuilder()
+        var e = entityBuilder(data)
                 .type(WANDERER)
                 .at(getRandomSpawnPoint())
                 .bbox(new HitBox(new Point2D(20, 20), BoundingShape.box(40, 40)))
-                //.view(t2)
                 .view(t)
                 .with(new HealthIntComponent(ENEMY_HP))
                 .with(new CollidableComponent(true))
                 .with(new WandererComponent(moveSpeed, t, texture("wanderer_overlay.png", 80, 80)))
                 .build();
+
+        e.setReusable(true);
+
+        return e;
+    }
+
+    public static void respawnWanderer(Entity entity) {
+        entity.getComponent(HealthIntComponent.class).setValue(ENEMY_HP);
+        entity.setPosition(getRandomSpawnPoint());
     }
 
     @Spawns("Seeker")
