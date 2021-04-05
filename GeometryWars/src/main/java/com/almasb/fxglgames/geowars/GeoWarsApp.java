@@ -44,6 +44,7 @@ import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxglgames.geowars.collision.BulletMineHandler;
 import com.almasb.fxglgames.geowars.collision.PlayerCrystalHandler;
+import com.almasb.fxglgames.geowars.component.GridComponent;
 import com.almasb.fxglgames.geowars.component.PlayerComponent;
 import com.almasb.fxglgames.geowars.menu.GeoWarsMainMenu;
 import com.almasb.fxglgames.geowars.service.HighScoreService;
@@ -92,7 +93,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setGameMenuEnabled(true);
         settings.setFullScreenAllowed(isRelease);
         settings.setFullScreenFromStart(isRelease);
-        settings.setProfilingEnabled(true);
+        settings.setProfilingEnabled(false);
         settings.setApplicationMode(isRelease ? ApplicationMode.RELEASE : ApplicationMode.DEVELOPER);
         settings.setFontUI("game_font_7.ttf");
         settings.addEngineService(HighScoreService.class);
@@ -189,6 +190,12 @@ public class GeoWarsApp extends GameApplication {
 
             onKeyDown(KeyCode.H, () -> {
                 byType(WANDERER).forEach(Entity::removeFromWorld);
+            });
+
+            onKeyDown(KeyCode.J, () -> {
+                byType(GRID).forEach(e -> {
+                    e.getComponent(GridComponent.class).applyDirectedForce(new Point2D(10000, 0), player.getCenter(), 1000);
+                });
             });
         }
     }

@@ -229,16 +229,22 @@ public class GridComponent extends Component {
         }
     }
 
-//    public void applyDirectedForce(Vector3f force, Vector3f position, float radius) {
-//        for (int x=0; x<points.length; x++) {
-//            for (int y=0; y<points[0].length; y++) {
-//                if (position.distanceSquared(points[x][y].getPosition()) < radius * radius) {
-//                    float forceFactor = 10 / (10 + position.distance(points[x][y].getPosition()));
-//                    points[x][y].applyForce(force.mult(forceFactor));
-//                }
-//            }
-//        }
-//    }
+    public void applyDirectedForce(Point2D forceDir, Point2D position, double radius) {
+        Vec2 tmpVec = new Vec2();
+
+        for (int x = 0; x < points.length; x++) {
+            for (int y = 0; y < points[0].length; y++) {
+                double dist = position.distance(points[x][y].getPosition().x, points[x][y].getPosition().y);
+                dist *= dist;
+
+                if (dist < radius * radius) {
+                    tmpVec.set(forceDir).mulLocal(10 / (10000 + dist));
+
+                    points[x][y].applyForce(tmpVec);
+                }
+            }
+        }
+    }
 
     private static class Line {
         private PointMass end1, end2;
