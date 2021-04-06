@@ -48,6 +48,7 @@ import com.almasb.fxglgames.geowars.component.GridComponent;
 import com.almasb.fxglgames.geowars.component.PlayerComponent;
 import com.almasb.fxglgames.geowars.menu.GeoWarsMainMenu;
 import com.almasb.fxglgames.geowars.service.HighScoreService;
+import com.almasb.fxglgames.geowars.service.PlayerPressureService;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.CacheHint;
@@ -73,6 +74,8 @@ public class GeoWarsApp extends GameApplication {
     private Entity player;
     private PlayerComponent playerComponent;
 
+    private PlayerPressureService pressureService;
+
     private VirtualJoystick moveJoystick;
     private VirtualJoystick shootJoystick;
 
@@ -97,6 +100,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setApplicationMode(isRelease ? ApplicationMode.RELEASE : ApplicationMode.DEVELOPER);
         settings.setFontUI("game_font_7.ttf");
         settings.addEngineService(HighScoreService.class);
+        settings.addEngineService(PlayerPressureService.class);
         settings.setSceneFactory(new SceneFactory() {
             @Override
             public FXGLMenu newMainMenu() {
@@ -123,14 +127,6 @@ public class GeoWarsApp extends GameApplication {
 
     @Override
     protected void initInput() {
-
-
-//        getInput().addAction(new UserAction("Release Shockwave") {
-//            @Override
-//            protected void onActionBegin() {
-//                playerComponent.releaseShockwave();
-//            }
-//        }, KeyCode.F, VirtualButton.B);
 
         if (!isOnMobile()) {
             getInput().addAction(new UserAction("Up") {
@@ -161,6 +157,7 @@ public class GeoWarsApp extends GameApplication {
                 }
             }, KeyCode.D, VirtualButton.RIGHT);
 
+            // TODO: use sticks to aim?
             // TODO: allow virtual button + sticks
             getInput().addAction(new UserAction("Shoot Mouse") {
                 @Override
@@ -169,18 +166,6 @@ public class GeoWarsApp extends GameApplication {
                 }
             }, MouseButton.PRIMARY);
         }
-
-//        getInput().addAction(new UserAction("Shoot Key") {
-//            @Override
-//            protected void onAction() {
-//
-//                // TODO: use sticks to aim?
-//                byType(WANDERER, SEEKER, RUNNER, BOUNCER)
-//                        .stream()
-//                        .min(Comparator.comparingDouble(e -> e.distance(player)))
-//                        .ifPresent(e -> playerComponent.shoot(e.getPosition()));
-//            }
-//        }, KeyCode.H, VirtualButton.A);
 
         if (!isReleaseMode()) {
             onKeyDown(KeyCode.G, () -> {
@@ -224,6 +209,8 @@ public class GeoWarsApp extends GameApplication {
         playerComponent = player.getComponent(PlayerComponent.class);
         playerComponent.playSpawnAnimation();
 
+        pressureService = getService(PlayerPressureService.class);
+
         int dist = OUTSIDE_DISTANCE;
 
         getGameScene().getViewport().setBounds(-dist, -dist, getAppWidth() + dist, getAppHeight() + dist);
@@ -240,6 +227,9 @@ public class GeoWarsApp extends GameApplication {
 
         getWorldProperties().<Integer>addListener("score", (prev, now) -> {
             getService(HighScoreService.class).setScore(now);
+
+            if (now >= GAME_OVER_SCORE)
+                gameOver();
         });
 
         getWorldProperties().<Integer>addListener("lives", (prev, now) -> {
@@ -248,75 +238,57 @@ public class GeoWarsApp extends GameApplication {
         });
 
         if (!IS_NO_ENEMIES) {
-            int[] scoresForBombers = new int[] {
-                    random(10_000, 15_000),
-                    random(25_000, 30_000),
-                    random(35_000, 45_000),
-                    random(50_000, 55_000),
-                    random(60_000, 65_000),
-                    random(70_000, 75_000),
-                    random(80_000, 85_000),
-                    random(90_000, 95_000)
-            };
+            initEnemySpawns();
+        }
+    }
 
-            for (int i = 0; i < scoresForBombers.length; i++) {
-                runOnce(() -> {
-                    int bomberHeight = (int)(166 * 0.15);
+    private void initEnemySpawns() {
+        getWorldProperties().<Integer>addListener("multiplier", (prev, now) -> {
+            if (now % 100 == 0) {
+                if (pressureService.isSpawningEnemies()) {
+                    int bomberHeight = (int) (166 * 0.15);
 
                     for (int y = 0; y < getAppHeight(); y += bomberHeight) {
                         spawn("Bomber", 0, y);
                     }
-                }, Duration.seconds(50 + 50 * i));
+                }
             }
+        });
 
-//            for (int bomberScore : scoresForBombers) {
-//                eventBuilder()
-//                        .when(() -> geti("score") >= bomberScore)
-//                        .thenRun(() -> {
-//                            int bomberHeight = (int)(166 * 0.15);
-//
-//                            for (int y = 0; y < getAppHeight(); y += bomberHeight) {
-//                                spawn("Bomber", 0, y);
-//                            }
-//                        })
-//                        .buildAndStart();
-//            }
+        run(() -> {
+            if (pressureService.isSpawningEnemies() && geti("multiplier") >= 75) {
+                spawn("Bouncer");
+            }
+        }, BOUNCER_SPAWN_INTERVAL);
 
-            eventBuilder()
-                    .when(() -> geti("score") >= 10_000)
-                    .thenRun(() -> run(() -> spawn("Bouncer"), Duration.seconds(5)))
-                    .buildAndStart();
+        run(() -> {
+            if (pressureService.isSpawningEnemies() && geti("multiplier") >= 50) {
+                spawn("Runner");
+            }
+        }, RUNNER_SPAWN_INTERVAL);
 
-            eventBuilder()
-                    .when(() -> geti("score") >= 50_000)
-                    .thenRun(() -> run(() -> spawn("Seeker"), Duration.seconds(2)))
-                    .buildAndStart();
+        run(() -> {
+            if (pressureService.isSpawningEnemies() && geti("multiplier") >= 25) {
+                spawn("Seeker");
+            }
+        }, SEEKER_SPAWN_INTERVAL);
 
-            eventBuilder()
-                    .when(() -> geti("score") >= 70_000)
-                    .thenRun(() -> run(() -> spawn("Runner"), Duration.seconds(3)))
-                    .buildAndStart();
-
-            eventBuilder()
-                    .when(() -> geti("score") >= 10_000_000)
-                    .thenRun(() -> gameOver())
-                    .buildAndStart();
-
-            run(() -> {
+        run(() -> {
+            if (pressureService.isSpawningEnemies()) {
                 for (int i = 0; i < 4; i++) {
                     var e = spawn("Wanderer");
                     GeoWarsFactory.respawnWanderer(e);
                 }
-            }, Duration.seconds(1.5));
+            }
+        }, WANDERER_SPAWN_INTERVAL);
 
-            run(() -> {
-                spawnFadeIn(
-                        "Mine",
-                        new SpawnData(FXGLMath.randomPoint(new Rectangle2D(0, 0, getAppWidth() - 80, getAppHeight() - 80))),
-                        Duration.seconds(1)
-                );
-            }, Duration.seconds(10));
-        }
+        run(() -> {
+            spawnFadeIn(
+                    "Mine",
+                    new SpawnData(FXGLMath.randomPoint(new Rectangle2D(0, 0, getAppWidth() - 80, getAppHeight() - 80))),
+                    Duration.seconds(1)
+            );
+        }, MINE_SPAWN_INTERVAL);
     }
 
     private boolean isOnMobile() {
@@ -433,6 +405,13 @@ public class GeoWarsApp extends GameApplication {
         ricochetText.setTranslateX(60);
         ricochetText.setTranslateY(130);
         ricochetText.visibleProperty().bind(getbp("isRicochet"));
+
+        var pressureText = getUIFactoryService().newText("", Color.WHITE, 24.0);
+        pressureText.textProperty().bind(getService(PlayerPressureService.class).pressurePropProperty().asString("Pressure: %.2f"));
+
+        if (!isReleaseMode()) {
+            addUINode(pressureText, 60, 150);
+        }
 
         getGameScene().addUINodes(multText, scoreText, livesText, ricochetText);
 
