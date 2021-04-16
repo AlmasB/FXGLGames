@@ -20,7 +20,7 @@
         <jfx.maven.plugin.version>0.0.5</jfx.maven.plugin.version>
         <client.plugin.version>0.1.35</client.plugin.version>
         <attach.version>4.0.9</attach.version>
-        <mainClassName>com.almasb.fxglgames.geowars.GeoWarsApp</mainClassName>
+        <mainClassName>geowars/com.almasb.fxglgames.geowars.GeoWarsApp</mainClassName>
     </properties>
 
     <dependencies>
