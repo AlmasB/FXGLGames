@@ -13,6 +13,7 @@ import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.particle.ParticleEmitters;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.texture.AnimatedTexture;
@@ -55,7 +56,7 @@ public class GeoWarsFactory implements EntityFactory {
     public Entity spawnBackground(SpawnData data) {
         return entityBuilder(data)
                 .type(GRID)
-                //.with(new BackgroundStarsComponent())
+                .with(new BackgroundStarsComponent())
                 .with(new GridComponent())
                 .build();
     }
@@ -83,7 +84,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .collidable()
                 .zIndex(1000)
                 .with(new PlayerComponent(PLAYER_SPEED))
-                //.with(new ExhaustParticleComponent(ParticleEmitters.newExplosionEmitter(1)))
+                .with(new ExhaustParticleComponent(ParticleEmitters.newExplosionEmitter(1)))
                 .build();
     }
 
