@@ -40,6 +40,7 @@ import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.virtual.VirtualButton;
 import com.almasb.fxgl.input.virtual.VirtualJoystick;
+import com.almasb.fxgl.physics.CollisionDetectionStrategy;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
 import com.almasb.fxglgames.geowars.collision.BulletMineHandler;
@@ -97,6 +98,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setFullScreenAllowed(isRelease);
         settings.setFullScreenFromStart(isRelease);
         settings.setProfilingEnabled(false);
+        settings.setCollisionDetectionStrategy(CollisionDetectionStrategy.GRID_INDEXING);
         settings.setApplicationMode(isRelease ? ApplicationMode.RELEASE : ApplicationMode.DEVELOPER);
         settings.setFontUI("game_font_7.ttf");
         settings.addEngineService(HighScoreService.class);

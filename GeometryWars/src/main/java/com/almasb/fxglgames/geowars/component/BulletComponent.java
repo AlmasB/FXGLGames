@@ -28,6 +28,7 @@ package com.almasb.fxglgames.geowars.component;
 
 import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
 import com.almasb.fxgl.dsl.components.ProjectileComponent;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.BoundingBoxComponent;
 import com.almasb.fxglgames.geowars.GeoWarsType;
@@ -40,6 +41,9 @@ import static com.almasb.fxgl.dsl.FXGL.*;
  */
 public class BulletComponent extends Component {
 
+    private Entity grid;
+    private GridComponent gridComponent;
+
     private BoundingBoxComponent bbox;
 
     private Point2D velocity;
@@ -51,10 +55,15 @@ public class BulletComponent extends Component {
 
     @Override
     public void onUpdate(double tpf) {
-        byType(GeoWarsType.GRID).forEach(g -> {
-            var grid = g.getComponent(GridComponent.class);
-            grid.applyImplosiveForce(velocity.magnitude() / 60 * 10, bbox.getCenterWorld(), 80 * 60 * tpf);
-        });
+        if (grid == null) {
+            grid = getGameWorld().getSingleton(GeoWarsType.GRID);
+            gridComponent = grid.getComponent(GridComponent.class);
+        }
+
+        // use bullet's rotation origin to avoid transforming the center
+        var p = entity.getPosition().add(entity.getTransformComponent().getRotationOrigin());
+
+        gridComponent.applyImplosiveForce(velocity.magnitude() / 60 * 10, p, 80 * 60 * tpf);
 
         if (bbox.getMinXWorld() < 0) {
             spawnParticles(0, bbox.getCenterWorld().getY(), 1, random(-1.0f, 1.0f));

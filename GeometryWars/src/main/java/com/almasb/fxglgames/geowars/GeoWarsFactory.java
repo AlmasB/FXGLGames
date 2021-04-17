@@ -71,14 +71,14 @@ public class GeoWarsFactory implements EntityFactory {
 
     @Spawns("Player")
     public Entity spawnPlayer(SpawnData data) {
-        var texture = texture("Player.png");
+        var texture = texture("PlayerNew.png");
         if (!FXGL.isMobile()) {
             texture.setEffect(new Bloom(0.7));
         }
 
         return entityBuilder()
                 .type(PLAYER)
-                .at(getAppWidth() / 2, getAppHeight() / 2)
+                .at(getAppWidth() / 2 - texture.getWidth() / 2, getAppHeight() / 2 - texture.getHeight() / 2)
                 .viewWithBBox(texture)
                 .collidable()
                 .zIndex(1000)
@@ -89,16 +89,20 @@ public class GeoWarsFactory implements EntityFactory {
 
     @Spawns("Bullet")
     public Entity spawnBullet(SpawnData data) {
+        // bullet texture is 54x13, hence 6.5
+
         var expireClean = new ExpireCleanComponent(Duration.seconds(0.5)).animateOpacity();
         expireClean.pause();
 
         var e = entityBuilder(data)
+                .at(data.getX(), data.getY() - 6.5)
                 .type(BULLET)
                 .viewWithBBox("Bullet.png")
                 .with(new CollidableComponent(true))
                 .with(new ProjectileComponent(data.get("direction"), BULLET_MOVE_SPEED))
                 .with(new BulletComponent())
                 .with(expireClean)
+                .rotationOrigin(0, 6.5)
                 .build();
 
         // creating entities can be expensive on mobile, so pool bullets
@@ -111,6 +115,7 @@ public class GeoWarsFactory implements EntityFactory {
     public static void respawnBullet(Entity entity, SpawnData data) {
         play("shoot" + (int) (Math.random() * 8 + 1) + ".wav");
 
+        entity.setPosition(data.getX(), data.getY() - 6.5);
         entity.setOpacity(1);
 
         entity.removeComponent(RicochetComponent.class);

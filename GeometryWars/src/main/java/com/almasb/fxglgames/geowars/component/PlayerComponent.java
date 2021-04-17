@@ -78,7 +78,7 @@ public class PlayerComponent extends Component {
 
     public void shoot(Point2D shootPoint) {
         if (weaponTimer.elapsed(WEAPON_DELAY)) {
-            Point2D position = entity.getCenter().subtract(14, 4.5);
+            Point2D position = entity.getCenter();
             Point2D vectorToMouse = shootPoint.subtract(position);
 
             WeaponType type = geto("weaponType");
@@ -119,7 +119,7 @@ public class PlayerComponent extends Component {
     // TODO: remove duplicate
     public void shootDirection(Point2D direction) {
         if (weaponTimer.elapsed(WEAPON_DELAY)) {
-            Point2D position = entity.getCenter().subtract(14, 4.5);
+            Point2D position = entity.getCenter();
             Point2D vectorToMouse = direction;
 
             WeaponType type = geto("weaponType");
@@ -157,6 +157,11 @@ public class PlayerComponent extends Component {
         }
     }
 
+    /**
+     * @param position typically player center
+     * @param direction bullet direction
+     * @return bullet
+     */
     private Entity spawnBullet(Point2D position, Point2D direction) {
         var data = new SpawnData(position.getX(), position.getY())
                 .put("direction", direction);
