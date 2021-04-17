@@ -150,7 +150,7 @@ public class SpaceRunnerApp extends GameApplication {
 
         SquadAI.INSTANCE.update(getGameWorld().getEntitiesByType(SpaceRunnerType.AI_POINT));
 
-        getGameState().<Integer>addListener("heat", (prev, now) -> {
+        getWorldProperties().<Integer>addListener("heat", (prev, now) -> {
             if (now >= 100) {
                 set("overheating", true);
             }
@@ -182,7 +182,7 @@ public class SpaceRunnerApp extends GameApplication {
             spawnPowerup(FXGLMath.random(PowerupType.values()).get());
         }, Duration.seconds(3));
 
-        uiTextLevel = getUIFactory().newText("", Color.WHITE, 22);
+        uiTextLevel = getUIFactoryService().newText("", Color.WHITE, 22);
 
         nextLevel();
     }
@@ -203,7 +203,7 @@ public class SpaceRunnerApp extends GameApplication {
     protected void initUI() {
         weaponTexture = texture("sprite_bullet.png", 22, 11);
 
-        bullets = getUIFactory().newText("", Color.rgb(20, 20, 20), 16);
+        bullets = getUIFactoryService().newText("", Color.rgb(20, 20, 20), 16);
         bullets.textProperty().bind(getip("bullets").asString("x %d"));
 
         HBox ui = new HBox(15,
@@ -211,7 +211,7 @@ public class SpaceRunnerApp extends GameApplication {
                 bullets
                 );
 
-        Text laser = getUIFactory().newText("", Color.rgb(20, 20, 20), 16);
+        Text laser = getUIFactoryService().newText("", Color.rgb(20, 20, 20), 16);
         laser.textProperty().bind(getip("laser").asString("x %d"));
 
         HBox ui2 = new HBox(15,
@@ -219,7 +219,7 @@ public class SpaceRunnerApp extends GameApplication {
                 laser
         );
 
-        Text rockets = getUIFactory().newText("", Color.rgb(20, 20, 20), 16);
+        Text rockets = getUIFactoryService().newText("", Color.rgb(20, 20, 20), 16);
         rockets.textProperty().bind(getip("rockets").asString("x %d"));
 
         HBox ui3 = new HBox(15,
@@ -267,11 +267,11 @@ public class SpaceRunnerApp extends GameApplication {
         barShield.setTraceFill(Color.LIGHTBLUE);
         barShield.currentValueProperty().bind(getip("shield"));
 
-        Text textShield = getUIFactory().newText("Shield");
+        Text textShield = getUIFactoryService().newText("Shield");
         textShield.setFill(Color.BLUE);
         textShield.visibleProperty().bind(getbp("hasShield"));
 
-        Text textDanger = getUIFactory().newText("Danger!");
+        Text textDanger = getUIFactoryService().newText("Danger!");
         textDanger.fillProperty().bind(
                 Bindings.when(getbp("overheating")).then(Color.RED).otherwise(Color.DARKGREY)
         );
@@ -288,7 +288,7 @@ public class SpaceRunnerApp extends GameApplication {
         bars.setTranslateY(520);
 
 
-        Text textScore = getUIFactory().newText("", Color.WHITE, 22);
+        Text textScore = getUIFactoryService().newText("", Color.WHITE, 22);
         textScore.setTranslateX(300);
         textScore.textProperty().bind(getip("score").asString("Score: %d"));
         textScore.setEffect(new DropShadow(7, Color.BLACK));
@@ -328,7 +328,7 @@ public class SpaceRunnerApp extends GameApplication {
         level = new Level();
         level.spawnNewWave();
 
-        Text textLevel = getUIFactory().newText("Level " + geti("level"), Color.WHITE, 22);
+        Text textLevel = getUIFactoryService().newText("Level " + geti("level"), Color.WHITE, 22);
         textLevel.setEffect(new DropShadow(7, Color.BLACK));
         textLevel.setOpacity(0);
 
