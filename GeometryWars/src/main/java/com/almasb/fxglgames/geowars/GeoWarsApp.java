@@ -50,6 +50,7 @@ import com.almasb.fxglgames.geowars.component.PlayerComponent;
 import com.almasb.fxglgames.geowars.menu.GeoWarsMainMenu;
 import com.almasb.fxglgames.geowars.service.HighScoreService;
 import com.almasb.fxglgames.geowars.service.PlayerPressureService;
+import com.almasb.fxglgames.geowars.wave.WaveService;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.CacheHint;
@@ -103,6 +104,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setFontUI("game_font_7.ttf");
         settings.addEngineService(HighScoreService.class);
         settings.addEngineService(PlayerPressureService.class);
+        settings.addEngineService(WaveService.class);
         settings.setSceneFactory(new SceneFactory() {
             @Override
             public FXGLMenu newMainMenu() {
@@ -184,6 +186,10 @@ public class GeoWarsApp extends GameApplication {
                     e.getComponent(GridComponent.class).applyDirectedForce(new Point2D(10000, 0), player.getCenter(), 1000);
                 });
             });
+
+            onKeyDown(KeyCode.T, () -> {
+                getService(WaveService.class).spawnWave();
+            });
         }
     }
 
@@ -245,17 +251,10 @@ public class GeoWarsApp extends GameApplication {
     }
 
     private void initEnemySpawns() {
-        getWorldProperties().<Integer>addListener("multiplier", (prev, now) -> {
-            if (now % 100 == 0) {
-                if (pressureService.isSpawningEnemies()) {
-                    int bomberHeight = (int) (166 * 0.15);
-
-                    for (int y = 0; y < getAppHeight(); y += bomberHeight) {
-                        spawn("Bomber", 0, y);
-                    }
-                }
-            }
-        });
+        run(() -> {
+            // spawn waves regardless of pressure level
+            getService(WaveService.class).spawnWave();
+        }, WAVE_SPAWN_INTERVAL);
 
         run(() -> {
             if (pressureService.isSpawningEnemies() && geti("multiplier") >= 75) {

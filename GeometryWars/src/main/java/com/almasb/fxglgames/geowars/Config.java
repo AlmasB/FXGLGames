@@ -23,6 +23,7 @@ public final class Config {
     public static final Duration SEEKER_SPAWN_INTERVAL = seconds(2.5);
     public static final Duration RUNNER_SPAWN_INTERVAL = seconds(3.5);
     public static final Duration BOUNCER_SPAWN_INTERVAL = seconds(4.5);
+    public static final Duration WAVE_SPAWN_INTERVAL = seconds(50);
 
     public static final Duration MINE_SPAWN_INTERVAL = seconds(10);
 

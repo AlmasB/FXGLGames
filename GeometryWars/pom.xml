@@ -201,6 +201,7 @@
 
                         <list>com.almasb.fxglgames.geowars.service.HighScoreService</list>
                         <list>com.almasb.fxglgames.geowars.service.PlayerPressureService</list>
+                        <list>com.almasb.fxglgames.geowars.wave.WaveService</list>
                         <list>com.almasb.fxglgames.geowars.component.BackgroundStarsComponent</list>
                         <list>com.almasb.fxglgames.geowars.component.BulletComponent</list>
                         <list>com.almasb.fxglgames.geowars.component.CrystalComponent</list>

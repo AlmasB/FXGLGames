@@ -56,7 +56,7 @@ public class GeoWarsFactory implements EntityFactory {
     public Entity spawnBackground(SpawnData data) {
         return entityBuilder(data)
                 .type(GRID)
-                .with(new BackgroundStarsComponent())
+                //.with(new BackgroundStarsComponent())
                 .with(new GridComponent())
                 .build();
     }
@@ -193,8 +193,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .viewWithBBox(texture("Bomber.png", 202 * 0.15, 166 * 0.15))
                 .with(new HealthIntComponent(ENEMY_HP))
                 .with(new CollidableComponent(true))
-                .with(new ProjectileComponent(new Point2D(1, 0), BOMBER_MOVE_SPEED))
-                .with(new BomberComponent())
+                .neverUpdated()
                 .build();
     }
 
