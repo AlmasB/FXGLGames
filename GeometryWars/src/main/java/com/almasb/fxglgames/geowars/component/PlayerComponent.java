@@ -222,7 +222,7 @@ public class PlayerComponent extends Component {
         emitter.setEmissionRate(0.5);
 
         entityBuilder()
-                .at(entity.getPosition())
+                .at(entity.getCenter().subtract(8, 8))
                 .with(new ParticleComponent(emitter))
                 .with(new ExpireCleanComponent(Duration.seconds(3)))
                 .buildAndAttach();

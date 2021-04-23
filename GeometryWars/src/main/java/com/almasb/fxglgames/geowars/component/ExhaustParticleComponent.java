@@ -49,6 +49,9 @@ public class ExhaustParticleComponent extends ParticleComponent {
 
     @Override
     public void onAdded() {
+        var playerWidth = entity.getWidth() / 2.0;
+        var playerHeight = entity.getHeight() / 2.0;
+
         var emitter = getEmitter();
         emitter.setMaxEmissions(Integer.MAX_VALUE);
         emitter.setNumParticles(2);
@@ -63,7 +66,7 @@ public class ExhaustParticleComponent extends ParticleComponent {
         emitter.setAccelerationFunction(() -> Point2D.ZERO);
 
         emitter.setSpawnPointFunction(i -> {
-            return new Point2D(32 -8, 32 -8);
+            return new Point2D(playerWidth - 8, playerHeight - 8);
         });
     }
 

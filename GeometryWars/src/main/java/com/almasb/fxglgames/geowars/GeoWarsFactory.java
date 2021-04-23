@@ -21,6 +21,7 @@ import com.almasb.fxglgames.geowars.component.*;
 import com.almasb.fxglgames.geowars.component.enemy.*;
 import javafx.geometry.Point2D;
 import javafx.scene.CacheHint;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.Bloom;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.paint.Color;
@@ -72,7 +73,7 @@ public class GeoWarsFactory implements EntityFactory {
 
     @Spawns("Player")
     public Entity spawnPlayer(SpawnData data) {
-        var texture = texture("PlayerNew.png");
+        var texture = texture("PlayerNew.png").outline(Color.web("blue", 0.5), 5);
         if (!FXGL.isMobile()) {
             texture.setEffect(new Bloom(0.7));
         }

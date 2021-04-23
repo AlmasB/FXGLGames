@@ -25,6 +25,8 @@ import static com.almasb.fxglgames.geowars.GeoWarsType.BULLET;
 public class GridComponent extends Component {
 
     private static final double POINT_MASS_DAMPING = 0.8;
+
+    // how fast springs return to original state
     private static final double SPRING_STIFFNESS = 0.28;
     private static final double SPRING_DAMPING = 0.86;
 
@@ -282,11 +284,17 @@ public class GridComponent extends Component {
             position2.x = end21.getPosition().x + (end22.getPosition().x - end21.getPosition().x) / 2;
             position2.y = end21.getPosition().y + (end22.getPosition().y - end21.getPosition().y) / 2;
 
+            var midPoint = position1.midpoint(position2);
+
             if (
                     bullets.stream()
                             .anyMatch(e -> {
-                                var distance = e.getPosition().distance(position1.toPoint2D());
-                                return distance > 15 && distance < 70;
+                                // offset by rotation origin
+                                var bulletPointX = e.getX();
+                                var bulletPointY = e.getY() + 6.5;
+
+                                var distance = midPoint.distance(bulletPointX, bulletPointY);
+                                return distance < 70;
                             })
             ) {
                 g.setStroke(BULLET_COLOR);
