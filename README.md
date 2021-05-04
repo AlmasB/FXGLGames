@@ -4,20 +4,11 @@ Each game focuses on one or two aspects of FXGL, e.g. Drop focuses on bare minim
 Checkout [this commit](https://github.com/AlmasB/FXGLGames/commit/a0821c76ba4a7a64dba4f9ec6f182827d909561c) for Java 8 code for all projects (FXGL 0.5.4).
 All projects will eventually be upgraded to Java 11 code (FXGL 11.0+).
 
-## Build
-```bash
-cd PROJECT_NAME
-mvn package
-```
-This will produce a standalone executable with that project in <code>target/</code>.
-Most games are pre-built and can be downloaded from [binaries](binaries).
-
 ## Run
 ```bash
-cd target/
-java -jar PROJECT_NAME-VERSION.jar
+cd PROJECT_NAME
+mvn javafx:run
 ```
-OR simply double-click the jar file if the extensions are correctly set on your machine.
 
 ## Build for Mobile
 
