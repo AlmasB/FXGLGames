@@ -122,7 +122,7 @@
                     <launcher>Start-game</launcher>
                     <jlinkImageName>game</jlinkImageName>
                     <jlinkZipName>spacewars-game-${project.version}</jlinkZipName>
-                    <mainClass>${mainClassName}</mainClass>
+                    <mainClass>geowars/${mainClassName}</mainClass>
                 </configuration>
             </plugin>
 
