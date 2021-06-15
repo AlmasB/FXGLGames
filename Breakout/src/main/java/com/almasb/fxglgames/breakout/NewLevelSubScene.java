@@ -30,7 +30,7 @@ public class NewLevelSubScene extends SubScene {
         emitter.setNumParticles(20);
         emitter.setVelocityFunction(i -> new Point2D(random(-100, 100), 0));
         emitter.setExpireFunction(i -> Duration.seconds(random(1, 3)));
-        emitter.setBlendMode(getSettings().isExperimentalNative() ? BlendMode.SRC_OVER : BlendMode.ADD);
+        emitter.setBlendMode(getSettings().isNative() ? BlendMode.SRC_OVER : BlendMode.ADD);
 
         particleSystem = new ParticleSystem();
         particleSystem.addParticleEmitter(emitter, getAppWidth() / 2.0 - 120, getAppHeight() / 2.0 - 110);
@@ -39,7 +39,7 @@ public class NewLevelSubScene extends SubScene {
         text.setTranslateX(getAppWidth() / 2.0 + 20 - 100);
         text.setTranslateY(getAppHeight() / 2.0 + 130 - 100);
 
-        if (!getSettings().isExperimentalNative()) {
+        if (!getSettings().isNative()) {
             getContentRoot().getChildren().addAll(particleSystem.getPane());
         }
         getContentRoot().getChildren().addAll(text);

@@ -166,7 +166,7 @@ public class BreakoutFactory implements EntityFactory {
                 .build();
 
         // disable particle effects in native mode
-        if (!getSettings().isExperimentalNative()) {
+        if (!getSettings().isNative()) {
             var emitter = ParticleEmitters.newFireEmitter();
             emitter.setSourceImage(texture("ball.png"));
             emitter.setBlendMode(BlendMode.SRC_OVER);
@@ -210,7 +210,7 @@ public class BreakoutFactory implements EntityFactory {
                 .with(new ExpireCleanComponent(Duration.seconds(1.5)))
                 .build();
 
-        if (!getSettings().isExperimentalNative()) {
+        if (!getSettings().isNative()) {
             var emitter = ParticleEmitters.newExplosionEmitter(24);
             emitter.setSourceImage(texture("particles/smoke_06.png", 16, 16).multiplyColor(color));
             emitter.setSize(4, 16);

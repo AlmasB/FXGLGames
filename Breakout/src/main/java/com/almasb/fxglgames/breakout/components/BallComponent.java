@@ -137,7 +137,7 @@ public class BallComponent extends Component {
 
         setColor(COLORS[colorIndex]);
 
-        if (!FXGL.getSettings().isExperimentalNative()) {
+        if (!FXGL.getSettings().isNative()) {
             // update emitter
             var emitter = entity.getComponent(ParticleComponent.class).getEmitter();
             emitter.setSourceImage(textures[colorIndex]);
