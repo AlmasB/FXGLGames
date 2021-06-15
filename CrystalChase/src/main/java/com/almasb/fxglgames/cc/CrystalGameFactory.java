@@ -1,14 +1,15 @@
 package com.almasb.fxglgames.cc;
 
 import com.almasb.fxgl.animation.Interpolators;
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.ProjectileComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
+import com.almasb.fxgl.multiplayer.NetworkComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.scene3d.Cone;
+import com.almasb.fxgl.scene3d.Prism;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
 import javafx.scene.paint.Color;
@@ -35,6 +36,7 @@ public class CrystalGameFactory implements EntityFactory {
                 .view(view)
                 .collidable()
                 .with(new ProjectileComponent(new Point2D(0, 1), 1.5).allowRotation(false))
+                .with(new NetworkComponent())
                 .build();
 
         e.setScaleUniform(0);
@@ -61,6 +63,7 @@ public class CrystalGameFactory implements EntityFactory {
                 .bbox(BoundingShape.box3D(20, 0.4, 20))
                 .view(view)
                 .collidable()
+                .with(new NetworkComponent())
                 .build();
     }
 
@@ -76,6 +79,7 @@ public class CrystalGameFactory implements EntityFactory {
                 .bbox(BoundingShape.box3D(2, 0.2, 2))
                 .view(view)
                 .collidable()
+                .with(new NetworkComponent())
                 .build();
     }
 }
