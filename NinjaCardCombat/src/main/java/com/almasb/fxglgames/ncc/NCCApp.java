@@ -135,7 +135,7 @@ public class NCCApp extends GameApplication {
                     selectCardAI();
                 });
 
-                getDisplay().showBox("Card Select", deckView, btn);
+                getDialogService().showBox("Card Select", deckView, btn);
             });
         }
     }
@@ -175,7 +175,7 @@ public class NCCApp extends GameApplication {
 
     @Override
     protected void initUI() {
-        var btnNext = getUIFactory().newButton("Next Turn");
+        var btnNext = getUIFactoryService().newButton("Next Turn");
         btnNext.setOnAction(e -> nextTurn());
 
         addUINode(btnNext, getAppWidth() - 250, getAppHeight() - 40);
@@ -271,7 +271,7 @@ public class NCCApp extends GameApplication {
     }
 
     private void gameOver(String message) {
-        getDisplay().showMessageBox(message, getGameController()::startNewGame);
+        getDialogService().showMessageBox(message, getGameController()::startNewGame);
     }
 
     private Card getRandomCard() {

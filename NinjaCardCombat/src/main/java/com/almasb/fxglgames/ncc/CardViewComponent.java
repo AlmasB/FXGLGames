@@ -54,8 +54,6 @@ public class CardViewComponent extends ChildViewComponent {
     public void onAdded() {
         super.onAdded();
 
-        // TODO: see if we can pre-render Text objects to improve animations
-
         Rectangle border = new Rectangle(CARD_WIDTH, CARD_HEIGHT);
         border.setStrokeWidth(2);
         border.setArcWidth(10);
@@ -175,6 +173,7 @@ public class CardViewComponent extends ChildViewComponent {
                 Bindings.when(card.aliveProperty()).then(1.0).otherwise(0.25)
         );
 
+        // to improve animation performance when animating anything related to Text
         getViewRoot().setCache(true);
         getViewRoot().setCacheHint(CacheHint.SPEED);
     }
@@ -196,12 +195,12 @@ public class CardViewComponent extends ChildViewComponent {
             circle.setStrokeWidth(2.0);
             circle.setStroke(outlineColor);
 
-            var stack = new StackPane(circle, getUIFactory().newText("" + level, Color.BLACK, 30.0));
+            var stack = new StackPane(circle, getUIFactoryService().newText("" + level, Color.BLACK, 30.0));
 
             Rectangle rect = new Rectangle(180, 30, Color.color(1, 1, 1, 0.8));
             rect.setStroke(Color.BLACK);
 
-            getChildren().addAll(stack, new StackPane(rect, getUIFactory().newText(name, Color.BLACK, 16.0)));
+            getChildren().addAll(stack, new StackPane(rect, getUIFactoryService().newText(name, Color.BLACK, 16.0)));
 
             stack.toFront();
         }
