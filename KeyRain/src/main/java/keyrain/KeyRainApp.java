@@ -33,8 +33,6 @@ public class KeyRainApp extends GameApplication {
 
     @Override
     protected void initInput() {
-        // TODO: KeyTrigger / MouseTrigger, more specific ...
-
         getInput().addTriggerListener(new TriggerListener() {
             @Override
             protected void onActionBegin(Trigger trigger) {

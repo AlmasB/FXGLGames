@@ -16,7 +16,7 @@
         <maven.compiler.version>3.8.0</maven.compiler.version>
         <maven.shade.version>3.0.0</maven.shade.version>
 
-        <fxgl.version>11.14</fxgl.version>
+        <fxgl.version>11.16</fxgl.version>
         <mainClassName>com.almasb.fxglgames.keyrain.KeyRainApp</mainClassName>
     </properties>
 
