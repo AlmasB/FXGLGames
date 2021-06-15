@@ -39,6 +39,7 @@ import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -98,7 +99,7 @@ public class SpaceInvadersController implements UIController {
 
         FXGLTextFlow flow = getUIFactoryService().newTextFlow();
         // TODO: bind dynamically to trigger
-        //flow.append("Press ", Color.WHITE).append(MouseButton.SECONDARY, Color.BLUE);
+        flow.append("Press ", Color.WHITE).append(MouseButton.SECONDARY, Color.BLUE);
 
         paneLaserReady.getChildren().add(flow);
 
