@@ -27,6 +27,7 @@
 package com.almasb.fxglgames.pacman;
 
 import com.almasb.fxgl.core.util.LazyValue;
+import com.almasb.fxgl.dsl.components.RandomAStarMoveComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
@@ -42,7 +43,6 @@ import com.almasb.fxglgames.pacman.components.PaletteChangingComponent;
 import com.almasb.fxglgames.pacman.components.PlayerComponent;
 import com.almasb.fxglgames.pacman.components.ai.DelayedChasePlayerComponent;
 import com.almasb.fxglgames.pacman.components.ai.GuardCoinComponent;
-import com.almasb.fxglgames.pacman.components.ai.RandomAStarMoveComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
