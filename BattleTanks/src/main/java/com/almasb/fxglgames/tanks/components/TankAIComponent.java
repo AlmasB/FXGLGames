@@ -143,15 +143,8 @@ public final class TankAIComponent extends Component {
                     .get();
 
             if (closestEnemyToOwnFlag.distanceBBox(ownFlag) < 200) {
-                if (state.isIn(GUARD_OWN_FLAG))
-                    return;
-
                 state.changeState(GUARD_OWN_FLAG);
             } else {
-                if (state.isIn(ATTACK_ENEMY_FLAG))
-                    return;
-
-                // TODO: add changeStateNoReentry()
                 state.changeState(ATTACK_ENEMY_FLAG);
             }
 
@@ -161,15 +154,8 @@ public final class TankAIComponent extends Component {
                     .get();
 
             if (closestEnemyToOwnFlag.distanceBBox(ownFlag) < 200) {
-                if (state.isIn(GUARD_OWN_FLAG))
-                    return;
-
                 state.changeState(GUARD_OWN_FLAG);
             } else {
-                if (state.isIn(ATTACK_ENEMY_FLAG))
-                    return;
-
-                // TODO: add changeStateNoReentry()
                 state.changeState(ATTACK_ENEMY_FLAG);
             }
         }
