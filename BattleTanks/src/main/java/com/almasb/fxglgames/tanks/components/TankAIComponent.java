@@ -179,7 +179,6 @@ public final class TankAIComponent extends Component {
         astar.get().moveToCell(cell);
     }
 
-    // TODO: grid.getCell(Entity,cellWidth,cellHeight);
     private AStarCell getCell(Entity entity) {
 
         int x = (int) ((entity.getX() + 30 / 2) / 30);
