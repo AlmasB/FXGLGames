@@ -15,8 +15,9 @@
         <!-- plugins -->
         <maven.compiler.version>3.8.1</maven.compiler.version>
         <maven.shade.version>3.0.0</maven.shade.version>
-
+        <jfx.maven.plugin.version>0.0.6</jfx.maven.plugin.version>
         <fxgl.version>11.16</fxgl.version>
+        <mainClassName>com.almasb.fxglgames.spaceranger.SpaceRangerApp</mainClassName>
     </properties>
 
     <dependencies>
@@ -34,6 +35,22 @@
                 <version>${maven.compiler.version}</version>
                 <configuration>
                     <release>${source.version}</release>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>${jfx.maven.plugin.version}</version>
+                <configuration>
+                    <stripDebug>true</stripDebug>
+                    <compress>2</compress>
+                    <noHeaderFiles>true</noHeaderFiles>
+                    <noManPages>true</noManPages>
+                    <launcher>Start-game</launcher>
+                    <jlinkImageName>game</jlinkImageName>
+                    <jlinkZipName>spaceranger-game</jlinkZipName>
+                    <mainClass>${mainClassName}</mainClass>
                 </configuration>
             </plugin>
         </plugins>
