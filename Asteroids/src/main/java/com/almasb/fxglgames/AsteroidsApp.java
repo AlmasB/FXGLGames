@@ -44,7 +44,7 @@ public class AsteroidsApp extends GameApplication {
         onKey(KeyCode.D, () -> player.getComponent(PlayerComponent.class).rotateRight());
         onKey(KeyCode.W, () -> player.getComponent(PlayerComponent.class).move());
 
-        onKeyDown(KeyCode.F, "Shoot", () -> player.getComponent(PlayerComponent.class).shoot());
+        onKeyDown(KeyCode.F, () -> player.getComponent(PlayerComponent.class).shoot());
     }
 
     @Override
