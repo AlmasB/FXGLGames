@@ -145,13 +145,13 @@ public class TowerDefenseApp extends GameApplication {
     }
 
     private void spawnEnemy() {
-        getGameState().increment("numEnemies", -1);
+        inc("numEnemies", -1);
 
-        getGameWorld().spawn("Enemy", enemySpawnPoint.getX(), enemySpawnPoint.getY());
+        spawn("Enemy", enemySpawnPoint.getX(), enemySpawnPoint.getY());
     }
 
     private void placeTower() {
-        getGameWorld().spawn("Tower",
+        spawn("Tower",
                 new SpawnData(getInput().getMouseXWorld(), getInput().getMouseYWorld())
                         .put("color", selectedColor)
                         .put("index", selectedIndex)
@@ -168,7 +168,7 @@ public class TowerDefenseApp extends GameApplication {
         Entity enemy = event.getEnemy();
         Point2D position = enemy.getPosition();
 
-        Text xMark = getUIFactory().newText("X", Color.RED, 24);
+        Text xMark = getUIFactoryService().newText("X", Color.RED, 24);
         xMark.setTranslateX(position.getX());
         xMark.setTranslateY(position.getY() + 20);
 
@@ -176,7 +176,7 @@ public class TowerDefenseApp extends GameApplication {
     }
 
     private void gameOver() {
-        getDisplay().showMessageBox("Demo Over. Thanks for playing!", getGameController()::exit);
+        showMessage("Demo Over. Thanks for playing!", getGameController()::exit);
     }
 
     public static void main(String[] args) {
