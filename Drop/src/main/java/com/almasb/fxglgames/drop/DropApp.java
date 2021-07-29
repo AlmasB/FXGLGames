@@ -10,6 +10,7 @@ import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
 import com.almasb.fxgl.entity.Entity;
 import javafx.util.Duration;
 
@@ -108,6 +109,7 @@ public class DropApp extends GameApplication {
                 .at(FXGLMath.random(0, getAppWidth() - 64), 0)
                 .viewWithBBox("droplet.png")
                 .collidable()
+                .with(new OffscreenCleanComponent())
                 .buildAndAttach();
     }
 
