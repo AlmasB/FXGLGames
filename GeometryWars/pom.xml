@@ -18,7 +18,7 @@
 
         <fxgl.version>dev-SNAPSHOT</fxgl.version>
         <jfx.maven.plugin.version>0.0.6</jfx.maven.plugin.version>
-        <client.plugin.version>0.1.35</client.plugin.version>
+        <gluonfx.plugin.version>1.0.7</gluonfx.plugin.version>
         <attach.version>4.0.9</attach.version>
         <mainClassName>com.almasb.fxglgames.geowars.GeoWarsApp</mainClassName>
     </properties>
@@ -128,8 +128,8 @@
 
             <plugin>
                 <groupId>com.gluonhq</groupId>
-                <artifactId>client-maven-plugin</artifactId>
-                <version>${client.plugin.version}</version>
+                <artifactId>gluonfx-maven-plugin</artifactId>
+                <version>${gluonfx.plugin.version}</version>
                 <configuration>
                     <nativeImageArgs>--allow-incomplete-classpath</nativeImageArgs>
                     <attachList>
