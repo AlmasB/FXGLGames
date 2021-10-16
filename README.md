@@ -78,3 +78,4 @@ You are very welcome to contribute to any of these games, or link to your own ga
 List of community developed games / demos: (Please add links below)
 
 * [FXGL based Idle Game](https://github.com/softknk/softknk.io) by Daniel Künkel.
+* [Greedy Snake Game](https://github.com/wuzirui/SnakeDungeon) by wuzirui
