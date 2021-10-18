@@ -50,8 +50,10 @@ public class PlayerComponent extends Component {
     public void onUpdate(double tpf) {
         speed = tpf * playerSpeed;
 
+        var dir = entity.getPosition().subtract(oldPosition);
+
         if (!entity.getPosition().equals(oldPosition))
-            entity.rotateToVector(entity.getPosition().subtract(oldPosition));
+            entity.rotateToVector(dir);
 
         oldPosition = entity.getPosition();
 
@@ -77,46 +79,12 @@ public class PlayerComponent extends Component {
     }
 
     public void shoot(Point2D shootPoint) {
-        if (weaponTimer.elapsed(WEAPON_DELAY)) {
-            Point2D position = entity.getCenter();
-            Point2D vectorToMouse = shootPoint.subtract(position);
+        Point2D position = entity.getCenter();
+        Point2D vectorToMouse = shootPoint.subtract(position);
 
-            WeaponType type = geto("weaponType");
-
-            List<Entity> bullets = new ArrayList<>();
-
-            switch (type) {
-                case TRIPLE:
-
-                    // spawn extra bullet
-                    bullets.add(spawnBullet(position.subtract(
-                            new Point2D(vectorToMouse.getY(), -vectorToMouse.getX()).normalize().multiply(15)
-                    ), vectorToMouse));
-
-                case DOUBLE:
-
-                    // spawn extra bullet
-                    bullets.add(spawnBullet(position.add(
-                            new Point2D(vectorToMouse.getY(), -vectorToMouse.getX()).normalize().multiply(15)
-                    ), vectorToMouse));
-
-                case SINGLE:
-                default:
-                    bullets.add(spawnBullet(position, vectorToMouse));
-                    break;
-            }
-
-            if (getb("isRicochet")) {
-                bullets.forEach(bullet -> {
-                    bullet.addComponent(new RicochetComponent());
-                });
-            }
-
-            weaponTimer.capture();
-        }
+        shootDirection(vectorToMouse);
     }
 
-    // TODO: remove duplicate
     public void shootDirection(Point2D direction) {
         if (weaponTimer.elapsed(WEAPON_DELAY)) {
             Point2D position = entity.getCenter();

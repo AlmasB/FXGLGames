@@ -21,7 +21,6 @@ import com.almasb.fxglgames.geowars.component.*;
 import com.almasb.fxglgames.geowars.component.enemy.*;
 import javafx.geometry.Point2D;
 import javafx.scene.CacheHint;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.Bloom;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.paint.Color;
@@ -57,7 +56,7 @@ public class GeoWarsFactory implements EntityFactory {
     public Entity spawnBackground(SpawnData data) {
         return entityBuilder(data)
                 .type(GRID)
-                .with(new BackgroundStarsComponent())
+                .with(IS_BACKGROUND ? new BackgroundStarsComponent() : new CollidableComponent(false))
                 .with(new GridComponent())
                 .build();
     }

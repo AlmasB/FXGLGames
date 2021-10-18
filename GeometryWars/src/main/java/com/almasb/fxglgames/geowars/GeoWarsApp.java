@@ -87,15 +87,15 @@ public class GeoWarsApp extends GameApplication {
 
     @Override
     protected void initSettings(GameSettings settings) {
-        var isRelease = false;
+        var isRelease = IS_RELEASE;
 
         settings.setWidth(1920);
         settings.setHeight(1080);
         settings.setTitle("FXGL Space Wars");
-        settings.setVersion("1.3-dev");
+        settings.setVersion("1.3.1");
         settings.setIntroEnabled(isRelease);
-        settings.setMainMenuEnabled(true);
-        settings.setGameMenuEnabled(true);
+        settings.setMainMenuEnabled(IS_MENU);
+        settings.setGameMenuEnabled(IS_MENU);
         settings.setFullScreenAllowed(isRelease);
         settings.setFullScreenFromStart(isRelease);
         settings.setProfilingEnabled(false);
@@ -123,8 +123,8 @@ public class GeoWarsApp extends GameApplication {
         // preload explosion sprite sheet
         getAssetLoader().loadTexture("explosion.png", 80 * 48, 80);
 
-        getSettings().setGlobalSoundVolume(0.2);
-        getSettings().setGlobalMusicVolume(0.5);
+        getSettings().setGlobalSoundVolume(IS_SOUND_ENABLED ? 0.2 : 0.0);
+        getSettings().setGlobalMusicVolume(IS_SOUND_ENABLED ? 0.5 : 0.0);
 
         loopBGM("bgm.mp3");
     }
@@ -361,7 +361,7 @@ public class GeoWarsApp extends GameApplication {
 
                 getGameScene().getViewport().shakeTranslational(8);
 
-                // TODO: rewrite to be all but player grid etc.
+                // remove all "removables"
                 byType(WANDERER, SEEKER, RUNNER, BOUNCER, BOMBER, BULLET, CRYSTAL, MINE, SHOCKWAVE_PICKUP)
                         .forEach(Entity::removeFromWorld);
 

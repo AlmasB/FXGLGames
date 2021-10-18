@@ -12,6 +12,9 @@ import static com.almasb.fxglgames.geowars.GeoWarsType.*;
 import static java.lang.Math.min;
 
 /**
+ * Provides dynamic difficulty gameplay by controlling how many enemies are being spawned,
+ * based on the "pressure" factor.
+ *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class PlayerPressureService extends EngineService {
@@ -42,7 +45,7 @@ public class PlayerPressureService extends EngineService {
     public void onGameUpdate(double tpf) {
         // not quite correct since this includes pick ups and other entities
         // but should be sufficient
-        var numEntities = (getGameWorld().getEntities().size() - byType(BOMBER, CRYSTAL).size() ) * 1.0;
+        var numEntities = (getGameWorld().getEntities().size() - byType(BOMBER, CRYSTAL).size()) * 1.0;
 
         var value = min(numEntities / MAX_ENEMIES_PRESSURE, 1.0);
 

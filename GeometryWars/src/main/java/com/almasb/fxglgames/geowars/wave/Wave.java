@@ -7,6 +7,9 @@ import com.almasb.fxgl.entity.Entity;
 import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
+ * Represents a single wave of enemies.
+ * Currently hardcoded to use Bomber type enemy, but easy to generalize if needed.
+ *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public abstract class Wave {

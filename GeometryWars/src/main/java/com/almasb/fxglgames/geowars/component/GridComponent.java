@@ -4,6 +4,7 @@ import com.almasb.fxgl.core.collection.Array;
 import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.logging.Logger;
 import javafx.application.Platform;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
@@ -57,7 +58,8 @@ public class GridComponent extends Component {
         PointMass[][] fixedPoints = new PointMass[numColumns][numRows];
 
         // create the point masses
-        float xCoord = 0, yCoord = 0;
+        float xCoord = 0;
+        float yCoord = 0;
         for (int row = 0; row < numRows; row++) {
             for (int column = 0; column < numColumns; column++) {
                 points[column][row] = new PointMass(new Vec2(xCoord, yCoord), POINT_MASS_DAMPING, 1);
@@ -135,8 +137,9 @@ public class GridComponent extends Component {
                     try {
                         Thread.sleep(1);
                     } catch (InterruptedException e) {
-                        // TODO:
-                        e.printStackTrace();
+
+                        Logger.get("GridRenderThread").warning("Render thread was interrupted");
+                        return;
                     }
 
                     continue;
@@ -231,6 +234,7 @@ public class GridComponent extends Component {
         }
     }
 
+    // currently unused
     public void applyDirectedForce(Point2D forceDir, Point2D position, double radius) {
         Vec2 tmpVec = new Vec2();
 
@@ -380,15 +384,12 @@ public class GridComponent extends Component {
         }
 
         public void update() {
-            Vec2 current = new Vec2()
-                    .set(end1.getPosition())
-                    .subLocal(end2.getPosition());
+            Vec2 current = new Vec2(end1.getPosition()).subLocal(end2.getPosition());
 
             float currentLength = current.length();
 
             if (currentLength > lengthAtRest) {
-                Vec2 dv = new Vec2()
-                        .set(end2.getVelocity())
+                Vec2 dv = new Vec2(end2.getVelocity())
                         .subLocal(end1.getVelocity())
                         .mulLocal(damping);
 
@@ -400,59 +401,6 @@ public class GridComponent extends Component {
                 end2.applyForce(force);
                 end1.applyForce(force.negateLocal());
             }
-        }
-    }
-
-    private static boolean circleIntersectsLine(double r, Point2D circleCenter, Point2D lineStart, Point2D lineEnd) {
-        var d = lineEnd.subtract(lineStart);
-        var f = lineStart.subtract(circleCenter);
-
-
-        var a = d.dotProduct(d);
-        var b = 2 * f.dotProduct(d);
-        var c = f.dotProduct(f) - r * r;
-
-        var discriminant = b * b - 4f * a * c;
-        if (discriminant < 0) {
-            // no intersection
-            return false;
-        } else {
-            // ray didn't totally miss sphere,
-            // so there is a solution to
-            // the equation.
-
-            discriminant = Math.sqrt(discriminant);
-
-            // either solution may be on or off the ray so need to test both
-            // t1 is always the smaller varue, because BOTH discriminant and
-            // a are nonnegative.
-            var t1 = (-b - discriminant) / (2 * a);
-            var t2 = (-b + discriminant) / (2 * a);
-
-            // 3x HIT cases:
-            //          -o->             --|-->  |            |  --|->
-            // Impale(t1 hit,t2 hit), Poke(t1 hit,t2>1), ExitWound(t1<0, t2 hit),
-
-            // 3x MISS cases:
-            //       ->  o                     o ->              | -> |
-            // FallShort (t1>1,t2>1), Past (t1<0,t2<0), CompletelyInside(t1<0, t2>1)
-
-            if (t1 >= 0 && t1 <= 1) {
-                // t1 is the intersection, and it's closer than t2
-                // (since t1 uses -b - discriminant)
-                // Impale, Poke
-                return true;
-            }
-
-            // here t1 didn't intersect so we are either started
-            // inside the sphere or completely past it
-            if( t2 >= 0 && t2 <= 1 )
-            {
-                // ExitWound
-                return true;
-            }
-
-            return false;
         }
     }
 }

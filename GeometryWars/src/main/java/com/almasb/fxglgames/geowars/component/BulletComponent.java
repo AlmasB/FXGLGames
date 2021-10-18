@@ -35,6 +35,7 @@ import com.almasb.fxglgames.geowars.GeoWarsType;
 import javafx.geometry.Point2D;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxglgames.geowars.GeoWarsType.GRID;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
