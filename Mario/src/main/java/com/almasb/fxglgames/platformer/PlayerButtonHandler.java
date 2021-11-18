@@ -1,8 +1,8 @@
-package com.almasb.fxglgames.mario.collisions;
+package com.almasb.fxglgames.platformer;
 
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.fxglgames.mario.MarioType;
+import com.almasb.fxglgames.platformer.EntityType;
 
 import static com.almasb.fxgl.dsl.FXGL.getGameWorld;
 
@@ -12,7 +12,7 @@ import static com.almasb.fxgl.dsl.FXGL.getGameWorld;
 public class PlayerButtonHandler extends CollisionHandler {
 
     public PlayerButtonHandler() {
-        super(MarioType.PLAYER, MarioType.BUTTON);
+        super(EntityType.PLAYER, EntityType.BUTTON);
     }
 
     @Override

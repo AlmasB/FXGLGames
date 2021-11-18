@@ -1,4 +1,4 @@
-package com.almasb.fxglgames.mario.components;
+package com.almasb.fxglgames.platformer;
 
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.physics.PhysicsComponent;
@@ -41,7 +41,6 @@ public class PlayerComponent extends Component {
 
         physics.onGroundProperty().addListener((obs, old, isOnGround) -> {
             if (isOnGround) {
-                //play("land.wav");
                 jumps = 2;
             }
         });
@@ -78,7 +77,6 @@ public class PlayerComponent extends Component {
         if (jumps == 0)
             return;
 
-        //play("jump.wav");
         physics.setVelocityY(-300);
 
         jumps--;

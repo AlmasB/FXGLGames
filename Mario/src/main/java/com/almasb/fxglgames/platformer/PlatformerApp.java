@@ -1,4 +1,4 @@
-package com.almasb.fxglgames.mario;
+package com.almasb.fxglgames.platformer;
 
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.ApplicationMode;
@@ -17,26 +17,22 @@ import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.view.KeyView;
 import com.almasb.fxgl.input.virtual.VirtualButton;
 import com.almasb.fxgl.physics.PhysicsComponent;
-import com.almasb.fxglgames.mario.collisions.PlayerButtonHandler;
-import com.almasb.fxglgames.mario.components.PlayerComponent;
-import com.almasb.fxglgames.mario.ui.LevelEndScene;
-import com.almasb.fxglgames.mario.ui.MarioLoadingScene;
+import com.almasb.fxglgames.platformer.ui.LevelEndScene;
+import com.almasb.fxglgames.platformer.ui.MainLoadingScene;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TouchEvent;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 import java.util.Map;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
-import static com.almasb.fxglgames.mario.MarioType.*;
+import static com.almasb.fxglgames.platformer.EntityType.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class MarioApp extends GameApplication {
+public class PlatformerApp extends GameApplication {
 
     private static final int MAX_LEVEL = 5;
     private static final int STARTING_LEVEL = 0;
@@ -48,7 +44,7 @@ public class MarioApp extends GameApplication {
         settings.setSceneFactory(new SceneFactory() {
             @Override
             public LoadingScene newLoadingScene() {
-                return new MarioLoadingScene();
+                return new MainLoadingScene();
             }
         });
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
@@ -56,8 +52,6 @@ public class MarioApp extends GameApplication {
 
     private LazyValue<LevelEndScene> levelEndScene = new LazyValue<>(() -> new LevelEndScene());
     private Entity player;
-
-    private boolean isMouseEvents = true;
 
     @Override
     protected void initInput() {
@@ -69,7 +63,6 @@ public class MarioApp extends GameApplication {
 
             @Override
             protected void onActionEnd() {
-                isMouseEvents = true;
                 player.getComponent(PlayerComponent.class).stop();
             }
         }, KeyCode.A, VirtualButton.LEFT);
@@ -89,7 +82,6 @@ public class MarioApp extends GameApplication {
         getInput().addAction(new UserAction("Jump") {
             @Override
             protected void onActionBegin() {
-                isMouseEvents = false;
                 player.getComponent(PlayerComponent.class).jump();
             }
         }, KeyCode.W, VirtualButton.A);
@@ -130,7 +122,7 @@ public class MarioApp extends GameApplication {
 
     @Override
     protected void initGame() {
-        getGameWorld().addEntityFactory(new MarioFactory());
+        getGameWorld().addEntityFactory(new PlatformerFactory());
 
         player = null;
         nextLevel();
@@ -227,20 +219,6 @@ public class MarioApp extends GameApplication {
 
             addUINode(dpadView, 0, getAppHeight() - 290);
             addUINode(buttonsView, getAppWidth() - 280, getAppHeight() - 290);
-
-            runOnce(() -> {
-                dpadView.getScene().addEventFilter(TouchEvent.ANY, event -> {
-                    if (!isMouseEvents) {
-                        System.out.println(event);
-                    }
-                });
-
-                dpadView.getScene().addEventFilter(MouseEvent.ANY, event -> {
-                    if (isMouseEvents) {
-                        System.out.println(event);
-                    }
-                });
-            }, Duration.seconds(2));
         }
     }
 

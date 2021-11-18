@@ -1,4 +1,4 @@
-package com.almasb.fxglgames.mario.ui;
+package com.almasb.fxglgames.platformer.ui;
 
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.scene.LoadingScene;
@@ -13,9 +13,9 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class MarioLoadingScene extends LoadingScene {
+public class MainLoadingScene extends LoadingScene {
 
-    public MarioLoadingScene() {
+    public MainLoadingScene() {
         var bg = new Rectangle(getAppWidth(), getAppHeight(), Color.AZURE);
 
         var text = getUIFactoryService().newText("Loading level", Color.BLACK, 46.0);

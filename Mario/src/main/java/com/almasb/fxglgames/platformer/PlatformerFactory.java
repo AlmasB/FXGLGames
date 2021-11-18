@@ -1,4 +1,4 @@
-package com.almasb.fxglgames.mario;
+package com.almasb.fxglgames.platformer;
 
 import com.almasb.fxgl.dsl.components.LiftComponent;
 import com.almasb.fxgl.dsl.views.ScrollingBackgroundView;
@@ -15,7 +15,6 @@ import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import com.almasb.fxgl.ui.FontType;
-import com.almasb.fxglgames.mario.components.PlayerComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.CacheHint;
 import javafx.scene.input.KeyCode;
@@ -23,17 +22,17 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
-import static com.almasb.fxglgames.mario.MarioType.*;
+import static com.almasb.fxglgames.platformer.EntityType.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class MarioFactory implements EntityFactory {
+public class PlatformerFactory implements EntityFactory {
 
     @Spawns("background")
     public Entity newBackground(SpawnData data) {
         return entityBuilder()
-                .view(new ScrollingBackgroundView(texture("background/forest.png")))
+                .view(new ScrollingBackgroundView(texture("background/forest.png").getImage(), getAppWidth(), getAppHeight()))
                 .zIndex(-1)
                 .with(new IrremovableComponent())
                 .build();
@@ -147,17 +146,17 @@ public class MarioFactory implements EntityFactory {
                 .build();
     }
 
-    @Spawns("messagePrompt")
-    public Entity newMessagePrompt(SpawnData data) {
-        var text = getUIFactoryService().newText(data.get("message"), Color.BLACK, FontType.GAME, 20.0);
-        text.setStrokeWidth(2);
-
-        return entityBuilder(data)
-                .type(MESSAGE_PROMPT)
-                .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
-                .view(text)
-                .with(new CollidableComponent(true))
-                .opacity(0)
-                .build();
-    }
+//    @Spawns("messagePrompt")
+//    public Entity newMessagePrompt(SpawnData data) {
+//        var text = getUIFactoryService().newText(data.get("message"), Color.BLACK, FontType.GAME, 20.0);
+//        text.setStrokeWidth(2);
+//
+//        return entityBuilder(data)
+//                .type(MESSAGE_PROMPT)
+//                .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
+//                .view(text)
+//                .with(new CollidableComponent(true))
+//                .opacity(0)
+//                .build();
+//    }
 }
