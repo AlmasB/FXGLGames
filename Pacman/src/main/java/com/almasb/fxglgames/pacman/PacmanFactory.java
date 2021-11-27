@@ -98,9 +98,10 @@ public class PacmanFactory implements EntityFactory {
     public Entity newPlayer(SpawnData data) {
         AnimatedTexture view = texture("player.png").toAnimatedTexture(2, Duration.seconds(0.33));
 
-        var e = entityBuilder(data)
+        return entityBuilder(data)
                 .type(PLAYER)
                 .bbox(new HitBox(new Point2D(4, 4), BoundingShape.box(32, 32)))
+                .anchorFromCenter()
                 .view(view.loop())
                 .with(new CollidableComponent(true))
                 .with(new CellMoveComponent(BLOCK_SIZE, BLOCK_SIZE, 200).allowRotation(true))
@@ -109,10 +110,6 @@ public class PacmanFactory implements EntityFactory {
                 .with(new PlayerComponent())
                 .rotationOrigin(35 / 2.0, 40 / 2.0)
                 .build();
-
-        e.setLocalAnchorFromCenter();
-
-        return e;
     }
 
     private Supplier<Component> aiComponents = new Supplier<>() {
@@ -138,9 +135,10 @@ public class PacmanFactory implements EntityFactory {
 
     @Spawns("E")
     public Entity newEnemy(SpawnData data) {
-        Entity enemy = entityBuilder(data)
+        return entityBuilder(data)
                 .type(ENEMY)
                 .bbox(new HitBox(new Point2D(2, 2), BoundingShape.box(36, 36)))
+                .anchorFromCenter()
                 .with(new CollidableComponent(true))
                 .with(new PaletteChangingComponent(texture("spritesheet.png", 695 * 0.24, 1048 * 0.24)))
                 .with(new CellMoveComponent(BLOCK_SIZE, BLOCK_SIZE, 125))
@@ -148,9 +146,5 @@ public class PacmanFactory implements EntityFactory {
                 .with(new AStarMoveComponent(new LazyValue<>(() -> geto("grid"))))
                 .with(aiComponents.get())
                 .build();
-
-        enemy.setLocalAnchorFromCenter();
-
-        return enemy;
     }
 }

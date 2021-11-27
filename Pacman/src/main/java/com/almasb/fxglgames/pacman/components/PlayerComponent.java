@@ -71,16 +71,14 @@ public class PlayerComponent extends Component {
         var x = moveComponent.getCellX();
         var y = moveComponent.getCellY();
 
-//        if (x == 0 && currentMoveDir == LEFT) {
-//
-//            // TODO: astar cancel movement
-//            entity.setX((astar.getGrid().getWidth() - 1) * BLOCK_SIZE);
-//            return;
-//
-//        } else if (x == astar.getGrid().getWidth() - 1 && currentMoveDir == RIGHT) {
-//            entity.setX(0);
-//            return;
-//        }
+        if (x == 0 && currentMoveDir == LEFT) {
+            astar.stopMovementAt(astar.getGrid().getWidth() - 1, moveComponent.getCellY());
+            return;
+
+        } else if (x == astar.getGrid().getWidth() - 1 && currentMoveDir == RIGHT) {
+            astar.stopMovementAt(0, moveComponent.getCellY());
+            return;
+        }
 
         if (astar.isMoving())
             return;
@@ -120,8 +118,6 @@ public class PlayerComponent extends Component {
         }
     }
 
-
-//
 //    public void teleport() {
 //        Random random = new Random();
 //
@@ -138,15 +134,4 @@ public class PlayerComponent extends Component {
 //
 //        playFadeAnimation();
 //    }
-//
-//    private void playFadeAnimation() {
-//        FadeTransition ft = new FadeTransition(Duration.seconds(0.5), view.getView());
-//        ft.setFromValue(1);
-//        ft.setToValue(0);
-//        ft.setAutoReverse(true);
-//        ft.setCycleCount(2);
-//        ft.play();
-//    }
-//
-
 }
