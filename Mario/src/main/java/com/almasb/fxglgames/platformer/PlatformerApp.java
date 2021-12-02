@@ -17,8 +17,6 @@ import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.view.KeyView;
 import com.almasb.fxgl.input.virtual.VirtualButton;
 import com.almasb.fxgl.physics.PhysicsComponent;
-import com.almasb.fxglgames.platformer.ui.LevelEndScene;
-import com.almasb.fxglgames.platformer.ui.MainLoadingScene;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;

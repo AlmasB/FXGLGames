@@ -1,4 +1,4 @@
-package com.almasb.fxglgames.platformer.ui;
+package com.almasb.fxglgames.platformer;
 
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.input.UserAction;
