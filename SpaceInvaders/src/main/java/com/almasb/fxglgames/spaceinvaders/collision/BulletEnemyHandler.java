@@ -28,6 +28,7 @@ package com.almasb.fxglgames.spaceinvaders.collision;
 
 import com.almasb.fxgl.dsl.components.Effect;
 import com.almasb.fxgl.dsl.components.EffectComponent;
+import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.TimeComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
@@ -35,7 +36,6 @@ import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
 import com.almasb.fxglgames.spaceinvaders.components.OwnerComponent;
 import com.almasb.fxglgames.spaceinvaders.components.BossComponent;
 import com.almasb.fxglgames.spaceinvaders.components.EnemyComponent;
-import com.almasb.fxglgames.spaceinvaders.components.HealthComponent;
 import javafx.util.Duration;
 
 /**
@@ -58,10 +58,10 @@ public class BulletEnemyHandler extends CollisionHandler {
 
         bullet.removeFromWorld();
 
-        HealthComponent hp = enemy.getComponent(HealthComponent.class);
-        hp.setValue(hp.getValue() - 1);
+        var hp = enemy.getComponent(HealthIntComponent.class);
+        hp.damage(1);
 
-        if (hp.getValue() <= 0) {
+        if (hp.isZero()) {
 
             if (enemy.hasComponent(EnemyComponent.class)) {
                 enemy.getComponent(EnemyComponent.class).die();

@@ -1,13 +1,13 @@
 package com.almasb.fxglgames.spaceinvaders.level.boss;
 
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.GameWorld;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.spaceinvaders.Config;
-import com.almasb.fxglgames.spaceinvaders.components.HealthComponent;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.play;
@@ -102,10 +102,10 @@ public class BossLevelFinal extends BossLevel {
 //            }
 
             if (hpTimer.elapsed(Duration.seconds(2))) {
-                HealthComponent hp = entity.getComponent(HealthComponent.class);
+                var hp = entity.getComponent(HealthIntComponent.class);
 
                 if (hp.getValue() < 50) {
-                    hp.setValue(hp.getValue() + 1);
+                    hp.restore(1);
                 }
 
                 hpTimer.capture();

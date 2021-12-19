@@ -15,8 +15,6 @@ import static com.almasb.fxgl.dsl.FXGL.getGameWorld;
  */
 public class RedLaserComponent extends Component {
 
-    private CollidableComponent collidable;
-
     private int numHits;
 
     private boolean isMoving = false;

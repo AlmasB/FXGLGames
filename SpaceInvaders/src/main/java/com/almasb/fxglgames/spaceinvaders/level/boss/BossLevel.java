@@ -3,14 +3,13 @@ package com.almasb.fxglgames.spaceinvaders.level.boss;
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.ui.ProgressBar;
-import com.almasb.fxglgames.spaceinvaders.components.HealthComponent;
 import com.almasb.fxglgames.spaceinvaders.level.SpaceLevel;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -21,10 +20,6 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 abstract class BossLevel extends SpaceLevel {
 
     private ProgressBar bossBar;
-
-    public BossLevel() {
-
-    }
 
     Entity spawnBoss(double x, double y, int hp, String textureName) {
         Entity boss = spawn("Boss", new SpawnData(x, y).put("hp", hp).put("textureName", textureName));
@@ -43,7 +38,7 @@ abstract class BossLevel extends SpaceLevel {
 
         // hp bar
 
-        HealthComponent hpComponent = boss.getComponent(HealthComponent.class);
+        var hpComponent = boss.getComponent(HealthIntComponent.class);
 
         bossBar = ProgressBar.makeHPBar();
         bossBar.setFill(Color.RED);

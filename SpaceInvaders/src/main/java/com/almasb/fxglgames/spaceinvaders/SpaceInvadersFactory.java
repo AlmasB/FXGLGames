@@ -28,10 +28,7 @@ package com.almasb.fxglgames.spaceinvaders;
 
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.dsl.components.EffectComponent;
-import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
-import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
-import com.almasb.fxgl.dsl.components.ProjectileComponent;
+import com.almasb.fxgl.dsl.components.*;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
@@ -45,6 +42,7 @@ import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxglgames.spaceinvaders.components.*;
+import com.almasb.fxglgames.spaceinvaders.components.AutoRotationComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.effect.Bloom;
@@ -172,7 +170,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
                                 .toAnimatedTexture(2, Duration.seconds(2))
                                 .loop()
                 )
-                .with(new CollidableComponent(true), new HealthComponent(2), new TimeComponent(1.0))
+                .with(new CollidableComponent(true), new HealthIntComponent(2), new TimeComponent(1.0))
                 .with(new EnemyComponent(), new EffectComponent())
                 .build();
     }
@@ -183,7 +181,7 @@ public final class SpaceInvadersFactory implements EntityFactory {
                 .from(data)
                 .type(ENEMY)
                 .viewWithBBox("bosses/" + data.get("textureName"))
-                .with(new CollidableComponent(true), new HealthComponent(data.get("hp")))
+                .with(new CollidableComponent(true), new HealthIntComponent(data.get("hp")))
                 .with(new BossComponent())
                 .build();
     }
