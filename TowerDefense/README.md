@@ -7,3 +7,7 @@ A tower defense game
 ## Contribution
 
 This game is in development and welcomes public contributions.
+
+## Assets
+
+Assets used are Tower Defense (top-down) Pack by  Kenney Vleugels (Kenney.nl)

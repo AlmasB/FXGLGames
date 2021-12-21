@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="20" height="12" tilewidth="64" tileheight="64" infinite="0" nextlayerid="6" nextobjectid="29">
+ <tileset firstgid="1" name="td_tilesheet" tilewidth="64" tileheight="64" tilecount="299" columns="23">
+  <image source="td_tilesheet.png" trans="ffffff" width="1472" height="832"/>
+ </tileset>
+ <layer id="1" name="ground" width="20" height="12">
+  <data encoding="base64" compression="zlib">
+   eJxrYmBgaBrFo3gUD0kMAIjreeE=
+  </data>
+ </layer>
+ <layer id="4" name="path" width="20" height="12">
+  <data encoding="base64" compression="zlib">
+   eJytUtsRgCAM6xDCSPjYQdEdhB3cWj7kyNVa0DN3+UqbFFqiApfYKxzoHebERaFPtJVcA/p29Y2JATiBXy1X0nOfZTr347nhQY/wBw7m5n6eZGg6ZkWh3io9/J2SZn6ar9UP91rzOxrypb1KfiuVG9PycddR0Hcq9yfd9xfsdL+znN+x2hPVazPR
+  </data>
+ </layer>
+ <layer id="3" name="decor" width="20" height="12">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUEANEB9oBWAAAD+QAFg==
+  </data>
+ </layer>
+ <objectgroup id="2" name="waypoints" visible="0">
+  <object id="15" name="way" type="waypoint" x="0" y="576">
+   <polygon points="0,0 128,0 128,-384 256,-384 256,-512 640,-512 640,-320 576,-192 576,0 640,64 896,64 896,-448 1280,-448"/>
+  </object>
+ </objectgroup>
+ <objectgroup id="5" name="tower_placement">
+  <object id="17" name="tower" type="towerBase" gid="182" x="256" y="640" width="64" height="64"/>
+  <object id="18" name="tower" type="towerBase" gid="182" x="256" y="576" width="64" height="64"/>
+  <object id="19" name="tower" type="towerBase" gid="182" x="384" y="256" width="64" height="64"/>
+  <object id="20" name="tower" type="towerBase" gid="182" x="512" y="256" width="64" height="64"/>
+  <object id="21" name="tower" type="towerBase" gid="182" x="448" y="576" width="64" height="64"/>
+  <object id="22" name="tower" type="towerBase" gid="182" x="448" y="640" width="64" height="64"/>
+  <object id="23" name="tower" type="towerBase" gid="182" x="768" y="512" width="64" height="64"/>
+  <object id="24" name="tower" type="towerBase" gid="182" x="704" y="512" width="64" height="64"/>
+  <object id="25" name="tower" type="towerBase" gid="182" x="768" y="192" width="64" height="64"/>
+  <object id="26" name="tower" type="towerBase" gid="182" x="768" y="256" width="64" height="64"/>
+  <object id="27" name="tower" type="towerBase" gid="182" x="1024" y="320" width="64" height="64"/>
+  <object id="28" name="tower" type="towerBase" gid="182" x="1024" y="448" width="64" height="64"/>
+ </objectgroup>
+</map>

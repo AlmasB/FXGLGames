@@ -3,7 +3,7 @@ package com.almasb.fxglgames.td.collision;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.fxglgames.td.TowerDefenseType;
+import com.almasb.fxglgames.td.EntityType;
 import com.almasb.fxglgames.td.event.EnemyKilledEvent;
 
 /**
@@ -12,7 +12,7 @@ import com.almasb.fxglgames.td.event.EnemyKilledEvent;
 public class BulletEnemyHandler extends CollisionHandler {
 
     public BulletEnemyHandler() {
-        super(TowerDefenseType.BULLET, TowerDefenseType.ENEMY);
+        super(EntityType.BULLET, EntityType.ENEMY);
     }
 
     @Override

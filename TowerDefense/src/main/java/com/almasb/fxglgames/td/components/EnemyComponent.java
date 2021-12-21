@@ -1,9 +1,8 @@
 package com.almasb.fxglgames.td.components;
 
 import com.almasb.fxgl.dsl.FXGL;
-import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxglgames.td.TowerDefenseApp;
+import com.almasb.fxglgames.td.Way;
 import com.almasb.fxglgames.td.event.EnemyReachedGoalEvent;
 import javafx.geometry.Point2D;
 
@@ -19,11 +18,15 @@ public class EnemyComponent extends Component {
 
     private double speed;
 
+    public EnemyComponent(Way way) {
+        waypoints = way.getWaypoints();
+    }
+
     @Override
     public void onAdded() {
-        waypoints = ((TowerDefenseApp) FXGL.getApp()).getWaypoints();
-
         nextWaypoint = waypoints.remove(0);
+
+        entity.setPosition(nextWaypoint);
     }
 
     @Override
