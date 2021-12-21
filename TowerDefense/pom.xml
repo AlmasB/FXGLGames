@@ -10,7 +10,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <source.version>11</source.version>
+        <source.version>17</source.version>
 
         <!-- plugins -->
         <maven.compiler.version>3.8.0</maven.compiler.version>

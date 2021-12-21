@@ -7,10 +7,14 @@ import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.td.EntityType;
 import com.almasb.fxglgames.td.Config;
+import com.almasb.fxglgames.td.TowerData;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
 /**
+ *
+ * // TODO: assign bullet data from tower that shot it
+ *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class TowerComponent extends Component {
@@ -20,6 +24,10 @@ public class TowerComponent extends Component {
     private int hp = 10;
     private int damage = 1;
     private double attackDelay = 1.5;
+
+    public TowerComponent(TowerData data) {
+
+    }
 
     public int getHP() {
         return hp;
@@ -41,11 +49,15 @@ public class TowerComponent extends Component {
 
     @Override
     public void onUpdate(double tpf) {
-
-        if (shootTimer.elapsed(Duration.seconds(0.5))) {
+        if (shootTimer.elapsed(Duration.seconds(1.5))) {
             FXGL.getGameWorld()
                     .getClosestEntity(entity, e -> e.isType(EntityType.ENEMY))
                     .ifPresent(nearestEnemy -> {
+
+                        entity.rotateToVector(nearestEnemy.getPosition().subtract(entity.getPosition()));
+                        // because of sprite rotation
+                        entity.rotateBy(90);
+
                         shoot(nearestEnemy);
                         shootTimer.capture();
                     });
@@ -57,7 +69,7 @@ public class TowerComponent extends Component {
 
         Point2D direction = enemy.getPosition().subtract(position);
 
-        Entity bullet = FXGL.spawn("Bullet", position);
+        Entity bullet = FXGL.spawn("Bullet", position.add(32, 32));
         bullet.addComponent(new ProjectileComponent(direction, Config.BULLET_SPEED));
     }
 }

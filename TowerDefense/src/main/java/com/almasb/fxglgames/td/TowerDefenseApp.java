@@ -6,24 +6,23 @@ import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.GameView;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.input.Input;
-import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxglgames.td.collision.BulletEnemyHandler;
 import com.almasb.fxglgames.td.event.EnemyKilledEvent;
+import com.almasb.fxglgames.td.ui.TowerIcon;
+import com.almasb.fxglgames.td.ui.TowerSelectionBox;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
@@ -40,13 +39,12 @@ import static com.almasb.fxgl.dsl.FXGL.*;
  */
 public class TowerDefenseApp extends GameApplication {
 
-    // TODO: add HP components
-    // TODO: assign bullet data from tower that shot it
-
     // TODO: read from level data
     private int levelEnemies = 10;
 
-    private Point2D enemySpawnPoint = new Point2D(50, 0);
+    private List<TowerData> towerData;
+
+    private TowerSelectionBox towerSelectionBox;
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -60,54 +58,63 @@ public class TowerDefenseApp extends GameApplication {
 
     @Override
     protected void initInput() {
-//        Input input = getInput();
+//        onBtnDown(MouseButton.PRIMARY, () -> {
+//            var x = getInput().getMouseXWorld();
+//            var y = getInput().getMouseYWorld();
 //
-//        input.addAction(new UserAction("Place Tower") {
-//            private Rectangle2D worldBounds = new Rectangle2D(0, 0, getAppWidth(), getAppHeight() - 100 - 40);
+//            var isThereTowerBase = getGameWorld().getEntitiesByType(EntityType.TOWER_BASE)
+//                    .stream()
+//                    .anyMatch(e -> e.getBoundingBoxComponent().range(0, 0).contains(x, y));
 //
-//            @Override
-//            protected void onActionBegin() {
-//                if (worldBounds.contains(input.getMousePositionWorld())) {
-//                    placeTower();
-//                }
+//            if (!isThereTowerBase) {
+//                towerSelectionBox.setVisible(false);
 //            }
-//        }, MouseButton.PRIMARY);
+//        });
     }
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("numEnemies", levelEnemies);
+        vars.put("money", 80);
     }
 
     @Override
     protected void initGame() {
+        loadTowerData();
+
         getGameWorld().addEntityFactory(new TowerDefenseFactory());
 
         setLevelFromMap("td1.tmx");
-
-        // TODO: optimise and remove cells
-//        for (int y = 0; y < 720 / 64 + 1; y++) {
-//            for (int x = 0; x < 1280 / 64 + 1; x++) {
-//                var cell = spawn("Cell", x * 64, y * 64);
-//            }
-//        }
-
-//        waypoints.addAll(Arrays.asList(
-//                new Point2D(700, 0),
-//                new Point2D(700, 300),
-//                new Point2D(50, 300),
-//                new Point2D(50, 450),
-//                new Point2D(700, 500)
-//        ));
-
 
         BooleanProperty enemiesLeft = new SimpleBooleanProperty();
         enemiesLeft.bind(getip("numEnemies").greaterThan(0));
 
         getGameTimer().runAtIntervalWhile(this::spawnEnemy, Duration.seconds(1), enemiesLeft);
-//
+
 //        getEventBus().addEventHandler(EnemyKilledEvent.ANY, this::onEnemyKilled);
 //        getEventBus().addEventHandler(EnemyReachedGoalEvent.ANY, e -> gameOver());
+
+        getGameWorld().getEntitiesFiltered(e -> e.isType("TiledMapLayer"))
+                .forEach(e -> {
+                    e.getViewComponent().addOnClickHandler(event -> {
+                        towerSelectionBox.setVisible(false);
+                    });
+                });
+    }
+
+    private void loadTowerData() {
+        List<String> towerNames = List.of(
+                "tower1.json",
+                "tower2.json",
+                "tower1.json",
+                "tower2.json",
+                "tower1.json",
+                "tower2.json"
+        );
+
+        towerData = towerNames.stream()
+                .map(name -> getAssetLoader().loadJSON("towers/" + name, TowerData.class).get())
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -116,38 +123,24 @@ public class TowerDefenseApp extends GameApplication {
     }
 
     public void onCellClicked(Entity cell) {
-        var tower = spawn("Tower", cell.getPosition());
+        towerSelectionBox.setCell(cell);
+        towerSelectionBox.setVisible(true);
+        towerSelectionBox.setTranslateX(cell.getX());
+        towerSelectionBox.setTranslateY(cell.getY());
     }
 
-    private TowerData selectedTower;
+    public void onTowerSelected(Entity cell, TowerData data) {
+        towerSelectionBox.setVisible(false);
+
+        var tower = spawn("Tower", new SpawnData(cell.getPosition()).put("towerData", data));
+    }
 
     @Override
     protected void initUI() {
-        var data = new TowerData();
-        data.setImageName("tower.png");
+        towerSelectionBox = new TowerSelectionBox(towerData);
+        towerSelectionBox.setVisible(false);
 
-        addUINode(new TowerIcon(data), 1000, 680);
-
-
-//        Rectangle uiBG = new Rectangle(getAppWidth(), 100);
-//        uiBG.setTranslateY(500);
-//
-//        getGameScene().addUINode(uiBG);
-//
-//        for (int i = 0; i < 4; i++) {
-//            int index = i + 1;
-//
-//            Color color = FXGLMath.randomColor();
-//            TowerIcon icon = new TowerIcon(color);
-//            icon.setTranslateX(10 + i * 100);
-//            icon.setTranslateY(500);
-//            icon.setOnMouseClicked(e -> {
-//                selectedColor = color;
-//                selectedIndex = index;
-//            });
-//
-//            getGameScene().addUINode(icon);
-//        }
+        addUINode(towerSelectionBox);
     }
 
     private void spawnEnemy() {
@@ -158,14 +151,6 @@ public class TowerDefenseApp extends GameApplication {
 
         spawn("Enemy", new SpawnData().put("way", Way.fromPolygon(p, wayEntity.getX(), wayEntity.getY())));
     }
-
-//    private void placeTower() {
-//        spawn("Tower",
-//                new SpawnData(getInput().getMouseXWorld(), getInput().getMouseYWorld())
-//                        .put("color", selectedColor)
-//                        .put("index", selectedIndex)
-//        );
-//    }
 
     private void onEnemyKilled(EnemyKilledEvent event) {
         levelEnemies--;

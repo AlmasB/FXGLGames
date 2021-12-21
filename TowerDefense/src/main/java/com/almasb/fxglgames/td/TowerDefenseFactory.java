@@ -34,11 +34,13 @@ public class TowerDefenseFactory implements EntityFactory {
 
     @Spawns("Tower")
     public Entity spawnTower(SpawnData data) {
+        TowerData towerData = data.get("towerData");
+
         return entityBuilder(data)
                 .type(TOWER)
-                .view("tower.png")
+                .viewWithBBox(towerData.imageName())
                 .collidable()
-                .with(new TowerComponent())
+                .with(new TowerComponent(towerData))
                 .build();
     }
 
@@ -59,7 +61,7 @@ public class TowerDefenseFactory implements EntityFactory {
 
         var cell = entityBuilder(data)
                 .type(TOWER_BASE)
-                .view(rect)
+                .viewWithBBox(rect)
                 .onClick(e -> {
                     FXGL.<TowerDefenseApp>getAppCast().onCellClicked(e);
                 })
