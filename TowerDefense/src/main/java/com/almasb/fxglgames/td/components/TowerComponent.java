@@ -21,24 +21,14 @@ public class TowerComponent extends Component {
 
     private LocalTimer shootTimer;
 
-    private int hp = 10;
-    private int damage = 1;
-    private double attackDelay = 1.5;
+    private TowerData data;
 
     public TowerComponent(TowerData data) {
-
-    }
-
-    public int getHP() {
-        return hp;
+        this.data = data;
     }
 
     public int getDamage() {
-        return damage;
-    }
-
-    public double getAttackDelay() {
-        return attackDelay;
+        return data.attack();
     }
 
     @Override
@@ -70,6 +60,7 @@ public class TowerComponent extends Component {
         Point2D direction = enemy.getPosition().subtract(position);
 
         Entity bullet = FXGL.spawn("Bullet", position.add(32, 32));
+        bullet.setProperty("tower", entity);
         bullet.addComponent(new ProjectileComponent(direction, Config.BULLET_SPEED));
     }
 }

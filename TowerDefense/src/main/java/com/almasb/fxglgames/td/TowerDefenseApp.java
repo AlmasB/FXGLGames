@@ -1,5 +1,6 @@
 package com.almasb.fxglgames.td;
 
+import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
@@ -8,11 +9,13 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxglgames.td.collision.BulletEnemyHandler;
 import com.almasb.fxglgames.td.event.EnemyKilledEvent;
+import com.almasb.fxglgames.td.ui.MoneyIcon;
 import com.almasb.fxglgames.td.ui.TowerIcon;
 import com.almasb.fxglgames.td.ui.TowerSelectionBox;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Point2D;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -70,12 +73,17 @@ public class TowerDefenseApp extends GameApplication {
 //                towerSelectionBox.setVisible(false);
 //            }
 //        });
+
+        onKey(KeyCode.F,() -> {
+            inc("money", -50);
+        });
     }
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("numEnemies", levelEnemies);
-        vars.put("money", 80);
+        vars.put("money", 1000);
+        vars.put("playerHP", 10);
     }
 
     @Override
@@ -106,10 +114,10 @@ public class TowerDefenseApp extends GameApplication {
         List<String> towerNames = List.of(
                 "tower1.json",
                 "tower2.json",
-                "tower1.json",
-                "tower2.json",
-                "tower1.json",
-                "tower2.json"
+                "tower3.json",
+                "tower4.json",
+                "tower5.json",
+                "tower6.json"
         );
 
         towerData = towerNames.stream()
@@ -125,12 +133,17 @@ public class TowerDefenseApp extends GameApplication {
     public void onCellClicked(Entity cell) {
         towerSelectionBox.setCell(cell);
         towerSelectionBox.setVisible(true);
-        towerSelectionBox.setTranslateX(cell.getX());
+
+        var x = cell.getX() > getAppWidth() / 2.0 ? cell.getX() - 250 : cell.getX();
+
+        towerSelectionBox.setTranslateX(x);
         towerSelectionBox.setTranslateY(cell.getY());
     }
 
     public void onTowerSelected(Entity cell, TowerData data) {
         towerSelectionBox.setVisible(false);
+
+        inc("money", -data.cost());
 
         var tower = spawn("Tower", new SpawnData(cell.getPosition()).put("towerData", data));
     }
@@ -141,6 +154,10 @@ public class TowerDefenseApp extends GameApplication {
         towerSelectionBox.setVisible(false);
 
         addUINode(towerSelectionBox);
+
+        var moneyIcon = new MoneyIcon();
+
+        addUINode(moneyIcon, 10, 10);
     }
 
     private void spawnEnemy() {
@@ -149,7 +166,12 @@ public class TowerDefenseApp extends GameApplication {
         var wayEntity = getGameWorld().getSingleton(EntityType.WAY);
         Polygon p = wayEntity.getObject("polygon");
 
-        spawn("Enemy", new SpawnData().put("way", Way.fromPolygon(p, wayEntity.getX(), wayEntity.getY())));
+        spawnWithScale(
+                "Enemy",
+                new SpawnData().put("way", Way.fromPolygon(p, wayEntity.getX(), wayEntity.getY())),
+                Duration.seconds(0.45),
+                Interpolators.ELASTIC.EASE_OUT()
+        );
     }
 
     private void onEnemyKilled(EnemyKilledEvent event) {

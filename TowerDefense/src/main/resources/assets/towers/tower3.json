@@ -1,0 +1,8 @@
+{
+  "name": "Tower 3",
+  "imageName": "towers/tower3.png",
+  "attack": 30,
+  "attackRate": 1.35,
+  "cost": 140,
+  "isSplashDamage": true
+}

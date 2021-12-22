@@ -3,6 +3,9 @@ package com.almasb.fxglgames.td;
 public record TowerData(
         String name,
         String imageName,
+        String projectileImageName,
         int attack,
-        int cost
+        double attackRate,
+        int cost,
+        boolean isSplashDamage
 ) { }
