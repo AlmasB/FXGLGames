@@ -9,15 +9,14 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxglgames.td.collision.BulletEnemyHandler;
 import com.almasb.fxglgames.td.event.EnemyKilledEvent;
+import com.almasb.fxglgames.td.ui.EnemiesIcon;
 import com.almasb.fxglgames.td.ui.MoneyIcon;
-import com.almasb.fxglgames.td.ui.TowerIcon;
 import com.almasb.fxglgames.td.ui.TowerSelectionBox;
+import com.almasb.fxglgames.td.ui.WaveIcon;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
-import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
@@ -48,6 +47,7 @@ public class TowerDefenseApp extends GameApplication {
     private List<TowerData> towerData;
 
     private TowerSelectionBox towerSelectionBox;
+    private WaveIcon waveIcon;
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -61,19 +61,6 @@ public class TowerDefenseApp extends GameApplication {
 
     @Override
     protected void initInput() {
-//        onBtnDown(MouseButton.PRIMARY, () -> {
-//            var x = getInput().getMouseXWorld();
-//            var y = getInput().getMouseYWorld();
-//
-//            var isThereTowerBase = getGameWorld().getEntitiesByType(EntityType.TOWER_BASE)
-//                    .stream()
-//                    .anyMatch(e -> e.getBoundingBoxComponent().range(0, 0).contains(x, y));
-//
-//            if (!isThereTowerBase) {
-//                towerSelectionBox.setVisible(false);
-//            }
-//        });
-
         onKey(KeyCode.F,() -> {
             inc("money", -50);
         });
@@ -84,6 +71,7 @@ public class TowerDefenseApp extends GameApplication {
         vars.put("numEnemies", levelEnemies);
         vars.put("money", 1000);
         vars.put("playerHP", 10);
+        vars.put("currentWave", 1);
     }
 
     @Override
@@ -127,7 +115,7 @@ public class TowerDefenseApp extends GameApplication {
 
     @Override
     protected void initPhysics() {
-        getPhysicsWorld().addCollisionHandler(new BulletEnemyHandler());
+        //getPhysicsWorld().addCollisionHandler(new BulletEnemyHandler());
     }
 
     public void onCellClicked(Entity cell) {
@@ -158,6 +146,14 @@ public class TowerDefenseApp extends GameApplication {
         var moneyIcon = new MoneyIcon();
 
         addUINode(moneyIcon, 10, 10);
+
+        waveIcon = new WaveIcon();
+        // TODO: read from data
+        waveIcon.setMaxWave(5);
+
+        addUINode(waveIcon, 10, 90);
+
+        addUINode(new EnemiesIcon(), 10, 170);
     }
 
     private void spawnEnemy() {

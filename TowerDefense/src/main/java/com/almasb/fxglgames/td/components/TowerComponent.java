@@ -3,6 +3,7 @@ package com.almasb.fxglgames.td.components;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.ProjectileComponent;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.td.EntityType;
@@ -10,6 +11,10 @@ import com.almasb.fxglgames.td.Config;
 import com.almasb.fxglgames.td.TowerData;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
+
+import java.util.Objects;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  *
@@ -33,14 +38,14 @@ public class TowerComponent extends Component {
 
     @Override
     public void onAdded() {
-        shootTimer = FXGL.newLocalTimer();
+        shootTimer = newLocalTimer();
         shootTimer.capture();
     }
 
     @Override
     public void onUpdate(double tpf) {
         if (shootTimer.elapsed(Duration.seconds(1.5))) {
-            FXGL.getGameWorld()
+            getGameWorld()
                     .getClosestEntity(entity, e -> e.isType(EntityType.ENEMY))
                     .ifPresent(nearestEnemy -> {
 
@@ -59,8 +64,14 @@ public class TowerComponent extends Component {
 
         Point2D direction = enemy.getPosition().subtract(position);
 
-        Entity bullet = FXGL.spawn("Bullet", position.add(32, 32));
-        bullet.setProperty("tower", entity);
-        bullet.addComponent(new ProjectileComponent(direction, Config.BULLET_SPEED));
+        String imageName = Objects.requireNonNullElse(data.projectileImageName(), "projectile.png");
+
+        var bullet = spawn("Bullet",
+                new SpawnData(position.add(32, 32))
+                        .put("imageName", imageName)
+                        .put("tower", entity)
+                        .put("target", enemy)
+        );
+        bullet.rotateToVector(direction);
     }
 }

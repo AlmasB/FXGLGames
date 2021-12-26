@@ -5,7 +5,7 @@ package com.almasb.fxglgames.td;
  */
 public class Config {
 
-    public static final double BULLET_SPEED = 5 * 60;
+    public static final double BULLET_SPEED = 15 * 60;
 
     public static final int MAX_MONEY = 9999;
 }
