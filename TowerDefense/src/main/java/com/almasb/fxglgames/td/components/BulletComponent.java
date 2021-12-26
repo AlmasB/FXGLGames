@@ -6,7 +6,6 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxglgames.td.TowerDefenseApp;
 import com.almasb.fxglgames.td.data.Config;
-import com.almasb.fxglgames.td.event.EnemyKilledEvent;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)

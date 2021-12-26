@@ -2,8 +2,9 @@ package com.almasb.fxglgames.td.components;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxglgames.td.TowerDefenseApp;
+import com.almasb.fxglgames.td.data.EnemyData;
 import com.almasb.fxglgames.td.data.Way;
-import com.almasb.fxglgames.td.event.EnemyReachedGoalEvent;
 import javafx.geometry.Point2D;
 
 import java.util.List;
@@ -14,12 +15,18 @@ import java.util.List;
 public class EnemyComponent extends Component {
 
     private List<Point2D> waypoints;
+    private EnemyData data;
     private Point2D nextWaypoint;
 
     private double speed;
 
-    public EnemyComponent(Way way) {
+    public EnemyComponent(Way way, EnemyData data) {
         waypoints = way.getWaypoints();
+        this.data = data;
+    }
+
+    public EnemyData getData() {
+        return data;
     }
 
     @Override
@@ -45,8 +52,9 @@ public class EnemyComponent extends Component {
             if (!waypoints.isEmpty()) {
                 nextWaypoint = waypoints.remove(0);
             } else {
+                FXGL.<TowerDefenseApp>getAppCast().onEnemyReachedEnd(entity);
 
-                FXGL.getEventBus().fireEvent(new EnemyReachedGoalEvent());
+                entity.removeFromWorld();
             }
         }
     }

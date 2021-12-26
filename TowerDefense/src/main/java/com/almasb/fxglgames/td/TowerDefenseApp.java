@@ -6,9 +6,9 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxglgames.td.components.EnemyComponent;
 import com.almasb.fxglgames.td.data.*;
 import com.almasb.fxglgames.td.ui.*;
-import javafx.scene.input.KeyCode;
 import javafx.scene.shape.Polygon;
 import javafx.util.Duration;
 
@@ -17,9 +17,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
-import static com.almasb.fxglgames.td.data.Config.STARTING_HP;
-import static com.almasb.fxglgames.td.data.Config.STARTING_MONEY;
-import static com.almasb.fxglgames.td.data.Vars.CURRENT_WAVE;
+import static com.almasb.fxglgames.td.data.Config.*;
+import static com.almasb.fxglgames.td.data.Vars.*;
 
 /**
  * This is an example of a tower defense game.
@@ -53,22 +52,17 @@ public class TowerDefenseApp extends GameApplication {
     }
 
     @Override
-    protected void initInput() {
-        onKey(KeyCode.F,() -> {
-            inc("money", -50);
-        });
-    }
-
-    @Override
     protected void initGameVars(Map<String, Object> vars) {
-        vars.put("numEnemies", 0);
-        vars.put("money", STARTING_MONEY);
-        vars.put("playerHP", STARTING_HP);
+        vars.put(NUM_ENEMIES, 0);
+        vars.put(MONEY, STARTING_MONEY);
+        vars.put(PLAYER_HP, STARTING_HP);
         vars.put(CURRENT_WAVE, 0);
     }
 
     @Override
     protected void initGame() {
+        initVarListeners();
+
         loadTowerData();
         loadLevelData();
 
@@ -79,6 +73,20 @@ public class TowerDefenseApp extends GameApplication {
         waveIcon = new WaveIcon();
 
         nextLevel();
+    }
+
+    private void initVarListeners() {
+        getWorldProperties().<Integer>addListener(NUM_ENEMIES, (old, newValue) -> {
+            if (newValue == 0) {
+                nextWave();
+            }
+        });
+
+        getWorldProperties().<Integer>addListener(PLAYER_HP, (old, newValue) -> {
+            if (newValue == 0) {
+                gameOver();
+            }
+        });
     }
 
     private void loadTowerData() {
@@ -132,14 +140,14 @@ public class TowerDefenseApp extends GameApplication {
     private void nextWave() {
         if (geti(CURRENT_WAVE) < currentLevel.maxWaveIndex()) {
             inc(CURRENT_WAVE, 1);
-            
+
             currentLevel.waves()
                     .stream()
                     .filter(w -> w.index() == geti(CURRENT_WAVE))
                     .forEach(wave -> {
                         spawnWave(wave);
 
-                        inc("numEnemies", wave.amount());
+                        inc(NUM_ENEMIES, wave.amount());
                     });
         } else {
             nextLevel();
@@ -171,6 +179,20 @@ public class TowerDefenseApp extends GameApplication {
         }
     }
 
+    @Override
+    protected void initUI() {
+        towerSelectionBox.setVisible(false);
+
+        addUINode(towerSelectionBox);
+
+        addUINode(new MoneyIcon(), 10, 10);
+        addUINode(new HPIcon(), 10, 90);
+
+        addUINode(waveIcon, 10, 250);
+
+        addUINode(new EnemiesIcon(), 10, 170);
+    }
+
     public void onCellClicked(Entity cell) {
         towerSelectionBox.setCell(cell);
         towerSelectionBox.setVisible(true);
@@ -189,26 +211,16 @@ public class TowerDefenseApp extends GameApplication {
         var tower = spawn("Tower", new SpawnData(cell.getPosition()).put("towerData", data));
     }
 
-    @Override
-    protected void initUI() {
-        towerSelectionBox.setVisible(false);
-
-        addUINode(towerSelectionBox);
-
-        addUINode(new MoneyIcon(), 10, 10);
-        addUINode(new HPIcon(), 10, 90);
-
-        addUINode(waveIcon, 10, 250);
-
-        addUINode(new EnemiesIcon(), 10, 170);
+    public void onEnemyKilled(Entity enemy) {
+        inc(NUM_ENEMIES, -1);
+        
+        inc(MONEY, enemy.getComponent(EnemyComponent.class).getData().reward());
     }
 
-    public void onEnemyKilled(Entity enemy) {
-        inc("numEnemies", -1);
+    public void onEnemyReachedEnd(Entity enemy) {
+        inc(NUM_ENEMIES, -1);
 
-        if (geti("numEnemies") == 0) {
-            nextWave();
-        }
+        inc(PLAYER_HP, -1);
     }
 
     private void gameOver() {

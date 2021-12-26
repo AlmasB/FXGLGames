@@ -47,7 +47,7 @@ public class TowerDefenseFactory implements EntityFactory {
                 .view(hpBar)
                 .collidable()
                 .with(hp)
-                .with(new EnemyComponent(data.get("way")))
+                .with(new EnemyComponent(data.get("way"), enemyData))
                 .build();
     }
 
