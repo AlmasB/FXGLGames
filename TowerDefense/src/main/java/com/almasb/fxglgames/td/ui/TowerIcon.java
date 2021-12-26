@@ -1,6 +1,6 @@
 package com.almasb.fxglgames.td.ui;
 
-import com.almasb.fxglgames.td.TowerData;
+import com.almasb.fxglgames.td.data.TowerData;
 import javafx.beans.binding.Bindings;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;

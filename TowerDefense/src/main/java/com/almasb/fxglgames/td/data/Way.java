@@ -1,4 +1,4 @@
-package com.almasb.fxglgames.td;
+package com.almasb.fxglgames.td.data;
 
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Polygon;

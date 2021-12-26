@@ -4,7 +4,8 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxglgames.td.Config;
+import com.almasb.fxglgames.td.TowerDefenseApp;
+import com.almasb.fxglgames.td.data.Config;
 import com.almasb.fxglgames.td.event.EnemyKilledEvent;
 
 /**
@@ -45,7 +46,7 @@ public class BulletComponent extends Component {
         hp.damage(data.getDamage());
 
         if (hp.isZero()) {
-            FXGL.getEventBus().fireEvent(new EnemyKilledEvent(target));
+            FXGL.<TowerDefenseApp>getAppCast().onEnemyKilled(target);
             target.removeFromWorld();
         }
     }

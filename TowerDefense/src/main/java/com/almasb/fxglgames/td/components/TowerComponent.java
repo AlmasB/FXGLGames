@@ -1,14 +1,11 @@
 package com.almasb.fxglgames.td.components;
 
-import com.almasb.fxgl.dsl.FXGL;
-import com.almasb.fxgl.dsl.components.ProjectileComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.td.EntityType;
-import com.almasb.fxglgames.td.Config;
-import com.almasb.fxglgames.td.TowerData;
+import com.almasb.fxglgames.td.data.TowerData;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 

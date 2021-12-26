@@ -7,16 +7,16 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class MoneyIcon extends Icon {
+public class HPIcon extends Icon {
 
-    public MoneyIcon() {
-        var moneyTexture = texture("money.png").multiplyColor(Color.GOLD);
+    public HPIcon() {
+        var hpTexture = texture("health.png").multiplyColor(Color.RED);
 
         var text = getUIFactoryService().newText("", Color.WHITE, 32.0);
-        text.textProperty().bind(getip("money").asString());
+        text.textProperty().bind(getip("playerHP").asString());
         text.setTranslateX(54);
         text.setTranslateY(45);
 
-        getChildren().addAll(moneyTexture, text);
+        getChildren().addAll(hpTexture, text);
     }
 }

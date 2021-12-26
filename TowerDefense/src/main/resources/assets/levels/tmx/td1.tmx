@@ -19,7 +19,7 @@
   </data>
  </layer>
  <objectgroup id="2" name="waypoints">
-  <object id="15" name="way" type="waypoint" x="0" y="576">
+  <object id="15" name="way1" type="waypoint" x="0" y="576">
    <polygon points="0,0 128,0 128,-384 256,-384 256,-512 640,-512 640,-320 576,-192 576,0 640,64 896,64 896,-448 1280,-448"/>
   </object>
  </objectgroup>

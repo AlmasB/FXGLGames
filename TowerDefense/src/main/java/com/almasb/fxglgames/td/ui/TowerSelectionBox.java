@@ -2,7 +2,7 @@ package com.almasb.fxglgames.td.ui;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxglgames.td.TowerData;
+import com.almasb.fxglgames.td.data.TowerData;
 import com.almasb.fxglgames.td.TowerDefenseApp;
 import javafx.scene.layout.HBox;
 

@@ -4,22 +4,12 @@ import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
-import com.almasb.fxgl.app.scene.GameView;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxglgames.td.collision.BulletEnemyHandler;
-import com.almasb.fxglgames.td.event.EnemyKilledEvent;
-import com.almasb.fxglgames.td.ui.EnemiesIcon;
-import com.almasb.fxglgames.td.ui.MoneyIcon;
-import com.almasb.fxglgames.td.ui.TowerSelectionBox;
-import com.almasb.fxglgames.td.ui.WaveIcon;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.geometry.Point2D;
+import com.almasb.fxglgames.td.data.*;
+import com.almasb.fxglgames.td.ui.*;
 import javafx.scene.input.KeyCode;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
-import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.util.List;
@@ -27,6 +17,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxglgames.td.data.Config.STARTING_HP;
+import static com.almasb.fxglgames.td.data.Config.STARTING_MONEY;
+import static com.almasb.fxglgames.td.data.Vars.CURRENT_WAVE;
 
 /**
  * This is an example of a tower defense game.
@@ -41,10 +34,10 @@ import static com.almasb.fxgl.dsl.FXGL.*;
  */
 public class TowerDefenseApp extends GameApplication {
 
-    // TODO: read from level data
-    private int levelEnemies = 10;
-
     private List<TowerData> towerData;
+    private List<LevelData> levelData;
+
+    private LevelData currentLevel;
 
     private TowerSelectionBox towerSelectionBox;
     private WaveIcon waveIcon;
@@ -68,34 +61,24 @@ public class TowerDefenseApp extends GameApplication {
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
-        vars.put("numEnemies", levelEnemies);
-        vars.put("money", 1000);
-        vars.put("playerHP", 10);
-        vars.put("currentWave", 1);
+        vars.put("numEnemies", 0);
+        vars.put("money", STARTING_MONEY);
+        vars.put("playerHP", STARTING_HP);
+        vars.put(CURRENT_WAVE, 0);
     }
 
     @Override
     protected void initGame() {
         loadTowerData();
+        loadLevelData();
 
         getGameWorld().addEntityFactory(new TowerDefenseFactory());
 
-        setLevelFromMap("td1.tmx");
+        // construct UI objects
+        towerSelectionBox = new TowerSelectionBox(towerData);
+        waveIcon = new WaveIcon();
 
-        BooleanProperty enemiesLeft = new SimpleBooleanProperty();
-        enemiesLeft.bind(getip("numEnemies").greaterThan(0));
-
-        getGameTimer().runAtIntervalWhile(this::spawnEnemy, Duration.seconds(1), enemiesLeft);
-
-//        getEventBus().addEventHandler(EnemyKilledEvent.ANY, this::onEnemyKilled);
-//        getEventBus().addEventHandler(EnemyReachedGoalEvent.ANY, e -> gameOver());
-
-        getGameWorld().getEntitiesFiltered(e -> e.isType("TiledMapLayer"))
-                .forEach(e -> {
-                    e.getViewComponent().addOnClickHandler(event -> {
-                        towerSelectionBox.setVisible(false);
-                    });
-                });
+        nextLevel();
     }
 
     private void loadTowerData() {
@@ -113,9 +96,79 @@ public class TowerDefenseApp extends GameApplication {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    protected void initPhysics() {
-        //getPhysicsWorld().addCollisionHandler(new BulletEnemyHandler());
+    private void loadLevelData() {
+        List<String> levelNames = List.of(
+                "level1.json"
+        );
+
+        levelData = levelNames.stream()
+                .map(name -> getAssetLoader().loadJSON("levels/" + name, LevelData.class).get())
+                .collect(Collectors.toList());
+    }
+
+    private void nextLevel() {
+        if (levelData.isEmpty()) {
+            gameOver();
+            return;
+        }
+
+        currentLevel = levelData.remove(0);
+        set(CURRENT_WAVE, 0);
+
+        waveIcon.setMaxWave(currentLevel.maxWaveIndex());
+
+        setLevelFromMap("tmx/" + currentLevel.map());
+
+        getGameWorld().getEntitiesFiltered(e -> e.isType("TiledMapLayer"))
+                .forEach(e -> {
+                    e.getViewComponent().addOnClickHandler(event -> {
+                        towerSelectionBox.setVisible(false);
+                    });
+                });
+
+        nextWave();
+    }
+
+    private void nextWave() {
+        if (geti(CURRENT_WAVE) < currentLevel.maxWaveIndex()) {
+            inc(CURRENT_WAVE, 1);
+            
+            currentLevel.waves()
+                    .stream()
+                    .filter(w -> w.index() == geti(CURRENT_WAVE))
+                    .forEach(wave -> {
+                        spawnWave(wave);
+
+                        inc("numEnemies", wave.amount());
+                    });
+        } else {
+            nextLevel();
+        }
+    }
+
+    private void spawnWave(WaveData wave) {
+        for (int i = 0; i < wave.amount(); i++) {
+            runOnce(() -> {
+
+                var wayEntity = getGameWorld().getSingleton(e ->
+                        e.isType(EntityType.WAY) && e.getString("name").equals(wave.way())
+                );
+
+                EnemyData data = getAssetLoader().loadJSON("enemies/" + wave.enemy(), EnemyData.class).get();
+
+                Polygon p = wayEntity.getObject("polygon");
+
+                spawnWithScale(
+                        "Enemy",
+                        new SpawnData()
+                                .put("way", Way.fromPolygon(p, wayEntity.getX(), wayEntity.getY()))
+                                .put("enemyData", data),
+                        Duration.seconds(0.45),
+                        Interpolators.ELASTIC.EASE_OUT()
+                );
+
+            }, Duration.seconds(i));
+        }
     }
 
     public void onCellClicked(Entity cell) {
@@ -138,53 +191,24 @@ public class TowerDefenseApp extends GameApplication {
 
     @Override
     protected void initUI() {
-        towerSelectionBox = new TowerSelectionBox(towerData);
         towerSelectionBox.setVisible(false);
 
         addUINode(towerSelectionBox);
 
-        var moneyIcon = new MoneyIcon();
+        addUINode(new MoneyIcon(), 10, 10);
+        addUINode(new HPIcon(), 10, 90);
 
-        addUINode(moneyIcon, 10, 10);
-
-        waveIcon = new WaveIcon();
-        // TODO: read from data
-        waveIcon.setMaxWave(5);
-
-        addUINode(waveIcon, 10, 90);
+        addUINode(waveIcon, 10, 250);
 
         addUINode(new EnemiesIcon(), 10, 170);
     }
 
-    private void spawnEnemy() {
+    public void onEnemyKilled(Entity enemy) {
         inc("numEnemies", -1);
 
-        var wayEntity = getGameWorld().getSingleton(EntityType.WAY);
-        Polygon p = wayEntity.getObject("polygon");
-
-        spawnWithScale(
-                "Enemy",
-                new SpawnData().put("way", Way.fromPolygon(p, wayEntity.getX(), wayEntity.getY())),
-                Duration.seconds(0.45),
-                Interpolators.ELASTIC.EASE_OUT()
-        );
-    }
-
-    private void onEnemyKilled(EnemyKilledEvent event) {
-        levelEnemies--;
-
-        if (levelEnemies == 0) {
-            gameOver();
+        if (geti("numEnemies") == 0) {
+            nextWave();
         }
-
-        Entity enemy = event.getEnemy();
-        Point2D position = enemy.getPosition();
-
-        Text xMark = getUIFactoryService().newText("X", Color.RED, 24);
-        xMark.setTranslateX(position.getX());
-        xMark.setTranslateY(position.getY() + 20);
-
-        getGameScene().addGameView(new GameView(xMark, 1000));
     }
 
     private void gameOver() {

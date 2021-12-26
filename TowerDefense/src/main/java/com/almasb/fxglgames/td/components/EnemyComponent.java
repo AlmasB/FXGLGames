@@ -2,7 +2,7 @@ package com.almasb.fxglgames.td.components;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxglgames.td.Way;
+import com.almasb.fxglgames.td.data.Way;
 import com.almasb.fxglgames.td.event.EnemyReachedGoalEvent;
 import javafx.geometry.Point2D;
 

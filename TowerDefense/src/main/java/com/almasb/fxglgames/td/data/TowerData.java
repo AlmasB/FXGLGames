@@ -1,4 +1,4 @@
-package com.almasb.fxglgames.td;
+package com.almasb.fxglgames.td.data;
 
 public record TowerData(
         String name,

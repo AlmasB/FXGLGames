@@ -3,20 +3,19 @@ package com.almasb.fxglgames.td;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.AutoRotationComponent;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
-import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
-import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.ui.ProgressBar;
 import com.almasb.fxglgames.td.components.BulletComponent;
 import com.almasb.fxglgames.td.components.EnemyComponent;
 import com.almasb.fxglgames.td.components.TowerComponent;
+import com.almasb.fxglgames.td.data.EnemyData;
+import com.almasb.fxglgames.td.data.TowerData;
 import javafx.beans.binding.Bindings;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -29,7 +28,9 @@ public class TowerDefenseFactory implements EntityFactory {
 
     @Spawns("Enemy")
     public Entity spawnEnemy(SpawnData data) {
-        var hp = new HealthIntComponent(150);
+        EnemyData enemyData = data.get("enemyData");
+
+        var hp = new HealthIntComponent(enemyData.hp());
 
         var hpBar = new ProgressBar(false);
         hpBar.setTranslateY(64);
