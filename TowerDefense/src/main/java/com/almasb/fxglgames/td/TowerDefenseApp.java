@@ -45,8 +45,8 @@ public class TowerDefenseApp extends GameApplication {
     protected void initSettings(GameSettings settings) {
         settings.setTitle("FXGL Tower Defense");
         settings.setVersion("0.3");
-        settings.setWidth(1280);
-        settings.setHeight(768);
+        settings.setWidth(25 * 64);
+        settings.setHeight(14 * 64);
         settings.setIntroEnabled(false);
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
@@ -87,6 +87,13 @@ public class TowerDefenseApp extends GameApplication {
                 gameOver();
             }
         });
+
+        // TODO: add FXGL API for limiting values of properties / vars?
+        getWorldProperties().<Integer>addListener(MONEY, (old, newValue) -> {
+            if (newValue > MAX_MONEY) {
+                set(MONEY, MAX_MONEY);
+            }
+        });
     }
 
     private void loadTowerData() {
@@ -106,6 +113,7 @@ public class TowerDefenseApp extends GameApplication {
 
     private void loadLevelData() {
         List<String> levelNames = List.of(
+                "level2.json",
                 "level1.json"
         );
 
@@ -115,11 +123,6 @@ public class TowerDefenseApp extends GameApplication {
     }
 
     private void nextLevel() {
-        if (levelData.isEmpty()) {
-            gameOver();
-            return;
-        }
-
         currentLevel = levelData.remove(0);
         set(CURRENT_WAVE, 0);
 
@@ -150,7 +153,12 @@ public class TowerDefenseApp extends GameApplication {
                         inc(NUM_ENEMIES, wave.amount());
                     });
         } else {
-            nextLevel();
+            if (levelData.isEmpty()) {
+                gameOver();
+                return;
+            }
+
+            getGameController().gotoLoading(() -> nextLevel());
         }
     }
 
@@ -194,6 +202,10 @@ public class TowerDefenseApp extends GameApplication {
     }
 
     public void onCellClicked(Entity cell) {
+        // if we already have a tower on this tower base, ignore call
+        if (cell.getProperties().exists("tower"))
+            return;
+
         towerSelectionBox.setCell(cell);
         towerSelectionBox.setVisible(true);
 
@@ -209,18 +221,18 @@ public class TowerDefenseApp extends GameApplication {
         inc("money", -data.cost());
 
         var tower = spawn("Tower", new SpawnData(cell.getPosition()).put("towerData", data));
+
+        cell.setProperty("tower", tower);
     }
 
     public void onEnemyKilled(Entity enemy) {
-        inc(NUM_ENEMIES, -1);
-        
         inc(MONEY, enemy.getComponent(EnemyComponent.class).getData().reward());
+        inc(NUM_ENEMIES, -1);
     }
 
     public void onEnemyReachedEnd(Entity enemy) {
-        inc(NUM_ENEMIES, -1);
-
         inc(PLAYER_HP, -1);
+        inc(NUM_ENEMIES, -1);
     }
 
     private void gameOver() {

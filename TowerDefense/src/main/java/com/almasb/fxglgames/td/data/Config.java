@@ -12,4 +12,7 @@ public class Config {
     public static final int PERFECT_CLEAR_REWARD = 100;
 
     public static final int STARTING_HP = 15;
+
+    public static final int Z_INDEX_TOWER = 5;
+    public static final int Z_INDEX_BULLET = 4;
 }

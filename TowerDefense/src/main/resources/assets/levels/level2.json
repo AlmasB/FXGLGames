@@ -1,0 +1,33 @@
+{
+  "map": "td2.tmx",
+  "waves": [
+    {
+      "index": 1,
+      "enemy": "enemy1.json",
+      "amount": 2,
+      "way": "way1",
+      "reward": 250
+    },
+    {
+      "index": 1,
+      "enemy": "enemy1.json",
+      "amount": 3,
+      "way": "way2",
+      "reward": 250
+    },
+    {
+      "index": 2,
+      "enemy": "enemy1.json",
+      "amount": 3,
+      "way": "way1",
+      "reward": 250
+    },
+    {
+      "index": 2,
+      "enemy": "enemy1.json",
+      "amount": 2,
+      "way": "way2",
+      "reward": 250
+    }
+  ]
+}

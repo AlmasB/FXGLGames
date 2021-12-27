@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="20" height="12" tilewidth="64" tileheight="64" infinite="0" nextlayerid="6" nextobjectid="29">
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="25" height="14" tilewidth="64" tileheight="64" infinite="0" nextlayerid="6" nextobjectid="31">
  <tileset firstgid="1" name="td_tilesheet" tilewidth="64" tileheight="64" tilecount="299" columns="23">
   <image source="td_tilesheet.png" trans="ffffff" width="1472" height="832"/>
  </tileset>
- <layer id="1" name="ground" width="20" height="12">
+ <layer id="1" name="ground" width="25" height="14">
   <data encoding="base64" compression="zlib">
-   eJxrYmBgaBrFo3gUD0kMAIjreeE=
+   eJxrYmBgaKIirsCCqWn+qB2jdozaMXLtGC4YAMHprXE=
   </data>
  </layer>
- <layer id="4" name="path" width="20" height="12">
+ <layer id="4" name="path" width="25" height="14">
   <data encoding="base64" compression="zlib">
-   eJytUtsRgCAM6xDCSPjYQdEdhB3cWj7kyNVa0DN3+UqbFFqiApfYKxzoHebERaFPtJVcA/p29Y2JATiBXy1X0nOfZTr347nhQY/wBw7m5n6eZGg6ZkWh3io9/J2SZn6ar9UP91rzOxrypb1KfiuVG9PycddR0Hcq9yfd9xfsdL+znN+x2hPVazPR
+   eJzdU1sOgCAM2+lUvIMCd1DPLyYuNHMMEvTHJv1hj5YxiDKGxNHgRP1YEleDvtGL5odr4t3LJe7AWWjUvGBuyX8pLjWkF82P7ME1h7hjJF1D9sFYoDy31hoH2i35yNYaXzljbPSc39saGnCfvtKw9gn7BcpvaHnSgHM7lPg1X97H2h/ogfaOJU9/xgkt2ztb
   </data>
  </layer>
- <layer id="3" name="decor" width="20" height="12">
+ <layer id="3" name="decor" width="25" height="14">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo2AUEANEB9oBWAAAD+QAFg==
+   eJxjYKAOECFCjRiV7BoF+IEYA/6wHuh4GGj7iQWiA+0AMsF9NIwOyPEXsp6NWOSxiVFiL7l2kALoYQcuAACppQh5
   </data>
  </layer>
- <objectgroup id="2" name="waypoints">
+ <objectgroup id="2" name="waypoints" visible="0">
   <object id="15" name="way1" type="waypoint" x="0" y="576">
-   <polygon points="0,0 128,0 128,-384 256,-384 256,-512 640,-512 640,-320 576,-192 576,0 640,64 896,64 896,-448 1280,-448"/>
+   <polygon points="0,0 128,0 128,-384 256,-384 256,-512 640,-512 640,-320 576,-192 576,0 640,64 896,64 896,-448 1344,-448 1344,-256 1600,-256"/>
   </object>
  </objectgroup>
  <objectgroup id="5" name="tower_placement">
@@ -36,5 +36,7 @@
   <object id="26" name="tower" type="towerBase" gid="182" x="768" y="256" width="64" height="64"/>
   <object id="27" name="tower" type="towerBase" gid="182" x="1024" y="320" width="64" height="64"/>
   <object id="28" name="tower" type="towerBase" gid="182" x="1024" y="448" width="64" height="64"/>
+  <object id="29" name="tower" type="towerBase" gid="182" x="1216" y="320" width="64" height="64"/>
+  <object id="30" name="tower" type="towerBase" gid="182" x="1216" y="448" width="64" height="64"/>
  </objectgroup>
 </map>

@@ -11,6 +11,7 @@ import com.almasb.fxgl.ui.ProgressBar;
 import com.almasb.fxglgames.td.components.BulletComponent;
 import com.almasb.fxglgames.td.components.EnemyComponent;
 import com.almasb.fxglgames.td.components.TowerComponent;
+import com.almasb.fxglgames.td.data.Config;
 import com.almasb.fxglgames.td.data.EnemyData;
 import com.almasb.fxglgames.td.data.TowerData;
 import javafx.beans.binding.Bindings;
@@ -20,6 +21,7 @@ import javafx.scene.shape.Rectangle;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxglgames.td.EntityType.*;
+import static com.almasb.fxglgames.td.data.Config.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -60,6 +62,7 @@ public class TowerDefenseFactory implements EntityFactory {
                 .viewWithBBox(towerData.imageName())
                 .collidable()
                 .with(new TowerComponent(towerData))
+                .zIndex(Z_INDEX_TOWER)
                 .build();
     }
 
@@ -79,6 +82,7 @@ public class TowerDefenseFactory implements EntityFactory {
                 .collidable()
                 .with(new BulletComponent(tower, target))
                 .with(new AutoRotationComponent())
+                .zIndex(Z_INDEX_BULLET)
                 .build();
     }
 

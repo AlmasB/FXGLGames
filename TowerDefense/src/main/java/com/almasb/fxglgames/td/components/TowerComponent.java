@@ -64,7 +64,7 @@ public class TowerComponent extends Component {
         String imageName = Objects.requireNonNullElse(data.projectileImageName(), "projectile.png");
 
         var bullet = spawn("Bullet",
-                new SpawnData(position.add(32, 32))
+                new SpawnData(position)
                         .put("imageName", imageName)
                         .put("tower", entity)
                         .put("target", enemy)
