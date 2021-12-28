@@ -218,7 +218,7 @@ public class TowerDefenseApp extends GameApplication {
     public void onTowerSelected(Entity cell, TowerData data) {
         towerSelectionBox.setVisible(false);
 
-        if(geti("money") - data.cost() > 0) {
+        if(geti("money") - data.cost() >= 0) {
             inc("money", -data.cost());
 
             var tower = spawn("Tower", new SpawnData(cell.getPosition()).put("towerData", data));
