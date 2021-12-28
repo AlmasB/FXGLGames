@@ -18,8 +18,6 @@ public class EnemyComponent extends Component {
     private EnemyData data;
     private Point2D nextWaypoint;
 
-    private double speed;
-
     public EnemyComponent(Way way, EnemyData data) {
         waypoints = way.getWaypoints();
         this.data = data;
@@ -38,7 +36,7 @@ public class EnemyComponent extends Component {
 
     @Override
     public void onUpdate(double tpf) {
-        speed = tpf * 60 * 2;
+        double speed = tpf * 60 * data.moveSpeed();
 
         Point2D velocity = nextWaypoint.subtract(entity.getPosition())
                 .normalize()

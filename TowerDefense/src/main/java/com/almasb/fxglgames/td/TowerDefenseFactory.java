@@ -10,8 +10,8 @@ import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.ui.ProgressBar;
 import com.almasb.fxglgames.td.components.BulletComponent;
 import com.almasb.fxglgames.td.components.EnemyComponent;
+import com.almasb.fxglgames.td.components.EnemyHealthViewComponent;
 import com.almasb.fxglgames.td.components.TowerComponent;
-import com.almasb.fxglgames.td.data.Config;
 import com.almasb.fxglgames.td.data.EnemyData;
 import com.almasb.fxglgames.td.data.TowerData;
 import javafx.beans.binding.Bindings;
@@ -19,7 +19,8 @@ import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
+import static com.almasb.fxgl.dsl.FXGL.texture;
 import static com.almasb.fxglgames.td.EntityType.*;
 import static com.almasb.fxglgames.td.data.Config.*;
 
@@ -32,24 +33,14 @@ public class TowerDefenseFactory implements EntityFactory {
     public Entity spawnEnemy(SpawnData data) {
         EnemyData enemyData = data.get("enemyData");
 
-        var hp = new HealthIntComponent(enemyData.hp());
-
-        var hpBar = new ProgressBar(false);
-        hpBar.setTranslateY(64);
-        hpBar.setWidth(60);
-        hpBar.setHeight(10);
-        hpBar.setFill(Color.LIGHTGREEN);
-        hpBar.setLabelVisible(false);
-        hpBar.maxValueProperty().bind(hp.maxValueProperty());
-        hpBar.currentValueProperty().bind(hp.valueProperty());
-
         return entityBuilder(data)
                 .type(ENEMY)
-                .viewWithBBox("enemy.png")
-                .view(hpBar)
+                .viewWithBBox("enemies/" + enemyData.imageName())
                 .collidable()
-                .with(hp)
+                .with(new HealthIntComponent(enemyData.hp()))
                 .with(new EnemyComponent(data.get("way"), enemyData))
+                .with(new AutoRotationComponent())
+                .with(new EnemyHealthViewComponent())
                 .build();
     }
 
@@ -110,16 +101,8 @@ public class TowerDefenseFactory implements EntityFactory {
 
     @Spawns("waypoint")
     public Entity newWaypoint(SpawnData data) {
-        //Polygon polygon = data.get("polygon");
-
         return entityBuilder(data)
                 .type(WAY)
-                .build();
-    }
-
-    @Spawns("start")
-    public Entity newStart(SpawnData data) {
-        return entityBuilder(data)
                 .build();
     }
 }

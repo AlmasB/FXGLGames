@@ -6,5 +6,6 @@ package com.almasb.fxglgames.td.data;
 public record EnemyData(
         int hp,
         int reward,
-        double moveSpeed
+        double moveSpeed,
+        String imageName
 ) { }

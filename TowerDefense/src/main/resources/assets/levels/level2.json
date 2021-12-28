@@ -10,7 +10,7 @@
     },
     {
       "index": 1,
-      "enemy": "enemy1.json",
+      "enemy": "enemy2.json",
       "amount": 3,
       "way": "way2",
       "reward": 250

@@ -4,11 +4,14 @@ import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.app.scene.FXGLMenu;
+import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxglgames.td.components.EnemyComponent;
 import com.almasb.fxglgames.td.data.*;
 import com.almasb.fxglgames.td.ui.*;
+import com.almasb.fxglgames.td.ui.scene.TowerDefenseMainMenu;
 import javafx.scene.shape.Polygon;
 import javafx.util.Duration;
 
@@ -29,6 +32,11 @@ import static com.almasb.fxglgames.td.data.Vars.*;
  * 3. Towers can shoot enemies
  * 4. Game ends if enemies are dead or have reached the last waypoint
  *
+ * TODO:
+ * - tower level up
+ * - new wave countdown
+ * - level end scene
+ *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class TowerDefenseApp extends GameApplication {
@@ -48,6 +56,14 @@ public class TowerDefenseApp extends GameApplication {
         settings.setWidth(25 * 64);
         settings.setHeight(14 * 64);
         settings.setIntroEnabled(false);
+        settings.setMainMenuEnabled(false);
+        settings.setGameMenuEnabled(false);
+        settings.setSceneFactory(new SceneFactory() {
+            @Override
+            public FXGLMenu newMainMenu() {
+                return new TowerDefenseMainMenu();
+            }
+        });
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
@@ -78,6 +94,7 @@ public class TowerDefenseApp extends GameApplication {
     private void initVarListeners() {
         getWorldProperties().<Integer>addListener(NUM_ENEMIES, (old, newValue) -> {
             if (newValue == 0) {
+                onWaveEnd();
                 nextWave();
             }
         });
@@ -86,6 +103,10 @@ public class TowerDefenseApp extends GameApplication {
             if (newValue == 0) {
                 gameOver();
             }
+        });
+
+        getWorldProperties().<Integer>addListener(CURRENT_WAVE, (old, newValue) -> {
+            Animations.playWaveIconAnimation(waveIcon);
         });
 
         // TODO: add FXGL API for limiting values of properties / vars?
@@ -144,13 +165,9 @@ public class TowerDefenseApp extends GameApplication {
         if (geti(CURRENT_WAVE) < currentLevel.maxWaveIndex()) {
             inc(CURRENT_WAVE, 1);
 
-            currentLevel.waves()
-                    .stream()
-                    .filter(w -> w.index() == geti(CURRENT_WAVE))
+            currentLevel.waves(geti(CURRENT_WAVE))
                     .forEach(wave -> {
                         spawnWave(wave);
-
-                        inc(NUM_ENEMIES, wave.amount());
                     });
         } else {
             if (levelData.isEmpty()) {
@@ -185,6 +202,15 @@ public class TowerDefenseApp extends GameApplication {
 
             }, Duration.seconds(i));
         }
+
+        inc(NUM_ENEMIES, wave.amount());
+    }
+
+    private void onWaveEnd() {
+        currentLevel.waves(geti(CURRENT_WAVE))
+                .forEach(wave -> {
+                    inc(MONEY, wave.reward());
+                });
     }
 
     @Override
@@ -216,15 +242,14 @@ public class TowerDefenseApp extends GameApplication {
     }
 
     public void onTowerSelected(Entity cell, TowerData data) {
-        towerSelectionBox.setVisible(false);
+        if (geti(MONEY) - data.cost() >= 0) {
+            towerSelectionBox.setVisible(false);
 
-        if(geti("money") - data.cost() >= 0) {
-            inc("money", -data.cost());
+            inc(MONEY, -data.cost());
 
             var tower = spawn("Tower", new SpawnData(cell.getPosition()).put("towerData", data));
 
             cell.setProperty("tower", tower);
-
         }
     }
 
