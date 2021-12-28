@@ -218,11 +218,14 @@ public class TowerDefenseApp extends GameApplication {
     public void onTowerSelected(Entity cell, TowerData data) {
         towerSelectionBox.setVisible(false);
 
-        inc("money", -data.cost());
+        if(geti("money") - data.cost() >= 0) {
+            inc("money", -data.cost());
 
-        var tower = spawn("Tower", new SpawnData(cell.getPosition()).put("towerData", data));
+            var tower = spawn("Tower", new SpawnData(cell.getPosition()).put("towerData", data));
 
-        cell.setProperty("tower", tower);
+            cell.setProperty("tower", tower);
+
+        }
     }
 
     public void onEnemyKilled(Entity enemy) {
