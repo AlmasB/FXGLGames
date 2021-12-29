@@ -68,12 +68,9 @@ public class TowerDefenseMainMenu extends FXGLMenu {
         bgInnerRight.setStroke(Color.LIGHTGREEN);
         bgInnerRight.setTranslateX(80 + bgInnerLeft.getWidth() + 80);
 
-        var title = getUIFactoryService().newText(
-                getSettings().getTitle() + " " + getSettings().getVersion(),
-                Color.BLACK, FontType.MONO, 16.0
-        );
-        title.setTranslateX(bgInnerLeft.getTranslateX() + 5);
-        title.setTranslateY(50);
+        var title = texture("title.png");
+        title.setTranslateX(bgInnerLeft.getTranslateX() + 8);
+        title.setTranslateY(40);
 
         var version = getUIFactoryService().newText(getSettings().getVersion(), Color.ANTIQUEWHITE, FontType.MONO, 12.0);
         version.setTranslateX(bgInnerLeft.getTranslateX() + 10);
@@ -161,7 +158,7 @@ public class TowerDefenseMainMenu extends FXGLMenu {
                 bgInnerRight,
                 menuBox,
                 contentBox,
-                //title,
+                title,
                 version
         );
     }
@@ -202,7 +199,7 @@ public class TowerDefenseMainMenu extends FXGLMenu {
             bg.setArcWidth(15);
             bg.setArcHeight(15);
             bg.setStrokeType(StrokeType.OUTSIDE);
-            bg.setStroke(Color.LIGHTGREY);
+            bg.setStroke(Color.LIGHTYELLOW);
             bg.setStrokeWidth(2.5);
 
             getChildren().addAll(view, bg);
