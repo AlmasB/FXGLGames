@@ -9,30 +9,27 @@ import com.almasb.fxgl.ui.FXGLScrollPane;
 import com.almasb.fxgl.ui.FontType;
 import com.almasb.fxglgames.td.TowerDefenseFactory;
 import com.almasb.fxglgames.td.data.LevelData;
-import javafx.beans.binding.Bindings;
-import javafx.collections.FXCollections;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
-import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
-import javafx.scene.text.Font;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
@@ -83,31 +80,64 @@ public class TowerDefenseMainMenu extends FXGLMenu {
         // TODO: where to read this from?
         List<String> levelNames = List.of(
                 "level2.json",
+                "level1.json",
+
+                // TODO: populate with actual levels
+                "level2.json",
+                "level1.json",
+                "level2.json",
+                "level1.json",
+                "level2.json",
+                "level1.json",
+                "level2.json",
+                "level1.json",
+                "level2.json",
+                "level1.json",
+                "level2.json",
+                "level1.json",
+                "level2.json",
+                "level1.json",
+                "level2.json",
+                "level1.json",
+                "level2.json",
+                "level1.json",
+                "level2.json",
+                "level1.json",
+                "level2.json",
+                "level1.json",
+                "level2.json",
                 "level1.json"
         );
 
-        var listView = getUIFactoryService().newListView(FXCollections.observableList(levelNames));
-        listView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, levelName) -> {
+        var selectBox = new LevelSelectionBox(
+                levelNames
+                        .stream()
+                        .map(name -> getAssetLoader().loadJSON("levels/" + name, LevelData.class).get())
+                        .collect(Collectors.toList())
+        );
 
-            if (levelName != null)
-                getExecutor().startAsync(() -> showLevelPreview(levelName));
+        // first level
+        getExecutor().startAsync(() -> showLevelPreview(selectBox.getSelectedLevel()));
+
+        selectBox.selectedLevelProperty().addListener((observable, oldValue, newLevel) -> {
+            getExecutor().startAsync(() -> showLevelPreview(newLevel));
         });
 
-        listView.getSelectionModel().selectFirst();
-
-        var scrollForListView = new FXGLScrollPane(listView);
-        scrollForListView.setPrefHeight(getAppHeight() / 2.0);
+        var scrollForListView = new FXGLScrollPane(selectBox);
+        scrollForListView.setMaxHeight(getAppHeight() / 2.0);
+        scrollForListView.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         // content views
 
         var hbox = new HBox(20, scrollForListView, mapPreview);
         var btnStartLevel = new Button(" Play ");
         btnStartLevel.getStyleClass().add("play_button");
-        btnStartLevel.disableProperty().bind(listView.getSelectionModel().selectedItemProperty().isNull());
-        btnStartLevel.setTranslateX(bgInnerRight.getWidth() / 2 - 100);
+        btnStartLevel.setTranslateX(bgInnerRight.getWidth() / 2);
         btnStartLevel.setTranslateY(getAppHeight() / 2.0 + 50);
         btnStartLevel.setOnAction(e -> {
             // TODO:
+
+            System.out.println(selectBox.getSelectedLevel().map());
         });
 
         var menuBox = new VBox(-15,
@@ -138,26 +168,24 @@ public class TowerDefenseMainMenu extends FXGLMenu {
         contentBox.getChildren().setAll(view);
     }
 
-    private void showLevelPreview(String levelName) {
+    private void showLevelPreview(LevelData data) {
         Image image;
 
-        if (mapPreviews.containsKey(levelName)) {
-            image = mapPreviews.get(levelName);
+        if (mapPreviews.containsKey(data.map())) {
+            image = mapPreviews.get(data.map());
         } else {
-
-            var levelData = getAssetLoader().loadJSON("levels/" + levelName, LevelData.class).get();
 
             var scene = new GameSubScene(getAppWidth() / 2, getAppHeight() / 2);
             scene.getGameScene().getViewport().setZoom(0.5);
             scene.getGameWorld().addEntityFactory(new TowerDefenseFactory());
 
-            var level = new TMXLevelLoader(true).load(getAssetLoader().getURL("/assets/levels/tmx/" + levelData.map()), scene.getGameWorld());
+            var level = new TMXLevelLoader(true).load(getAssetLoader().getURL("/assets/levels/tmx/" + data.map()), scene.getGameWorld());
 
             scene.getGameWorld().setLevel(level);
 
             image = ImagesKt.toImage(scene.getContentRoot());
 
-            mapPreviews.put(levelName, image);
+            mapPreviews.put(data.map(), image);
         }
 
         getExecutor().startAsyncFX(() -> mapPreview.view.setImage(image));
@@ -176,41 +204,6 @@ public class TowerDefenseMainMenu extends FXGLMenu {
             bg.setStrokeWidth(2.5);
 
             getChildren().addAll(view, bg);
-        }
-    }
-
-    private static class MenuButton extends Parent {
-
-        MenuButton(String name, Runnable action) {
-            var bg = new Polygon(
-                    0.0, 0.0,
-                    200.0, 0.0,
-                    200.0, 25.0,
-                    190.0, 40.0,
-                    0.0, 40.0
-            );
-            bg.setStrokeWidth(2.5);
-            bg.strokeProperty().bind(
-                    Bindings.when(hoverProperty()).then(Color.GOLD).otherwise(Color.TRANSPARENT)
-            );
-            bg.fillProperty().bind(
-                    Bindings.when(hoverProperty()).then(Color.DARKORANGE).otherwise(Color.TRANSPARENT)
-            );
-
-            var text = getUIFactoryService().newText(name, Color.WHITE, FontType.GAME, 26.0);
-            text.setTranslateX(15);
-            text.setTranslateY(28);
-            text.fillProperty().bind(
-                    Bindings.when(disableProperty())
-                            .then(Color.GRAY)
-                            .otherwise(
-                                    Bindings.when(pressedProperty()).then(Color.YELLOWGREEN).otherwise(Color.WHITE)
-                            )
-            );
-
-            setOnMouseClicked(e -> action.run());
-
-            getChildren().addAll(bg, text);
         }
     }
 }
