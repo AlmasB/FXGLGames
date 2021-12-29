@@ -56,7 +56,6 @@ public class PongApp extends GameApplication {
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Pong");
         settings.setVersion("1.0");
-        settings.setFontUI("pong.ttf");
     }
 
     private BatComponent playerBat;
