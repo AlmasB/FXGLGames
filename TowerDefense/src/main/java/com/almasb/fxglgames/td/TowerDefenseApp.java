@@ -55,8 +55,9 @@ public class TowerDefenseApp extends GameApplication {
         settings.setVersion("0.3");
         settings.setWidth(25 * 64);
         settings.setHeight(14 * 64);
+        settings.getCSSList().add("main.css");
         settings.setIntroEnabled(false);
-        settings.setMainMenuEnabled(false);
+        settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(false);
         settings.setSceneFactory(new SceneFactory() {
             @Override
