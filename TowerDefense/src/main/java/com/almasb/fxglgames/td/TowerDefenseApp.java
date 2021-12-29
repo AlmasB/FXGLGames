@@ -42,7 +42,6 @@ import static com.almasb.fxglgames.td.data.Vars.*;
 public class TowerDefenseApp extends GameApplication {
 
     private List<TowerData> towerData;
-    private List<LevelData> levelData;
 
     private LevelData currentLevel;
 
@@ -76,12 +75,15 @@ public class TowerDefenseApp extends GameApplication {
         vars.put(CURRENT_WAVE, 0);
     }
 
+    public void setCurrentLevel(LevelData currentLevel) {
+        this.currentLevel = currentLevel;
+    }
+
     @Override
     protected void initGame() {
         initVarListeners();
 
         loadTowerData();
-        loadLevelData();
 
         getGameWorld().addEntityFactory(new TowerDefenseFactory());
 
@@ -133,19 +135,7 @@ public class TowerDefenseApp extends GameApplication {
                 .collect(Collectors.toList());
     }
 
-    private void loadLevelData() {
-        List<String> levelNames = List.of(
-                "level2.json",
-                "level1.json"
-        );
-
-        levelData = levelNames.stream()
-                .map(name -> getAssetLoader().loadJSON("levels/" + name, LevelData.class).get())
-                .collect(Collectors.toList());
-    }
-
     private void nextLevel() {
-        currentLevel = levelData.remove(0);
         set(CURRENT_WAVE, 0);
 
         waveIcon.setMaxWave(currentLevel.maxWaveIndex());
@@ -171,12 +161,7 @@ public class TowerDefenseApp extends GameApplication {
                         spawnWave(wave);
                     });
         } else {
-            if (levelData.isEmpty()) {
-                gameOver();
-                return;
-            }
-
-            getGameController().gotoLoading(() -> nextLevel());
+            gameOver();
         }
     }
 
@@ -265,7 +250,7 @@ public class TowerDefenseApp extends GameApplication {
     }
 
     private void gameOver() {
-        showMessage("Demo Over. Thanks for playing!", getGameController()::exit);
+        showMessage("Level Complete!", getGameController()::gotoMainMenu);
     }
 
     public static void main(String[] args) {

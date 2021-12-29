@@ -3,10 +3,12 @@ package com.almasb.fxglgames.td.ui.scene;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.GameSubScene;
 import com.almasb.fxgl.app.scene.MenuType;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.level.tiled.TMXLevelLoader;
 import com.almasb.fxgl.texture.ImagesKt;
 import com.almasb.fxgl.ui.FXGLScrollPane;
 import com.almasb.fxgl.ui.FontType;
+import com.almasb.fxglgames.td.TowerDefenseApp;
 import com.almasb.fxglgames.td.TowerDefenseFactory;
 import com.almasb.fxglgames.td.data.LevelData;
 import javafx.scene.Group;
@@ -135,9 +137,9 @@ public class TowerDefenseMainMenu extends FXGLMenu {
         btnStartLevel.setTranslateX(bgInnerRight.getWidth() / 2);
         btnStartLevel.setTranslateY(getAppHeight() / 2.0 + 50);
         btnStartLevel.setOnAction(e -> {
-            // TODO:
+            FXGL.<TowerDefenseApp>getAppCast().setCurrentLevel(selectBox.getSelectedLevel());
 
-            System.out.println(selectBox.getSelectedLevel().map());
+            fireNewGame();
         });
 
         var menuBox = new VBox(-15,
