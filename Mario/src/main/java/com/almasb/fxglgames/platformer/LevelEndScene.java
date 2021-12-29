@@ -34,7 +34,7 @@ public class LevelEndScene extends SubScene {
     private Text textUserTime = getUIFactoryService().newText("", Color.WHITE, 24.0);
     private HBox gradeBox = new HBox();
 
-    private FontFactory levelFont = getAssetLoader().loadFont("level_font.ttf");
+    private FontFactory levelFont = getAssetLoader().loadFont(getSettings().getFontMono());
     private BooleanProperty isAnimationDone = new SimpleBooleanProperty(false);
 
     public LevelEndScene() {
@@ -69,12 +69,12 @@ public class LevelEndScene extends SubScene {
 
         var textLevel = new Text();
         textLevel.textProperty().bind(getip("level").asString("Level %d"));
-        textLevel.setFont(levelFont.newFont(52));
+        textLevel.setFont(levelFont.newFont(72));
         textLevel.setRotate(-20);
 
         textLevel.setFill(Color.ORANGE);
         textLevel.setStroke(Color.BLACK);
-        textLevel.setStrokeWidth(3.5);
+        textLevel.setStrokeWidth(1);
 
         textLevel.setTranslateX(root.getTranslateX() - textLevel.getLayoutBounds().getWidth() / 3);
         textLevel.setTranslateY(root.getTranslateY() + 25);
