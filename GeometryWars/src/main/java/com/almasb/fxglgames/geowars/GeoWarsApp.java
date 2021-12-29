@@ -30,6 +30,7 @@ import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
+import com.almasb.fxgl.app.scene.GameSubScene;
 import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.app.scene.SimpleGameMenu;
 import com.almasb.fxgl.core.math.FXGLMath;
@@ -101,7 +102,6 @@ public class GeoWarsApp extends GameApplication {
         settings.setProfilingEnabled(false);
         settings.setCollisionDetectionStrategy(CollisionDetectionStrategy.GRID_INDEXING);
         settings.setApplicationMode(isRelease ? ApplicationMode.RELEASE : ApplicationMode.DEVELOPER);
-        settings.setFontUI("game_font_7.ttf");
         settings.addEngineService(HighScoreService.class);
         settings.addEngineService(PlayerPressureService.class);
         settings.addEngineService(WaveService.class);
@@ -189,6 +189,23 @@ public class GeoWarsApp extends GameApplication {
 
             onKeyDown(KeyCode.T, () -> {
                 getService(WaveService.class).spawnWave();
+            });
+
+
+
+
+            onKeyDown(KeyCode.Y, () -> {
+
+                System.out.println(player.getPosition());
+
+                var gameSubScene = new ChainExplosionSubScene();
+                gameSubScene.getGameWorld().addEntityFactory(new GeoWarsFactory());
+
+                gameSubScene.addTargets(player,
+                        getGameWorld().getEntitiesFiltered(e -> e.isType(WANDERER))
+                );
+
+                getSceneService().pushSubScene(gameSubScene);
             });
         }
     }
