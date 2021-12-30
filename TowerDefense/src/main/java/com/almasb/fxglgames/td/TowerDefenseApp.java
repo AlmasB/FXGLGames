@@ -34,7 +34,6 @@ import static com.almasb.fxglgames.td.data.Vars.*;
  *
  * TODO:
  * - tower level up
- * - new wave countdown
  * - level end scene
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -240,7 +239,12 @@ public class TowerDefenseApp extends GameApplication {
 
             inc(MONEY, -data.cost());
 
-            var tower = spawn("Tower", new SpawnData(cell.getPosition()).put("towerData", data));
+            var tower = spawnWithScale(
+                    "Tower",
+                    new SpawnData(cell.getPosition()).put("towerData", data),
+                    Duration.seconds(0.85),
+                    Interpolators.ELASTIC.EASE_OUT()
+            );
 
             cell.setProperty("tower", tower);
         }

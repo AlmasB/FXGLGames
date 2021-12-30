@@ -1,10 +1,12 @@
 package com.almasb.fxglgames.td.ui;
 
+import com.almasb.fxgl.core.util.EmptyRunnable;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -23,7 +25,21 @@ public class WaveIcon extends Icon {
     private BooleanBinding isCountdownGreaterZero = countdown.greaterThan(0);
     private BooleanProperty timerCondition = new SimpleBooleanProperty();
 
+    private Button startButton = new Button("Start");
+
+    private Runnable waveStartAction = EmptyRunnable.INSTANCE;
+
     public WaveIcon() {
+        startButton.getStyleClass().add("play_button");
+
+        startButton.setOnAction(e -> {
+            countdown.set(0);
+            waveStartAction.run();
+        });
+
+        startButton.setTranslateX(150);
+        startButton.setTranslateY(-5);
+
         textCurrentWave.setTranslateX(5);
         textCurrentWave.setTranslateY(40);
 
@@ -36,8 +52,9 @@ public class WaveIcon extends Icon {
 
         textCurrentWave.visibleProperty().bind(isCountdownGreaterZero.not());
         textWaveIn.visibleProperty().bind(isCountdownGreaterZero);
+        startButton.visibleProperty().bind(isCountdownGreaterZero);
 
-        getChildren().addAll(textCurrentWave, textWaveIn);
+        getChildren().addAll(textCurrentWave, textWaveIn, startButton);
     }
 
     public void setMaxWave(int maxWave) {
@@ -45,17 +62,20 @@ public class WaveIcon extends Icon {
     }
 
     public void scheduleWave(int seconds, Runnable action) {
+        this.waveStartAction = action;
         countdown.set(seconds);
 
         // TODO: change API to boolean binding / expression?
         getGameTimer().runAtIntervalWhile(() -> {
 
-            countdown.set(countdown.get() - 1);
+            // just in case
+            if (countdown.get() > 0) {
+                countdown.set(countdown.get() - 1);
 
-            if (countdown.get() == 0) {
-                action.run();
+                if (countdown.get() == 0) {
+                    action.run();
+                }
             }
-
         }, Duration.seconds(1), timerCondition);
     }
 }
