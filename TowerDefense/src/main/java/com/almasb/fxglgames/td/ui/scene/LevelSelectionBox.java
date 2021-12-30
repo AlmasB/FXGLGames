@@ -27,7 +27,7 @@ public class LevelSelectionBox extends VBox {
         super(-20);
 
         levels.forEach(data -> {
-            MenuItem item = new MenuItem(data, data.map(), i -> select(i));
+            MenuItem item = new MenuItem(data, data.name(), i -> select(i));
 
             getChildren().add(item);
         });

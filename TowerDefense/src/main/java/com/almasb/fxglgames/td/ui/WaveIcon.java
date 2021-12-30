@@ -30,7 +30,7 @@ public class WaveIcon extends Icon {
     private Runnable waveStartAction = EmptyRunnable.INSTANCE;
 
     public WaveIcon() {
-        startButton.getStyleClass().add("play_button");
+        startButton.getStyleClass().add("wave_button");
 
         startButton.setOnAction(e -> {
             countdown.set(0);
@@ -38,7 +38,7 @@ public class WaveIcon extends Icon {
         });
 
         startButton.setTranslateX(150);
-        startButton.setTranslateY(-5);
+        startButton.setTranslateY(15);
 
         textCurrentWave.setTranslateX(5);
         textCurrentWave.setTranslateY(40);

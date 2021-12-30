@@ -11,6 +11,7 @@ import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxglgames.td.components.EnemyComponent;
 import com.almasb.fxglgames.td.data.*;
 import com.almasb.fxglgames.td.ui.*;
+import com.almasb.fxglgames.td.ui.scene.TowerDefenseGameMenu;
 import com.almasb.fxglgames.td.ui.scene.TowerDefenseMainMenu;
 import javafx.scene.shape.Polygon;
 import javafx.util.Duration;
@@ -20,21 +21,18 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxglgames.td.EntityType.*;
 import static com.almasb.fxglgames.td.data.Config.*;
 import static com.almasb.fxglgames.td.data.Vars.*;
 
 /**
  * This is an example of a tower defense game.
  *
- * Demo:
- * 1. Enemies move using waypoints
- * 2. Player can place towers
- * 3. Towers can shoot enemies
- * 4. Game ends if enemies are dead or have reached the last waypoint
- *
  * TODO:
- * - tower level up
+ * - bonus buffs (runes)
+ * - tower level up (upgrades)
  * - level end scene
+ * - player progression currency, so that towers are unlocked via the "shop"
  *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
@@ -56,11 +54,16 @@ public class TowerDefenseApp extends GameApplication {
         settings.getCSSList().add("main.css");
         settings.setIntroEnabled(false);
         settings.setMainMenuEnabled(true);
-        settings.setGameMenuEnabled(false);
+        settings.setGameMenuEnabled(true);
         settings.setSceneFactory(new SceneFactory() {
             @Override
             public FXGLMenu newMainMenu() {
                 return new TowerDefenseMainMenu();
+            }
+
+            @Override
+            public FXGLMenu newGameMenu() {
+                return new TowerDefenseGameMenu();
             }
         });
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
@@ -130,7 +133,7 @@ public class TowerDefenseApp extends GameApplication {
 
         towerData = towerNames.stream()
                 .map(name -> getAssetLoader().loadJSON("towers/" + name, TowerData.class).get())
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private void loadCurrentLevel() {
@@ -166,27 +169,27 @@ public class TowerDefenseApp extends GameApplication {
     }
 
     private void spawnWave(WaveData wave) {
+        var wayEntity = getGameWorld().getSingleton(e ->
+                e.isType(WAY) && e.getString("name").equals(wave.way())
+        );
+
+        EnemyData data = getAssetLoader().loadJSON("enemies/" + wave.enemy(), EnemyData.class).get();
+
+        Polygon p = wayEntity.getObject("polygon");
+        var way = Way.fromPolygon(p, wayEntity.getX(), wayEntity.getY());
+
         for (int i = 0; i < wave.amount(); i++) {
             runOnce(() -> {
-
-                var wayEntity = getGameWorld().getSingleton(e ->
-                        e.isType(EntityType.WAY) && e.getString("name").equals(wave.way())
-                );
-
-                EnemyData data = getAssetLoader().loadJSON("enemies/" + wave.enemy(), EnemyData.class).get();
-
-                Polygon p = wayEntity.getObject("polygon");
-
                 spawnWithScale(
                         "Enemy",
                         new SpawnData()
-                                .put("way", Way.fromPolygon(p, wayEntity.getX(), wayEntity.getY()))
+                                .put("way", way)
                                 .put("enemyData", data),
                         Duration.seconds(0.45),
                         Interpolators.ELASTIC.EASE_OUT()
                 );
 
-            }, Duration.seconds(i));
+            }, Duration.seconds(i * data.interval()));
         }
 
         inc(NUM_ENEMIES, wave.amount());

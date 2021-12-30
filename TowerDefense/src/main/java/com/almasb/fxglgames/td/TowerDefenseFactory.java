@@ -2,11 +2,13 @@ package com.almasb.fxglgames.td;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.AutoRotationComponent;
+import com.almasb.fxgl.dsl.components.EffectComponent;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
+import com.almasb.fxgl.entity.components.TimeComponent;
 import com.almasb.fxgl.ui.ProgressBar;
 import com.almasb.fxglgames.td.components.BulletComponent;
 import com.almasb.fxglgames.td.components.EnemyComponent;
@@ -14,9 +16,13 @@ import com.almasb.fxglgames.td.components.EnemyHealthViewComponent;
 import com.almasb.fxglgames.td.components.TowerComponent;
 import com.almasb.fxglgames.td.data.EnemyData;
 import com.almasb.fxglgames.td.data.TowerData;
+import com.almasb.fxglgames.td.ui.PowerDownIcon;
 import javafx.beans.binding.Bindings;
 import javafx.scene.Node;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 
 import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
@@ -37,6 +43,8 @@ public class TowerDefenseFactory implements EntityFactory {
                 .type(ENEMY)
                 .viewWithBBox("enemies/" + enemyData.imageName())
                 .collidable()
+                .with(new TimeComponent())
+                .with(new EffectComponent())
                 .with(new HealthIntComponent(enemyData.hp()))
                 .with(new EnemyComponent(data.get("way"), enemyData))
                 .with(new AutoRotationComponent())
@@ -103,6 +111,27 @@ public class TowerDefenseFactory implements EntityFactory {
     public Entity newWaypoint(SpawnData data) {
         return entityBuilder(data)
                 .type(WAY)
+                .build();
+    }
+
+    // VISUAL EFFECTS
+
+    @Spawns("visualEffectSlow")
+    public Entity newVisualEffectSlow(SpawnData data) {
+        var icon1 = new PowerDownIcon(Color.YELLOW);
+        var icon2 = new PowerDownIcon(Color.ORANGE);
+
+        var icon3 = new PowerDownIcon(Color.YELLOW);
+        var icon4 = new PowerDownIcon(Color.ORANGE);
+
+        var box = new VBox(-5, icon3, icon4);
+        box.setTranslateX(64.0);
+        box.setTranslateY(-25.0);
+
+        return entityBuilder(data)
+                .viewWithBBox(new VBox(-5, icon1, icon2))
+                .viewWithBBox(box)
+                .scale(0.3, 0.3)
                 .build();
     }
 }

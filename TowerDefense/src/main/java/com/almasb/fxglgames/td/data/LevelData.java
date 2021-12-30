@@ -8,6 +8,7 @@ import java.util.stream.Stream;
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public record LevelData(
+        String name,
         String map,
         List<WaveData> waves
 ) {

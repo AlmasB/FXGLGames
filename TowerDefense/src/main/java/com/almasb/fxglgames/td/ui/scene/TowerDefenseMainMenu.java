@@ -139,17 +139,20 @@ public class TowerDefenseMainMenu extends FXGLMenu {
             fireNewGame();
         });
 
+        var runesView = new RunesView();
+        var upgradesView = new UpgradesView();
+
         var menuBox = new VBox(-15,
                 new MenuButton("Levels", () -> setContent(new Group(hbox, btnStartLevel))),
-                new MenuButton("Runes", () -> showMessage("TODO: not implemented")),
-                new MenuButton("Upgrades", () -> showMessage("TODO: not implemented")),
+                new MenuButton("Runes", () -> setContent(runesView)),
+                new MenuButton("Upgrades", () -> setContent(upgradesView)),
                 new MenuButton("Settings", () -> showMessage("TODO: not implemented")),
                 new MenuButton("Exit", () -> fireExit())
         );
         menuBox.setTranslateX(bgInnerLeft.getTranslateX() + 15);
         menuBox.setTranslateY(250);
 
-        contentBox.setTranslateX(bgInnerRight.getTranslateX() + 15);
+        contentBox.setTranslateX(bgInnerRight.getTranslateX() + 25);
         contentBox.setTranslateY(220);
 
         getContentRoot().getChildren().addAll(

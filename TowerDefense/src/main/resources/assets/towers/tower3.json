@@ -4,5 +4,8 @@
   "attack": 30,
   "attackRate": 1.35,
   "cost": 140,
-  "isSplashDamage": true
+  "isSplashDamage": true,
+  "effects": [
+    "slow,90,1.0"
+  ]
 }

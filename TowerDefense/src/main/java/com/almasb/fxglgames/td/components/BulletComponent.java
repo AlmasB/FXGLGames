@@ -1,11 +1,17 @@
 package com.almasb.fxglgames.td.components;
 
+import com.almasb.fxgl.app.scene.FXGLMenu;
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.dsl.components.EffectComponent;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxglgames.td.TowerDefenseApp;
 import com.almasb.fxglgames.td.data.Config;
+import com.almasb.fxglgames.td.ui.Animations;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -37,6 +43,17 @@ public class BulletComponent extends Component {
 
     private void onTargetHit() {
         TowerComponent data = tower.getComponent(TowerComponent.class);
+
+        data.onHitEffects().forEach(effect -> {
+            if (FXGLMath.randomBoolean(effect.getChance())) {
+                target.getComponent(EffectComponent.class).startEffect(effect.getEffect());
+
+                // TODO: generalise
+                var visualEffect = spawn("visualEffectSlow", target.getPosition());
+
+                Animations.playVisualEffectSlowAnimation(visualEffect);
+            }
+        });
 
         entity.removeFromWorld();
 

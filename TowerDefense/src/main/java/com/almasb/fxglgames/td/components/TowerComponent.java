@@ -1,14 +1,17 @@
 package com.almasb.fxglgames.td.components;
 
+import com.almasb.fxgl.dsl.effects.SlowTimeEffect;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.td.EntityType;
+import com.almasb.fxglgames.td.buffs.OnHitEffect;
 import com.almasb.fxglgames.td.data.TowerData;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
+import java.util.List;
 import java.util.Objects;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -31,6 +34,13 @@ public class TowerComponent extends Component {
 
     public int getDamage() {
         return data.attack();
+    }
+
+    // TODO: read from data
+    public List<OnHitEffect> onHitEffects() {
+        return List.of(
+                new OnHitEffect(new SlowTimeEffect(0.2, Duration.seconds(3)), 0.75)
+        );
     }
 
     @Override

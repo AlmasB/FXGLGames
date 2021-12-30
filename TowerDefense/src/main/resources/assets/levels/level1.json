@@ -1,17 +1,11 @@
 {
+  "name": "Hello world",
   "map": "td1.tmx",
   "waves": [
     {
       "index": 1,
       "enemy": "enemy1.json",
-      "amount": 5,
-      "way": "way1",
-      "reward": 250
-    },
-    {
-      "index": 2,
-      "enemy": "enemy1.json",
-      "amount": 10,
+      "amount": 35,
       "way": "way1",
       "reward": 250
     }
