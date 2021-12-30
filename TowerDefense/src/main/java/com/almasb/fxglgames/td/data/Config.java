@@ -15,4 +15,6 @@ public class Config {
 
     public static final int Z_INDEX_TOWER = 5;
     public static final int Z_INDEX_BULLET = 4;
+
+    public static final int WAVE_PREP_TIME = 90;
 }

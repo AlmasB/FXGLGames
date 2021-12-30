@@ -91,14 +91,13 @@ public class TowerDefenseApp extends GameApplication {
         towerSelectionBox = new TowerSelectionBox(towerData);
         waveIcon = new WaveIcon();
 
-        nextLevel();
+        loadCurrentLevel();
     }
 
     private void initVarListeners() {
         getWorldProperties().<Integer>addListener(NUM_ENEMIES, (old, newValue) -> {
             if (newValue == 0) {
                 onWaveEnd();
-                nextWave();
             }
         });
 
@@ -135,7 +134,7 @@ public class TowerDefenseApp extends GameApplication {
                 .collect(Collectors.toList());
     }
 
-    private void nextLevel() {
+    private void loadCurrentLevel() {
         set(CURRENT_WAVE, 0);
 
         waveIcon.setMaxWave(currentLevel.maxWaveIndex());
@@ -149,7 +148,11 @@ public class TowerDefenseApp extends GameApplication {
                     });
                 });
 
-        nextWave();
+        scheduleNextWave();
+    }
+
+    private void scheduleNextWave() {
+        waveIcon.scheduleWave(WAVE_PREP_TIME, () -> nextWave());
     }
 
     private void nextWave() {
@@ -160,8 +163,6 @@ public class TowerDefenseApp extends GameApplication {
                     .forEach(wave -> {
                         spawnWave(wave);
                     });
-        } else {
-            gameOver();
         }
     }
 
@@ -197,6 +198,12 @@ public class TowerDefenseApp extends GameApplication {
                 .forEach(wave -> {
                     inc(MONEY, wave.reward());
                 });
+
+        if (geti(CURRENT_WAVE) < currentLevel.maxWaveIndex()) {
+            scheduleNextWave();
+        } else {
+            gameOver();
+        }
     }
 
     @Override
