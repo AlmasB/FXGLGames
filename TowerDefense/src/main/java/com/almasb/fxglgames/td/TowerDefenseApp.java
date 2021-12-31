@@ -55,6 +55,7 @@ public class TowerDefenseApp extends GameApplication {
         settings.setIntroEnabled(false);
         settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(true);
+        settings.addEngineService(CurrencyService.class);
         settings.setSceneFactory(new SceneFactory() {
             @Override
             public FXGLMenu newMainMenu() {

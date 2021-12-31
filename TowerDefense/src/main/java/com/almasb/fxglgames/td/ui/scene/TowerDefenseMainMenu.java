@@ -11,6 +11,7 @@ import com.almasb.fxgl.ui.FontType;
 import com.almasb.fxglgames.td.TowerDefenseApp;
 import com.almasb.fxglgames.td.TowerDefenseFactory;
 import com.almasb.fxglgames.td.data.LevelData;
+import com.almasb.fxglgames.td.ui.CurrencyView;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -155,6 +156,10 @@ public class TowerDefenseMainMenu extends FXGLMenu {
         contentBox.setTranslateX(bgInnerRight.getTranslateX() + 25);
         contentBox.setTranslateY(220);
 
+        var currencyView = new CurrencyView();
+        currencyView.setTranslateX(getAppWidth() - 300);
+        currencyView.setTranslateY(15);
+
         getContentRoot().getChildren().addAll(
                 bg,
                 bgInnerLeft,
@@ -162,7 +167,8 @@ public class TowerDefenseMainMenu extends FXGLMenu {
                 menuBox,
                 contentBox,
                 title,
-                version
+                version,
+                currencyView
         );
     }
 
