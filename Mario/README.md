@@ -7,6 +7,8 @@ Coin https://opengameart.org/content/coin-animation
 
 Bone https://opengameart.org/content/throwing-bone
 
+Player https://github.com/photonstorm/phaser3-examples
+
 ## Contributions
 
 The turret textures were created by [Chun Ho Choi](https://chc40.brighton.domains/Index.html).
