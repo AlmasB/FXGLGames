@@ -18,7 +18,7 @@
 
         <fxgl.version>17</fxgl.version>
         <jfx.maven.plugin.version>0.0.8</jfx.maven.plugin.version>
-        <gluonfx.plugin.version>1.0.1</gluonfx.plugin.version>
+        <gluonfx.plugin.version>1.0.11</gluonfx.plugin.version>
         <attach.version>4.0.13</attach.version>
         <mainClassName>com.almasb.fxglgames.platformer.PlatformerApp</mainClassName>
     </properties>
