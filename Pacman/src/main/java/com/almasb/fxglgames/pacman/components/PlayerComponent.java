@@ -29,6 +29,7 @@ package com.almasb.fxglgames.pacman.components;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.component.Required;
 import com.almasb.fxgl.pathfinding.CellMoveComponent;
+import com.almasb.fxgl.pathfinding.astar.AStarCell;
 import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
 
 import static com.almasb.fxglgames.pacman.components.PlayerComponent.MoveDirection.*;
@@ -118,20 +119,9 @@ public class PlayerComponent extends Component {
         }
     }
 
-//    public void teleport() {
-//        Random random = new Random();
-//
-//        AStarGrid grid = ((PacmanApp) FXGL.getApp()).getGrid();
-//
-//        int x, y;
-//
-//        do {
-//            x = (random.nextInt(PacmanApp.MAP_SIZE - 2) + 1);
-//            y = (random.nextInt(PacmanApp.MAP_SIZE - 2) + 1);
-//        } while (grid.getNodeState(x, y) != NodeState.WALKABLE);
-//
-//        position.setValue(x * PacmanApp.BLOCK_SIZE, y * PacmanApp.BLOCK_SIZE);
-//
-//        playFadeAnimation();
-//    }
+    public void teleport() {
+        astar.getGrid()
+                .getRandomCell(AStarCell::isWalkable)
+                .ifPresent(c -> astar.stopMovementAt(c.getX(), c.getY()));
+    }
 }
