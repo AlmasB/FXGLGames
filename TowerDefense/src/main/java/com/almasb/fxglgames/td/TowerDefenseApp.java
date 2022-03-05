@@ -8,7 +8,6 @@ import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.quest.IntQuestObjective;
 import com.almasb.fxgl.quest.Quest;
 import com.almasb.fxgl.quest.QuestService;
 import com.almasb.fxgl.quest.QuestState;
@@ -25,10 +24,9 @@ import javafx.util.Duration;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
-import static com.almasb.fxglgames.td.EntityType.*;
+import static com.almasb.fxglgames.td.EntityType.WAY;
 import static com.almasb.fxglgames.td.data.Config.*;
 import static com.almasb.fxglgames.td.data.Vars.*;
 
@@ -171,35 +169,25 @@ public class TowerDefenseApp extends GameApplication {
     private void initQuests(LevelData level) {
         getService(QuestService.class).questsProperty().forEach(quest -> getService(QuestService.class).removeQuest(quest));
 
-        var objs = level.quests()
-                .stream()
-                .map(data -> {
-                    var obj = new IntQuestObjective(data.desc(), data.varName(), (int) data.varValue());
-                    obj.stateProperty().addListener((observable, oldValue, newValue) -> {
-                        System.out.println("QUEST_OBJECTIVE: " + oldValue + " -> " + newValue);
-                    });
-
-                    return obj;
-                })
-                .collect(Collectors.toList());
-
-        var quest = new Quest("Objectives", objs);
+        var quest = new Quest("Objectives");
 
         quest.stateProperty().addListener((observable, oldValue, newValue) -> {
             System.out.println("QUEST: " + oldValue + " -> " + newValue);
         });
 
-        getService(QuestService.class).addQuest(quest);
-        getService(QuestService.class).startQuest(quest);
+        level.quests()
+                .forEach(data -> {
+                    quest.addIntObjective(data.desc(), data.varName(), (int) data.varValue());
+                });
 
-
+        getQuestService().startQuest(quest);
 
         var vbox = new VBox(10);
         vbox.getChildren().addAll(
                 getUIFactoryService().newText(quest.getName(), Color.ANTIQUEWHITE, 24.0)
         );
 
-        quest.getObjectives().forEach(obj -> {
+        quest.objectivesProperty().forEach(obj -> {
             var text = getUIFactoryService().newText("");
             text.textProperty().bind(
                     Bindings.when(obj.stateProperty().isEqualTo(QuestState.COMPLETED))
