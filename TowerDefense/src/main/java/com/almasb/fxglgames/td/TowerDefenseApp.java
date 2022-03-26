@@ -19,7 +19,7 @@ import com.almasb.fxglgames.td.ui.scene.TowerDefenseMainMenu;
 import javafx.beans.binding.Bindings;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Polyline;
 import javafx.util.Duration;
 
 import java.util.List;
@@ -228,8 +228,8 @@ public class TowerDefenseApp extends GameApplication {
 
         EnemyData data = getAssetLoader().loadJSON("enemies/" + wave.enemy(), EnemyData.class).get();
 
-        Polygon p = wayEntity.getObject("polygon");
-        var way = Way.fromPolygon(p, wayEntity.getX(), wayEntity.getY());
+        Polyline p = wayEntity.getObject("polyline");
+        var way = Way.fromPolyline(p, wayEntity.getX(), wayEntity.getY());
 
         for (int i = 0; i < wave.amount(); i++) {
             runOnce(() -> {
