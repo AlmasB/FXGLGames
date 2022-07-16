@@ -10,7 +10,6 @@ import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.geowars.GeoWarsFactory;
 import com.almasb.fxglgames.geowars.WeaponType;
 import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
@@ -56,22 +55,6 @@ public class PlayerComponent extends Component {
             entity.rotateToVector(dir);
 
         oldPosition = entity.getPosition();
-
-        // TODO: extract to KeepInBoundsComponent
-        
-        var viewport = new Rectangle2D(0, 0, getAppWidth(), getAppHeight());
-
-        if (getEntity().getX() < viewport.getMinX()) {
-            getEntity().setX(viewport.getMinX());
-        } else if (getEntity().getRightX() > viewport.getMaxX()) {
-            getEntity().setX(viewport.getMaxX() - getEntity().getWidth());
-        }
-
-        if (getEntity().getY() < viewport.getMinY()) {
-            getEntity().setY(viewport.getMinY());
-        } else if (getEntity().getBottomY() > viewport.getMaxY()) {
-            getEntity().setY(viewport.getMaxY() - getEntity().getHeight());
-        }
     }
 
     public double getSpeed() {
