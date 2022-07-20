@@ -18,7 +18,7 @@
 
         <!-- dependencies -->
         <kotlin.version>1.4.30</kotlin.version>
-        <jackson.version>2.11.1</jackson.version>
+        <jackson.version>2.12.6.1</jackson.version>
         <jfx.maven.plugin.version>0.0.6</jfx.maven.plugin.version>
         <fxgl.version>dev-SNAPSHOT</fxgl.version>
         <mainClassName>com.almasb.fxglgames.ncc.NCCApp</mainClassName>
