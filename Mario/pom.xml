@@ -16,10 +16,10 @@
         <maven.compiler.version>3.8.1</maven.compiler.version>
         <maven.shade.version>3.0.0</maven.shade.version>
 
-        <fxgl.version>17+dev-SNAPSHOT</fxgl.version>
-        <jfx.maven.plugin.version>0.0.6</jfx.maven.plugin.version>
-        <client.plugin.version>0.1.35</client.plugin.version>
-        <attach.version>4.0.9</attach.version>
+        <fxgl.version>17</fxgl.version>
+        <jfx.maven.plugin.version>0.0.8</jfx.maven.plugin.version>
+        <gluonfx.plugin.version>1.0.11</gluonfx.plugin.version>
+        <attach.version>4.0.13</attach.version>
         <mainClassName>com.almasb.fxglgames.platformer.PlatformerApp</mainClassName>
     </properties>
 
@@ -52,31 +52,6 @@
         </dependency>
     </dependencies>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>gluon-releases</id>
-            <url>http://nexus.gluonhq.com/nexus/content/repositories/releases/</url>
-        </pluginRepository>
-
-        <pluginRepository>
-            <id>gluon-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </pluginRepository>
-    </pluginRepositories>
-
-    <repositories>
-        <repository>
-            <id>oss.sonatype.org-snapshot</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </repository>
-
-        <!-- for attach -->
-        <repository>
-            <id>nexus-gluon</id>
-            <url>https://nexus.gluonhq.com/nexus/content/repositories/releases/</url>
-        </repository>
-    </repositories>
-
     <build>
         <plugins>
             <plugin>
@@ -105,8 +80,8 @@
 
             <plugin>
                 <groupId>com.gluonhq</groupId>
-                <artifactId>client-maven-plugin</artifactId>
-                <version>${client.plugin.version}</version>
+                <artifactId>gluonfx-maven-plugin</artifactId>
+                <version>${gluonfx.plugin.version}</version>
                 <configuration>
                     <nativeImageArgs>--allow-incomplete-classpath</nativeImageArgs>
                     <attachList>
