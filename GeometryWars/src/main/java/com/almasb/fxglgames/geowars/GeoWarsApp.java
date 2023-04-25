@@ -187,12 +187,13 @@ public class GeoWarsApp extends GameApplication {
                 });
             });
 
+            onKeyDown(KeyCode.I, () -> {
+                spawn("Mine", 400, 400);
+            });
+
             onKeyDown(KeyCode.T, () -> {
                 getService(WaveService.class).spawnWave();
             });
-
-
-
 
             onKeyDown(KeyCode.Y, () -> {
 

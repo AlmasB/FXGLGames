@@ -23,7 +23,7 @@ public class BackgroundStarsComponent extends Component {
     public void onAdded() {
         var size = getAppWidth() + OUTSIDE_DISTANCE*2;
 
-        starsLayerFront1 = texture("background/stars_big_1.png", size, size);
+        starsLayerFront1 = texture("background/stars_big_1.png", size, size).darker().darker();
 
         starsLayerBack1 = texture("background/stars_small_1.png", size, size);
         starsLayerBack2 = texture("background/stars_small_2.png", size, size);

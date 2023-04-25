@@ -215,12 +215,20 @@ public class GeoWarsFactory implements EntityFactory {
 
     @Spawns("Mine")
     public Entity spawnMine(SpawnData data) {
+        var beepSwitch = new IntervalSwitchComponent(false, Duration.seconds(0.5));
+
         var e = entityBuilder(data)
                 .type(MINE)
                 .viewWithBBox(texture("mine.png", 315 * 0.2, 315 * 0.2))
+                .with(beepSwitch)
                 .with(new MineComponent())
                 .with(new CollidableComponent(false))
                 .build();
+
+        var overlay = texture("mine_red.png", 315 * 0.2, 315 * 0.2);
+        overlay.visibleProperty().bind(beepSwitch.valueProperty());
+
+        e.getViewComponent().addChild(overlay);
 
         // enable collidable after a while
         runOnce(() -> {
