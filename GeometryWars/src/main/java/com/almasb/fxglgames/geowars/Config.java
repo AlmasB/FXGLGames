@@ -16,13 +16,13 @@ public final class Config {
     /**
      * Disables enemies if true, useful for quick level building / testing.
      */
-    public static final boolean IS_NO_ENEMIES = true;
+    public static final boolean IS_NO_ENEMIES = false;
 
     public static final boolean IS_MENU = false;
 
-    public static final boolean IS_BACKGROUND = false;
+    public static final boolean IS_BACKGROUND = true;
 
-    public static final boolean IS_SOUND_ENABLED = false;
+    public static final boolean IS_SOUND_ENABLED = true;
 
     /**
      * How much space is between edges of the game and boundary of the playable grid.
@@ -62,7 +62,7 @@ public final class Config {
     public static final int BOUNCER_MOVE_SPEED = 500;
     public static final int BOMBER_MOVE_SPEED = 150;
 
-    public static final int PLAYER_SPEED = 320;
+    public static final int PLAYER_SPEED = 380;
 
     public static final int BULLET_MOVE_SPEED = 1200;
 

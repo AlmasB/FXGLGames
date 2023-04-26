@@ -167,7 +167,7 @@ public class GeoWarsFactory implements EntityFactory {
 
         e.setReusable(true);
 
-        var overlay = texture("Wanderer_overlay.png", 60, 60).toColor(Color.YELLOW);
+        var overlay = texture("Wanderer_overlay.png", 60, 60).toColor(Color.FIREBRICK);
         overlay.visibleProperty().bind(beepSwitch.valueProperty());
 
         e.getViewComponent().addChild(overlay);
@@ -274,7 +274,6 @@ public class GeoWarsFactory implements EntityFactory {
         var e = entityBuilder(data)
                 .at(data.getX() - 40, data.getY() - 40)
                 .type(EXPLOSION)
-                .view(texture("explosion.png", 80 * 48, 80).toAnimatedTexture(48, Duration.seconds(0.75)))
                 .with(new ExplosionParticleComponent())
                 .build();
 
@@ -291,9 +290,6 @@ public class GeoWarsFactory implements EntityFactory {
         play("explosion-0" + (int) (Math.random() * 8 + 1) + ".wav");
 
         entity.getComponent(ExplosionParticleComponent.class).setNumParticles(numParticles);
-
-        AnimatedTexture animTexture = (AnimatedTexture) entity.getViewComponent().getChildren().get(0);
-        animTexture.play();
     }
 
     @Spawns("Shockwave")
