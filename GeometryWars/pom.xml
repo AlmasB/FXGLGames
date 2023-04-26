@@ -212,7 +212,6 @@
                         <list>com.almasb.fxglgames.geowars.component.ParticleCanvasComponent</list>
                         <list>com.almasb.fxglgames.geowars.component.PlayerComponent</list>
                         <list>com.almasb.fxglgames.geowars.component.RicochetComponent</list>
-                        <list>com.almasb.fxglgames.geowars.component.enemy.BomberComponent</list>
                         <list>com.almasb.fxglgames.geowars.component.enemy.BouncerComponent</list>
                         <list>com.almasb.fxglgames.geowars.component.enemy.RunnerComponent</list>
                         <list>com.almasb.fxglgames.geowars.component.enemy.SeekerComponent</list>

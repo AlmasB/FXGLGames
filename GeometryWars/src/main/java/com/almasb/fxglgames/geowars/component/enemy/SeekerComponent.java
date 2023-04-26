@@ -29,10 +29,8 @@ package com.almasb.fxglgames.geowars.component.enemy;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxgl.time.LocalTimer;
 import javafx.geometry.Point2D;
-import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 /**
@@ -47,11 +45,6 @@ public class SeekerComponent extends Component {
     private LocalTimer adjustDirectionTimer = FXGL.newLocalTimer();
     private Duration adjustDelay = Duration.seconds(0.15);
 
-    private LocalTimer swapTexturesTimer = FXGL.newLocalTimer();
-    private Duration swapTexturesDelay = Duration.seconds(0.2);
-
-    private Texture overlay;
-
     private int moveSpeed;
 
     public SeekerComponent(Entity player, int moveSpeed) {
@@ -63,22 +56,10 @@ public class SeekerComponent extends Component {
     public void onAdded() {
         seeker = entity;
         adjustVelocity(0.016);
-
-        overlay = FXGL.texture("Seeker_overlay.png", 60, 60).toColor(Color.WHITE);
     }
 
     @Override
     public void onUpdate(double tpf) {
-        move(tpf);
-        rotate();
-
-        if (swapTexturesTimer.elapsed(swapTexturesDelay)) {
-            swapTextures();
-            swapTexturesTimer.capture();
-        }
-    }
-
-    private void move(double tpf) {
         if (adjustDirectionTimer.elapsed(adjustDelay)) {
             adjustVelocity(tpf);
             adjustDirectionTimer.capture();
@@ -94,19 +75,5 @@ public class SeekerComponent extends Component {
                 .multiply(moveSpeed);
 
         velocity = velocity.add(directionToPlayer).multiply(tpf);
-    }
-
-    private void rotate() {
-        if (!velocity.equals(Point2D.ZERO)) {
-            seeker.rotateToVector(velocity);
-        }
-    }
-
-    private void swapTextures() {
-        if (overlay.getScene() == null) {
-            entity.getViewComponent().addChild(overlay);
-        } else {
-            entity.getViewComponent().removeChild(overlay);
-        }
     }
 }

@@ -188,7 +188,7 @@ public class GeoWarsApp extends GameApplication {
             });
 
             onKeyDown(KeyCode.I, () -> {
-                spawn("Mine", 400, 400);
+                spawn("Seeker", 400, 400);
             });
 
             onKeyDown(KeyCode.T, () -> {

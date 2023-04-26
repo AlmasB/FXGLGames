@@ -152,19 +152,25 @@ public class GeoWarsFactory implements EntityFactory {
     public Entity spawnWanderer(SpawnData data) {
         int moveSpeed = random(WANDERER_MIN_MOVE_SPEED, WANDERER_MAX_MOVE_SPEED);
 
-        var t = texture("Wanderer.png", 60, 60).brighter();
+        var beepSwitch = new IntervalSwitchComponent(false, Duration.seconds(0.5));
 
         var e = entityBuilder(data)
                 .type(WANDERER)
                 .at(getRandomSpawnPoint())
                 .bbox(new HitBox(new Point2D(15, 15), BoundingShape.box(30, 30)))
-                .view(t)
+                .view(texture("Wanderer.png", 60, 60).brighter())
+                .with(beepSwitch)
                 .with(new HealthIntComponent(ENEMY_HP))
                 .with(new CollidableComponent(true))
-                .with(new WandererComponent(moveSpeed, t, texture("wanderer_overlay.png", 60, 60)))
+                .with(new WandererComponent(moveSpeed))
                 .build();
 
         e.setReusable(true);
+
+        var overlay = texture("Wanderer_overlay.png", 60, 60).toColor(Color.YELLOW);
+        overlay.visibleProperty().bind(beepSwitch.valueProperty());
+
+        e.getViewComponent().addChild(overlay);
 
         return e;
     }
@@ -179,14 +185,25 @@ public class GeoWarsFactory implements EntityFactory {
 
         int moveSpeed = random(SEEKER_MIN_MOVE_SPEED, SEEKER_MAX_MOVE_SPEED);
 
-        return entityBuilder()
+        var beepSwitch = new IntervalSwitchComponent(false, Duration.seconds(0.2));
+
+        var e = entityBuilder()
                 .type(SEEKER)
                 .at(getRandomSpawnPoint())
                 .viewWithBBox(texture("Seeker.png", 50, 50).brighter())
                 .with(new HealthIntComponent(ENEMY_HP))
                 .with(new CollidableComponent(true))
+                .with(beepSwitch)
+                .with(new AutoRotationComponent().withSmoothing())
                 .with(new SeekerComponent(FXGL.<GeoWarsApp>getAppCast().getPlayer(), moveSpeed))
                 .build();
+
+        var overlay = texture("Seeker_overlay.png", 50, 50).toColor(Color.WHITE);
+        overlay.visibleProperty().bind(beepSwitch.valueProperty());
+
+        e.getViewComponent().addChild(overlay);
+
+        return e;
     }
 
     @Spawns("Runner")
