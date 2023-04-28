@@ -93,7 +93,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setWidth(1920);
         settings.setHeight(1080);
         settings.setTitle("FXGL Space Wars");
-        settings.setVersion("1.3.1");
+        settings.setVersion("1.4.0");
         settings.setIntroEnabled(isRelease);
         settings.setMainMenuEnabled(IS_MENU);
         settings.setGameMenuEnabled(IS_MENU);
