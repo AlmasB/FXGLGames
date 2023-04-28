@@ -30,7 +30,6 @@ import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
-import com.almasb.fxgl.app.scene.GameSubScene;
 import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.app.scene.SimpleGameMenu;
 import com.almasb.fxgl.core.math.FXGLMath;
@@ -120,9 +119,6 @@ public class GeoWarsApp extends GameApplication {
 
     @Override
     protected void onPreInit() {
-        // preload explosion sprite sheet
-        getAssetLoader().loadTexture("explosion.png", 80 * 48, 80);
-
         getSettings().setGlobalSoundVolume(IS_SOUND_ENABLED ? 0.2 : 0.0);
         getSettings().setGlobalMusicVolume(IS_SOUND_ENABLED ? 0.5 : 0.0);
 
