@@ -378,9 +378,9 @@ public class GeoWarsApp extends GameApplication {
 
                 getGameScene().getViewport().shakeTranslational(8);
                 if (System.nanoTime() > geti("lastHitTime") + 100000000) {
-
+                    set("lastHitTime", (int)System.nanoTime());
                     // remove all "removables"
-                    inc("hp", -20);
+                    inc("hp", COLLISION_PENALTY);
                     if (geti("hp") < 1) {
                         byType(WANDERER, SEEKER, RUNNER, BOUNCER, BOMBER, BULLET, CRYSTAL, MINE, SHOCKWAVE_PICKUP)
                                 .forEach(Entity::removeFromWorld);
@@ -389,13 +389,8 @@ public class GeoWarsApp extends GameApplication {
                         playerComponent.playSpawnAnimation();
                         deductScoreDeath();
                     } else {
-                        // player is wounded but not dead!
-                        // do we kill the enemy here??
-                        var t = b.getType();
                         killEnemy(b);
-
                         SpawnData data = new SpawnData(a.getCenter()).put("numParticles", 10);
-
                         Entity explosion = spawn("Explosion", data);
                         GeoWarsFactory.respawnExplosion(explosion, data);
                     }
