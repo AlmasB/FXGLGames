@@ -71,4 +71,6 @@ public final class Config {
     public static final Duration WEAPON_DELAY = seconds(0.11);
 
     public static final String SAVE_FILE_NAME = "high_score.dat";
+
+    public static final int COLLISION_PENALTY = -20;
 }

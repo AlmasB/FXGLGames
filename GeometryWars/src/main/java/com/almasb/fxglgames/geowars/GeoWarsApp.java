@@ -37,6 +37,7 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.virtual.VirtualButton;
 import com.almasb.fxgl.input.virtual.VirtualJoystick;
@@ -215,6 +216,8 @@ public class GeoWarsApp extends GameApplication {
         vars.put("lives", 3);
         vars.put("isRicochet", false);
         vars.put("weaponType", WeaponType.SINGLE);
+        vars.put("hp", 100);
+        vars.put("lastHitTime", 0);
     }
 
     @Override
@@ -374,15 +377,24 @@ public class GeoWarsApp extends GameApplication {
             protected void onCollisionBegin(Entity a, Entity b) {
 
                 getGameScene().getViewport().shakeTranslational(8);
+                if (System.nanoTime() > geti("lastHitTime") + 100000000) {
+                    set("lastHitTime", (int)System.nanoTime());
+                    // remove all "removables"
+                    inc("hp", COLLISION_PENALTY);
+                    if (geti("hp") < 1) {
+                        byType(WANDERER, SEEKER, RUNNER, BOUNCER, BOMBER, BULLET, CRYSTAL, MINE, SHOCKWAVE_PICKUP)
+                                .forEach(Entity::removeFromWorld);
 
-                // remove all "removables"
-                byType(WANDERER, SEEKER, RUNNER, BOUNCER, BOMBER, BULLET, CRYSTAL, MINE, SHOCKWAVE_PICKUP)
-                        .forEach(Entity::removeFromWorld);
-
-                player.setPosition(getAppWidth() / 2, getAppHeight() / 2);
-                playerComponent.playSpawnAnimation();
-
-                deductScoreDeath();
+                        player.setPosition(getAppWidth() / 2, getAppHeight() / 2);
+                        playerComponent.playSpawnAnimation();
+                        deductScoreDeath();
+                    } else {
+                        killEnemy(b);
+                        SpawnData data = new SpawnData(a.getCenter()).put("numParticles", 10);
+                        Entity explosion = spawn("Explosion", data);
+                        GeoWarsFactory.respawnExplosion(explosion, data);
+                    }
+                }
             }
         };
 
@@ -542,6 +554,7 @@ public class GeoWarsApp extends GameApplication {
         inc("score", -1000);
         set("kills", 0);
         set("multiplier", 1);
+        set("hp", 100);
 
         Text bonusText = getUIFactoryService().newText("-1000", Color.WHITE, 20);
 
