@@ -22,7 +22,7 @@ public final class Config {
 
     public static final boolean IS_BACKGROUND = true;
 
-    public static final boolean IS_SOUND_ENABLED = true;
+    public static final boolean IS_SOUND_ENABLED = false;
 
     /**
      * How much space is between edges of the game and boundary of the playable grid.
@@ -62,7 +62,7 @@ public final class Config {
     public static final int BOUNCER_MOVE_SPEED = 500;
     public static final int BOMBER_MOVE_SPEED = 150;
 
-    public static final int PLAYER_SPEED = 380;
+    public static final int PLAYER_SPEED = 480;
 
     public static final int BULLET_MOVE_SPEED = 1200;
 
@@ -72,5 +72,8 @@ public final class Config {
 
     public static final String SAVE_FILE_NAME = "high_score.dat";
 
+    public static final int PLAYER_HP = 50;
     public static final int COLLISION_PENALTY = -20;
+    public static final int TIME_PENALTY = -1;
+    public static final Duration PENALTY_INTERVAL = seconds(0.5);
 }

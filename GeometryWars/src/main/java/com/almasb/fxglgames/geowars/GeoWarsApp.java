@@ -216,8 +216,9 @@ public class GeoWarsApp extends GameApplication {
         vars.put("lives", 3);
         vars.put("isRicochet", false);
         vars.put("weaponType", WeaponType.SINGLE);
-        vars.put("hp", 100);
+        vars.put("hp", PLAYER_HP);
         vars.put("lastHitTime", 0);
+        vars.put("time", 0.0);
     }
 
     @Override
@@ -262,6 +263,17 @@ public class GeoWarsApp extends GameApplication {
                 gameOver();
         });
 
+        getWorldProperties().<Integer>addListener("hp", (prev, now) -> {
+            if (now > PLAYER_HP)
+                set("hp", PLAYER_HP);
+
+            if (now <= 0)
+                killPlayer();
+        });
+
+        run(() -> inc("hp", TIME_PENALTY), PENALTY_INTERVAL);
+        run(() -> inc("time", +1.0), Duration.seconds(1));
+
         if (!IS_NO_ENEMIES) {
             initEnemySpawns();
         }
@@ -274,19 +286,19 @@ public class GeoWarsApp extends GameApplication {
         }, WAVE_SPAWN_INTERVAL);
 
         run(() -> {
-            if (pressureService.isSpawningEnemies() && geti("multiplier") >= 75) {
+            if (pressureService.isSpawningEnemies() && getd("time") >= 40) {
                 spawn("Bouncer");
             }
         }, BOUNCER_SPAWN_INTERVAL);
 
         run(() -> {
-            if (pressureService.isSpawningEnemies() && geti("multiplier") >= 50) {
+            if (pressureService.isSpawningEnemies() && getd("time") >= 20) {
                 spawn("Runner");
             }
         }, RUNNER_SPAWN_INTERVAL);
 
         run(() -> {
-            if (pressureService.isSpawningEnemies() && geti("multiplier") >= 25) {
+            if (pressureService.isSpawningEnemies()) {
                 spawn("Seeker");
             }
         }, SEEKER_SPAWN_INTERVAL);
@@ -379,21 +391,10 @@ public class GeoWarsApp extends GameApplication {
                 getGameScene().getViewport().shakeTranslational(8);
                 if (System.nanoTime() > geti("lastHitTime") + 100000000) {
                     set("lastHitTime", (int)System.nanoTime());
-                    // remove all "removables"
-                    inc("hp", COLLISION_PENALTY);
-                    if (geti("hp") < 1) {
-                        byType(WANDERER, SEEKER, RUNNER, BOUNCER, BOMBER, BULLET, CRYSTAL, MINE, SHOCKWAVE_PICKUP)
-                                .forEach(Entity::removeFromWorld);
 
-                        player.setPosition(getAppWidth() / 2, getAppHeight() / 2);
-                        playerComponent.playSpawnAnimation();
-                        deductScoreDeath();
-                    } else {
-                        killEnemy(b);
-                        SpawnData data = new SpawnData(a.getCenter()).put("numParticles", 10);
-                        Entity explosion = spawn("Explosion", data);
-                        GeoWarsFactory.respawnExplosion(explosion, data);
-                    }
+                    inc("hp", COLLISION_PENALTY);
+
+                    killEnemy(b);
                 }
             }
         };
@@ -408,6 +409,16 @@ public class GeoWarsApp extends GameApplication {
         onCollisionCollectible(PLAYER, SHOCKWAVE_PICKUP, (pickup) -> {
             playerComponent.setShockwaveReady(true);
         });
+    }
+
+    private void killPlayer() {
+        // remove all "removables"
+        byType(WANDERER, SEEKER, RUNNER, BOUNCER, BOMBER, BULLET, CRYSTAL, MINE, SHOCKWAVE_PICKUP)
+                .forEach(Entity::removeFromWorld);
+
+        player.setPosition(getAppWidth() / 2, getAppHeight() / 2);
+        playerComponent.playSpawnAnimation();
+        deductScoreDeath();
     }
 
     @Override
@@ -440,7 +451,13 @@ public class GeoWarsApp extends GameApplication {
             addUINode(pressureText, 60, 150);
         }
 
-        getGameScene().addUINodes(multText, scoreText, livesText, ricochetText);
+        Text hpText = getUIFactoryService().newText("", Color.GREEN, 28);
+        hpText.setTranslateX(60);
+        hpText.setTranslateY(250);
+        hpText.textProperty().bind(getip("hp").asString("HP %d"));
+        hpText.setStroke(Color.GOLD);
+
+        getGameScene().addUINodes(multText, scoreText, livesText, ricochetText, hpText);
 
         Text goodLuck = getUIFactoryService().newText("Score as many points as you can. Good luck!", Color.AQUA, 38);
 
@@ -498,6 +515,7 @@ public class GeoWarsApp extends GameApplication {
             spawn("ShockwavePickup", enemy.getPosition());
         }
 
+        inc("hp", +1);
         addScoreKill(enemy.getCenter());
 
         enemy.removeFromWorld();
@@ -554,7 +572,8 @@ public class GeoWarsApp extends GameApplication {
         inc("score", -1000);
         set("kills", 0);
         set("multiplier", 1);
-        set("hp", 100);
+        set("hp", PLAYER_HP);
+        set("time", 0.0);
 
         Text bonusText = getUIFactoryService().newText("-1000", Color.WHITE, 20);
 

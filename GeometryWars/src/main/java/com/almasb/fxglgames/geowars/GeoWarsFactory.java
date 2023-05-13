@@ -158,7 +158,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .type(WANDERER)
                 .at(getRandomSpawnPoint())
                 .bbox(new HitBox(new Point2D(15, 15), BoundingShape.box(30, 30)))
-                .view(texture("Wanderer.png", 60, 60).brighter())
+                .view(texture("Wanderer.png", 60, 60).toColor(Color.PURPLE).outline(Color.ALICEBLUE, 2))
                 .with(beepSwitch)
                 .with(new HealthIntComponent(ENEMY_HP))
                 .with(new CollidableComponent(true))
@@ -167,7 +167,7 @@ public class GeoWarsFactory implements EntityFactory {
 
         e.setReusable(true);
 
-        var overlay = texture("Wanderer_overlay.png", 60, 60).toColor(Color.FIREBRICK);
+        var overlay = texture("Wanderer_overlay.png", 60, 60).toColor(Color.FIREBRICK).outline(Color.PURPLE, 2);
         overlay.visibleProperty().bind(beepSwitch.valueProperty());
 
         e.getViewComponent().addChild(overlay);
@@ -190,7 +190,7 @@ public class GeoWarsFactory implements EntityFactory {
         var e = entityBuilder()
                 .type(SEEKER)
                 .at(getRandomSpawnPoint())
-                .viewWithBBox(texture("Seeker.png", 50, 50).brighter())
+                .viewWithBBox(texture("Seeker.png", 50, 50).toColor(Color.RED).outline(Color.ALICEBLUE, 2))
                 .with(new HealthIntComponent(ENEMY_HP))
                 .with(new CollidableComponent(true))
                 .with(beepSwitch)
@@ -198,7 +198,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .with(new SeekerComponent(FXGL.<GeoWarsApp>getAppCast().getPlayer(), moveSpeed))
                 .build();
 
-        var overlay = texture("Seeker_overlay.png", 50, 50).toColor(Color.WHITE);
+        var overlay = texture("Seeker_overlay.png", 50, 50).toColor(Color.BLACK).outline(Color.WHITESMOKE, 2);
         overlay.visibleProperty().bind(beepSwitch.valueProperty());
 
         e.getViewComponent().addChild(overlay);
