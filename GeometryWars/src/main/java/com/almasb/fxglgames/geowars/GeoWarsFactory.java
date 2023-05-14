@@ -60,6 +60,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .type(GRID)
                 .with(IS_BACKGROUND ? new BackgroundStarsComponent() : new CollidableComponent(false))
                 .with(new GridComponent())
+                .zIndex(BACKGROUND_Z_INDEX)
                 .build();
     }
 
@@ -68,7 +69,7 @@ public class GeoWarsFactory implements EntityFactory {
         return entityBuilder(data)
                 .type(PARTICLE_LAYER)
                 .with(new ParticleCanvasComponent())
-                .zIndex(5000)
+                .zIndex(PARTICLES_Z_INDEX)
                 .build();
     }
 
@@ -81,13 +82,15 @@ public class GeoWarsFactory implements EntityFactory {
 
         return entityBuilder()
                 .type(PLAYER)
-                .at(getAppWidth() / 2 - texture.getWidth() / 2, getAppHeight() / 2 - texture.getHeight() / 2)
+                .at(getAppWidth() / 2.0 - texture.getWidth() / 2, getAppHeight() / 2.0 - texture.getHeight() / 2)
                 .viewWithBBox(texture)
                 .collidable()
                 .zIndex(1000)
                 .with(new PlayerComponent(PLAYER_SPEED))
+                .with(new EffectComponent())
                 .with(new ExhaustParticleComponent(ParticleEmitters.newExplosionEmitter(1)))
                 .with(new KeepInBoundsComponent(new Rectangle2D(0, 0, getAppWidth(), getAppHeight())))
+                .zIndex(PLAYER_Z_INDEX)
                 .build();
     }
 
@@ -119,6 +122,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .with(new ProjectileComponent(data.get("direction"), BULLET_MOVE_SPEED))
                 .with(new BulletComponent())
                 .with(expireClean)
+                .zIndex(BULLET_Z_INDEX)
                 .rotationOrigin(0, 6.5)
                 .build();
 
@@ -163,6 +167,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .with(new HealthIntComponent(ENEMY_HP))
                 .with(new CollidableComponent(true))
                 .with(new WandererComponent(moveSpeed))
+                .zIndex(ENEMIES_Z_INDEX)
                 .build();
 
         e.setReusable(true);
@@ -196,6 +201,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .with(beepSwitch)
                 .with(new AutoRotationComponent().withSmoothing())
                 .with(new SeekerComponent(FXGL.<GeoWarsApp>getAppCast().getPlayer(), moveSpeed))
+                .zIndex(ENEMIES_Z_INDEX)
                 .build();
 
         var overlay = texture("Seeker_overlay.png", 50, 50).toColor(Color.BLACK).outline(Color.WHITESMOKE, 2);
@@ -216,6 +222,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .with(new CollidableComponent(true))
                 .with(new RunnerComponent(RUNNER_MOVE_SPEED))
                 .with(new AutoRotationComponent().withSmoothing())
+                .zIndex(ENEMIES_Z_INDEX)
                 .build();
     }
 
@@ -227,6 +234,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .with(new HealthIntComponent(ENEMY_HP))
                 .with(new CollidableComponent(true))
                 .neverUpdated()
+                .zIndex(ENEMIES_Z_INDEX)
                 .build();
     }
 
@@ -240,6 +248,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .with(beepSwitch)
                 .with(new MineComponent())
                 .with(new CollidableComponent(false))
+                .zIndex(ENEMIES_Z_INDEX)
                 .build();
 
         var overlay = texture("mine_red.png", 315 * 0.2, 315 * 0.2);
@@ -266,6 +275,7 @@ public class GeoWarsFactory implements EntityFactory {
                 .with(new HealthIntComponent(ENEMY_HP))
                 .with(new CollidableComponent(true))
                 .with(new BouncerComponent(BOUNCER_MOVE_SPEED))
+                .zIndex(ENEMIES_Z_INDEX)
                 .build();
     }
 
@@ -334,32 +344,6 @@ public class GeoWarsFactory implements EntityFactory {
                 .collidable()
                 .zIndex(100)
                 .with(new LiftComponent().yAxisDistanceDuration(15, Duration.seconds(1)))
-                .build();
-    }
-
-    @Spawns("Crystal")
-    public Entity spawnCrystal(SpawnData data) {
-        var name = "light_02.png";
-
-        var w = 64;
-        var h = 64;
-
-        var t = texture("particles/" + name, w, h).multiplyColor(Color.YELLOW.brighter());
-        t.setTranslateX(-(w / 2.0 - 32 / 2.0));
-        t.setTranslateY(-(h / 2.0 - 32 / 2.0));
-        if (!FXGL.isMobile()) {
-            t.setEffect(new BoxBlur(15, 15, 3));
-        }
-
-        return entityBuilder(data)
-                .type(CRYSTAL)
-                .scale(0.25, 0.25)
-                .view(t)
-                .viewWithBBox(texture("YellowCrystal.png").toAnimatedTexture(8, Duration.seconds(1)))
-                .zIndex(100)
-                .with(new CollidableComponent(true))
-                .with(new CrystalComponent())
-                .with(new ExpireCleanComponent(Duration.seconds(10)))
                 .build();
     }
 }

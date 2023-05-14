@@ -41,12 +41,13 @@ public final class Config {
     /* SPAWN INTERVALS FOR ENTITIES BEGIN */
 
     public static final Duration WANDERER_SPAWN_INTERVAL = seconds(1.5);
-    public static final Duration SEEKER_SPAWN_INTERVAL = seconds(2.5);
+    public static final Duration SEEKER_SPAWN_INTERVAL = seconds(2.0);
     public static final Duration RUNNER_SPAWN_INTERVAL = seconds(3.5);
     public static final Duration BOUNCER_SPAWN_INTERVAL = seconds(4.5);
     public static final Duration WAVE_SPAWN_INTERVAL = seconds(50);
 
     public static final Duration MINE_SPAWN_INTERVAL = seconds(10);
+    public static final Duration PICKUP_RICOCHET_SPAWN_INTERVAL = seconds(10);
 
     /* SPAWN INTERVALS FOR ENTITIES END */
 
@@ -55,8 +56,8 @@ public final class Config {
     public static final int WANDERER_MIN_MOVE_SPEED = 150;
     public static final int WANDERER_MAX_MOVE_SPEED = 180;
 
-    public static final int SEEKER_MIN_MOVE_SPEED = 200;
-    public static final int SEEKER_MAX_MOVE_SPEED = 250;
+    public static final int SEEKER_MIN_MOVE_SPEED = 250;
+    public static final int SEEKER_MAX_MOVE_SPEED = 310;
 
     public static final int RUNNER_MOVE_SPEED = 350;
     public static final int BOUNCER_MOVE_SPEED = 500;
@@ -68,6 +69,13 @@ public final class Config {
 
     /* MOVE SPEED FOR ENTITIES END */
 
+    public static final int BACKGROUND_Z_INDEX = -10;
+    public static final int PARTICLES_Z_INDEX = -5;
+    public static final int PLAYER_Z_INDEX = 10;
+    public static final int ENEMIES_Z_INDEX = 50;
+    public static final int BULLET_Z_INDEX = 30;
+    public static final int PICKUP_Z_INDEX = 5;
+
     public static final Duration WEAPON_DELAY = seconds(0.11);
 
     public static final String SAVE_FILE_NAME = "high_score.dat";
@@ -76,4 +84,6 @@ public final class Config {
     public static final int COLLISION_PENALTY = -20;
     public static final int TIME_PENALTY = -1;
     public static final Duration PENALTY_INTERVAL = seconds(0.5);
+
+    public static final Duration PICKUP_RICOCHET_DURATION = seconds(3);
 }

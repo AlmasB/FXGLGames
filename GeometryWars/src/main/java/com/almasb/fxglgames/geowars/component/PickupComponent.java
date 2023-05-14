@@ -8,7 +8,17 @@ import com.almasb.fxglgames.geowars.GeoWarsApp;
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class CrystalComponent extends Component {
+public class PickupComponent extends Component {
+
+    private Runnable onPickup;
+
+    public PickupComponent(Runnable onPickup) {
+        this.onPickup = onPickup;
+    }
+
+    public void pickUp() {
+        onPickup.run();
+    }
 
     @Override
     public void onUpdate(double tpf) {

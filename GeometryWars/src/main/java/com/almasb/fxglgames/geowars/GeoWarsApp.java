@@ -37,17 +37,18 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.virtual.VirtualButton;
 import com.almasb.fxgl.input.virtual.VirtualJoystick;
 import com.almasb.fxgl.physics.CollisionDetectionStrategy;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
+import com.almasb.fxgl.ui.ProgressBar;
 import com.almasb.fxglgames.geowars.collision.BulletMineHandler;
-import com.almasb.fxglgames.geowars.collision.PlayerCrystalHandler;
+import com.almasb.fxglgames.geowars.collision.PlayerPickupHandler;
 import com.almasb.fxglgames.geowars.component.GridComponent;
 import com.almasb.fxglgames.geowars.component.PlayerComponent;
+import com.almasb.fxglgames.geowars.factory.PickupFactory;
 import com.almasb.fxglgames.geowars.menu.GeoWarsMainMenu;
 import com.almasb.fxglgames.geowars.service.HighScoreService;
 import com.almasb.fxglgames.geowars.service.PlayerPressureService;
@@ -59,6 +60,7 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -185,7 +187,7 @@ public class GeoWarsApp extends GameApplication {
             });
 
             onKeyDown(KeyCode.I, () -> {
-                spawn("Seeker", 400, 400);
+                spawn("PickupRicochet", 400, 400);
             });
 
             onKeyDown(KeyCode.T, () -> {
@@ -225,6 +227,7 @@ public class GeoWarsApp extends GameApplication {
     protected void initGame() {
 
         getGameWorld().addEntityFactory(new GeoWarsFactory());
+        getGameWorld().addEntityFactory(new PickupFactory());
 
         getGameScene().setBackgroundColor(Color.color(0, 0, 0.05, 1.0));
 
@@ -239,8 +242,9 @@ public class GeoWarsApp extends GameApplication {
 
         int dist = OUTSIDE_DISTANCE;
 
+        getGameScene().getViewport().setLazy(true);
         getGameScene().getViewport().setBounds(-dist, -dist, getAppWidth() + dist, getAppHeight() + dist);
-        getGameScene().getViewport().bindToEntity(player, getAppWidth() / 2, getAppHeight() / 2);
+        getGameScene().getViewport().bindToEntity(player, getAppWidth() / 2.0 - player.getWidth() / 2, getAppHeight() / 2.0 - player.getHeight() / 2);
 
         getWorldProperties().<Integer>addListener("multiplier", (prev, now) -> {
             WeaponType current = geto("weaponType");
@@ -299,7 +303,11 @@ public class GeoWarsApp extends GameApplication {
 
         run(() -> {
             if (pressureService.isSpawningEnemies()) {
-                spawn("Seeker");
+                var numToSpawn = geti("multiplier") >= 100 ? 4 : 2;
+
+                for (int i = 0; i < numToSpawn; i++) {
+                    spawn("Seeker");
+                }
             }
         }, SEEKER_SPAWN_INTERVAL);
 
@@ -319,6 +327,14 @@ public class GeoWarsApp extends GameApplication {
                     Duration.seconds(1)
             );
         }, MINE_SPAWN_INTERVAL);
+
+        run(() -> {
+            spawnFadeIn(
+                    "PickupRicochet",
+                    new SpawnData(FXGLMath.randomPoint(new Rectangle2D(0, 0, getAppWidth() - 80, getAppHeight() - 80))),
+                    Duration.seconds(1)
+            );
+        }, PICKUP_RICOCHET_SPAWN_INTERVAL);
     }
 
     private boolean isOnMobile() {
@@ -349,7 +365,11 @@ public class GeoWarsApp extends GameApplication {
         physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, RUNNER));
         physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, BOUNCER));
         physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, BOMBER));
-        physics.addCollisionHandler(new PlayerCrystalHandler());
+
+        var pickupHandler = new PlayerPickupHandler();
+
+        physics.addCollisionHandler(pickupHandler);
+        physics.addCollisionHandler(pickupHandler.copyFor(PLAYER, PICKUP_RICOCHET));
         physics.addCollisionHandler(new BulletMineHandler());
 
         CollisionHandler shockwaveEnemy = new CollisionHandler(SHOCKWAVE, WANDERER) {
@@ -413,7 +433,7 @@ public class GeoWarsApp extends GameApplication {
 
     private void killPlayer() {
         // remove all "removables"
-        byType(WANDERER, SEEKER, RUNNER, BOUNCER, BOMBER, BULLET, CRYSTAL, MINE, SHOCKWAVE_PICKUP)
+        byType(WANDERER, SEEKER, RUNNER, BOUNCER, BOMBER, BULLET, PICKUP_CRYSTAL, MINE, SHOCKWAVE_PICKUP)
                 .forEach(Entity::removeFromWorld);
 
         player.setPosition(getAppWidth() / 2, getAppHeight() / 2);
@@ -439,11 +459,6 @@ public class GeoWarsApp extends GameApplication {
         livesText.setTranslateY(110);
         livesText.textProperty().bind(getip("lives").asString("Lives: %d"));
 
-        var ricochetText = getUIFactoryService().newText("RICOCHET", Color.ANTIQUEWHITE, 16.0);
-        ricochetText.setTranslateX(60);
-        ricochetText.setTranslateY(130);
-        ricochetText.visibleProperty().bind(getbp("isRicochet"));
-
         var pressureText = getUIFactoryService().newText("", Color.WHITE, 24.0);
         pressureText.textProperty().bind(getService(PlayerPressureService.class).pressurePropProperty().asString("Pressure: %.2f"));
 
@@ -451,15 +466,26 @@ public class GeoWarsApp extends GameApplication {
             addUINode(pressureText, 60, 150);
         }
 
-        Text hpText = getUIFactoryService().newText("", Color.GREEN, 28);
-        hpText.setTranslateX(60);
-        hpText.setTranslateY(250);
-        hpText.textProperty().bind(getip("hp").asString("HP %d"));
-        hpText.setStroke(Color.GOLD);
+        ProgressBar hpBar = new ProgressBar(false);
+        hpBar.setFill(Color.GREEN.brighter());
+        hpBar.setTraceFill(Color.GREEN.brighter());
+        hpBar.setMaxValue(PLAYER_HP);
+        hpBar.setLabelVisible(false);
+        hpBar.currentValueProperty().bind(getip("hp"));
+        hpBar.setTranslateX(getAppWidth() / 2.0 - 200 / 2.0);
+        hpBar.setTranslateY(60);
 
-        getGameScene().addUINodes(multText, scoreText, livesText, ricochetText, hpText);
+        var ricochetText = getUIFactoryService().newText("RICOCHET", Color.ANTIQUEWHITE, 12.0);
+        ricochetText.setTranslateX(hpBar.getTranslateX());
+        ricochetText.setTranslateY(hpBar.getTranslateY() + 27);
+        ricochetText.visibleProperty().bind(getbp("isRicochet"));
 
-        Text goodLuck = getUIFactoryService().newText("Score as many points as you can. Good luck!", Color.AQUA, 38);
+        var centerLine = new Line(getAppWidth() / 2.0, 0, getAppWidth() / 2.0, getAppHeight());
+        centerLine.setStroke(Color.RED);
+
+        getGameScene().addUINodes(multText, scoreText, livesText, ricochetText, hpBar);
+
+        Text goodLuck = getUIFactoryService().newText("Kill enemies to survive!", Color.AQUA, 38);
 
         addUINode(goodLuck);
 

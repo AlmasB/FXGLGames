@@ -9,8 +9,11 @@ public enum GeoWarsType {
     // enemies
     WANDERER, SEEKER, RUNNER, BOUNCER, BOMBER,
 
+    // pick-ups
+    PICKUP_CRYSTAL, PICKUP_RICOCHET,
+
     // misc
-    BULLET, CRYSTAL, SHOCKWAVE_PICKUP, MINE,
+    BULLET, SHOCKWAVE_PICKUP, MINE,
 
     // rendering helpers
     GRID, PARTICLE_LAYER,
