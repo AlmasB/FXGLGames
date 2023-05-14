@@ -53,11 +53,9 @@ public final class Config {
 
     /* MOVE SPEED FOR ENTITIES BEGIN */
 
-    public static final int WANDERER_MIN_MOVE_SPEED = 150;
-    public static final int WANDERER_MAX_MOVE_SPEED = 180;
+    public static final int WANDERER_MOVE_SPEED = 170;
 
-    public static final int SEEKER_MIN_MOVE_SPEED = 250;
-    public static final int SEEKER_MAX_MOVE_SPEED = 310;
+    public static final int SEEKER_MOVE_SPEED = 380;
 
     public static final int RUNNER_MOVE_SPEED = 350;
     public static final int BOUNCER_MOVE_SPEED = 500;
