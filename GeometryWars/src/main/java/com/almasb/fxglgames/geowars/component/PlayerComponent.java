@@ -1,5 +1,6 @@
 package com.almasb.fxglgames.geowars.component;
 
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.geto;
+import static com.almasb.fxglgames.geowars.Config.MAX_CHARGES_SECONDARY;
 import static com.almasb.fxglgames.geowars.Config.WEAPON_DELAY;
 import static com.almasb.fxglgames.geowars.GeoWarsType.GRID;
 
@@ -181,5 +183,20 @@ public class PlayerComponent extends Component {
         animationBuilder()
                 .fadeIn(entity)
                 .buildAndPlay();
+    }
+
+    public void shootSecondary(Point2D shootPoint) {
+        if (geti("secondaryCharge") < MAX_CHARGES_SECONDARY)
+            return;
+
+        set("secondaryCharge", 0);
+
+        getGameScene().getViewport().shakeRotational(2);
+
+        for (int i = -35; i <= 35; i += 5) {
+            var p = FXGLMath.rotate(shootPoint, entity.getCenter(), i);
+            var e = spawnBullet(entity.getCenter(), p.subtract(entity.getCenter()));
+            e.setVisible(false);
+        }
     }
 }

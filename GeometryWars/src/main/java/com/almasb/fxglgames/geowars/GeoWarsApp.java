@@ -53,6 +53,7 @@ import com.almasb.fxglgames.geowars.menu.GeoWarsMainMenu;
 import com.almasb.fxglgames.geowars.service.HighScoreService;
 import com.almasb.fxglgames.geowars.service.PlayerPressureService;
 import com.almasb.fxglgames.geowars.wave.WaveService;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.CacheHint;
@@ -168,6 +169,13 @@ public class GeoWarsApp extends GameApplication {
                     playerComponent.shoot(getInput().getMousePositionWorld());
                 }
             }, MouseButton.PRIMARY);
+
+            getInput().addAction(new UserAction("Shoot Mouse Secondary") {
+                @Override
+                protected void onActionBegin() {
+                    playerComponent.shootSecondary(getInput().getMousePositionWorld());
+                }
+            }, MouseButton.SECONDARY);
         }
 
         if (!isReleaseMode()) {
@@ -217,6 +225,7 @@ public class GeoWarsApp extends GameApplication {
         vars.put("kills", 0);
         vars.put("lives", 3);
         vars.put("isRicochet", false);
+        vars.put("secondaryCharge", 0);
         vars.put("weaponType", WeaponType.SINGLE);
         vars.put("hp", PLAYER_HP);
         vars.put("lastHitTime", 0);
@@ -273,6 +282,11 @@ public class GeoWarsApp extends GameApplication {
 
             if (now <= 0)
                 killPlayer();
+        });
+
+        getWorldProperties().<Integer>addListener("secondaryCharge", (prev, now) -> {
+            if (now > MAX_CHARGES_SECONDARY)
+                set("secondaryCharge", MAX_CHARGES_SECONDARY);
         });
 
         run(() -> inc("hp", TIME_PENALTY), PENALTY_INTERVAL);
@@ -438,7 +452,14 @@ public class GeoWarsApp extends GameApplication {
 
         player.setPosition(getAppWidth() / 2, getAppHeight() / 2);
         playerComponent.playSpawnAnimation();
-        deductScoreDeath();
+
+        inc("lives", -1);
+        set("kills", 0);
+        set("secondaryCharge", 0);
+        set("multiplier", 1);
+        set("hp", PLAYER_HP);
+        set("time", 0.0);
+        set("weaponType", WeaponType.SINGLE);
     }
 
     @Override
@@ -475,15 +496,29 @@ public class GeoWarsApp extends GameApplication {
         hpBar.setTranslateX(getAppWidth() / 2.0 - 200 / 2.0);
         hpBar.setTranslateY(60);
 
+        ProgressBar secondaryBar = new ProgressBar(false);
+        secondaryBar.setFill(Color.LIGHTBLUE.brighter().brighter());
+        secondaryBar.setTraceFill(Color.LIGHTBLUE.brighter());
+        secondaryBar.setMaxValue(MAX_CHARGES_SECONDARY);
+        secondaryBar.setLabelVisible(false);
+        secondaryBar.opacityProperty().bind(
+                Bindings.when(getip("secondaryCharge").lessThan(MAX_CHARGES_SECONDARY))
+                        .then(0.45)
+                        .otherwise(1.0)
+        );
+        secondaryBar.currentValueProperty().bind(getip("secondaryCharge"));
+        secondaryBar.setTranslateX(getAppWidth() / 2.0 - 200 / 2.0);
+        secondaryBar.setTranslateY(75);
+
         var ricochetText = getUIFactoryService().newText("RICOCHET", Color.ANTIQUEWHITE, 12.0);
         ricochetText.setTranslateX(hpBar.getTranslateX());
-        ricochetText.setTranslateY(hpBar.getTranslateY() + 27);
+        ricochetText.setTranslateY(hpBar.getTranslateY() + 57);
         ricochetText.visibleProperty().bind(getbp("isRicochet"));
 
         var centerLine = new Line(getAppWidth() / 2.0, 0, getAppWidth() / 2.0, getAppHeight());
         centerLine.setStroke(Color.RED);
 
-        getGameScene().addUINodes(multText, scoreText, livesText, ricochetText, hpBar);
+        getGameScene().addUINodes(multText, scoreText, livesText, ricochetText, hpBar, secondaryBar);
 
         Text goodLuck = getUIFactoryService().newText("Kill enemies to survive!", Color.AQUA, 38);
 
@@ -542,6 +577,8 @@ public class GeoWarsApp extends GameApplication {
         }
 
         inc("hp", +1);
+        inc("secondaryCharge", +1);
+
         addScoreKill(enemy.getCenter());
 
         enemy.removeFromWorld();
@@ -590,30 +627,6 @@ public class GeoWarsApp extends GameApplication {
                 .scale(e)
                 .from(new Point2D(1, 1))
                 .to(new Point2D(1.2, 0.85))
-                .buildAndPlay();
-    }
-
-    private void deductScoreDeath() {
-        inc("lives", -1);
-        inc("score", -1000);
-        set("kills", 0);
-        set("multiplier", 1);
-        set("hp", PLAYER_HP);
-        set("time", 0.0);
-
-        Text bonusText = getUIFactoryService().newText("-1000", Color.WHITE, 20);
-
-        addUINode(bonusText, 1100, 70);
-
-        animationBuilder()
-                .duration(Duration.seconds(0.5))
-                .onFinished(() -> {
-                    removeUINode(bonusText);
-                })
-                .interpolator(Interpolators.EXPONENTIAL.EASE_IN())
-                .translate(bonusText)
-                .from(new Point2D(bonusText.getTranslateX(), bonusText.getTranslateY()))
-                .to(new Point2D(bonusText.getTranslateX(), 0))
                 .buildAndPlay();
     }
 

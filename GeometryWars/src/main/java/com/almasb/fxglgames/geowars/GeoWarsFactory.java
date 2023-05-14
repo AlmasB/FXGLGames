@@ -138,6 +138,7 @@ public class GeoWarsFactory implements EntityFactory {
 
         entity.setPosition(data.getX(), data.getY() - 6.5);
         entity.setOpacity(1);
+        entity.setVisible(true);
 
         entity.removeComponent(RicochetComponent.class);
         entity.removeComponent(ExpireCleanComponent.class);

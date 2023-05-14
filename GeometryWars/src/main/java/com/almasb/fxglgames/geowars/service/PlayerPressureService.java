@@ -44,7 +44,7 @@ public class PlayerPressureService extends EngineService {
     public void onGameUpdate(double tpf) {
         // not quite correct since this includes pick ups and other entities
         // but should be sufficient
-        var numEntities = (getGameWorld().getEntities().size() - byType(BOMBER, PICKUP_CRYSTAL).size()) * 1.0;
+        var numEntities = (getGameWorld().getEntities().size() - byType(BOMBER, BULLET, PICKUP_CRYSTAL).size()) * 1.0;
 
         var value = min(numEntities / MAX_ENEMIES_PRESSURE, 1.0);
 

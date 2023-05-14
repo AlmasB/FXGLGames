@@ -86,4 +86,6 @@ public final class Config {
     public static final Duration PENALTY_INTERVAL = seconds(0.5);
 
     public static final Duration PICKUP_RICOCHET_DURATION = seconds(3);
+
+    public static final int MAX_CHARGES_SECONDARY = 30;
 }
