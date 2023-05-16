@@ -34,6 +34,8 @@ public final class Config {
      */
     public static final int GAME_OVER_SCORE = 10_000_000;
 
+    public static final int MAX_MULTIPLIER = 500;
+
     public static final int ENEMY_HP = 1;
 
     public static final int MAX_ENEMIES_PRESSURE = 150;

@@ -8,7 +8,7 @@ import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.particle.ParticleComponent;
 import com.almasb.fxgl.particle.ParticleEmitters;
 import com.almasb.fxgl.time.LocalTimer;
-import com.almasb.fxglgames.geowars.GeoWarsFactory;
+import com.almasb.fxglgames.geowars.factory.GeoWarsFactory;
 import com.almasb.fxglgames.geowars.WeaponType;
 import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;

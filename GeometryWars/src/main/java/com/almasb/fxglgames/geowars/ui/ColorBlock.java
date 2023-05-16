@@ -1,4 +1,4 @@
-package com.almasb.fxglgames.geowars.menu;
+package com.almasb.fxglgames.geowars.ui;
 
 import com.almasb.fxgl.dsl.FXGL;
 import javafx.scene.effect.InnerShadow;

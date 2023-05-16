@@ -1,4 +1,4 @@
-package com.almasb.fxglgames.geowars;
+package com.almasb.fxglgames.geowars.factory;
 
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.dsl.FXGL;
@@ -58,18 +58,27 @@ public class GeoWarsFactory implements EntityFactory {
             texture.setEffect(new Bloom(0.7));
         }
 
-        return entityBuilder()
+        var darkerTexture = texture.darker().darker();
+
+        var e = entityBuilder()
                 .type(PLAYER)
                 .at(getAppWidth() / 2.0 - texture.getWidth() / 2, getAppHeight() / 2.0 - texture.getHeight() / 2)
                 .viewWithBBox(texture)
                 .collidable()
                 .zIndex(1000)
                 .with(new PlayerComponent(PLAYER_SPEED))
+                .with(new PlayerViewComponent())
                 .with(new EffectComponent())
                 .with(new ExhaustParticleComponent(ParticleEmitters.newExplosionEmitter(1)))
                 .with(new KeepInBoundsComponent(new Rectangle2D(0, 0, getAppWidth(), getAppHeight())))
                 .zIndex(PLAYER_Z_INDEX)
                 .build();
+
+        onIntChangeTo("lives", 1, () -> {
+            e.getViewComponent().addChild(darkerTexture);
+        });
+
+        return e;
     }
 
     @Spawns("Bullet")

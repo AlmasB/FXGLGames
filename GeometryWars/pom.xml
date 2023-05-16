@@ -218,7 +218,7 @@
                         <list>com.almasb.fxglgames.geowars.component.enemy.WandererComponent</list>
 
                         <!-- Factories -->
-                        <list>com.almasb.fxglgames.geowars.GeoWarsFactory</list>
+                        <list>com.almasb.fxglgames.geowars.factory.GeoWarsFactory</list>
                     </reflectionList>
                     <target>android</target>
                     <mainClass>${mainClassName}</mainClass>

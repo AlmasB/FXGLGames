@@ -49,10 +49,12 @@ import com.almasb.fxglgames.geowars.collision.PlayerPickupHandler;
 import com.almasb.fxglgames.geowars.component.GridComponent;
 import com.almasb.fxglgames.geowars.component.PlayerComponent;
 import com.almasb.fxglgames.geowars.factory.EnemyFactory;
+import com.almasb.fxglgames.geowars.factory.GeoWarsFactory;
 import com.almasb.fxglgames.geowars.factory.PickupFactory;
-import com.almasb.fxglgames.geowars.menu.GeoWarsMainMenu;
+import com.almasb.fxglgames.geowars.ui.GeoWarsMainMenu;
 import com.almasb.fxglgames.geowars.service.HighScoreService;
 import com.almasb.fxglgames.geowars.service.PlayerPressureService;
+import com.almasb.fxglgames.geowars.ui.MainUI;
 import com.almasb.fxglgames.geowars.wave.WaveService;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Point2D;
@@ -61,7 +63,6 @@ import javafx.scene.CacheHint;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
@@ -200,6 +201,10 @@ public class GeoWarsApp extends GameApplication {
                 spawn("PickupRicochet", 400, 400);
             });
 
+            onKey(KeyCode.O, () -> {
+                inc("multiplier", +10);
+            });
+
             onKeyDown(KeyCode.T, () -> {
                 getService(WaveService.class).spawnWave();
             });
@@ -291,6 +296,11 @@ public class GeoWarsApp extends GameApplication {
                 set("secondaryCharge", MAX_CHARGES_SECONDARY);
         });
 
+        getWorldProperties().<Integer>addListener("multiplier", (prev, now) -> {
+            if (now > MAX_MULTIPLIER)
+                set("multiplier", MAX_MULTIPLIER);
+        });
+
         run(() -> inc("hp", TIME_PENALTY), PENALTY_INTERVAL);
         run(() -> inc("time", +1.0), Duration.seconds(1));
 
@@ -319,7 +329,7 @@ public class GeoWarsApp extends GameApplication {
 
         run(() -> {
             if (pressureService.isSpawningEnemies()) {
-                var numToSpawn = geti("multiplier") / 25 + 2;
+                var numToSpawn = Math.min(geti("multiplier") / 25 + 2, 8);
 
                 for (int i = 0; i < numToSpawn; i++) {
                     spawn("Seeker");
@@ -467,17 +477,6 @@ public class GeoWarsApp extends GameApplication {
 
     @Override
     protected void initUI() {
-        Text scoreText = getUIFactoryService().newText("", Color.WHITE, 28);
-        scoreText.setTranslateX(60);
-        scoreText.setTranslateY(70);
-        scoreText.textProperty().bind(getip("score").asString());
-        scoreText.setStroke(Color.GOLD);
-
-        Text multText = getUIFactoryService().newText("", Color.WHITE, 12);
-        multText.setTranslateX(60);
-        multText.setTranslateY(90);
-        multText.textProperty().bind(getip("multiplier").asString("x %d"));
-
         var pressureText = getUIFactoryService().newText("", Color.WHITE, 24.0);
         pressureText.textProperty().bind(getService(PlayerPressureService.class).pressurePropProperty().asString("Pressure: %.2f"));
 
@@ -485,56 +484,12 @@ public class GeoWarsApp extends GameApplication {
             //addUINode(pressureText, 60, 150);
         }
 
-        ProgressBar hpBar = new ProgressBar(false);
-        hpBar.setWidth(140);
-        hpBar.setFill(Color.GREEN.brighter());
-        hpBar.setTraceFill(Color.GREEN.brighter());
-        hpBar.setMaxValue(PLAYER_HP);
-        hpBar.setLabelVisible(false);
-        hpBar.currentValueProperty().bind(getip("hp"));
-        hpBar.setTranslateX(getAppWidth() / 2.0 - 140 / 2.0);
-        hpBar.setTranslateY(60);
+        var ui = new MainUI();
 
-        ProgressBar secondaryBar = new ProgressBar(false);
-        secondaryBar.setWidth(140);
-        secondaryBar.setFill(Color.LIGHTBLUE.brighter().brighter());
-        secondaryBar.setTraceFill(Color.LIGHTBLUE.brighter());
-        secondaryBar.setMaxValue(MAX_CHARGES_SECONDARY);
-        secondaryBar.setLabelVisible(false);
-        secondaryBar.opacityProperty().bind(
-                Bindings.when(getip("secondaryCharge").lessThan(MAX_CHARGES_SECONDARY))
-                        .then(0.45)
-                        .otherwise(1.0)
-        );
-        secondaryBar.currentValueProperty().bind(getip("secondaryCharge"));
-        secondaryBar.setTranslateX(getAppWidth() / 2.0 - 140 / 2.0);
-        secondaryBar.setTranslateY(75);
-
-        var ricochetText = getUIFactoryService().newText("RICOCHET", Color.ANTIQUEWHITE, 12.0);
-        ricochetText.setTranslateX(hpBar.getTranslateX());
-        ricochetText.setTranslateY(hpBar.getTranslateY() + 57);
-        ricochetText.visibleProperty().bind(getbp("isRicochet"));
-
-        var livesBar = new HBox(3.5);
-        livesBar.setTranslateX(getAppWidth() / 2.0 - 140 / 2.0 + 3.5);
-        livesBar.setTranslateY(hpBar.getTranslateY() - 25);
-
-        for (int i = 0; i < geti("lives"); i++) {
-            var t = texture("PlayerNew.png", 16, 16);
-
-            livesBar.getChildren().add(t);
-        }
-
-        getWorldProperties().<Integer>addListener("lives", (prev, now) -> {
-            if (now < prev && !livesBar.getChildren().isEmpty()) {
-                livesBar.getChildren().remove(livesBar.getChildren().size() - 1);
-            }
-        });
+        addUINode(ui, 30, 50);
 
         var centerLine = new Line(getAppWidth() / 2.0, 0, getAppWidth() / 2.0, getAppHeight());
         centerLine.setStroke(Color.RED);
-
-        getGameScene().addUINodes(multText, scoreText, ricochetText, hpBar, secondaryBar, livesBar);
 
         Text goodLuck = getUIFactoryService().newText("Kill enemies to survive!", Color.AQUA, 38);
 
@@ -609,15 +564,16 @@ public class GeoWarsApp extends GameApplication {
         }
 
         final int multiplier = geti("multiplier");
+        int score = 10 * multiplier;
 
-        inc("score", +10*multiplier);
+        inc("score", score);
 
-        Text bonusText = getUIFactoryService().newText("+10" + (multiplier == 1 ? "" : "x" + multiplier), Color.color(1, 1, 1, 0.8), 24);
+        Text bonusText = getUIFactoryService().newText(
+                "" + score,
+                Color.color(1, 1, 1, 0.8),
+                Math.max(multiplier / 14, 12)
+        );
         bonusText.setStroke(Color.GOLD);
-
-        if (!FXGL.isMobile()) {
-            bonusText.setEffect(new DropShadow(25, Color.WHITE));
-        }
         bonusText.setCache(true);
         bonusText.setCacheHint(CacheHint.SPEED);
 
