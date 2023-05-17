@@ -7,7 +7,7 @@ public enum GeoWarsType {
     PLAYER,
 
     // enemies
-    WANDERER, SEEKER, RUNNER, BOUNCER, BOMBER,
+    WANDERER, SEEKER, RUNNER, BOUNCER, BOMBER, BOSS,
 
     // pick-ups
     PICKUP_CRYSTAL, PICKUP_RICOCHET,

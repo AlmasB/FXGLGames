@@ -16,7 +16,7 @@ public final class Config {
     /**
      * Disables enemies if true, useful for quick level building / testing.
      */
-    public static final boolean IS_NO_ENEMIES = false;
+    public static final boolean IS_NO_ENEMIES = true;
 
     public static final boolean IS_MENU = false;
 
@@ -37,6 +37,7 @@ public final class Config {
     public static final int MAX_MULTIPLIER = 500;
 
     public static final int ENEMY_HP = 1;
+    public static final int BOSS_HP = 10;
 
     public static final int MAX_ENEMIES_PRESSURE = 150;
 

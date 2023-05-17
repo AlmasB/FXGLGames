@@ -187,6 +187,10 @@ public class GeoWarsApp extends GameApplication {
                 EnemyFactory.respawnWanderer(e);
             });
 
+            onKeyDown(KeyCode.K, () -> {
+                var e = spawn("Boss");
+            });
+
             onKeyDown(KeyCode.H, () -> {
                 byType(WANDERER).forEach(Entity::removeFromWorld);
             });
@@ -301,7 +305,7 @@ public class GeoWarsApp extends GameApplication {
                 set("multiplier", MAX_MULTIPLIER);
         });
 
-        run(() -> inc("hp", TIME_PENALTY), PENALTY_INTERVAL);
+        //run(() -> inc("hp", TIME_PENALTY), PENALTY_INTERVAL);
         run(() -> inc("time", +1.0), Duration.seconds(1));
 
         if (!IS_NO_ENEMIES) {

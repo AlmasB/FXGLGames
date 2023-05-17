@@ -13,12 +13,11 @@ import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxglgames.geowars.GeoWarsApp;
-import com.almasb.fxglgames.geowars.component.enemy.BouncerComponent;
-import com.almasb.fxglgames.geowars.component.enemy.RunnerComponent;
-import com.almasb.fxglgames.geowars.component.enemy.SeekerComponent;
-import com.almasb.fxglgames.geowars.component.enemy.WandererComponent;
+import com.almasb.fxglgames.geowars.component.enemy.*;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -136,6 +135,25 @@ public class EnemyFactory implements EntityFactory {
                 .with(new HealthIntComponent(ENEMY_HP))
                 .with(new CollidableComponent(true))
                 .with(new BouncerComponent(BOUNCER_MOVE_SPEED))
+                .zIndex(ENEMIES_Z_INDEX)
+                .build();
+    }
+
+    @Spawns("Boss")
+    public Entity spawnBoss(SpawnData data) {
+        var boss = new Boss1Component();
+
+        return entityBuilder()
+                .type(BOSS)
+                .at(getAppCenter())
+                .viewWithBBox(new Rectangle(100, 100, Color.RED))
+                //.viewWithBBox(new Circle(100, 100, 100, Color.RED))
+                //.viewWithBBox(texture("Bouncer.png", 254 * 0.2, 304 * 0.2))
+                .with(new HealthIntComponent(BOSS_HP))
+                .with(new CollidableComponent(true))
+                .with(boss)
+                .onActive(e -> boss.spawnGuards())
+                //.with(new BouncerComponent(BOUNCER_MOVE_SPEED))
                 .zIndex(ENEMIES_Z_INDEX)
                 .build();
     }
