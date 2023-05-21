@@ -12,12 +12,11 @@ import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
+import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxglgames.geowars.GeoWarsApp;
 import com.almasb.fxglgames.geowars.component.enemy.*;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -45,6 +44,11 @@ public class EnemyFactory implements EntityFactory {
         return spawnPoints[FXGLMath.random(0, 3)];
     }
 
+    private static final Texture WANDERER_TEXTURE = texture("Wanderer.png", 60, 60).toColor(Color.PURPLE).outline(Color.ALICEBLUE, 2);
+    private static final Texture WANDERER_OVERLAY = texture("Wanderer_overlay.png", 60, 60).toColor(Color.FIREBRICK).outline(Color.PURPLE, 2);
+    private static final Texture SEEKER_TEXTURE = texture("Seeker.png", 50, 50).toColor(Color.RED).outline(Color.ALICEBLUE, 2);
+    private static final Texture SEEKER_OVERLAY = texture("Seeker_overlay.png", 50, 50).toColor(Color.BLACK).outline(Color.WHITESMOKE, 2);
+
     @Spawns("Wanderer")
     public Entity spawnWanderer(SpawnData data) {
         var beepSwitch = new IntervalSwitchComponent(false, Duration.seconds(0.5));
@@ -53,7 +57,7 @@ public class EnemyFactory implements EntityFactory {
                 .type(WANDERER)
                 .at(getRandomSpawnPoint())
                 .bbox(new HitBox(new Point2D(15, 15), BoundingShape.box(30, 30)))
-                .view(texture("Wanderer.png", 60, 60).toColor(Color.PURPLE).outline(Color.ALICEBLUE, 2))
+                .view(WANDERER_TEXTURE.copy())
                 .with(beepSwitch)
                 .with(new HealthIntComponent(ENEMY_HP))
                 .with(new CollidableComponent(true))
@@ -63,7 +67,7 @@ public class EnemyFactory implements EntityFactory {
 
         e.setReusable(true);
 
-        var overlay = texture("Wanderer_overlay.png", 60, 60).toColor(Color.FIREBRICK).outline(Color.PURPLE, 2);
+        var overlay = WANDERER_OVERLAY.copy();
         overlay.visibleProperty().bind(beepSwitch.valueProperty());
 
         e.getViewComponent().addChild(overlay);
@@ -74,6 +78,18 @@ public class EnemyFactory implements EntityFactory {
     public static void respawnWanderer(Entity entity) {
         entity.getComponent(HealthIntComponent.class).setValue(ENEMY_HP);
         entity.setPosition(getRandomSpawnPoint());
+
+        // reuse boss guards
+        entity.getComponent(WandererComponent.class).resume();
+        entity.removeComponent(CircularMoveComponent.class);
+    }
+
+    public static void respawnWandererGuard(Entity entity) {
+        entity.getComponent(HealthIntComponent.class).setValue(ENEMY_HP);
+
+        // reuse boss guards
+        entity.getComponent(WandererComponent.class).pause();
+        entity.removeComponent(CircularMoveComponent.class);
     }
 
     @Spawns("Seeker")
@@ -83,7 +99,7 @@ public class EnemyFactory implements EntityFactory {
         var e = entityBuilder()
                 .type(SEEKER)
                 .at(getRandomSpawnPoint())
-                .viewWithBBox(texture("Seeker.png", 50, 50).toColor(Color.RED).outline(Color.ALICEBLUE, 2))
+                .viewWithBBox(SEEKER_TEXTURE.copy())
                 .with(new HealthIntComponent(ENEMY_HP))
                 .with(new CollidableComponent(true))
                 .with(beepSwitch)
@@ -92,7 +108,7 @@ public class EnemyFactory implements EntityFactory {
                 .zIndex(ENEMIES_Z_INDEX)
                 .build();
 
-        var overlay = texture("Seeker_overlay.png", 50, 50).toColor(Color.BLACK).outline(Color.WHITESMOKE, 2);
+        var overlay = SEEKER_OVERLAY.copy();
         overlay.visibleProperty().bind(beepSwitch.valueProperty());
 
         e.getViewComponent().addChild(overlay);
@@ -139,22 +155,23 @@ public class EnemyFactory implements EntityFactory {
                 .build();
     }
 
-    @Spawns("Boss")
+    @Spawns("Boss1")
     public Entity spawnBoss(SpawnData data) {
         var boss = new Boss1Component();
 
-        return entityBuilder()
+        var t = texture("Wanderer.png", 120, 120).toColor(Color.RED).outline(Color.DARKBLUE, 5);
+
+        var e = entityBuilder()
                 .type(BOSS)
                 .at(getAppCenter())
-                .viewWithBBox(new Rectangle(100, 100, Color.RED))
-                //.viewWithBBox(new Circle(100, 100, 100, Color.RED))
-                //.viewWithBBox(texture("Bouncer.png", 254 * 0.2, 304 * 0.2))
+                .viewWithBBox(t)
                 .with(new HealthIntComponent(BOSS_HP))
                 .with(new CollidableComponent(true))
                 .with(boss)
-                .onActive(e -> boss.spawnGuards())
-                //.with(new BouncerComponent(BOUNCER_MOVE_SPEED))
+                .onActive(en -> boss.spawnGuards())
                 .zIndex(ENEMIES_Z_INDEX)
                 .build();
+
+        return e;
     }
 }

@@ -16,13 +16,15 @@ public final class Config {
     /**
      * Disables enemies if true, useful for quick level building / testing.
      */
-    public static final boolean IS_NO_ENEMIES = true;
+    public static final boolean IS_NO_ENEMIES = false;
 
     public static final boolean IS_MENU = false;
 
     public static final boolean IS_BACKGROUND = true;
 
     public static final boolean IS_SOUND_ENABLED = false;
+
+    public static final boolean IS_TIME_HP_PENALTY = true;
 
     /**
      * How much space is between edges of the game and boundary of the playable grid.

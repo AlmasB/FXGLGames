@@ -34,6 +34,7 @@ import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.app.scene.SimpleGameMenu;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.dsl.FXGLForKtKt;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
@@ -305,8 +306,17 @@ public class GeoWarsApp extends GameApplication {
                 set("multiplier", MAX_MULTIPLIER);
         });
 
-        //run(() -> inc("hp", TIME_PENALTY), PENALTY_INTERVAL);
+        if (IS_TIME_HP_PENALTY)
+            run(() -> inc("hp", TIME_PENALTY), PENALTY_INTERVAL);
+
         run(() -> inc("time", +1.0), Duration.seconds(1));
+
+        // TODO: this won't respawn with player
+        eventBuilder()
+                .when(() -> getd("time") >= 10)
+                .limit(1)
+                .thenRun(() -> spawnBoss("Boss1"))
+                .buildAndStart();
 
         if (!IS_NO_ENEMIES) {
             initEnemySpawns();
@@ -395,6 +405,7 @@ public class GeoWarsApp extends GameApplication {
         physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, RUNNER));
         physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, BOUNCER));
         physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, BOMBER));
+        physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, BOSS));
 
         var pickupHandler = new PlayerPickupHandler();
 
@@ -463,8 +474,8 @@ public class GeoWarsApp extends GameApplication {
 
     private void killPlayer() {
         // remove all "removables"
-        // TODO: do inverse
-        byType(WANDERER, SEEKER, RUNNER, BOUNCER, BOMBER, BULLET, PICKUP_CRYSTAL, PICKUP_RICOCHET, MINE, SHOCKWAVE_PICKUP)
+        // TODO: do inverse -- add new FXGL method byTypeNot() or similar
+        byType(WANDERER, SEEKER, RUNNER, BOUNCER, BOMBER, BOSS, BULLET, PICKUP_CRYSTAL, PICKUP_RICOCHET, MINE, SHOCKWAVE_PICKUP)
                 .forEach(Entity::removeFromWorld);
 
         player.setPosition(getAppWidth() / 2, getAppHeight() / 2);
@@ -531,6 +542,24 @@ public class GeoWarsApp extends GameApplication {
                 playerComponent.shootDirection(shootVector);
             }
         }
+    }
+
+    private void spawnBoss(String bossName) {
+        getGameWorld().getEntitiesFiltered(e -> !(e.isType(PLAYER) || e.isType(PARTICLE_LAYER) || e.isType(GRID)))
+                .forEach(e -> {
+                    animationBuilder()
+                            .onFinished(e::removeFromWorld)
+                            .duration(Duration.seconds(2))
+                            .interpolator(Interpolators.EXPONENTIAL.EASE_IN())
+                            .translate(e)
+                            .to(getAppCenter())
+                            .buildAndPlay();
+                });
+
+        runOnce(() -> {
+            spawnFadeIn(bossName, new SpawnData(), Duration.seconds(2));
+
+        }, Duration.seconds(2.5));
     }
 
     public void killEnemy(Entity enemy) {

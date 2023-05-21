@@ -37,7 +37,11 @@ public class PlayerPressureService extends EngineService {
     }
 
     public boolean isSpawningEnemies() {
-        return isSpawningEnemies;
+        return isSpawningEnemies && !isBossPresent();
+    }
+
+    public boolean isBossPresent() {
+        return byType(BOSS).size() > 0;
     }
 
     @Override

@@ -8,17 +8,25 @@ public class CircularMoveComponent extends Component {
 
     private Point2D center;
     private double angle;
+    private double distance;
+    private boolean cw;
 
-    public CircularMoveComponent(Point2D center, double angle) {
+    public CircularMoveComponent(Point2D center, double angle, double distance, boolean cw) {
         this.center = center;
         this.angle = angle;
+        this.distance = distance;
+        this.cw = cw;
+    }
+
+    public void setCenter(Point2D center) {
+        this.center = center;
     }
 
     @Override
     public void onUpdate(double tpf) {
-        angle += tpf * 60;
+        angle += cw ? tpf * 60 : - tpf * 60;
 
-        var vector = Vec2.fromAngle(angle).mulLocal(150);
+        var vector = Vec2.fromAngle(angle).mulLocal(distance);
         entity.setPosition(vector.add(center));
     }
 }
