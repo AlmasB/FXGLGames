@@ -38,6 +38,12 @@ public class PaletteChangingComponent extends Component {
 
     private Texture texture;
 
+    private double lastX = 0;
+    private double lastY = 0;
+
+    private double timeToSwitch = 0;
+    private int spriteColor = 0;
+
     public PaletteChangingComponent(Texture texture) {
         this.texture = texture;
     }
@@ -46,12 +52,6 @@ public class PaletteChangingComponent extends Component {
     public void onAdded() {
         entity.getViewComponent().addChild(texture);
     }
-
-    private double lastX = 0;
-    private double lastY = 0;
-
-    private double timeToSwitch = 0;
-    private int spriteColor = 0;
 
     @Override
     public void onUpdate(double tpf) {

@@ -2,6 +2,7 @@ package com.almasb.fxglgames.td.data;
 
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Polyline;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,12 +22,12 @@ public class Way {
         return new ArrayList<>(waypoints);
     }
 
-    public static Way fromPolygon(Polygon polygon, double offsetX, double offsetY) {
+    public static Way fromPolyline(Polyline polyline, double offsetX, double offsetY) {
         var list = new ArrayList<Point2D>();
 
-        for (int i = 0; i < polygon.getPoints().size(); i += 2) {
-            var x = polygon.getPoints().get(i) + offsetX;
-            var y = polygon.getPoints().get(i+1) + offsetY;
+        for (int i = 0; i < polyline.getPoints().size(); i += 2) {
+            var x = polyline.getPoints().get(i) + offsetX;
+            var y = polyline.getPoints().get(i+1) + offsetY;
 
             list.add(new Point2D(x, y));
         }

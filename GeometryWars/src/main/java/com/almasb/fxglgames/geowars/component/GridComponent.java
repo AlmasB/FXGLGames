@@ -197,22 +197,7 @@ public class GridComponent extends Component {
     }
 
     public void applyExplosiveForce(double force, Point2D position, double radius) {
-        Vec2 tmpVec = new Vec2();
-
-        for (int x = 0; x < points.length; x++) {
-            for (int y = 0; y < points[0].length; y++) {
-                double dist = position.distance(points[x][y].getPosition().x, points[x][y].getPosition().y);
-                dist *= dist;
-
-                if (dist < radius * radius) {
-                    tmpVec.set((float) position.getX(), (float) position.getY());
-                    tmpVec.subLocal(points[x][y].getPosition()).mulLocal((float) (-10f * force / (10000 + dist)));
-
-                    points[x][y].applyForce(tmpVec);
-                    points[x][y].increaseDamping(0.6f);
-                }
-            }
-        }
+        applyImplosiveForce(-force, position, radius);
     }
 
     public void applyImplosiveForce(double force, Point2D position, double radius) {

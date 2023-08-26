@@ -30,11 +30,11 @@ import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
-import com.almasb.fxgl.app.scene.GameSubScene;
 import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.app.scene.SimpleGameMenu;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.dsl.FXGLForKtKt;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
@@ -44,14 +44,20 @@ import com.almasb.fxgl.input.virtual.VirtualJoystick;
 import com.almasb.fxgl.physics.CollisionDetectionStrategy;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.PhysicsWorld;
+import com.almasb.fxgl.ui.ProgressBar;
 import com.almasb.fxglgames.geowars.collision.BulletMineHandler;
-import com.almasb.fxglgames.geowars.collision.PlayerCrystalHandler;
+import com.almasb.fxglgames.geowars.collision.PlayerPickupHandler;
 import com.almasb.fxglgames.geowars.component.GridComponent;
 import com.almasb.fxglgames.geowars.component.PlayerComponent;
-import com.almasb.fxglgames.geowars.menu.GeoWarsMainMenu;
+import com.almasb.fxglgames.geowars.factory.EnemyFactory;
+import com.almasb.fxglgames.geowars.factory.GeoWarsFactory;
+import com.almasb.fxglgames.geowars.factory.PickupFactory;
+import com.almasb.fxglgames.geowars.ui.GeoWarsMainMenu;
 import com.almasb.fxglgames.geowars.service.HighScoreService;
 import com.almasb.fxglgames.geowars.service.PlayerPressureService;
+import com.almasb.fxglgames.geowars.ui.MainUI;
 import com.almasb.fxglgames.geowars.wave.WaveService;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.CacheHint;
@@ -59,6 +65,7 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -93,7 +100,7 @@ public class GeoWarsApp extends GameApplication {
         settings.setWidth(1920);
         settings.setHeight(1080);
         settings.setTitle("FXGL Space Wars");
-        settings.setVersion("1.3.1");
+        settings.setVersion("1.4.0");
         settings.setIntroEnabled(isRelease);
         settings.setMainMenuEnabled(IS_MENU);
         settings.setGameMenuEnabled(IS_MENU);
@@ -120,9 +127,6 @@ public class GeoWarsApp extends GameApplication {
 
     @Override
     protected void onPreInit() {
-        // preload explosion sprite sheet
-        getAssetLoader().loadTexture("explosion.png", 80 * 48, 80);
-
         getSettings().setGlobalSoundVolume(IS_SOUND_ENABLED ? 0.2 : 0.0);
         getSettings().setGlobalMusicVolume(IS_SOUND_ENABLED ? 0.5 : 0.0);
 
@@ -169,12 +173,23 @@ public class GeoWarsApp extends GameApplication {
                     playerComponent.shoot(getInput().getMousePositionWorld());
                 }
             }, MouseButton.PRIMARY);
+
+            getInput().addAction(new UserAction("Shoot Mouse Secondary") {
+                @Override
+                protected void onActionBegin() {
+                    playerComponent.shootSecondary(getInput().getMousePositionWorld());
+                }
+            }, MouseButton.SECONDARY);
         }
 
         if (!isReleaseMode()) {
             onKeyDown(KeyCode.G, () -> {
                 var e = spawn("Wanderer");
-                GeoWarsFactory.respawnWanderer(e);
+                EnemyFactory.respawnWanderer(e);
+            });
+
+            onKeyDown(KeyCode.K, () -> {
+                var e = spawn("Boss");
             });
 
             onKeyDown(KeyCode.H, () -> {
@@ -187,12 +202,17 @@ public class GeoWarsApp extends GameApplication {
                 });
             });
 
+            onKeyDown(KeyCode.I, () -> {
+                spawn("PickupRicochet", 400, 400);
+            });
+
+            onKey(KeyCode.O, () -> {
+                inc("multiplier", +10);
+            });
+
             onKeyDown(KeyCode.T, () -> {
                 getService(WaveService.class).spawnWave();
             });
-
-
-
 
             onKeyDown(KeyCode.Y, () -> {
 
@@ -217,13 +237,18 @@ public class GeoWarsApp extends GameApplication {
         vars.put("kills", 0);
         vars.put("lives", 3);
         vars.put("isRicochet", false);
+        vars.put("secondaryCharge", 0);
         vars.put("weaponType", WeaponType.SINGLE);
+        vars.put("hp", PLAYER_HP);
+        vars.put("lastHitTime", 0);
+        vars.put("time", 0.0);
     }
 
     @Override
     protected void initGame() {
-
         getGameWorld().addEntityFactory(new GeoWarsFactory());
+        getGameWorld().addEntityFactory(new EnemyFactory());
+        getGameWorld().addEntityFactory(new PickupFactory());
 
         getGameScene().setBackgroundColor(Color.color(0, 0, 0.05, 1.0));
 
@@ -238,8 +263,9 @@ public class GeoWarsApp extends GameApplication {
 
         int dist = OUTSIDE_DISTANCE;
 
+        getGameScene().getViewport().setLazy(true);
         getGameScene().getViewport().setBounds(-dist, -dist, getAppWidth() + dist, getAppHeight() + dist);
-        getGameScene().getViewport().bindToEntity(player, getAppWidth() / 2, getAppHeight() / 2);
+        getGameScene().getViewport().bindToEntity(player, getAppWidth() / 2.0 - player.getWidth() / 2, getAppHeight() / 2.0 - player.getHeight() / 2);
 
         getWorldProperties().<Integer>addListener("multiplier", (prev, now) -> {
             WeaponType current = geto("weaponType");
@@ -262,6 +288,36 @@ public class GeoWarsApp extends GameApplication {
                 gameOver();
         });
 
+        getWorldProperties().<Integer>addListener("hp", (prev, now) -> {
+            if (now > PLAYER_HP)
+                set("hp", PLAYER_HP);
+
+            if (now <= 0)
+                killPlayer();
+        });
+
+        getWorldProperties().<Integer>addListener("secondaryCharge", (prev, now) -> {
+            if (now > MAX_CHARGES_SECONDARY)
+                set("secondaryCharge", MAX_CHARGES_SECONDARY);
+        });
+
+        getWorldProperties().<Integer>addListener("multiplier", (prev, now) -> {
+            if (now > MAX_MULTIPLIER)
+                set("multiplier", MAX_MULTIPLIER);
+        });
+
+        if (IS_TIME_HP_PENALTY)
+            run(() -> inc("hp", TIME_PENALTY), PENALTY_INTERVAL);
+
+        run(() -> inc("time", +1.0), Duration.seconds(1));
+
+        // TODO: this won't respawn with player
+        eventBuilder()
+                .when(() -> getd("time") >= 10)
+                .limit(1)
+                .thenRun(() -> spawnBoss("Boss1"))
+                .buildAndStart();
+
         if (!IS_NO_ENEMIES) {
             initEnemySpawns();
         }
@@ -274,20 +330,24 @@ public class GeoWarsApp extends GameApplication {
         }, WAVE_SPAWN_INTERVAL);
 
         run(() -> {
-            if (pressureService.isSpawningEnemies() && geti("multiplier") >= 75) {
+            if (pressureService.isSpawningEnemies() && getd("time") >= 40) {
                 spawn("Bouncer");
             }
         }, BOUNCER_SPAWN_INTERVAL);
 
         run(() -> {
-            if (pressureService.isSpawningEnemies() && geti("multiplier") >= 50) {
+            if (pressureService.isSpawningEnemies() && getd("time") >= 20) {
                 spawn("Runner");
             }
         }, RUNNER_SPAWN_INTERVAL);
 
         run(() -> {
-            if (pressureService.isSpawningEnemies() && geti("multiplier") >= 25) {
-                spawn("Seeker");
+            if (pressureService.isSpawningEnemies()) {
+                var numToSpawn = Math.min(geti("multiplier") / 25 + 2, 8);
+
+                for (int i = 0; i < numToSpawn; i++) {
+                    spawn("Seeker");
+                }
             }
         }, SEEKER_SPAWN_INTERVAL);
 
@@ -295,7 +355,7 @@ public class GeoWarsApp extends GameApplication {
             if (pressureService.isSpawningEnemies()) {
                 for (int i = 0; i < 4; i++) {
                     var e = spawn("Wanderer");
-                    GeoWarsFactory.respawnWanderer(e);
+                    EnemyFactory.respawnWanderer(e);
                 }
             }
         }, WANDERER_SPAWN_INTERVAL);
@@ -307,6 +367,14 @@ public class GeoWarsApp extends GameApplication {
                     Duration.seconds(1)
             );
         }, MINE_SPAWN_INTERVAL);
+
+        run(() -> {
+            spawnFadeIn(
+                    "PickupRicochet",
+                    new SpawnData(FXGLMath.randomPoint(new Rectangle2D(0, 0, getAppWidth() - 80, getAppHeight() - 80))),
+                    Duration.seconds(1)
+            );
+        }, PICKUP_RICOCHET_SPAWN_INTERVAL);
     }
 
     private boolean isOnMobile() {
@@ -337,7 +405,12 @@ public class GeoWarsApp extends GameApplication {
         physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, RUNNER));
         physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, BOUNCER));
         physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, BOMBER));
-        physics.addCollisionHandler(new PlayerCrystalHandler());
+        physics.addCollisionHandler(bulletEnemy.copyFor(BULLET, BOSS));
+
+        var pickupHandler = new PlayerPickupHandler();
+
+        physics.addCollisionHandler(pickupHandler);
+        physics.addCollisionHandler(pickupHandler.copyFor(PLAYER, PICKUP_RICOCHET));
         physics.addCollisionHandler(new BulletMineHandler());
 
         CollisionHandler shockwaveEnemy = new CollisionHandler(SHOCKWAVE, WANDERER) {
@@ -377,15 +450,13 @@ public class GeoWarsApp extends GameApplication {
             protected void onCollisionBegin(Entity a, Entity b) {
 
                 getGameScene().getViewport().shakeTranslational(8);
+                if (System.nanoTime() > geti("lastHitTime") + 100000000) {
+                    set("lastHitTime", (int)System.nanoTime());
 
-                // remove all "removables"
-                byType(WANDERER, SEEKER, RUNNER, BOUNCER, BOMBER, BULLET, CRYSTAL, MINE, SHOCKWAVE_PICKUP)
-                        .forEach(Entity::removeFromWorld);
+                    inc("hp", COLLISION_PENALTY);
 
-                player.setPosition(getAppWidth() / 2, getAppHeight() / 2);
-                playerComponent.playSpawnAnimation();
-
-                deductScoreDeath();
+                    killEnemy(b);
+                }
             }
         };
 
@@ -401,39 +472,41 @@ public class GeoWarsApp extends GameApplication {
         });
     }
 
+    private void killPlayer() {
+        // remove all "removables"
+        // TODO: do inverse -- add new FXGL method byTypeNot() or similar
+        byType(WANDERER, SEEKER, RUNNER, BOUNCER, BOMBER, BOSS, BULLET, PICKUP_CRYSTAL, PICKUP_RICOCHET, MINE, SHOCKWAVE_PICKUP)
+                .forEach(Entity::removeFromWorld);
+
+        player.setPosition(getAppWidth() / 2, getAppHeight() / 2);
+        playerComponent.playSpawnAnimation();
+
+        inc("lives", -1);
+        set("kills", 0);
+        set("secondaryCharge", 0);
+        set("multiplier", 1);
+        set("hp", PLAYER_HP);
+        set("time", 0.0);
+        set("weaponType", WeaponType.SINGLE);
+    }
+
     @Override
     protected void initUI() {
-        Text scoreText = getUIFactoryService().newText("", Color.WHITE, 28);
-        scoreText.setTranslateX(60);
-        scoreText.setTranslateY(70);
-        scoreText.textProperty().bind(getip("score").asString());
-        scoreText.setStroke(Color.GOLD);
-
-        Text multText = getUIFactoryService().newText("", Color.WHITE, 28);
-        multText.setTranslateX(60);
-        multText.setTranslateY(90);
-        multText.textProperty().bind(getip("multiplier").asString("x %d"));
-
-        var livesText = getUIFactoryService().newText("", Color.WHITE, 24.0);
-        livesText.setTranslateX(60);
-        livesText.setTranslateY(110);
-        livesText.textProperty().bind(getip("lives").asString("Lives: %d"));
-
-        var ricochetText = getUIFactoryService().newText("RICOCHET", Color.ANTIQUEWHITE, 16.0);
-        ricochetText.setTranslateX(60);
-        ricochetText.setTranslateY(130);
-        ricochetText.visibleProperty().bind(getbp("isRicochet"));
-
         var pressureText = getUIFactoryService().newText("", Color.WHITE, 24.0);
         pressureText.textProperty().bind(getService(PlayerPressureService.class).pressurePropProperty().asString("Pressure: %.2f"));
 
         if (!isReleaseMode()) {
-            addUINode(pressureText, 60, 150);
+            //addUINode(pressureText, 60, 150);
         }
 
-        getGameScene().addUINodes(multText, scoreText, livesText, ricochetText);
+        var ui = new MainUI();
 
-        Text goodLuck = getUIFactoryService().newText("Score as many points as you can. Good luck!", Color.AQUA, 38);
+        addUINode(ui, 30, 50);
+
+        var centerLine = new Line(getAppWidth() / 2.0, 0, getAppWidth() / 2.0, getAppHeight());
+        centerLine.setStroke(Color.RED);
+
+        Text goodLuck = getUIFactoryService().newText("Kill enemies to survive!", Color.AQUA, 38);
 
         addUINode(goodLuck);
 
@@ -471,6 +544,24 @@ public class GeoWarsApp extends GameApplication {
         }
     }
 
+    private void spawnBoss(String bossName) {
+        getGameWorld().getEntitiesFiltered(e -> !(e.isType(PLAYER) || e.isType(PARTICLE_LAYER) || e.isType(GRID)))
+                .forEach(e -> {
+                    animationBuilder()
+                            .onFinished(e::removeFromWorld)
+                            .duration(Duration.seconds(2))
+                            .interpolator(Interpolators.EXPONENTIAL.EASE_IN())
+                            .translate(e)
+                            .to(getAppCenter())
+                            .buildAndPlay();
+                });
+
+        runOnce(() -> {
+            spawnFadeIn(bossName, new SpawnData(), Duration.seconds(2));
+
+        }, Duration.seconds(2.5));
+    }
+
     public void killEnemy(Entity enemy) {
         SpawnData data;
 
@@ -489,6 +580,9 @@ public class GeoWarsApp extends GameApplication {
             spawn("ShockwavePickup", enemy.getPosition());
         }
 
+        inc("hp", +1);
+        inc("secondaryCharge", +1);
+
         addScoreKill(enemy.getCenter());
 
         enemy.removeFromWorld();
@@ -503,15 +597,16 @@ public class GeoWarsApp extends GameApplication {
         }
 
         final int multiplier = geti("multiplier");
+        int score = 10 * multiplier;
 
-        inc("score", +10*multiplier);
+        inc("score", score);
 
-        Text bonusText = getUIFactoryService().newText("+10" + (multiplier == 1 ? "" : "x" + multiplier), Color.color(1, 1, 1, 0.8), 24);
+        Text bonusText = getUIFactoryService().newText(
+                "" + score,
+                Color.color(1, 1, 1, 0.8),
+                Math.max(multiplier / 14, 12)
+        );
         bonusText.setStroke(Color.GOLD);
-
-        if (!FXGL.isMobile()) {
-            bonusText.setEffect(new DropShadow(25, Color.WHITE));
-        }
         bonusText.setCache(true);
         bonusText.setCacheHint(CacheHint.SPEED);
 
@@ -537,28 +632,6 @@ public class GeoWarsApp extends GameApplication {
                 .scale(e)
                 .from(new Point2D(1, 1))
                 .to(new Point2D(1.2, 0.85))
-                .buildAndPlay();
-    }
-
-    private void deductScoreDeath() {
-        inc("lives", -1);
-        inc("score", -1000);
-        set("kills", 0);
-        set("multiplier", 1);
-
-        Text bonusText = getUIFactoryService().newText("-1000", Color.WHITE, 20);
-
-        addUINode(bonusText, 1100, 70);
-
-        animationBuilder()
-                .duration(Duration.seconds(0.5))
-                .onFinished(() -> {
-                    removeUINode(bonusText);
-                })
-                .interpolator(Interpolators.EXPONENTIAL.EASE_IN())
-                .translate(bonusText)
-                .from(new Point2D(bonusText.getTranslateX(), bonusText.getTranslateY()))
-                .to(new Point2D(bonusText.getTranslateX(), 0))
                 .buildAndPlay();
     }
 

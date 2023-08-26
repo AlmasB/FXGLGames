@@ -64,7 +64,6 @@ public class PlayerComponent extends Component {
     }
 
     public void down() {
-        // TODO: allow component to handle Rectangle2D
         if (entity.getBottomY() >= 700 - 210) {
             return;
         }

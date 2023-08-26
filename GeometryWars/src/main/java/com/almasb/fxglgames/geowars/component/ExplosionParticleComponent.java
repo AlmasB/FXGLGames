@@ -23,9 +23,9 @@ public class ExplosionParticleComponent extends Component {
 
     @Override
     public void onAdded() {
-        grid = byType(GeoWarsType.GRID).get(0).getComponent(GridComponent.class);
+        grid = getGameWorld().getSingleton(GeoWarsType.GRID).getComponent(GridComponent.class);
 
-        color = Color.rgb(random(50, 235), random(155, 255), random(50, 235)).brighter();
+        color = Color.rgb(random(50, 235), random(155, 255), random(50, 235));
 
         spawnParticles();
     }
@@ -33,7 +33,7 @@ public class ExplosionParticleComponent extends Component {
     public void setNumParticles(int numParticles) {
         this.numParticles = numParticles;
 
-        color = Color.rgb(random(50, 235), random(155, 255), random(50, 235)).brighter();
+        color = Color.rgb(random(50, 235), random(155, 255), random(50, 235));
 
         spawnParticles();
     }
@@ -65,7 +65,7 @@ public class ExplosionParticleComponent extends Component {
 
             var angle = FXGLMath.map(i, 0, 200, 0, 360);
             p.velocity.setFromAngle(angle);
-            p.acceleration.set(p.velocity);
+            p.acceleration.set(p.velocity.mul(0.25));
 
             particles.add(p);
         }

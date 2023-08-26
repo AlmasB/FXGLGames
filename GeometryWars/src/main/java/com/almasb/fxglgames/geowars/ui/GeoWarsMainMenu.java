@@ -1,4 +1,4 @@
-package com.almasb.fxglgames.geowars.menu;
+package com.almasb.fxglgames.geowars.ui;
 
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.scene.FXGLMenu;
@@ -6,7 +6,6 @@ import com.almasb.fxgl.app.scene.MenuType;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.input.view.KeyView;
 import com.almasb.fxgl.input.view.MouseButtonView;
-import com.almasb.fxgl.input.view.TriggerView;
 import com.almasb.fxgl.logging.Logger;
 import com.almasb.fxgl.scene.Scene;
 import com.almasb.fxglgames.geowars.service.HighScoreService;
@@ -34,7 +33,6 @@ import java.util.ArrayList;
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxglgames.geowars.Config.SAVE_FILE_NAME;
 import static javafx.scene.input.KeyCode.*;
-import static javafx.scene.input.KeyCode.X;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)

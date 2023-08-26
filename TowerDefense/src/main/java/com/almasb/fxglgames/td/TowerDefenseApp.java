@@ -8,20 +8,25 @@ import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.quest.Quest;
+import com.almasb.fxgl.quest.QuestService;
+import com.almasb.fxgl.quest.QuestState;
 import com.almasb.fxglgames.td.components.EnemyComponent;
 import com.almasb.fxglgames.td.data.*;
 import com.almasb.fxglgames.td.ui.*;
 import com.almasb.fxglgames.td.ui.scene.TowerDefenseGameMenu;
 import com.almasb.fxglgames.td.ui.scene.TowerDefenseMainMenu;
-import javafx.scene.shape.Polygon;
+import javafx.beans.binding.Bindings;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Polyline;
 import javafx.util.Duration;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
-import static com.almasb.fxglgames.td.EntityType.*;
+import static com.almasb.fxglgames.td.EntityType.WAY;
 import static com.almasb.fxglgames.td.data.Config.*;
 import static com.almasb.fxglgames.td.data.Vars.*;
 
@@ -55,6 +60,7 @@ public class TowerDefenseApp extends GameApplication {
         settings.setIntroEnabled(false);
         settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(true);
+        settings.addEngineService(QuestService.class);
         settings.addEngineService(CurrencyService.class);
         settings.setSceneFactory(new SceneFactory() {
             @Override
@@ -76,6 +82,8 @@ public class TowerDefenseApp extends GameApplication {
         vars.put(MONEY, STARTING_MONEY);
         vars.put(PLAYER_HP, STARTING_HP);
         vars.put(CURRENT_WAVE, 0);
+
+        vars.put(NUM_TOWERS, 0);
     }
 
     public void setCurrentLevel(LevelData currentLevel) {
@@ -142,6 +150,10 @@ public class TowerDefenseApp extends GameApplication {
 
         waveIcon.setMaxWave(currentLevel.maxWaveIndex());
 
+        runOnce(() -> {
+            initQuests(currentLevel);
+        }, Duration.seconds(0.1));
+
         setLevelFromMap("tmx/" + currentLevel.map());
 
         getGameWorld().getEntitiesFiltered(e -> e.isType("TiledMapLayer"))
@@ -152,6 +164,46 @@ public class TowerDefenseApp extends GameApplication {
                 });
 
         scheduleNextWave();
+    }
+
+    private void initQuests(LevelData level) {
+        getService(QuestService.class).questsProperty().forEach(quest -> getService(QuestService.class).removeQuest(quest));
+
+        var quest = new Quest("Objectives");
+
+        quest.stateProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("QUEST: " + oldValue + " -> " + newValue);
+        });
+
+        level.quests()
+                .forEach(data -> {
+                    quest.addIntObjective(data.desc(), data.varName(), (int) data.varValue());
+                });
+
+        getQuestService().startQuest(quest);
+
+        var vbox = new VBox(10);
+        vbox.getChildren().addAll(
+                getUIFactoryService().newText(quest.getName(), Color.ANTIQUEWHITE, 24.0)
+        );
+
+        quest.objectivesProperty().forEach(obj -> {
+            var text = getUIFactoryService().newText("");
+            text.textProperty().bind(
+                    Bindings.when(obj.stateProperty().isEqualTo(QuestState.COMPLETED))
+                            .then("- " + obj.getDescription() + " \u2713")
+                            .otherwise("- " + obj.getDescription())
+            );
+            text.fillProperty().bind(
+                    Bindings.when(obj.stateProperty().isEqualTo(QuestState.COMPLETED))
+                            .then(Color.GREEN)
+                            .otherwise(Color.WHITE)
+            );
+
+            vbox.getChildren().add(text);
+        });
+
+        addUINode(vbox, getAppWidth() - 200, 10);
     }
 
     private void scheduleNextWave() {
@@ -176,8 +228,8 @@ public class TowerDefenseApp extends GameApplication {
 
         EnemyData data = getAssetLoader().loadJSON("enemies/" + wave.enemy(), EnemyData.class).get();
 
-        Polygon p = wayEntity.getObject("polygon");
-        var way = Way.fromPolygon(p, wayEntity.getX(), wayEntity.getY());
+        Polyline p = wayEntity.getObject("polyline");
+        var way = Way.fromPolyline(p, wayEntity.getX(), wayEntity.getY());
 
         for (int i = 0; i < wave.amount(); i++) {
             runOnce(() -> {
@@ -251,6 +303,8 @@ public class TowerDefenseApp extends GameApplication {
             );
 
             cell.setProperty("tower", tower);
+
+            inc(NUM_TOWERS, +1);
         }
     }
 

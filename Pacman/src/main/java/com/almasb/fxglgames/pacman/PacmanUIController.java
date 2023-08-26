@@ -33,7 +33,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
-import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxgl.dsl.FXGL.getUIFactoryService;
+import static com.almasb.fxgl.dsl.FXGL.getip;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)

@@ -10,7 +10,8 @@ import java.util.stream.Stream;
 public record LevelData(
         String name,
         String map,
-        List<WaveData> waves
+        List<WaveData> waves,
+        List<QuestData> quests
 ) {
 
     public int maxWaveIndex() {

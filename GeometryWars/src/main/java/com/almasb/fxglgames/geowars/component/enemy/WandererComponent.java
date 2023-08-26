@@ -31,18 +31,15 @@ import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.texture.Texture;
-import com.almasb.fxgl.time.LocalTimer;
 import javafx.geometry.Point2D;
-import javafx.scene.paint.Color;
-import javafx.util.Duration;
 
 /**
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class WandererComponent extends Component {
 
-    private int screenWidth, screenHeight;
+    private int screenWidth;
+    private int screenHeight;
 
     private double angleAdjustRate = FXGLMath.random(0, 0.15);
 
@@ -50,29 +47,20 @@ public class WandererComponent extends Component {
     private double directionAngle = FXGLMath.toDegrees(FXGLMath.random(-1, 1) * FXGLMath.PI2);
 
     private int moveSpeed;
-    private int rotationSpeed = FXGLMath.random(-100, 100);
 
     private float tx = FXGLMath.random(1000, 10000);
 
-    private Texture texture;
-    private Texture saturatedTexture;
-
-    private LocalTimer timer;
-
     private Entity wanderer;
 
-    public WandererComponent(int moveSpeed, Texture texture, Texture overlay) {
+    public WandererComponent(int moveSpeed) {
         screenWidth = FXGL.getAppWidth();
         screenHeight = FXGL.getAppHeight();
         this.moveSpeed = moveSpeed;
-        this.texture = texture;
-        saturatedTexture = overlay.toColor(Color.YELLOW);
     }
 
     @Override
     public void onAdded() {
         wanderer = entity;
-        timer = FXGL.newLocalTimer();
     }
 
     @Override
@@ -85,11 +73,6 @@ public class WandererComponent extends Component {
         tx += tpf;
 
         checkScreenBounds();
-
-        if (timer.elapsed(Duration.seconds(1))) {
-            swapTextures();
-            timer.capture();
-        }
     }
 
     private void adjustAngle(double tpf) {
@@ -118,14 +101,6 @@ public class WandererComponent extends Component {
 
             double angle = Math.toDegrees(Math.atan(newDirectionVector.getY() / newDirectionVector.getX()));
             directionAngle = newDirectionVector.getX() > 0 ? angle : 180 + angle;
-        }
-    }
-
-    private void swapTextures() {
-        if (saturatedTexture.getScene() == null) {
-            entity.getViewComponent().addChild(saturatedTexture);
-        } else {
-            entity.getViewComponent().removeChild(saturatedTexture);
         }
     }
 }

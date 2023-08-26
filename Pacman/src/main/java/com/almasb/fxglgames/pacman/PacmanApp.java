@@ -30,7 +30,6 @@ import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.level.Level;
 import com.almasb.fxgl.entity.level.text.TextLevelLoader;
-import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.pathfinding.CellState;
 import com.almasb.fxgl.pathfinding.astar.AStarGrid;
 import com.almasb.fxgl.ui.UI;
@@ -61,7 +60,7 @@ public class PacmanApp extends GameApplication {
     private static final int UI_SIZE = 80;
 
     // seconds
-    public static final int TIME_PER_LEVEL = 100;
+    public static final int TIME_PER_LEVEL = 110;
 
     public Entity getPlayer() {
         return getGameWorld().getSingleton(PLAYER);
@@ -83,51 +82,24 @@ public class PacmanApp extends GameApplication {
 
     @Override
     protected void initInput() {
-        getInput().addAction(new UserAction("Up") {
-            @Override
-            protected void onAction() {
-                getPlayerComponent().up();
-            }
-        }, KeyCode.W);
+        onKey(KeyCode.W, () -> getPlayerComponent().up());
+        onKey(KeyCode.S, () -> getPlayerComponent().down());
+        onKey(KeyCode.A, () -> getPlayerComponent().left());
+        onKey(KeyCode.D, () -> getPlayerComponent().right());
 
-        getInput().addAction(new UserAction("Down") {
-            @Override
-            protected void onAction() {
-                getPlayerComponent().down();
+        onKeyDown(KeyCode.F, () -> {
+            if (geti("teleport") > 0) {
+                inc("teleport", -1);
+                getPlayerComponent().teleport();
             }
-        }, KeyCode.S);
-
-        getInput().addAction(new UserAction("Left") {
-            @Override
-            protected void onAction() {
-                getPlayerComponent().left();
-            }
-        }, KeyCode.A);
-
-        getInput().addAction(new UserAction("Right") {
-            @Override
-            protected void onAction() {
-                getPlayerComponent().right();
-            }
-        }, KeyCode.D);
-//
-//        getInput().addAction(new UserAction("Teleport") {
-//            @Override
-//            protected void onActionBegin() {
-//
-//                if (geti("teleport") > 0) {
-//                    inc("teleport", -1);
-//                    getPlayerControl().teleport();
-//                }
-//            }
-//        }, KeyCode.F);
+        });
     }
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("score", 0);
         vars.put("coins", 0);
-        vars.put("teleport", 0);
+        vars.put("teleport", 1);
         vars.put("time", TIME_PER_LEVEL);
     }
 

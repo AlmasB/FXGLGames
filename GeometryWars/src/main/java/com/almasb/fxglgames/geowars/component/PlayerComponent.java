@@ -1,5 +1,6 @@
 package com.almasb.fxglgames.geowars.component;
 
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
@@ -7,10 +8,9 @@ import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.particle.ParticleComponent;
 import com.almasb.fxgl.particle.ParticleEmitters;
 import com.almasb.fxgl.time.LocalTimer;
-import com.almasb.fxglgames.geowars.GeoWarsFactory;
+import com.almasb.fxglgames.geowars.factory.GeoWarsFactory;
 import com.almasb.fxglgames.geowars.WeaponType;
 import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
@@ -20,6 +20,7 @@ import java.util.List;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.geto;
+import static com.almasb.fxglgames.geowars.Config.MAX_CHARGES_SECONDARY;
 import static com.almasb.fxglgames.geowars.Config.WEAPON_DELAY;
 import static com.almasb.fxglgames.geowars.GeoWarsType.GRID;
 
@@ -56,22 +57,6 @@ public class PlayerComponent extends Component {
             entity.rotateToVector(dir);
 
         oldPosition = entity.getPosition();
-
-        // TODO: extract to KeepInBoundsComponent
-        
-        var viewport = new Rectangle2D(0, 0, getAppWidth(), getAppHeight());
-
-        if (getEntity().getX() < viewport.getMinX()) {
-            getEntity().setX(viewport.getMinX());
-        } else if (getEntity().getRightX() > viewport.getMaxX()) {
-            getEntity().setX(viewport.getMaxX() - getEntity().getWidth());
-        }
-
-        if (getEntity().getY() < viewport.getMinY()) {
-            getEntity().setY(viewport.getMinY());
-        } else if (getEntity().getBottomY() > viewport.getMaxY()) {
-            getEntity().setY(viewport.getMaxY() - getEntity().getHeight());
-        }
     }
 
     public double getSpeed() {
@@ -198,5 +183,20 @@ public class PlayerComponent extends Component {
         animationBuilder()
                 .fadeIn(entity)
                 .buildAndPlay();
+    }
+
+    public void shootSecondary(Point2D shootPoint) {
+        if (geti("secondaryCharge") < MAX_CHARGES_SECONDARY)
+            return;
+
+        set("secondaryCharge", 0);
+
+        getGameScene().getViewport().shakeRotational(2);
+
+        for (int i = -35; i <= 35; i += 5) {
+            var p = FXGLMath.rotate(shootPoint, entity.getCenter(), i);
+            var e = spawnBullet(entity.getCenter(), p.subtract(entity.getCenter()));
+            e.setVisible(false);
+        }
     }
 }

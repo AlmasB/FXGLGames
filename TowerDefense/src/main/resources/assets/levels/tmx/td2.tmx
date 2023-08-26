@@ -18,12 +18,12 @@
    eJxjYMAEYljEYEAUi1gHFrFmPGZQAzSj0cgAn/spAS1QGpt/qQGo5W5KzKFm2LUQVjIkQBcOcWx5gZqAmPDDpgbdXbjcT21A6/CgBsBXLmELJ3LDDp89oHACALIxCK8=
   </data>
  </layer>
- <objectgroup id="2" name="waypoints" visible="0">
+ <objectgroup id="2" name="waypoints">
   <object id="15" name="way1" type="waypoint" x="0" y="576">
-   <polygon points="0,-512 512,-512 512,-320 128,-320 128,-128 896,-128 896,-512 1216,-512 1216,-320 1600,-320"/>
+   <polyline points="0,-512 512,-512 512,-320 128,-320 128,-128 896,-128 896,-512 1216,-512 1216,-320 1600,-320"/>
   </object>
   <object id="31" name="way2" type="waypoint" x="64" y="1024">
-   <polygon points="-64,-384 320,-384 320,-192 832,-192 832,-384 1152,-384 1152,-576 1536,-576"/>
+   <polyline points="-64,-384 320,-384 320,-192 832,-192 832,-384 1152,-384 1152,-576 1536,-576"/>
   </object>
  </objectgroup>
  <objectgroup id="5" name="tower_placement">

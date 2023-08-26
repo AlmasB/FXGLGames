@@ -18,9 +18,9 @@
    eJxjYKAOECFCjRiV7BoF+IEYA/6wHuh4GGj7iQWiA+0AMsF9NIwOyPEXsp6NWOSxiVFiL7l2kALoYQcuAACppQh5
   </data>
  </layer>
- <objectgroup id="2" name="waypoints" visible="0">
+ <objectgroup id="2" name="waypoints">
   <object id="15" name="way1" type="waypoint" x="0" y="576">
-   <polygon points="0,0 128,0 128,-384 256,-384 256,-512 640,-512 640,-320 576,-192 576,0 640,64 896,64 896,-448 1344,-448 1344,-256 1600,-256"/>
+   <polyline points="0,0 128,0 128,-384 256,-384 256,-512 640,-512 640,-320 576,-192 576,0 640,64 896,64 896,-448 1344,-448 1344,-256 1600,-256"/>
   </object>
  </objectgroup>
  <objectgroup id="5" name="tower_placement">
