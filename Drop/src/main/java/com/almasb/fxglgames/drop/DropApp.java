@@ -49,7 +49,6 @@ public class DropApp extends GameApplication {
         settings.setVersion("1.0");
         settings.setWidth(480);
         settings.setHeight(800);
-        settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
 
     @Override
