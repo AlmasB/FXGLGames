@@ -28,6 +28,7 @@ package com.almasb.fxglgames.spaceinvaders.components;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import javafx.geometry.Point2D;
 
@@ -37,6 +38,16 @@ import javafx.geometry.Point2D;
 public class MeteorComponent extends Component {
 
     private Point2D velocity;
+    private Entity entity;
+
+    public MeteorComponent() {
+    }
+
+
+    public MeteorComponent(Entity entity) {
+        this.entity = entity;
+    }
+
 
     @Override
     public void onAdded() {
