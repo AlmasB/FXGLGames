@@ -9,8 +9,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.MockedStatic;
 
-import java.lang.reflect.Field;
-
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,7 +20,6 @@ class MeteorComponentTest {
 
     @BeforeAll
     static void beforeAll() {
-
         fxglMock = mockStatic(FXGL.class);
         fxglMock.when(FXGL::getAppWidth).thenReturn(800);
         fxglMock.when(FXGL::getAppHeight).thenReturn(600);
@@ -30,21 +27,15 @@ class MeteorComponentTest {
 
     @AfterAll
     static void afterAll() {
-
         if (fxglMock != null) {
             fxglMock.close();
         }
     }
 
     @BeforeEach
-    void setUp() throws Exception {
-        meteorComponent = new MeteorComponent();
+    void setUp() {
         entityMock = mock(Entity.class);
-
-
-        Field entityField = meteorComponent.getClass().getSuperclass().getDeclaredField("entity");
-        entityField.setAccessible(true);
-        entityField.set(meteorComponent, entityMock);
+        meteorComponent = new MeteorComponent(entityMock);
     }
 
     @ParameterizedTest
@@ -58,9 +49,7 @@ class MeteorComponentTest {
         when(entityMock.getX()).thenReturn(x);
         when(entityMock.getY()).thenReturn(y);
 
-
         meteorComponent.onAdded();
-
 
         verify(entityMock, never()).translate(any(Point2D.class));
         verify(entityMock, never()).rotateBy(anyDouble());
