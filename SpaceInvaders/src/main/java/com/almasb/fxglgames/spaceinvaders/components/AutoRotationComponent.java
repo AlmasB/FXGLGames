@@ -13,11 +13,11 @@ public class AutoRotationComponent extends Component {
         this.e = entity;
     }
 
-    public AutoRotationComponent(Entity e) {
+    public void setEntity(Entity e){
         this.e = e;
     }
 
-    Point2D getPrev() {
+    public Point2D getPrev() {
         return prev;
     }
 
