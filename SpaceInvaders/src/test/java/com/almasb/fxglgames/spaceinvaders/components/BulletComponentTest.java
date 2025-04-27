@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import java.lang.reflect.Field;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -14,10 +16,14 @@ class BulletComponentTest {
     private OwnerComponent ownerMock;
     private Entity entityMock;
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
         ownerMock = mock(OwnerComponent.class);
         entityMock = mock(Entity.class);
         bulletComponent = new BulletComponent(10.5, ownerMock, entityMock);
+
+        Field entityField = bulletComponent.getClass().getSuperclass().getDeclaredField("entity");
+        entityField.setAccessible(true);
+        entityField.set(bulletComponent, entityMock);
     }
 
     @ParameterizedTest(name = "{index} => tpf={0}, expected={1}")
