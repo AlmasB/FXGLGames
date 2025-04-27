@@ -38,6 +38,10 @@ public class MeteorComponent extends Component {
 
     private Point2D velocity;
 
+    public Point2D getVelocity() {
+        return velocity;
+    }
+
     @Override
     public void onAdded() {
         double w = FXGL.getAppWidth();

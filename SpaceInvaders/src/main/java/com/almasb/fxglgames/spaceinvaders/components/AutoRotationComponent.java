@@ -7,6 +7,10 @@ public class AutoRotationComponent extends Component {
 
     private Point2D prev;
 
+    public Point2D getPrev() {
+        return prev;
+    }
+
     @Override
     public void onAdded() {
         prev = entity.getPosition();

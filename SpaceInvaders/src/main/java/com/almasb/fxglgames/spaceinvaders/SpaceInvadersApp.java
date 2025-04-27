@@ -42,6 +42,10 @@ import com.almasb.fxglgames.spaceinvaders.components.PlayerComponent;
 import com.almasb.fxglgames.spaceinvaders.event.BonusPickupEvent;
 import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
 import com.almasb.fxglgames.spaceinvaders.level.*;
+import com.almasb.fxglgames.spaceinvaders.level.boss.BossLevel1;
+import com.almasb.fxglgames.spaceinvaders.level.boss.BossLevel2;
+import com.almasb.fxglgames.spaceinvaders.level.boss.BossLevel3;
+import com.almasb.fxglgames.spaceinvaders.level.boss.BossLevelFinal;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.util.Duration;
@@ -173,6 +177,7 @@ public class SpaceInvadersApp extends GameApplication {
                 new Level4(),
                 new Level5(),
                 new Level6(),
+                new BossLevel1(),
                 new Level7(),
                 new Level8(),
                 new Level9(),
@@ -181,11 +186,14 @@ public class SpaceInvadersApp extends GameApplication {
                 new Level12(),
                 new Level13(),
                 new Level14(),
+                new BossLevel2(),
                 new Level15(),
                 new Level16(),
                 new Level17(),
                 new Level18(),
-                new Level19()
+                new Level19(),
+                new BossLevel3(),
+                new BossLevelFinal()
         );
 
         spawnBackground();
