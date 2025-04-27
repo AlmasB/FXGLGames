@@ -18,7 +18,8 @@ class AutoRotationComponentTest {
     @BeforeEach
     void setUp() {
         entityMock = mock(Entity.class);
-        autoRotation = new AutoRotationComponent(entityMock);
+        autoRotation = new AutoRotationComponent();
+        autoRotation.setEntity(entityMock);
     }
 
     @ParameterizedTest
