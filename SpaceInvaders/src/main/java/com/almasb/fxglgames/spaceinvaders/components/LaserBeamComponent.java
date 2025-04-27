@@ -6,14 +6,13 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxglgames.spaceinvaders.Config;
 
-import com.almasb.fxgl.dsl.FXGL;  // Direct import to use in inner class
+import com.almasb.fxgl.dsl.FXGL;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class LaserBeamComponent extends Component {
 
-    // Added for testability
     private FXGLInterface fxgl;
 
     public LaserBeamComponent() {
@@ -35,14 +34,12 @@ public class LaserBeamComponent extends Component {
         }
     }
 
-    // Interface for FXGL static methods to make them testable
     public interface FXGLInterface {
         void inc(String varName, double value);
         double getd(String varName);
         void set(String varName, double value);
     }
 
-    // Default implementation that delegates to FXGL static methods
     private static class DefaultFXGLWrapper implements FXGLInterface {
         @Override
         public void inc(String varName, double value) {
