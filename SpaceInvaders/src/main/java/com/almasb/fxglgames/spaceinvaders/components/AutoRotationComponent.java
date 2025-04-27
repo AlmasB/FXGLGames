@@ -5,7 +5,11 @@ import javafx.geometry.Point2D;
 
 public class AutoRotationComponent extends Component {
 
-    protected Point2D prev;
+    private Point2D prev;
+
+    public Point2D getPrev() {
+        return prev;
+    }
 
     @Override
     public void onAdded() {

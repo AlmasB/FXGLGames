@@ -1,5 +1,6 @@
 package com.almasb.fxglgames.spaceinvaders.components;
 
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.entity.Entity;
 import javafx.geometry.Point2D;
 import com.almasb.fxgl.dsl.FXGL;
@@ -8,6 +9,8 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.MockedStatic;
+
+import java.lang.reflect.Field;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,26 +36,33 @@ class MeteorComponentTest {
     }
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
         entityMock = mock(Entity.class);
-        meteorComponent = new MeteorComponent(entityMock);
+        meteorComponent = new MeteorComponent();
+
+        Field entityField = meteorComponent.getClass().getSuperclass().getDeclaredField("entity");
+        entityField.setAccessible(true);
+        entityField.set(meteorComponent, entityMock);
     }
 
     @ParameterizedTest
     @CsvSource({
-            "100, 100",
-            "10, 10",
-            "400, 300"
+            "100, 100, 28.2842712474619, 28.2842712474619",
+            "200, 200, 28.2842712474619, 28.2842712474619",
+            "500, 500, -28.2842712474619, -28.2842712474619"
     })
     @DisplayName("Test onAdded initializes correctly based on position")
-    void testOnAddedInitializesVelocity(double x, double y) {
+    void testOnAddedInitializesVelocity(double x, double y, double velX, double velY) {
         when(entityMock.getX()).thenReturn(x);
         when(entityMock.getY()).thenReturn(y);
 
-        meteorComponent.onAdded();
+        try (MockedStatic<FXGLMath> fxglMathMock = mockStatic(FXGLMath.class)) {
+            fxglMathMock.when(() -> FXGLMath.random(40, 50)).thenReturn(40);
 
-        verify(entityMock, never()).translate(any(Point2D.class));
-        verify(entityMock, never()).rotateBy(anyDouble());
+            meteorComponent.onAdded();
+
+            assertEquals(new Point2D(velX, velY), meteorComponent.getVelocity());
+        }
     }
 
     @ParameterizedTest
@@ -69,7 +79,7 @@ class MeteorComponentTest {
         meteorComponent.onAdded();
         meteorComponent.onUpdate(0.016);
 
-        verify(entityMock, atLeastOnce()).translate(any(Point2D.class));
-        verify(entityMock, atLeastOnce()).rotateBy(anyDouble());
+        verify(entityMock, times(1)).translate(any(Point2D.class));
+        verify(entityMock, times(1)).rotateBy(anyDouble());
     }
 }
