@@ -37,7 +37,7 @@ class AutoRotationComponentTest {
         autoRotation.onAdded();
 
         verify(entityMock, times(1)).getPosition();
-        assertEquals(new Point2D(expectedX,expectedY),autoRotation.prev);
+        assertEquals(new Point2D(expectedX,expectedY),autoRotation.getPrev());
     }
 
     @ParameterizedTest
