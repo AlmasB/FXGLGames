@@ -26,6 +26,7 @@
 
 package com.almasb.fxglgames.spaceinvaders.components;
 
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.component.Required;
 import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
@@ -36,11 +37,20 @@ import com.almasb.fxglgames.spaceinvaders.SpaceInvadersType;
 @Required(OwnerComponent.class)
 public class BulletComponent extends Component {
 
-    private OwnerComponent owner;
+    private final OwnerComponent owner;
+    private final Entity entity;
 
-    private double speed;
+    private final double speed;
 
     public BulletComponent(double speed) {
+        this.owner = getEntity().getComponent(OwnerComponent.class);
+        this.entity = getEntity();
+        this.speed = speed;
+    }
+
+    public BulletComponent(double speed, OwnerComponent owner, Entity entity) {
+        this.owner = owner;
+        this.entity = entity;
         this.speed = speed;
     }
 

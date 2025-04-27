@@ -5,6 +5,7 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxglgames.spaceinvaders.event.GameEvent;
 import javafx.util.Duration;
+import com.almasb.fxgl.time.LocalTimer;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxgl.dsl.FXGL.spawn;
@@ -13,28 +14,34 @@ import static com.almasb.fxgl.dsl.FXGL.spawn;
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class BossComponent extends EnemyComponent {
+    private LocalTimer attackTimer;
+    private Duration nextAttack;
 
-    @Override
-    public void onUpdate(double tpf) {
-//        if (attackTimer.elapsed(nextAttack)) {
-//            shoot();
-//
-//            nextAttack = Duration.seconds(1);
-//            attackTimer.capture();
-//        }
+    public BossComponent() {
+        attackTimer = newLocalTimer();
+        nextAttack = Duration.seconds(2);
+        attackTimer.capture();
     }
 
     @Override
-    protected void shoot() {
+    public void onUpdate(double tpf) {
+        if (attackTimer.elapsed(nextAttack)) {
+            shoot();
+
+            nextAttack = Duration.seconds(1);
+            attackTimer.capture();
+        }
+    }
+
+//    @Override
+//    protected void shoot() {
 //        for (int i = 0; i < 6; i++) {
-//            GameWorld world = getEntity().getWorld();
-//            Entity bullet = world.spawn("Bullet", new SpawnData(0, 0).put("owner", getEntity()));
-//
+//            Entity bullet = spawn("Bullet", new SpawnData(0, 0).put("owner", getEntity()));
 //            bullet.translateX(20 * (i-3));
 //        }
 //
 //        play("shoot" + (int)(Math.random() * 4 + 1) + ".wav");
-    }
+//    }
 
     @Override
     public void die() {
