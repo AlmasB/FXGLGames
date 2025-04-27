@@ -1,9 +1,9 @@
 package com.almasb.fxglgames.spaceinvaders.components;
 import com.almasb.fxgl.entity.Entity;
 import javafx.geometry.Point2D;
+import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -16,10 +16,13 @@ class AutoRotationComponentTest {
     private Entity entityMock;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
         entityMock = mock(Entity.class);
         autoRotation = new AutoRotationComponent();
-        autoRotation.setEntity(entityMock);
+
+        Field entityField = autoRotation.getClass().getSuperclass().getDeclaredField("entity");
+        entityField.setAccessible(true);
+        entityField.set(autoRotation, entityMock);
     }
 
     @ParameterizedTest
@@ -34,7 +37,7 @@ class AutoRotationComponentTest {
         autoRotation.onAdded();
 
         verify(entityMock, times(1)).getPosition();
-        assertEquals(new Point2D(expectedX,expectedY),autoRotation.getPrev());
+        assertEquals(new Point2D(expectedX,expectedY),autoRotation.prev);
     }
 
     @ParameterizedTest
