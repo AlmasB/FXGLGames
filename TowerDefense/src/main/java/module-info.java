@@ -3,5 +3,4 @@
  */
 open module td.main {
     requires com.almasb.fxgl.all;
-    requires annotations;
 }
