@@ -46,12 +46,14 @@ public class BulletComponent extends Component {
 
         data.onHitEffects().forEach(effect -> {
             if (FXGLMath.randomBoolean(effect.getChance())) {
+                effect.onTriggered(data, target);
+
                 target.getComponent(EffectComponent.class).startEffect(effect.getEffect());
 
                 // TODO: generalise
-                var visualEffect = spawn("visualEffectSlow", target.getPosition());
+                //var visualEffect = spawn("visualEffectSlow", target.getPosition());
 
-                Animations.playVisualEffectSlowAnimation(visualEffect);
+                //Animations.playVisualEffectSlowAnimation(visualEffect);
             }
         });
 
@@ -59,7 +61,11 @@ public class BulletComponent extends Component {
 
         var hp = target.getComponent(HealthIntComponent.class);
 
-        hp.damage(data.getDamage());
+        var damage = (int) (data.getDamage() * data.getDamageModifier());
+
+        hp.damage(damage);
+
+        data.resetDamageModifier();
 
         if (hp.isZero()) {
             FXGL.<TowerDefenseApp>getAppCast().onEnemyKilled(target);

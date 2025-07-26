@@ -8,6 +8,8 @@ public record TowerData(
         String imageName,
         String projectileImageName,
         int attack,
+
+        // number of attacks per second
         double attackRate,
         int cost,
         boolean isSplashDamage,

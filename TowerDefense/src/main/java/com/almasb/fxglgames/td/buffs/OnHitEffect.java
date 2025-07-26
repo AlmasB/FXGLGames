@@ -1,6 +1,8 @@
 package com.almasb.fxglgames.td.buffs;
 
 import com.almasb.fxgl.dsl.components.Effect;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxglgames.td.components.TowerComponent;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -21,5 +23,12 @@ public class OnHitEffect {
 
     public double getChance() {
         return chance;
+    }
+
+    /**
+     * Called when the [tower] triggered this effect on [target].
+     */
+    public void onTriggered(TowerComponent tower, Entity target) {
+
     }
 }

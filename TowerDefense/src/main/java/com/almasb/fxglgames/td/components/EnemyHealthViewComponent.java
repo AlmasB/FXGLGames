@@ -16,12 +16,12 @@ public class EnemyHealthViewComponent extends ChildViewComponent {
     private ProgressBar hpBar;
 
     public EnemyHealthViewComponent() {
-        super(0, 64, false);
+        super(15, 64, false);
 
         hpBar = new ProgressBar(false);
-        hpBar.setWidth(60);
-        hpBar.setHeight(10);
-        hpBar.setFill(Color.LIGHTGREEN);
+        hpBar.setWidth(30);
+        hpBar.setHeight(7);
+        hpBar.setFill(Color.YELLOW);
         hpBar.setLabelVisible(false);
 
         getViewRoot().getChildren().add(hpBar);

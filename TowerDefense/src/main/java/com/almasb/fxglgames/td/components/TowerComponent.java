@@ -6,6 +6,7 @@ import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.td.EntityType;
+import com.almasb.fxglgames.td.buffs.CritEffect;
 import com.almasb.fxglgames.td.buffs.OnHitEffect;
 import com.almasb.fxglgames.td.data.TowerData;
 import javafx.geometry.Point2D;
@@ -26,21 +27,39 @@ public class TowerComponent extends Component {
 
     private LocalTimer shootTimer;
 
+    private List<OnHitEffect> effects;
+
+    private double damageModifier = 1.0;
+
     private TowerData data;
 
     public TowerComponent(TowerData data) {
         this.data = data;
+
+        effects = data.effects()
+                .stream()
+                .map(e -> parseEffect(e))
+                .toList();
+    }
+
+    public double getDamageModifier() {
+        return damageModifier;
+    }
+
+    public void setDamageModifier(double damageModifier) {
+        this.damageModifier = damageModifier;
+    }
+
+    public void resetDamageModifier() {
+        damageModifier = 1.0;
     }
 
     public int getDamage() {
         return data.attack();
     }
 
-    // TODO: read from data
     public List<OnHitEffect> onHitEffects() {
-        return List.of(
-                new OnHitEffect(new SlowTimeEffect(0.2, Duration.seconds(3)), 0.75)
-        );
+        return effects;
     }
 
     @Override
@@ -51,7 +70,9 @@ public class TowerComponent extends Component {
 
     @Override
     public void onUpdate(double tpf) {
-        if (shootTimer.elapsed(Duration.seconds(1.5))) {
+        var interval = Duration.seconds(1.0 / data.attackRate());
+
+        if (shootTimer.elapsed(interval)) {
             getGameWorld()
                     .getClosestEntity(entity, e -> e.isType(EntityType.ENEMY))
                     .ifPresent(nearestEnemy -> {
@@ -80,5 +101,22 @@ public class TowerComponent extends Component {
                         .put("target", enemy)
         );
         bullet.rotateToVector(direction);
+    }
+
+    private OnHitEffect parseEffect(String effect) {
+        var tokens = effect.split(",");
+
+        if (effect.startsWith("crit")) {
+            double chance = Double.parseDouble(tokens[1]) * 0.01;
+            double modifier = Double.parseDouble(tokens[2]);
+
+            return new CritEffect(chance, modifier);
+        }
+
+        if (effect.startsWith("slow")) {
+
+        }
+
+        throw new IllegalArgumentException("Unknown effect: " + effect);
     }
 }

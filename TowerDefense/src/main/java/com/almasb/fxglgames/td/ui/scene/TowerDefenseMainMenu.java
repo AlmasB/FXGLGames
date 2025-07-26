@@ -79,34 +79,8 @@ public class TowerDefenseMainMenu extends FXGLMenu {
 
         // TODO: where to read this from?
         List<String> levelNames = List.of(
-                "level2.json",
                 "level1.json",
-
-                // TODO: populate with actual levels
-                "level2.json",
-                "level1.json",
-                "level2.json",
-                "level1.json",
-                "level2.json",
-                "level1.json",
-                "level2.json",
-                "level1.json",
-                "level2.json",
-                "level1.json",
-                "level2.json",
-                "level1.json",
-                "level2.json",
-                "level1.json",
-                "level2.json",
-                "level1.json",
-                "level2.json",
-                "level1.json",
-                "level2.json",
-                "level1.json",
-                "level2.json",
-                "level1.json",
-                "level2.json",
-                "level1.json"
+                "level2.json"
         );
 
         var selectBox = new LevelSelectionBox(

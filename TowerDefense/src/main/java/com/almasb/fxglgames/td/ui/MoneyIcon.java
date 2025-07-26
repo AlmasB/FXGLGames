@@ -20,7 +20,7 @@ public class MoneyIcon extends Icon {
         text.setTranslateX(54);
         text.setTranslateY(45);
 
-        text.textProperty().addListener((observable, oldValue, newValue) -> {
+        getip("money").subscribe((oldValue, newValue) -> {
             var t = moneyTexture.copy();
 
             animationBuilder()
@@ -28,8 +28,8 @@ public class MoneyIcon extends Icon {
                     .duration(Duration.seconds(0.5))
                     .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
                     .translate(t)
-                    .from(new Point2D(0, -64))
-                    .to(new Point2D(0, 0))
+                    .from(newValue.intValue() > oldValue.intValue() ? new Point2D(0, -64) : new Point2D(0, 0))
+                    .to(newValue.intValue() > oldValue.intValue() ? new Point2D(0, 0) : new Point2D(0, -64))
                     .buildAndPlay();
 
             getChildren().add(t);

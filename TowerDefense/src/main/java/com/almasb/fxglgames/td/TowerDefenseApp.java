@@ -53,7 +53,7 @@ public class TowerDefenseApp extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setTitle("FXGL Tower Defense");
-        settings.setVersion("0.3");
+        settings.setVersion("0.4");
         settings.setWidth(25 * 64);
         settings.setHeight(14 * 64);
         settings.getCSSList().add("main.css");
@@ -151,7 +151,7 @@ public class TowerDefenseApp extends GameApplication {
         waveIcon.setMaxWave(currentLevel.maxWaveIndex());
 
         runOnce(() -> {
-            initQuests(currentLevel);
+            //initQuests(currentLevel);
         }, Duration.seconds(0.1));
 
         setLevelFromMap("tmx/" + currentLevel.map());
@@ -167,7 +167,7 @@ public class TowerDefenseApp extends GameApplication {
     }
 
     private void initQuests(LevelData level) {
-        getService(QuestService.class).questsProperty().forEach(quest -> getService(QuestService.class).removeQuest(quest));
+        //getService(QuestService.class).questsProperty().forEach(quest -> getService(QuestService.class).removeQuest(quest));
 
         var quest = new Quest("Objectives");
 
