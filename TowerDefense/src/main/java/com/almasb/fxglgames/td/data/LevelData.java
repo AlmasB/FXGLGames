@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 public record LevelData(
         String name,
         String map,
+        int startMoney,
         List<WaveData> waves,
         List<QuestData> quests
 ) {

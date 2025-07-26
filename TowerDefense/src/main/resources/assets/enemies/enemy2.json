@@ -2,6 +2,5 @@
   "hp": 350,
   "reward": 45,
   "moveSpeed": 3.2,
-  "interval": 1.5,
   "imageName": "enemy2.png"
 }

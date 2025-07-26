@@ -1,0 +1,48 @@
+{
+  "name": "Level 2 - More Enemies",
+  "map": "td1.tmx",
+  "waves": [
+    {
+      "index": 1,
+      "enemy": "enemy1.json",
+      "amount": 2,
+      "way": "way1",
+      "reward": 250
+    },
+    {
+      "index": 1,
+      "enemy": "enemy2.json",
+      "amount": 3,
+      "way": "way1",
+      "reward": 250
+    },
+    {
+      "index": 2,
+      "enemy": "enemy1.json",
+      "amount": 3,
+      "way": "way1",
+      "reward": 250
+    },
+    {
+      "index": 2,
+      "enemy": "enemy1.json",
+      "amount": 2,
+      "way": "way1",
+      "reward": 250
+    }
+  ],
+  "quests": [
+    {
+      "desc": "Build 3 towers",
+      "varName": "numTowers",
+      "varValue": 3,
+      "reward": 100
+    },
+    {
+      "desc": "Build 6 towers",
+      "varName": "numTowers",
+      "varValue": 6,
+      "reward": 120
+    }
+  ]
+}

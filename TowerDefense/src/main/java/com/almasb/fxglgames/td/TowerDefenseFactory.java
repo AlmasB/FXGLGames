@@ -9,6 +9,7 @@ import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.TimeComponent;
+import com.almasb.fxgl.texture.ImagesKt;
 import com.almasb.fxgl.ui.ProgressBar;
 import com.almasb.fxglgames.td.components.BulletComponent;
 import com.almasb.fxglgames.td.components.EnemyComponent;
@@ -61,6 +62,7 @@ public class TowerDefenseFactory implements EntityFactory {
                 .viewWithBBox(towerData.imageName())
                 .collidable()
                 .with(new TowerComponent(towerData))
+                .with("isDespawning", false)
                 .zIndex(Z_INDEX_TOWER)
                 .build();
     }
@@ -69,7 +71,7 @@ public class TowerDefenseFactory implements EntityFactory {
     public Entity spawnBullet(SpawnData data) {
         String imageName = data.get("imageName");
 
-        Node view = texture(imageName);
+        Node view = texture(imageName).outline(Color.BLACK, 2);
         view.setRotate(90);
 
         Entity tower = data.get("tower");

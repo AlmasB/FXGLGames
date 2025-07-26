@@ -100,6 +100,8 @@ public class TowerComponent extends Component {
                         .put("tower", entity)
                         .put("target", enemy)
         );
+
+        // TODO: pass to spawn as above, or use [enemy] to calculate direction
         bullet.rotateToVector(direction);
     }
 

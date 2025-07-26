@@ -13,6 +13,7 @@ public record WaveData(
         int index,
         String enemy,
         int amount,
+        double interval,
         String way,
         int reward
 ) { }

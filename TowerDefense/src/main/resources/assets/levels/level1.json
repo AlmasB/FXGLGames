@@ -1,11 +1,13 @@
 {
-  "name": "Hello world",
+  "name": "Level 1 - Hello World",
   "map": "td1.tmx",
+  "startMoney": 100,
   "waves": [
     {
       "index": 1,
       "enemy": "enemy1.json",
       "amount": 15,
+      "interval": 0.5,
       "way": "way1",
       "reward": 0
     }

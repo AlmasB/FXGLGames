@@ -48,6 +48,7 @@ public class TowerDefenseApp extends GameApplication {
     private LevelData currentLevel;
 
     private TowerSelectionBox towerSelectionBox;
+    private TowerSellBox towerSellBox;
     private WaveIcon waveIcon;
 
     @Override
@@ -79,10 +80,9 @@ public class TowerDefenseApp extends GameApplication {
     @Override
     protected void initGameVars(Map<String, Object> vars) {
         vars.put(NUM_ENEMIES, 0);
-        vars.put(MONEY, STARTING_MONEY);
         vars.put(PLAYER_HP, STARTING_HP);
         vars.put(CURRENT_WAVE, 0);
-
+        vars.put(MONEY, currentLevel.startMoney());
         vars.put(NUM_TOWERS, 0);
     }
 
@@ -100,6 +100,7 @@ public class TowerDefenseApp extends GameApplication {
 
         // construct UI objects
         towerSelectionBox = new TowerSelectionBox(towerData);
+        towerSellBox = new TowerSellBox();
         waveIcon = new WaveIcon();
 
         loadCurrentLevel();
@@ -242,7 +243,7 @@ public class TowerDefenseApp extends GameApplication {
                         Interpolators.ELASTIC.EASE_OUT()
                 );
 
-            }, Duration.seconds(i * data.interval()));
+            }, Duration.seconds(i * wave.interval()));
         }
 
         inc(NUM_ENEMIES, wave.amount());
@@ -264,7 +265,9 @@ public class TowerDefenseApp extends GameApplication {
     @Override
     protected void initUI() {
         towerSelectionBox.setVisible(false);
+        towerSellBox.setVisible(false);
 
+        addUINode(towerSellBox);
         addUINode(towerSelectionBox);
 
         addUINode(new MoneyIcon(), 10, 10);
@@ -276,9 +279,24 @@ public class TowerDefenseApp extends GameApplication {
     }
 
     public void onCellClicked(Entity cell) {
-        // if we already have a tower on this tower base, ignore call
-        if (cell.getProperties().exists("tower"))
+        // if we already have a tower on this tower base, open tower selling box
+        if (cell.getProperties().exists("tower")) {
+
+            // TODO: duplicate code as below
+            towerSelectionBox.setVisible(false);
+
+            towerSellBox.setCell(cell);
+            towerSellBox.setVisible(true);
+
+            var x = cell.getX() > getAppWidth() / 2.0 ? cell.getX() - 80 : cell.getX();
+
+            towerSellBox.setTranslateX(x);
+            towerSellBox.setTranslateY(cell.getY());
+
             return;
+        }
+
+        towerSellBox.setVisible(false);
 
         towerSelectionBox.setCell(cell);
         towerSelectionBox.setVisible(true);
@@ -302,10 +320,37 @@ public class TowerDefenseApp extends GameApplication {
                     Interpolators.ELASTIC.EASE_OUT()
             );
 
+            tower.getViewComponent().addOnClickHandler(e -> {
+                if (!tower.getBoolean("isDespawning")) {
+                    onCellClicked(cell);
+                }
+            });
+
             cell.setProperty("tower", tower);
 
             inc(NUM_TOWERS, +1);
         }
+    }
+
+    public void onTowerSold(Entity cell) {
+        towerSellBox.setVisible(false);
+
+        Entity tower = cell.getObject("tower");
+
+        TowerData data = tower.getObject("towerData");
+
+        // TODO: record, then check wave spawned, if this wave, then refund 100%
+        inc(MONEY, (int)(data.cost() * COST_REFUND_ON_SALE));
+
+        cell.getProperties().remove("tower");
+
+        tower.setProperty("isDespawning", true);
+
+        despawnWithScale(
+                tower,
+                Duration.seconds(0.5),
+                Interpolators.EXPONENTIAL.EASE_OUT()
+        );
     }
 
     public void onEnemyKilled(Entity enemy) {
