@@ -1,15 +1,16 @@
 package com.almasb.fxglgames.td.components;
 
-import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.EffectComponent;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxglgames.td.EntityType;
 import com.almasb.fxglgames.td.TowerDefenseApp;
 import com.almasb.fxglgames.td.data.Config;
-import com.almasb.fxglgames.td.ui.Animations;
+
+import java.util.ArrayList;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
@@ -42,13 +43,32 @@ public class BulletComponent extends Component {
     }
 
     private void onTargetHit() {
-        TowerComponent data = tower.getComponent(TowerComponent.class);
+        TowerComponent tower = this.tower.getComponent(TowerComponent.class);
+        var data = tower.getData();
 
-        data.onHitEffects().forEach(effect -> {
+        var targets = new ArrayList<Entity>();
+
+        if (data.isSplashDamage()) {
+            // TODO: extract range? perhaps can use aoeRange = 0 for no splash damage, any greater value for range itself
+
+            targets.addAll(
+                    getGameWorld().getEntitiesInRange(target.getBoundingBoxComponent().range(5, 5))
+                            .stream()
+                            .filter(e -> e.isType(EntityType.ENEMY))
+                            .toList()
+            );
+
+        } else {
+            targets.add(target);
+        }
+
+        tower.onHitEffects().forEach(effect -> {
             if (FXGLMath.randomBoolean(effect.getChance())) {
-                effect.onTriggered(data, target);
+                targets.forEach(t -> {
+                    effect.onTriggered(tower, t);
 
-                target.getComponent(EffectComponent.class).startEffect(effect.getEffect());
+                    t.getComponent(EffectComponent.class).startEffect(effect.getEffect());
+                });
 
                 // TODO: generalise
                 //var visualEffect = spawn("visualEffectSlow", target.getPosition());
@@ -59,17 +79,18 @@ public class BulletComponent extends Component {
 
         entity.removeFromWorld();
 
-        var hp = target.getComponent(HealthIntComponent.class);
+        targets.forEach(t -> {
+            var hp = t.getComponent(HealthIntComponent.class);
 
-        var damage = (int) (data.getDamage() * data.getDamageModifier());
+            var damage = (int) (tower.getDamage() * tower.getDamageModifier());
 
-        hp.damage(damage);
+            hp.damage(damage);
 
-        data.resetDamageModifier();
+            tower.resetDamageModifier();
 
-        if (hp.isZero()) {
-            FXGL.<TowerDefenseApp>getAppCast().onEnemyKilled(target);
-            target.removeFromWorld();
-        }
+            if (hp.isZero()) {
+                FXGL.<TowerDefenseApp>getAppCast().killEnemy(t);
+            }
+        });
     }
 }

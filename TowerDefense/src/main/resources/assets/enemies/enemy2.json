@@ -1,6 +1,6 @@
 {
-  "hp": 350,
-  "reward": 45,
-  "moveSpeed": 3.2,
-  "imageName": "enemy2.png"
+  "hp": 15,
+  "reward": 2,
+  "moveSpeed": 4.4,
+  "imageName": "enemy1.png"
 }

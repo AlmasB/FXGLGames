@@ -2,8 +2,8 @@
   "name": "Tower 4",
   "imageName": "towers/tower4.png",
   "projectileImageName": "projectile1.png",
-  "attack": 60,
-  "attackRate": 1,
-  "cost": 250,
+  "attack": 6,
+  "attackRate": 0.25,
+  "cost": 245,
   "isSplashDamage": true
 }

@@ -11,21 +11,25 @@ import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.quest.Quest;
 import com.almasb.fxgl.quest.QuestService;
 import com.almasb.fxgl.quest.QuestState;
+import com.almasb.fxgl.time.TimerAction;
 import com.almasb.fxglgames.td.components.EnemyComponent;
 import com.almasb.fxglgames.td.data.*;
 import com.almasb.fxglgames.td.ui.*;
 import com.almasb.fxglgames.td.ui.scene.TowerDefenseGameMenu;
 import com.almasb.fxglgames.td.ui.scene.TowerDefenseMainMenu;
 import javafx.beans.binding.Bindings;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polyline;
 import javafx.util.Duration;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxglgames.td.EntityType.ENEMY;
 import static com.almasb.fxglgames.td.EntityType.WAY;
 import static com.almasb.fxglgames.td.data.Config.*;
 import static com.almasb.fxglgames.td.data.Vars.*;
@@ -75,6 +79,26 @@ public class TowerDefenseApp extends GameApplication {
             }
         });
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
+    }
+
+    @Override
+    protected void initInput() {
+        onKeyDown(KeyCode.L, () -> {
+            byType(ENEMY).forEach(e -> e.removeFromWorld());
+
+            spawnActions.forEach(a -> a.expire());
+
+            currentLevel.waves(geti(CURRENT_WAVE))
+                    .forEach(wave -> {
+                        EnemyData data = getAssetLoader().loadJSON("enemies/" + wave.enemy(), EnemyData.class).get();
+
+                        int reward = data.reward() * wave.amount();
+
+                        inc(MONEY, reward);
+                    });
+
+            set(NUM_ENEMIES, 0);
+        });
     }
 
     @Override
@@ -222,6 +246,8 @@ public class TowerDefenseApp extends GameApplication {
         }
     }
 
+    private List<TimerAction> spawnActions = new ArrayList<>();
+
     private void spawnWave(WaveData wave) {
         var wayEntity = getGameWorld().getSingleton(e ->
                 e.isType(WAY) && e.getString("name").equals(wave.way())
@@ -232,8 +258,10 @@ public class TowerDefenseApp extends GameApplication {
         Polyline p = wayEntity.getObject("polyline");
         var way = Way.fromPolyline(p, wayEntity.getX(), wayEntity.getY());
 
+        spawnActions.clear();
+
         for (int i = 0; i < wave.amount(); i++) {
-            runOnce(() -> {
+            var a = runOnce(() -> {
                 spawnWithScale(
                         "Enemy",
                         new SpawnData()
@@ -244,6 +272,8 @@ public class TowerDefenseApp extends GameApplication {
                 );
 
             }, Duration.seconds(i * wave.interval()));
+
+            spawnActions.add(a);
         }
 
         inc(NUM_ENEMIES, wave.amount());
@@ -353,9 +383,11 @@ public class TowerDefenseApp extends GameApplication {
         );
     }
 
-    public void onEnemyKilled(Entity enemy) {
+    public void killEnemy(Entity enemy) {
         inc(MONEY, enemy.getComponent(EnemyComponent.class).getData().reward());
         inc(NUM_ENEMIES, -1);
+
+        enemy.removeFromWorld();
     }
 
     public void onEnemyReachedEnd(Entity enemy) {

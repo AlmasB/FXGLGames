@@ -1,7 +1,7 @@
 {
-  "name": "L3 - The Flood",
+  "name": "L3 - New Strategy",
   "map": "td1.tmx",
-  "startMoney": 120,
+  "startMoney": 200,
   "waves": [
     {
       "index": 1,
@@ -9,63 +9,39 @@
       "amount": 50,
       "interval": 0.2,
       "way": "way1",
-      "reward": 15
+      "reward": 350
     },
     {
       "index": 2,
+      "enemy": "enemy2.json",
+      "amount": 55,
+      "interval": 0.2,
+      "way": "way1",
+      "reward": 175
+    },
+    {
+      "index": 2,
+      "enemy": "enemy2.json",
+      "amount": 55,
+      "interval": 0.2,
+      "way": "way1",
+      "reward": 175
+    },
+    {
+      "index": 3,
       "enemy": "enemy1.json",
       "amount": 100,
       "interval": 0.1,
-      "way": "way1"
+      "way": "way1",
+      "reward": 0
     },
     {
       "index": 3,
-      "enemy": "enemy1.json",
-      "amount": 60,
-      "interval": 0.1,
-      "way": "way1"
-    },
-    {
-      "index": 3,
-      "enemy": "enemy1.json",
-      "amount": 60,
-      "interval": 0.05,
-      "way": "way1"
-    },
-    {
-      "index": 4,
-      "enemy": "enemy1.json",
-      "amount": 140,
-      "interval": 0.1,
-      "way": "way1"
-    },
-    {
-      "index": 4,
-      "enemy": "enemy1.json",
-      "amount": 50,
-      "interval": 0.1,
-      "way": "way1"
-    },
-    {
-      "index": 5,
-      "enemy": "enemy1.json",
-      "amount": 170,
-      "interval": 0.1,
-      "way": "way1"
-    },
-    {
-      "index": 6,
-      "enemy": "enemy1.json",
-      "amount": 200,
-      "interval": 0.15,
-      "way": "way1"
-    },
-    {
-      "index": 6,
-      "enemy": "enemy1.json",
-      "amount": 200,
-      "interval": 0.03,
-      "way": "way1"
+      "enemy": "enemy2.json",
+      "amount": 100,
+      "interval": 0.2,
+      "way": "way1",
+      "reward": 0
     }
   ]
 }

@@ -8,6 +8,7 @@ import com.almasb.fxgl.time.LocalTimer;
 import com.almasb.fxglgames.td.EntityType;
 import com.almasb.fxglgames.td.buffs.CritEffect;
 import com.almasb.fxglgames.td.buffs.OnHitEffect;
+import com.almasb.fxglgames.td.buffs.SlowEffect;
 import com.almasb.fxglgames.td.data.TowerData;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
@@ -40,6 +41,10 @@ public class TowerComponent extends Component {
                 .stream()
                 .map(e -> parseEffect(e))
                 .toList();
+    }
+
+    public TowerData getData() {
+        return data;
     }
 
     public double getDamageModifier() {
@@ -116,7 +121,10 @@ public class TowerComponent extends Component {
         }
 
         if (effect.startsWith("slow")) {
+            double chance = Double.parseDouble(tokens[1]) * 0.01;
+            double durationSeconds = Double.parseDouble(tokens[2]);
 
+            return new SlowEffect(0.5, durationSeconds, chance);
         }
 
         throw new IllegalArgumentException("Unknown effect: " + effect);

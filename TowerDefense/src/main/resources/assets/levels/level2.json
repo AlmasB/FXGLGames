@@ -1,5 +1,5 @@
 {
-  "name": "Level 2 - More Enemies",
+  "name": "L2 - More Enemies",
   "map": "td1.tmx",
   "startMoney": 150,
   "waves": [
@@ -8,14 +8,16 @@
       "enemy": "enemy1.json",
       "amount": 10,
       "interval": 0.5,
-      "way": "way1"
+      "way": "way1",
+      "reward": 10
     },
     {
       "index": 1,
       "enemy": "enemy1.json",
       "amount": 10,
       "interval": 0.33,
-      "way": "way1"
+      "way": "way1",
+      "reward": 10
     },
     {
       "index": 2,

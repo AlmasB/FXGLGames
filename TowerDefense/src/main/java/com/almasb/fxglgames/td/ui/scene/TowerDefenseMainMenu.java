@@ -81,7 +81,8 @@ public class TowerDefenseMainMenu extends FXGLMenu {
         List<String> levelNames = List.of(
                 "level1.json",
                 "level2.json",
-                "level3.json"
+                "level3.json",
+                "level4.json"
         );
 
         var selectBox = new LevelSelectionBox(

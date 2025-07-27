@@ -49,7 +49,7 @@ public class TowerDefenseFactory implements EntityFactory {
                 .with(new HealthIntComponent(enemyData.hp()))
                 .with(new EnemyComponent(data.get("way"), enemyData))
                 .with(new AutoRotationComponent())
-                .with(new EnemyHealthViewComponent())
+                //.with(new EnemyHealthViewComponent())
                 .build();
     }
 

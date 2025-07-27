@@ -3,5 +3,5 @@
   "imageName": "towers/tower1.png",
   "attack": 10,
   "attackRate": 1,
-  "cost": 50
+  "cost": 45
 }

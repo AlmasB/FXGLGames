@@ -1,0 +1,72 @@
+{
+  "name": "L4 - The Flood",
+  "map": "td1.tmx",
+  "startMoney": 185,
+  "waves": [
+    {
+      "index": 1,
+      "enemy": "enemy1.json",
+      "amount": 50,
+      "interval": 0.2,
+      "way": "way1",
+      "reward": 250
+    },
+    {
+      "index": 2,
+      "enemy": "enemy1.json",
+      "amount": 100,
+      "interval": 0.1,
+      "way": "way1",
+      "reward": 250
+    },
+    {
+      "index": 3,
+      "enemy": "enemy1.json",
+      "amount": 60,
+      "interval": 0.1,
+      "way": "way1"
+    },
+    {
+      "index": 3,
+      "enemy": "enemy1.json",
+      "amount": 60,
+      "interval": 0.05,
+      "way": "way1"
+    },
+    {
+      "index": 4,
+      "enemy": "enemy1.json",
+      "amount": 140,
+      "interval": 0.1,
+      "way": "way1"
+    },
+    {
+      "index": 4,
+      "enemy": "enemy2.json",
+      "amount": 50,
+      "interval": 0.1,
+      "way": "way1"
+    },
+    {
+      "index": 5,
+      "enemy": "enemy1.json",
+      "amount": 170,
+      "interval": 0.1,
+      "way": "way1"
+    },
+    {
+      "index": 6,
+      "enemy": "enemy2.json",
+      "amount": 200,
+      "interval": 0.15,
+      "way": "way1"
+    },
+    {
+      "index": 6,
+      "enemy": "enemy1.json",
+      "amount": 200,
+      "interval": 0.03,
+      "way": "way1"
+    }
+  ]
+}
